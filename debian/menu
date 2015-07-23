@@ -1,0 +1,8 @@
+?package(seq24):\
+ needs="X11"\
+ section="Applications/Sound"\
+ title="Seq24"\
+ command="/usr/bin/seq24"\
+ hints="MIDI,Music Editor"\
+ description="Seq24 is a simple MIDI sequencer."\
+ icon="/usr/share/pixmaps/seq24.xpm"
