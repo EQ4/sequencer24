@@ -1,0 +1,80 @@
+Sequencer24/Seq24 Roadmap
+Chris Ahlstrom
+2015-07-23 to 2015-07-23
+
+The starting point for the Sequencer24 project is version
+0.9.2 of seq24.  The following changes are planned:
+
+   -  Create a Git project out of the existing Seq24 files: sequencer24
+   -  Branch off to a permanent "Legacy" branch:
+      -  Add this ROADMAP file to the legacy branch.
+      -  Make any changes needed to get the code to build and running in the
+         old way.  Hopefully, no changes will be needed.
+      -  Tag the legacy branch and record the tag in the parent ROADMAP.
+   -  Branch off to a "Debian" branch:
+      -  Add the Debian files obtained from Debian.org, and verify that
+         a Debian package could be made.
+      -  Merge "Debian" back into the main trunk.
+   -  Branch off to a "Catchup" branch:
+      -  Add the LASH fixes found on GitHub, and verify functionality.
+      -  Other easy fixes found anywhere?
+      -  Merge "Catchup" back into the main trunk.
+   -  Branch off to a "Packaging" branch:
+      -  Add a bootstrap script.
+      -  Add a pack script.
+      -  Fix and verify any Debian packaging issues.
+      -  Merge "Packaging" back into the main trunk.
+   -  Branch off to a "Gtkmm-3" branch.
+      -  Update the GUI, document the changes, and verify functionality.
+      -  Merge "Gtkmm-3" back into the main trunk.
+   -  Branch off to a "Document" branch:
+      -  Document each module.
+      -  Get an idea of the design, and document it.
+      -  Generate Doxygen documentation.
+      -  Merge "Document" back into the main trunk.
+   -  Branch off to a "Library" branch:
+      -  Break out functionality into libsequencer24.
+      -  Unit test each element as appropriate using xpc-suite
+         functionality.
+      -  Enhance documentation and recreate it.
+      -  Rebuild application using library code.
+      -  Verify functionality.
+      -  Merge "Library" back into the main trunk.
+   -  Create a separate "sequencer24-doc" project and update the
+      documentation to reflect the name changes and new project.
+   -  Branch off to an "Enhancements" branch:
+      -  TO BE DETERMINED.
+
+Git Graph:
+
+o Origin.
+   o  Legacy
+      o  ROADMAP
+      o  Build and verify
+      o  Tag and record the tag
+   o  Debian
+      o  Debian directory
+      o  Build, build deb and verify
+   o  Catchup
+      o  LASH fixes
+      o  Other fixes
+      o  Build, build deb and verify
+   o  Packaging
+      o  bootstrap
+      o  pack
+      o  Build, build deb and verify
+   o  Gtkmm-3
+      o  GUI update
+      o  Update-related comments
+      o  Build, build deb and verify
+   o  Document
+      o  Add module comments
+      o  Generate Doxygen design documentation
+      o  Build, build deb and verify
+   o  Library
+      o  Refactor to a library
+      o  Build using library
+      o  Build, build deb and verify
+   o  Enhancements
+      o  TBD
+
