@@ -1,0 +1,27 @@
+`configure' configures seq24 0.9.2 to adapt to many kinds of systems.
+
+Usage: ./configure [OPTION]... [VAR=VALUE]...
+
+Optional Features:
+  --disable-alsatest      Do not try to compile and run a test Alsa program
+  --disable-jack          Disable JACK support
+  --disable-jack-session  Disable JACK session support
+  --disable-lash          Disable LASH support
+
+Optional Packages:
+  --with-alsa-prefix=PFX  Prefix where Alsa library is installed(optional)
+  --with-alsa-inc-prefix=PFX  Prefix where include libraries are (optional)
+
+Some influential environment variables:
+  GTKMM_CFLAGS C compiler flags for GTKMM, overriding pkg-config
+  GTKMM_LIBS   linker flags for GTKMM, overriding pkg-config
+  JACK_CFLAGS  C compiler flags for JACK, overriding pkg-config
+  JACK_LIBS    linker flags for JACK, overriding pkg-config
+  LASH_CFLAGS  C compiler flags for LASH, overriding pkg-config
+  LASH_LIBS    linker flags for LASH, overriding pkg-config
+
+Use these variables to override the choices made by `configure' or to help
+it to find libraries and programs with nonstandard names/locations.
+
+Report bugs to <seq24-devel@lists.sourceforge.net>.
+
