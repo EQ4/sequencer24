@@ -1,0 +1,54 @@
+Sequencer24/Seq24 Notes
+Chris Ahlstrom
+2015-07-23 to 2015-07-23
+
+seq24 0.9.2 original dependencies
+----------------------------------------------------------------------
+Packages needed:
+  libfreetype6-dev
+  guile-2.0-libs:amd64
+  libglib2.0-dev
+  libglibmm-2.4-dev:amd64
+  libffi6:amd64
+  libcairo2-dev
+  make-guile
+  libjack-jackd2-dev:amd64
+  libpangomm-1.4-dev:amd64
+  file
+  x11proto-render-dev
+  libfreetype-infinality6:amd64
+  libcairomm-1.0-dev
+  libasound2:amd64
+  libgtk2.0-dev
+  x11proto-randr-dev
+  libsigsegv2:amd64
+  libgdk-pixbuf2.0-dev
+* liblash-compat-dev
+  libgtkmm-2.4-1c2a:amd64
+  gawk
+  mime-support
+  x11proto-composite-dev
+  libxi-dev
+  libxau-dev:amd64
+  libgc1c2:amd64
+  libatk1.0-dev
+  pkg-config
+  libharfbuzz-dev
+  libxcomposite-dev
+  x11proto-kb-dev
+  libpthread-stubs0-dev:amd64
+  x11proto-damage-dev
+  libreadline6:amd64
+  libpango1.0-dev
+  libunistring0:amd64
+  libxdmcp-dev:amd64
+  perl
+* libasound2-dev:amd64
+* libgtkmm-2.4-dev:amd64
+  libmagic1:amd64
+  libpixman-1-dev
+  libltdl7:amd64
+  libsigc++-2.0-0c2a:amd64
+* libexpat1-dev:amd64
+  x11proto-xinerama-dev
+  libatkmm-1.6-dev:amd64
