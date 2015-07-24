@@ -21,6 +21,7 @@ x  -  Branch off to a "Catchup" branch:
       -  Add the LASH fixes found on GitHub, and verify functionality.
       -  Other easy fixes found anywhere?
       -  Merge "Catchup" back into the main trunk.
+      -  Tagged as "Catchup", commit 8ea385884b7629424243b347f645b7d3720a3857.
    -  Branch off to a "Packaging" branch:
       -  Add a bootstrap script.
       -  Add a pack script.

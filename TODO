@@ -1,5 +1,12 @@
+Sequencer24/Seq24 TODO Updates
+Chris Ahlstrom
+2015-07-24 to 2015-07-24
 
-<0.9.0>
+These are my best guesses as to what was done in 0.9.2; some more
+TODOs may already be done, I will update as I discover them.
+Don't forget to check out the new ROADMAP file as well.
+
+<0.9.2>
 
 [sequence editor]
 
@@ -16,7 +23,6 @@
 [x] Port Names and number specd in rc file 
 [x] Controllers Speced in rc file eg. (Wavestation MIDI 1) (SuperNova Filter)
 [ ] Notes Speced in rc file eg. Bass Drum (no black/white)
-
 
 [ ] sorting of events placed into event list
     0) Program Changes
@@ -43,48 +49,51 @@
 [x] Stretch w/ Ctrl (Federico)
 [ ] Change background sequence color
 
-
 [x] Test Maxim Patches w/ wheel mouse
     Make sure data entry still does its thing w/ wheel
 
- 1) when clicking on an event only one (the "topmost") event is selected.
- useful to decouple two events that are eventually stocked on top one another
- 2) if there are any events selected, data editor only changes controller.
- values for these events; if there are no events selected it acts as usual.
- 3) data editor slope line can be dragged outside of data editor window;
- controller values are adjusted to fit (0,127).
- makes it easier setting all controllers to min/max value.
- 4) mouse wheel scrolls the grid up/down in sequence editor and song editor.
-  MAxim Krikun[+ 
- 5) Scrolling draw
+   1) When clicking on an event only one (the "topmost") event is selected.
+      useful to decouple two events that are eventually stocked on top one
+      another.
+   2) If there are any events selected, data editor only changes controller.
+      values for these events; if there are no events selected it acts as
+      usual.
+   3) Data editor slope line can be dragged outside of data editor window;
+      controller values are adjusted to fit (0,127).  Makes it easier
+      setting all controllers to min/max value.
+   4) Mouse wheel scrolls the grid up/down in sequence editor and song editor.
+      Maxim Krikun[+].
+   5) Scrolling draw.
 
-[ ] Quantize Button
+[X] Quantize Button
   
 [tools]
+
 [ ] Insert data runs. (Using Snap) CC
 [ ] Randomize                      CC
 [ ] Smooth                         CC
 [ ] Sharpen                        CC
 [ ] Thin.                          CC
 [ ] Thick.                         CC
-[ ] Reverse.                NOTES CC
-[ ] Delete doubles (Start) NOTES   CC   
-[x] Quantize Start        NOTES    CC
-[ ] Quantize Length  > Big Menu.   NOTES
+[ ] Reverse.                 NOTES CC
+[ ] Delete doubles (Start)   NOTES CC   
+[x] Quantize Start           NOTES CC
+[ ] Quantize Length  > Big Menu.  NOTES
 [ ] Set Note Lengthi > Big Menu.  NOTES
-[x] Transpose.            NOTES
-[x] Harmonic transpose.   NOTES
+[x] Transpose.               NOTES
+[x] Harmonic transpose.      NOTES
 
 [ ] Multiple Manual Inputs.  Selectable from editor.
 
 [ ] One mouse button operation (buttons now chose mode)
-       Old buttons still work.
-       Add keyboard shortcuts for Select Draw Erase Grow
+    Old buttons still work.
+    Add keyboard shortcuts for Select Draw Erase Grow
 
 [ ] options for priority
 [ ] nologo flag ??
 
 [sysex]
+
 [ ] add data buffers to event.cpp
 [ ] midi files must read/save sysex.
 [ ] .seq24rc defines known sysex patters
@@ -92,11 +101,14 @@
 [ ] known sysex patterns can be changed with data graph
 [ ] unknown sysex patterns can be edited raw
 
-[ ] Implement raw hex editor.  
 [hexeditor]
+
+[ ] Implement raw hex editor.  
     Design for sysex and normal midi data.
     Edit whole sequence list.  Filters?  Super flexable
 
-<< Other >>
+[Other]
+
 [ ] Midi file export (render mode)
 [ ] Song Cue Points Based on Keys or Midi Input
+
