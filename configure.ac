@@ -12,7 +12,7 @@ dnl \version       $Revision$
 dnl \license       $XPC_SUITE_GPL_LICENSE$
 dnl
 dnl   This script is for the sequencer24 project, a repacking and fixing
-dnl   of the sequencer24 project, which is derived from seq24 v0.9.2..
+dnl   of the sequencer24 project, which is derived from seq24 v0.9.2.
 dnl
 dnl ---------------------------------------------------------------------------
 
@@ -395,7 +395,7 @@ dnl AC_XPC_DEBUGGING
 
 dnl 8.  Set up other options in the compiler macros.
 
-APIDEF="-DAPI_VERSION=\"$MIDICVT_API_VERSION\""
+APIDEF="-DAPI_VERSION=\"$SEQUENCER24_API_VERSION\""
 WARNFLAGS="-Wall -Wextra -pedantic $WARNINGS"
 SPEEDFLAGS="-ffast-math"
 COMMONFLAGS="$WARNFLAGS -D_REENTRANT $APIDEF $DBGFLAGS $STACKCHK $NOERRLOG $NOTHISPTR"
