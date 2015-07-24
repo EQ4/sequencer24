@@ -12,5 +12,5 @@ aclocal-1.11:
    overwriting 4/ltversion.m4' with usr/share/aclocal/ltversion.m4'
    overwriting 4/lt~obsolete.m4' with usr/share/aclocal/lt~obsolete
 
-Also of later version was: ax_prefix_config_h.m4
+   Also of later version was: ax_prefix_config_h.m4
 

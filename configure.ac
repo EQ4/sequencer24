@@ -1,4 +1,3 @@
-dnl Process this file with autoconf to produce a configure script.
 dnl ***************************************************************************
 dnl configure.ac (sequencer24)
 dnl ---------------------------------------------------------------------------
@@ -13,6 +12,8 @@ dnl \license       $XPC_SUITE_GPL_LICENSE$
 dnl
 dnl   This script is for the sequencer24 project, a repacking and fixing
 dnl   of the sequencer24 project, which is derived from seq24 v0.9.2.
+dnl
+dnl   Process this file with autoconf to produce a configure script.
 dnl
 dnl ---------------------------------------------------------------------------
 
@@ -228,6 +229,18 @@ else
     AC_MSG_RESULT(no)
 fi
 
+dnl Check for deprecated GTK constructs as per
+dnl http://www.murrayc.com/permalink/2011/01/18/avoiding-use-of-deprecated-api/
+dnl
+dnl Looks too difficult, errors in gtk headers. Try gtkmm-3 directly instead.
+dnl
+dnl MM_ARG_ENABLE_WARNINGS([MM_WFLAGS],
+dnl  [-Wall],
+dnl  [-Wall -Wextra -Wno-missing-field-initializers -DGSEAL_ENABLE],
+dnl  [G GDK GDK_PIXBUF PANGO GTK])
+
+dnl  [G GDK GDK_PIXBUF PANGO GTK])
+
 dnl 4. Get external flags, if any.
 
 CFLAGS="${CFLAGS}"
@@ -237,8 +250,13 @@ dnl Checks for libraries.
 AC_CHECK_LIB(rt, main, ,
     AC_MSG_ERROR([POSIX.1b RealTime Library Missing -lrt]))
 
-AC_CHECK_LIB(gtkmm-2.4, _init,,
-    AC_MSG_ERROR(Essential library libgtkmm-2.4 not found))
+dnl Convert from gtkmm-2.4 to gtkmm-3.0.  It currently builds either way.
+dnl
+dnl AC_CHECK_LIB(gtkmm-2.4, _init,,
+dnl     AC_MSG_ERROR(Essential library libgtkmm-2.4 not found))
+
+AC_CHECK_LIB(gtkmm-3.0, _init,,
+    AC_MSG_ERROR(Essential library libgtkmm-3.0 not found))
 
 AC_CHECK_LIB(sigc-2.0, main,,
     AC_MSG_ERROR(Essential library libsigc++-2.0 not found))
@@ -269,7 +287,7 @@ AC_GCC_VERSION
 dnl C++ support.  Run tests in C++.  Note the order; avoids messy warnings.
 
 AC_LANG_C
-AC_LANG_CPLUSPLUS dnl or AC_LANG(C++)
+AC_LANG_CPLUSPLUS dnl or AC_LANG([C++])
 AC_PROG_CXX
 AC_PROG_CXXCPP
 

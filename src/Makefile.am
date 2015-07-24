@@ -97,7 +97,7 @@ builddir = @abs_top_builddir@
 # Compiler and linker flags
 #------------------------------------------------------------------------------
 
-AM_CXXFLAGS = $(GTKMM_CFLAGS) $(JACK_CFLAGS) $(LASH_CFLAGS) -Wall
+AM_CXXFLAGS = $(GTKMM_CFLAGS) $(JACK_CFLAGS) $(LASH_CFLAGS) -Wall $(MM_WFLAGS)
 sequencer24_LDADD = $(GTKMM_LIBS) $(ALSA_LIBS) $(JACK_LIBS) $(LASH_LIBS)
 
 #******************************************************************************

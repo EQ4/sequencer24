@@ -1,0 +1,35 @@
+Conversion to GTKmm-3.0
+Chris Ahlstrom
+2015-07-24 to 2015-07-24
+
+We want to try to tag deprecated functions in gtkmm-2.0 that were used
+by Seq24.  So....
+
+dk-warn.m4:
+
+   We got this file (and some others) by grabbing the master ZIP of this
+   project, unpacking, and copying the m4 files:
+
+      https://github.com/GNOME/regexxer
+
+   This file actually part of Daniel Elstner's "Autostuff" project.
+
+mm-warnings.m4:
+
+   However, it is easier to install the mm-common package, which installs
+   similar macros in /usr/share/aclocal/:
+
+      mm-ax_cxx_compile_stdcxx_11.m4
+      mm-common.m4
+      mm-dietlib.m4
+      mm-doc.m4
+      mm-module.m4
+      mm-pkg.m4
+
+   The macro we want, MM_ARG_ENABLE_WARNINGS, is in mm-warnings.m4.
+   Apparently Daniel Elstner wrote that, too.
+
+However, enabling the warning got deep into gtk++ header files for
+deprecated stuff.
+
+We had better luck just going straight to gtkmm-3.0 right away.
