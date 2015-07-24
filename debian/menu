@@ -5,4 +5,4 @@
  command="/usr/bin/sequencer24"\
  hints="MIDI,Music Editor"\
  description="Sequencer24 is a simple MIDI sequencer based on Seq24."\
- icon="/usr/share/pixmaps/seq24.xpm"
+ icon="/usr/share/pixmaps/sequencer24.xpm"

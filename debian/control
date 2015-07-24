@@ -11,7 +11,7 @@ Build-Depends: debhelper (>= 7),
  libasound2-dev,
  libjack-dev | libjack-jackd2-dev
 Standards-Version: 3.9.1
-Homepage: http://www.filter24.org/seq24/
+Homepage: http://github.com/ahlstromcj/sequencer24.git
 Vcs-Git: git://github.com/ahlstromcj/sequencer24.git
 Vcs-Browser: http://github.com/ahlstromcj/sequencer24.git
 

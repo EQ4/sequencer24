@@ -439,22 +439,20 @@ function clean_gnufiles()
 #
 #     We could run "dh_clean" instead.
 #
-#  NOT YET READY!!!!
-#  NOT YET READY!!!!
-#  NOT YET READY!!!!
-#
 #------------------------------------------------------------------------------
 
 function clean_debfiles()
 {
-   local DEBFILES="debian/files debian/*.log debian/*-dev"
+   #  local DEBFILES="debian/files debian/*.log debian/*-dev"
+   #
+   #  echo "* Cleaning Debian files..."
+   #  echo "! clean_debfiles() needs work, just printing for now"
+   #  for FILE in $DEBFILES
+   #  do
+   #     find . -path "*.$FILE" # -exec rm -f '{}' \; 2> /dev/null
+   #  done
 
-   echo "* Cleaning Debian files..."
-   echo "! clean_debfiles() needs work, just printing for now"
-   for FILE in $DEBFILES
-   do
-      find . -path "*.$FILE" # -exec rm -f '{}' \; 2> /dev/null
-   done
+   debian/rules clean
 }
 
 #******************************************************************************

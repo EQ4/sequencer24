@@ -12,7 +12,7 @@ dnl \version       $Revision$
 dnl \license       $XPC_SUITE_GPL_LICENSE$
 dnl
 dnl   This script is for the sequencer24 project, a repacking and fixing
-dnl   of the sequencer24 project, which is derived from seq24 v0.9.2..
+dnl   of the sequencer24 project, which is derived from seq24 v0.9.2.
 dnl
 dnl ---------------------------------------------------------------------------
 
@@ -374,12 +374,13 @@ dnl      since the macro call in quotes does /not/ get expanded.
 dnl
 dnl Note: The AX_PREFIX_CONFIG_H macro called way above prepends
 dnl       "SEQUENCER24_" to these values when it generated sequencer24-config.h.
+dnl
+dnl #define API_VERSION "0.9"             // already defined on command line
 
 AH_TOP(
 
 #define VERSION_DATE_SHORT "2015-07-24"
 #define VERSION "0.9.3"
-#define API_VERSION "0.9"
 
 )
 
@@ -395,7 +396,7 @@ dnl AC_XPC_DEBUGGING
 
 dnl 8.  Set up other options in the compiler macros.
 
-APIDEF="-DAPI_VERSION=\"$MIDICVT_API_VERSION\""
+APIDEF="-DAPI_VERSION=\"$SEQUENCER24_API_VERSION\""
 WARNFLAGS="-Wall -Wextra -pedantic $WARNINGS"
 SPEEDFLAGS="-ffast-math"
 COMMONFLAGS="$WARNFLAGS -D_REENTRANT $APIDEF $DBGFLAGS $STACKCHK $NOERRLOG $NOTHISPTR"
@@ -407,9 +408,10 @@ WARNINGS_ENABLED="-Wall"
 WARNINGS_DISABLED="-Wno-unused-parameter -Wno-non-virtual-dtor"
 
 dnl CXXFLAGS="$CFLAGS $COMMONFLAGS -Wno-variadic-macros -std=c++11"
+dnl CXXFLAGS="$CFLAGS $COMMONFLAGS -Wno-variadic-macros"
 
 CFLAGS="$CFLAGS $COMMONFLAGS"
-CXXFLAGS="$CFLAGS $COMMONFLAGS -Wno-variadic-macros"
+CXXFLAGS="$CFLAGS -Wno-variadic-macros"
 
 AC_OUTPUT(Makefile man/Makefile src/Makefile src/pixmaps/Makefile)
 
