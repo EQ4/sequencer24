@@ -65,7 +65,15 @@
 
 using namespace Gtk;
 
-/* has a seqroll and paino roll */
+/*
+ * ca 2015-07-24
+ * Just a note:  The patches in the pld-linux/seq24 GitHub project had a
+ * namespace sigc declaration here, which does not seem to be needed.
+ * And a lot of the patches from that project were already applied to
+ * seq24 v 0.9.2.
+ */
+
+/* has a seqroll and piano roll */
 class perfedit:public Gtk::Window
 {
 

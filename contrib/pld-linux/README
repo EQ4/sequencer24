@@ -1,0 +1,11 @@
+Sigc22-fix Updates from GitHub
+Chris Ahlstrom
+2015-07-23 to 2015-07-24
+
+Downloaded the master ZIP file from https://github.com/pld-linux/seq24
+and put the contents here for safe-keeping while incorporating them.
+
+It turns out that all of the fixes in this patch were already incorporated
+into seq24 v0.9.2; they almost exclusively involved changing the "SigC"
+namespace to "sigc".
+

@@ -1,21 +1,23 @@
 Sequencer24/Seq24 Roadmap
 Chris Ahlstrom
-2015-07-23 to 2015-07-23
+2015-07-23 to 2015-07-24
 
 The starting point for the Sequencer24 project is version
 0.9.2 of seq24.  The following changes are planned:
 
-   -  Create a Git project out of the existing Seq24 files: sequencer24
-   -  Branch off to a permanent "Legacy" branch:
+x  -  Create a Git project out of the existing Seq24 files: sequencer24
+x  -  Branch off to a permanent "Legacy" branch:
       -  Add this ROADMAP file to the legacy branch.
       -  Make any changes needed to get the code to build and running in the
          old way.  Hopefully, no changes will be needed.
-      -  Tag the legacy branch and record the tag in the parent ROADMAP.
-   -  Branch off to a "Debian" branch:
+      -  Tag the legacy branch and record the tag in this ROADMAP:
+         Legacy commit #: 3ab98816b494a5b0a8aedd04e7fd7f6fe8c3e96f
+         Legacy tag name: "v0.9.2"
+x  -  Branch off to a "Debian" branch:
       -  Add the Debian files obtained from Debian.org, and verify that
          a Debian package could be made.
       -  Merge "Debian" back into the main trunk.
-   -  Branch off to a "Catchup" branch:
+x  -  Branch off to a "Catchup" branch:
       -  Add the LASH fixes found on GitHub, and verify functionality.
       -  Other easy fixes found anywhere?
       -  Merge "Catchup" back into the main trunk.
@@ -77,4 +79,15 @@ o Origin.
       o  Build, build deb and verify
    o  Enhancements
       o  TBD
+
+Old dependencies:
+
+   awk
+   librt (POSIX.1b Realtime Library)
+   libgtkmm-2.4
+   libsigc++-2.0
+   libasound
+   JACK
+   lash-1.0
+
 

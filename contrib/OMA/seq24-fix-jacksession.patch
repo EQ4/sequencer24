@@ -1,0 +1,11 @@
+--- src/perform_orig.cpp	2011-12-23 18:46:30.254759731 +0100
++++ src/perform.cpp	2011-12-23 18:45:44.225740245 +0100
+@@ -1215,7 +1215,7 @@
+     Glib::ustring fname( m_jsession_ev->session_dir );
+     fname += "file.mid";
+ 
+-    Glib::ustring cmd( "seq24 --file \"${SESSION_DIR}file.mid\" --jack_session_uuid " );
++    Glib::ustring cmd( "seq24 ${SESSION_DIR}file.mid --jack_session_uuid " );
+     cmd += m_jsession_ev->client_uuid;
+ 
+     midifile f(fname);

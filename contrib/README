@@ -1,0 +1,28 @@
+Contributed Code and Ideas
+Chris Ahlstrom
+2015-07-24 to 2015-07-24
+
+This directory contains contributed code, patches, and ideas for
+future work found on the Internet.
+
+Patch directories:
+
+   freddix
+   OMA
+   pld-linux
+
+Ideas:
+
+   http://sourceforge.net/p/seq24/mailman/seq24-users/
+
+   Several years ago (in summer 2008, actually), I made several (crappy)
+   patches for seq24 which lead to "features" that I needed:
+   - play/stop/play from beginning can be bind to any MIDI control
+     (PC, CC, note, and so on),
+   - change of the number of lines/columns (I wanted to extend this so that
+     it could be saved in file, so that it would just have been part of it
+     and not something depending on seq24),
+   - menus for number of bars and numerators of bars were writable, so that
+     you can set anything you want (especially useful when dealing with
+     asymetric bars),
+
