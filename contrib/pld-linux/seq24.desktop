@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Seq24
+Comment=Real-time MIDI sequencer
+Comment[pl]=Sekwencer MIDI działający w czasie rzeczywistym
+Exec=seq24
+Terminal=false
+Type=Application
+Categories=GTK;Audio;Midi;
+# vi: encoding=utf-8

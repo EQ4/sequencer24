@@ -207,6 +207,15 @@ void perform::init_jack( void )
             jack_on_shutdown( m_jack_client, jack_shutdown,(void *) this );
             jack_set_sync_callback(m_jack_client, jack_sync_callback,
                     (void *) this );
+
+            /*
+             * ca 2015-07-23
+             * Implemented patch from freddix/seq24 GitHub project, to fix
+             * JACK transport.  One line of code.
+             */
+
+            jack_set_process_callback(m_jack_client, jack_process_callback, NULL);
+
 #ifdef JACK_SESSION
 	    if (jack_set_session_callback)
 		jack_set_session_callback(m_jack_client, jack_session_callback,
@@ -1158,6 +1167,17 @@ void* output_thread_func(void *a_pef )
     return 0;
 }
 
+/*
+ * ca 2015-07-23
+ * Implemented second patch for JACK Transport from freddix/seq24
+ * GitHub project.  Added the following function.
+ */
+
+int jack_process_callback(jack_nframes_t nframes, void* arg)
+{
+   return 0;
+}
+
 #ifdef JACK_SUPPORT
 
 int jack_sync_callback(jack_transport_state_t state,
@@ -1214,6 +1234,12 @@ bool perform::jack_session_event()
 {
     Glib::ustring fname( m_jsession_ev->session_dir );
     fname += "file.mid";
+
+    /*
+     * ca 2015-07-24
+     * Just a note:  The OMA (OpenMandrivaAssociation) patch was already
+     * applied to seq24 v.0.9.2.  It put quotes around the --file argument.
+     */
 
     Glib::ustring cmd( "seq24 --file \"${SESSION_DIR}file.mid\" --jack_session_uuid " );
     cmd += m_jsession_ev->client_uuid;
