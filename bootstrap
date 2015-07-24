@@ -184,6 +184,7 @@ if [ $DOFULLCLEAN == "yes" ] ; then
    rm -rf config
    rm -rf include
    rm -rf po
+   clean_debfiles
    echo "   All junk files removed."
 
 fi
