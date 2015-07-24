@@ -1,8 +1,8 @@
-Source: seq24
+Source: sequencer24
 Section: sound
 Priority: optional
-Maintainer: Debian Multimedia Maintainers <pkg-multimedia-maintainers@lists.alioth.debian.org>
-Uploaders: Alessio Treglia <alessio@debian.org>
+Maintainer: Chris Ahlstrom <ahlstromcj@gmail.com>
+Uploaders: Chris Ahlstrom <ahlstromcj@gmail.com>
 Build-Depends: debhelper (>= 7),
  automake,
  autoconf,
@@ -12,15 +12,16 @@ Build-Depends: debhelper (>= 7),
  libjack-dev | libjack-jackd2-dev
 Standards-Version: 3.9.1
 Homepage: http://www.filter24.org/seq24/
-Vcs-Git: git://git.debian.org/pkg-multimedia/seq24.git
-Vcs-Browser: http://git.debian.org/?p=pkg-multimedia/seq24.git
+Vcs-Git: git://github.com/ahlstromcj/sequencer24.git
+Vcs-Browser: http://github.com/ahlstromcj/sequencer24.git
 
-Package: seq24
+Package: sequencer24
 Architecture: any
 Depends: ${shlibs:Depends},
  ${misc:Depends}
-Description: Real time MIDI sequencer
- Seq24 was created to provide a very simple interface for editing and 
- playing midi 'loops'. It is a very minimal sequencer that excludes the 
+Description: Real time MIDI sequencer refactored from seq24
+ Sequencer24 was created to modernize, fix, and extend the very nice
+ seq24 live-loop sequencer.  Upgraded the build system and upgraded to
+ gtkmm-3.0.  It is a minimal, but powerful, sequencer that excludes the 
  bloated features of the large software sequencers and includes a small 
  subset that proved to be useful for live performances.

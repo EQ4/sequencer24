@@ -1,6 +1,12 @@
 SEQ24 - Midi Sequencer
 ======================
 
+Note:  A 50-page User's Manual for Seq24 is now available in PDF format,
+       with the LaTeX "source-code", at the following URL:
+
+       git@github.com:ahlstromcj/seq24-doc.git
+
+The original text of this text file follows:
 
 [1] What & Why
 [2] Who 

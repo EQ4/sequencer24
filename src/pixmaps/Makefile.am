@@ -1,4 +1,19 @@
-# Makefile.am for seq24
+#******************************************************************************
+# Makefile.am (sequencer24)
+#------------------------------------------------------------------------------
+##
+# \file       	Makefile.am
+# \library    	sequencer24 application
+# \author     	Chris Ahlstrom
+# \date       	2015-07-24
+# \update      2015-07-24
+# \version    	$Revision$
+# \license    	$XPC_SUITE_GPL_LICENSE$
+#
+# 		This module provides an packaging makefile for the sequencer24 C/C++
+# 		pixmaps.
+#
+#------------------------------------------------------------------------------
 
 EXTRA_DIST = \
 	bus.xpm \

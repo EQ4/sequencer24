@@ -1,13 +1,116 @@
-# Makefile.am for seq24
+#******************************************************************************
+# Makefile.am (sequencer24)
+#------------------------------------------------------------------------------
+##
+# \file       	Makefile.am
+# \library    	sequencer24 application
+# \author     	Chris Ahlstrom
+# \date       	2015-07-24
+# \update      2015-07-24
+# \version    	$Revision$
+# \license    	$XPC_SUITE_GPL_LICENSE$
+#
+# 		This module provides an Automake makefile for the sequencer24 C/C++
+# 		application.
+#
+#------------------------------------------------------------------------------
+
+#*****************************************************************************
+# Packing/cleaning targets
+#-----------------------------------------------------------------------------
+
+AUTOMAKE_OPTIONS = foreign dist-zip dist-bzip2
+MAINTAINERCLEANFILES = Makefile.in Makefile $(AUX_DIST)
+
+#******************************************************************************
+# CLEANFILES
+#------------------------------------------------------------------------------
+
+CLEANFILES = *.gc*
+MOSTLYCLEANFILES = *~
+
+#******************************************************************************
+#  EXTRA_DIST
+#------------------------------------------------------------------------------
+#
+#  getopt_test.c is not ready and is not included at this time.
+#	$(TESTS) is not included because it is derived files.
+#
+#------------------------------------------------------------------------------
+
+EXTRA_DIST = configwin32.h
+
+#******************************************************************************
+#  SUBDIRS
+#------------------------------------------------------------------------------
 
 SUBDIRS = pixmaps
 
+#******************************************************************************
+# Items from configure.ac
+#-------------------------------------------------------------------------------
+#
+#  XPCCUT_LIBS is defined by the PKG_CHECK_MODULES macro.  The xpccut
+#  library must be installed officially in order to be used to build the
+#  unit-test application of the XPC library.
+#
+#-------------------------------------------------------------------------------
+
+PACKAGE = @PACKAGE@
+VERSION = @VERSION@
+
+#******************************************************************************
+# Install directories
+#------------------------------------------------------------------------------
+#
+# 	Not needed, yet, since we won't be installing the app for awhile.
+#
+#------------------------------------------------------------------------------
+
+prefix = @prefix@
+libdir = @xpclibdir@
+datadir = @datadir@
+datarootdir = @datarootdir@
+sequencer24includedir = @sequencer24includedir@
+sequencer24libdir = @sequencer24libdir@
+
+#******************************************************************************
+# localedir
+#------------------------------------------------------------------------------
+#
+# 	'localedir' is the normal system directory for installed localization
+#  files.
+#
+#------------------------------------------------------------------------------
+
+localedir = $(datadir)/locale
+DEFS = -DLOCALEDIR=\"$(localedir)\" @DEFS@
+
+#******************************************************************************
+# Local project directories
+#------------------------------------------------------------------------------
+
+top_srcdir = @top_srcdir@
+builddir = @abs_top_builddir@
+
+#******************************************************************************
+# Compiler and linker flags
+#------------------------------------------------------------------------------
+
 AM_CXXFLAGS = $(GTKMM_CFLAGS) $(JACK_CFLAGS) $(LASH_CFLAGS) -Wall
-seq24_LDADD = $(GTKMM_LIBS) $(ALSA_LIBS) $(JACK_LIBS) $(LASH_LIBS)
+sequencer24_LDADD = $(GTKMM_LIBS) $(ALSA_LIBS) $(JACK_LIBS) $(LASH_LIBS)
 
-bin_PROGRAMS = seq24
+#******************************************************************************
+# The programs to build
+#------------------------------------------------------------------------------
 
-seq24_SOURCES = \
+bin_PROGRAMS = sequencer24
+
+#******************************************************************************
+# Source files
+#----------------------------------------------------------------------------
+
+sequencer24_SOURCES = \
 	configfile.cpp configfile.h \
 	controllers.h \
 	event.cpp event.h \
@@ -41,7 +144,33 @@ seq24_SOURCES = \
 	sequence.cpp sequence.h \
 	userfile.cpp userfile.h
 
-EXTRA_DIST = configwin32.h
+#******************************************************************************
+# Testing
+#------------------------------------------------------------------------------
+#
+# 	   http://www.gnu.org/software/hello/manual/automake/Simple-Tests.html
+#
+#------------------------------------------------------------------------------
 
-MOSTLYCLEANFILES = *~
+# testsubdir = test-results
+# TESTS_ENVIRONMENT =
+# TESTS = test_script
+
+# test: check
+
+#******************************************************************************
+#  distclean
+#------------------------------------------------------------------------------
+
+distclean-local:
+	-rm -rf $(testsubdir)
+
+#******************************************************************************
+# Makefile.am (sequencer24)
+#------------------------------------------------------------------------------
+# Local Variables:
+# End:
+#------------------------------------------------------------------------------
+# 	vim: ts=3 sw=3 ft=automake
+#------------------------------------------------------------------------------
 

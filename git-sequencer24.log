@@ -1,0 +1,56 @@
+Git Notes
+Chris Ahlstrom
+2015-07-23 to 2015-07-24
+
+Important Commands performed on new sequencer24 project:
+
+    1.   Unpacked seq24-0.9.2.tar.bz2
+    2.   Renamed seq24-0.9.2 to sequencer24
+    3.   $ cd sequencer24
+    4.   $ git init
+    5.   $ git add .
+    6.   $ git commit -m "Initial commit of original seq24-0.9.2 project."
+
+    7.   $ git checkout -b Legacy
+    8.   $ cp ../ROADMAP .
+    9.   $ git add ROADMAP
+   10.   $ git commit -m "Added ROADMAP for Legacy storage."
+   11.   $ ./configure ; make (it worked) ; make clean
+   12.   $ git tag -a v0.9.2 -m "Original version of Seq24 plus ROADMAP."
+   13.   $ git log (to get commit number)
+   14.   $ git checkout master
+   15.   $ git merge Legacy
+
+   16.   $ git checkout -b Debian
+   17.   Copied the files in seq24_0.9.2-2.debian.tar.gz to the new project's
+         "debian" directory; added a README there to note how to use it to
+         build a "deb" file for installing the binaries.  Built the binary
+         installer, and it looks good.
+   18.   $ git checkout master
+   19.   $ git merge Debian
+
+   20.   $ git checkout -b Catchup
+   21.   Get the seq24 JACK Transport and LASH patch files from
+         https://github.com/freddix/seq24 Manually merge in those changes,
+         for safety.  Other patches seemed to be in place already.
+   22.   $ git tag -a Catchup -m "Added freddix and other patches."
+   23.   $ git checkout master
+   24.   $ git merge Catchup (got a "warning: refname Catchup is ambiguous")
+
+   25.   $ git checkout -b Legacy, then Debian, then Catchup.
+         Committed some minor changes, then went back to add files inadvertantly
+         ignored in the Legacy, Debian, and Catchup branches.
+
+         Legacy:
+
+         $ git tag -a v0.9.2b -m "Original version of Seq24, restored build files."
+           commit: 707a20a05429d5ab6412c75baec8f0fd8bb31843
+
+         Catchup:
+
+         $ git tag -a v0.9.2c -m "Catchup version of Seq24, restored build files."
+           commit: b37b86d896272ead442811070c1b5c2eca25ecc3
+
+
+
+

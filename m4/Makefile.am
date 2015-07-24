@@ -3,15 +3,15 @@
 #-------------------------------------------------------------------------------
 ##
 # \file       	Makefile.am
-# \library    	midicvt
+# \library    	sequencer24
 # \author     	Chris Ahlstrom
-# \date       	2014-04-08
-# \update      2014-04-08
+# \date       	2015-07-24
+# \update      2015-07-24
 # \version    	$Revision$
 # \license    	$XPC_SUITE_GPL_LICENSE$
 #
-#     This module provides an Automake makefile for the midicvt library's
-#     main 'm4' directory.
+#     This module provides an Automake makefile for the sequencer24
+#     library's main 'm4' directory.
 #
 #     This makefile provides mostly just a way to make sure the m4 files are
 #     included in the 'dist' target.
