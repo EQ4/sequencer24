@@ -11,6 +11,11 @@ Patch directories:
    OMA
    pld-linux
 
+Bootstrap files:
+
+   config.rpath
+   mkinstalldirs-1.10
+
 Ideas:
 
    http://sourceforge.net/p/seq24/mailman/seq24-users/

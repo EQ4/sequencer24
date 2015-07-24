@@ -1,23 +1,20 @@
-.TH Seq24 1 "November 20 2010" "Version 0.9.2" "Seq24 Manual Page"
+.TH Sequencer24 1 "July 24 2015" "Version 0.9.3" "Sequencer24 Manual Page"
 
 .SH NAME
-Seq24 - Real time MIDI sequencer
-
+Sequencer24 - Real time MIDI sequencer refactored from Seq24
 
 .SH SYNOPSIS
-.B seq24
+.B sequencer24
 [\fIOPTIONS\fP] [\fIFILENAME\fP]
-
 
 .SH DESCRIPTION
 .PP
-\fISeq24\fP is a real-time midi sequencer. It was created to
-provide a very simple interface for editing and playing
-midi 'loops'.
-
+\fISequencer24\fP is a real-time MIDI sequencer. It was created to
+provide a simple interface for editing and playing MIDI 'loops'.
+It uses gtk-3 for the user interface.
 
 .SH OPTIONS
-Seq24 accepts the following options:
+Sequencer24 accepts the following options:
 .TP 8
 .B  \-\-help
 Display a list of all commandline options
@@ -29,7 +26,7 @@ Display the program version
 Load MIDI file on startup
 .TP 8
 .B \-\-manual_alsa_ports
-Seq24 won't attach alsa ports
+Sequencer24 won't attach alsa ports
 .TP 8
 .B \-\-showmidi
 Dumps incoming midi to screen
@@ -48,20 +45,20 @@ Prints pressed key value
 .TP 8
 .B \-\-interaction_method \fI<number>\fP
 Select mouse interaction method
-	(0 = seq24) (default)
+	(0 = sequencer24) (default)
 	(1 = fruity loops method)
 .TP 8
 .B \-\-jack_transport
-seq24 will sync to JACK transport
+sequencer24 will sync to JACK transport
 .TP 8
 .B \-\-jack_master
-seq24 will try to be JACK master
+sequencer24 will try to be JACK master
 .TP 8
 .B \-\-jack_master_cond
 JACK master will fail if there is already a master
 .TP 8
 .B \-\-jack_start_mode \fI<x>\fP
-When seq24 is synced to JACK, the following play modes are available:
+When sequencer24 is synced to JACK, the following play modes are available:
 	(0 = live mode)
 	(1 = song mode) (default)
 .TP 8
@@ -73,23 +70,23 @@ Set uuid for jack session
 
 
 .SH FILES
-\fB$HOME\fP/.seq24rc stores the user settings for seq24.
-
+\fB$HOME\fP/.sequencer24rc stores the user settings for sequencer24.
 
 .SH SUGGESTIONS AND BUG REPORTS
 Any bugs found should be reported to the upstream author and/or package 
 maintainer.
 
-
 .SH OTHER INFO
-The old project homepage is at http://www.filter24.org/seq24/ the new
-one is at https://edge.launchpad.net/seq24/.
+The current project homepage is a simple git repository at the
+https://github.com/ahlstromcj/sequencer.git URL.  It can be cloned as
+git@github.com:ahlstromcj/sequencer24.git if desired.
 
 It is released under the GNU GPL license.
 
-
 .SH AUTHOR
+Sequencer24 was written by Chris Ahlstrom <ahlstromcj@gmail.com>.
 Seq24 was written by Rob C. Buse <seq24@filter24.org> and the Seq24team.
 
 This manual page was written by Dana Olson <seq24@ubuntustudio.com> with
-additions from Guido Scholz <guido.scholz@bayernline.de>. 
+additions from Guido Scholz <guido.scholz@bayernline.de>, and minor
+changes by Chris Ahlstrom <ahlstromcj@gmail.com>.

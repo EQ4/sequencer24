@@ -1,5 +1,26 @@
-seq24 README
-------------
+README for Sequencer24 0.9.3
+Chris Ahlstrom
+2015-07-24 to 2015-07-24
+
+The sequencer24 project is a gradual refactoring of seq24 0.9.2
+to bring it up to date, fix bugs, consolidate patches, convert
+to GTKmm 3, and more.
+
+It is done as a series of Git branches:
+
+   Legacy:     The original Seq24 0.9.2 with some notes.
+   Debian:     Incorporated Debian's packaging support.
+   Catchup:    Incorporating a few patches found around the Internet.
+   Packaging:  Getting the build system up-to-date; bootstrapping; packing.
+   Gtkmm-3:    Porting from gtkmm-2.4 to gtkmm-3.0.
+   Document:   Adding thorough in-code documentation and upgraded formatting.
+   Library:    Refactor the code to separate and unit-test functionality.
+
+Eventually, there will be a few features to add.
+
+--------------------------------------
+The original seq24 v0.9.2 README
+--------------------------------------
 
 How to install? 
 

@@ -1,11 +1,11 @@
 [Desktop Entry]
-Name=Seq24
+Name=Sequencer24
 GenericName=
-Comment=MIDI Sequencer
+Comment=MIDI Loop Sequencer
 Icon=/usr/share/pixmaps/seq24.xpm
 
 Type=Application
 Categories=AudioVideo;Audio;
 
-Exec=seq24
+Exec=sequencer24
 Terminal=false
