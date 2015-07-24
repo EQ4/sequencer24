@@ -374,12 +374,13 @@ dnl      since the macro call in quotes does /not/ get expanded.
 dnl
 dnl Note: The AX_PREFIX_CONFIG_H macro called way above prepends
 dnl       "SEQUENCER24_" to these values when it generated sequencer24-config.h.
+dnl
+dnl #define API_VERSION "0.9"             // already defined on command line
 
 AH_TOP(
 
 #define VERSION_DATE_SHORT "2015-07-24"
 #define VERSION "0.9.3"
-#define API_VERSION "0.9"
 
 )
 
@@ -407,9 +408,10 @@ WARNINGS_ENABLED="-Wall"
 WARNINGS_DISABLED="-Wno-unused-parameter -Wno-non-virtual-dtor"
 
 dnl CXXFLAGS="$CFLAGS $COMMONFLAGS -Wno-variadic-macros -std=c++11"
+dnl CXXFLAGS="$CFLAGS $COMMONFLAGS -Wno-variadic-macros"
 
 CFLAGS="$CFLAGS $COMMONFLAGS"
-CXXFLAGS="$CFLAGS $COMMONFLAGS -Wno-variadic-macros"
+CXXFLAGS="$CFLAGS -Wno-variadic-macros"
 
 AC_OUTPUT(Makefile man/Makefile src/Makefile src/pixmaps/Makefile)
 
