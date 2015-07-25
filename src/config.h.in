@@ -5,8 +5,16 @@
 
 
 
+/* Define COVFLAGS=-fprofile-arcs -ftest-coverage if coverage support is
+   wanted. */
+#undef COVFLAGS
+
 /* Define on cygwin */
 #undef CYGWIN
+
+/* Define DBGFLAGS=-g -O0 -DDEBUG -NWIN32 -fno-inline if debug support is
+   wanted. */
+#undef DBGFLAGS
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
@@ -92,6 +100,9 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
+
+/* Define PROFLAGS=-pg (gprof) or -p (prof) if profile support is wanted. */
+#undef PROFLAGS
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS

@@ -1,3 +1,6 @@
+#ifndef SEQ24_SEQUENCE_H
+#define SEQ24_SEQUENCE_H
+
 /*
  *
  *  This file is part of seq24/sequencer24.
@@ -18,9 +21,6 @@
  *
  */
 
-
-#ifndef SEQ24_SEQUENCE
-#define SEQ24_SEQUENCE
 
 class sequence;
 
@@ -177,14 +177,13 @@ class sequence
     void split_trigger( trigger &trig, long a_split_tick);
     void adjust_trigger_offsets_to_legnth( long a_new_len );
     long adjust_offset( long a_offset );
-    void remove( list<event>::iterator i );
+    void remove( std::list<event>::iterator i );
     void remove( event* e );
-
 
   public:
 
-      sequence ();
-     ~sequence ();
+    sequence ();
+    ~sequence ();
 
 
     void push_undo (void);
@@ -466,4 +465,5 @@ class sequence
     void transpose_notes (int a_steps, int a_scale);
 };
 
-#endif
+#endif    // SEQ24_SEQUENCE_H
+

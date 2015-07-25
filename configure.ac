@@ -6,12 +6,12 @@ dnl \file          configure.ac
 dnl \library       sequencer24
 dnl \author        Chris Ahlstrom
 dnl \date          2015-07-24
-dnl \update        2015-07-24
+dnl \update        2015-07-25
 dnl \version       $Revision$
 dnl \license       $XPC_SUITE_GPL_LICENSE$
 dnl
 dnl   This script is for the sequencer24 project, a repacking and fixing
-dnl   of the sequencer24 project, which is derived from seq24 v0.9.2.
+dnl   of seq24 v0.9.2.
 dnl
 dnl   Process this file with autoconf to produce a configure script.
 dnl
@@ -405,12 +405,13 @@ AH_TOP(
 dnl 7. Checks for build configuration.
 dnl
 dnl 7.a. Compiling with debugging, coverage, or profiling options.
+dnl      Implemented in m4/xpc_debug.m4.
 dnl
 dnl      --enable-debug
 dnl      --enable-coverage
 dnl      --enable-profiling
 
-dnl AC_XPC_DEBUGGING
+AC_XPC_DEBUGGING
 
 dnl 8.  Set up other options in the compiler macros.
 

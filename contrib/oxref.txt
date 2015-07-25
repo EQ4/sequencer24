@@ -1,0 +1,2254 @@
+oxref by Frank B. Brokken (f.b.brokken@rug.nl)
+oxref V1.00.02 2012-2015
+
+CREATED Sat, 25 Jul 2015 16:01:24 +0000
+CROSS REFERENCE FOR: --full-symbol --source-files --xref-source-files configfile.o event.o font.o keybindentry.o lash.o maintime.o mainwid.o mainwnd.o midibus.o midibus_portmidi.o midifile.o mutex.o optionsfile.o options.o perfedit.o perfnames.o perform.o perfroll_input.o perfroll.o perftime.o seq24.o seqdata.o seqedit.o seqevent.o seqkeys.o seqmenu.o seqroll.o seqtime.o sequence.o userfile.o 
+----------------------------------------------------------------------
+
+add_event(event const*)
+  Full name: sequence::add_event(event const*)
+  Source:    sequence.cpp 
+  Used By:
+    midifile.cpp: midifile::parse(perform*, int)
+
+add_event(long, unsigned char, unsigned char, unsigned char, bool)
+  Full name: sequence::add_event(long, unsigned char, unsigned char, unsigned char, bool)
+  Source:    sequence.cpp 
+  Used By:
+    seqevent.cpp: seqevent::drop_event(long)
+
+add_note(long, long, int, bool)
+  Full name: sequence::add_note(long, long, int, bool)
+  Source:    sequence.cpp 
+  Used By:
+    seqroll.cpp: FruitySeqRollInput::on_button_press_event(_GdkEventButton*, seqroll&)
+
+add_sequence(sequence*, int)
+  Full name: perform::add_sequence(sequence*, int)
+  Source:    perform.cpp 
+  Used By:
+    midifile.cpp: midifile::parse(perform*, int)
+
+add_trigger(long, long, long, bool)
+  Full name: sequence::add_trigger(long, long, long, bool)
+  Source:    sequence.cpp 
+  Used By:
+    midifile.cpp: midifile::parse(perform*, int)
+    perfroll_input.cpp: FruityPerfInput::on_left_button_pressed(_GdkEventButton*, perfroll&)
+
+change_event_data_range(long, long, unsigned char, unsigned char, int, int)
+  Full name: sequence::change_event_data_range(long, long, unsigned char, unsigned char, int, int)
+  Source:    sequence.cpp 
+  Used By:
+    seqdata.cpp: seqdata::on_button_release_event(_GdkEventButton*)
+
+clear_all()
+  Full name: perform::clear_all()
+  Source:    perform.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::new_file()
+
+clear_link()
+  Full name: event::clear_link()
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::verify_and_link()
+
+clear_sequence_triggers(int)
+  Full name: perform::clear_sequence_triggers(int)
+  Source:    perform.cpp 
+  Used By:
+    seqmenu.cpp: seqmenu::seq_clear_perf()
+
+clear_triggers()
+  Full name: sequence::clear_triggers()
+  Source:    sequence.cpp 
+  Used By:
+    perform.cpp: perform::clear_sequence_triggers(int)
+
+clock(long)
+  Full name: mastermidibus::clock(long)
+  Source:    midibus.cpp 
+  Used By:
+    perform.cpp: perform::output_func()
+
+condition_var()
+  Full name: condition_var::condition_var()
+  Source:    mutex.cpp 
+  Used By:
+    perform.cpp: perform::perform()
+
+configfile(Glib::ustring const&)
+  Full name: configfile::configfile(Glib::ustring const&)
+  Source:    configfile.cpp 
+  Used By:
+    optionsfile.cpp: optionsfile::optionsfile(Glib::ustring const&)
+    userfile.cpp: userfile::userfile(std::string)
+
+convert_x(int, long*)
+  Full name: perfroll::convert_x(int, long*)
+  Source:    perfroll.cpp 
+  Used By:
+    perfroll_input.cpp: Seq24PerfInput::on_motion_notify_event(_GdkEventMotion*, perfroll&)
+
+convert_xy(int, int, long*, int*)
+  Full name: perfroll::convert_xy(int, int, long*, int*)
+  Source:    perfroll.cpp 
+  Used By:
+    perfroll_input.cpp: FruityPerfInput::updateMousePtr(perfroll&)
+
+copy_selected()
+  Full name: sequence::copy_selected()
+  Source:    sequence.cpp 
+  Used By:
+    seqevent.cpp: seqevent::on_key_press_event(_GdkEventKey*)
+    seqroll.cpp: seqroll::on_key_press_event(_GdkEventKey*)
+
+copy_selected_trigger()
+  Full name: sequence::copy_selected_trigger()
+  Source:    sequence.cpp 
+  Used By:
+    perfroll.cpp: perfroll::on_key_press_event(_GdkEventKey*)
+
+copy_triggers()
+  Full name: perform::copy_triggers()
+  Source:    perform.cpp 
+  Used By:
+    perfedit.cpp: perfedit::copy()
+
+copy_triggers(long, long)
+  Full name: sequence::copy_triggers(long, long)
+  Source:    sequence.cpp 
+  Used By:
+    perform.cpp: perform::copy_triggers()
+
+cut_selected_trigger()
+  Full name: sequence::cut_selected_trigger()
+  Source:    sequence.cpp 
+  Used By:
+    perfroll.cpp: perfroll::on_key_press_event(_GdkEventKey*)
+
+decrement_data1()
+  Full name: event::decrement_data1()
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::decrement_selected(unsigned char, unsigned char)
+
+decrement_data2()
+  Full name: event::decrement_data2()
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::decrement_selected(unsigned char, unsigned char)
+
+decrement_selected(unsigned char, unsigned char)
+  Full name: sequence::decrement_selected(unsigned char, unsigned char)
+  Source:    sequence.cpp 
+  Used By:
+    seqdata.cpp: seqdata::on_scroll_event(_GdkEventScroll*)
+
+deinit_jack()
+  Full name: perform::deinit_jack()
+  Source:    perform.cpp 
+  Used By:
+    options.cpp: options::transport_callback(options::button, Gtk::Button*)
+    seq24.cpp: main
+
+del_selected_trigger()
+  Full name: sequence::del_selected_trigger()
+  Source:    sequence.cpp 
+  Used By:
+    perfroll.cpp: perfroll::on_key_press_event(_GdkEventKey*)
+
+del_trigger(long)
+  Full name: sequence::del_trigger(long)
+  Source:    sequence.cpp 
+  Used By:
+    perfroll_input.cpp: FruityPerfInput::on_right_button_pressed(_GdkEventButton*, perfroll&)
+
+delete_sequence(int)
+  Full name: perform::delete_sequence(int)
+  Source:    perform.cpp 
+  Used By:
+    mainwid.cpp: mainwid::on_motion_notify_event(_GdkEventMotion*)
+    seqmenu.cpp: seqmenu::seq_cut()
+
+draw_background_on(Glib::RefPtr<Gdk::Drawable>, int)
+  Full name: perfroll::draw_background_on(Glib::RefPtr<Gdk::Drawable>, int)
+  Source:    perfroll.cpp 
+  Used By:
+    perfroll_input.cpp: Seq24PerfInput::on_motion_notify_event(_GdkEventMotion*, perfroll&)
+
+draw_drawable_row(Glib::RefPtr<Gdk::Drawable>, Glib::RefPtr<Gdk::Drawable>, long)
+  Full name: perfroll::draw_drawable_row(Glib::RefPtr<Gdk::Drawable>, Glib::RefPtr<Gdk::Drawable>, long)
+  Source:    perfroll.cpp 
+  Used By:
+    perfroll_input.cpp: Seq24PerfInput::on_motion_notify_event(_GdkEventMotion*, perfroll&)
+
+draw_pixmap_on_window()
+  Full name: seqdata::draw_pixmap_on_window()
+  Source:    seqdata.cpp 
+  Used By:
+    seqevent.cpp: seqevent::update_pixmap()
+
+draw_progress()
+  Full name: perfroll::draw_progress()
+  Source:    perfroll.cpp 
+  Used By:
+    perfedit.cpp: perfedit::timeout()
+
+draw_progress_on_window()
+  Full name: seqroll::draw_progress_on_window()
+  Source:    seqroll.cpp 
+  Used By:
+    seqedit.cpp: seqedit::timeout()
+
+draw_sequence_on(Glib::RefPtr<Gdk::Drawable>, int)
+  Full name: perfroll::draw_sequence_on(Glib::RefPtr<Gdk::Drawable>, int)
+  Source:    perfroll.cpp 
+  Used By:
+    perfroll_input.cpp: Seq24PerfInput::on_motion_notify_event(_GdkEventMotion*, perfroll&)
+
+event()
+  Full name: event::event()
+  Source:    event.cpp 
+  Used By:
+    midifile.cpp: midifile::parse(perform*, int)
+    perform.cpp: perform::input_func()
+    sequence.cpp: sequence::play_note_on(int)
+
+fill_list(std::list<char, std::allocator<char> >*, int)
+  Full name: sequence::fill_list(std::list<char, std::allocator<char> >*, int)
+  Source:    sequence.cpp 
+  Used By:
+    midifile.cpp: midifile::write(perform*)
+
+flush()
+  Full name: mastermidibus::flush()
+  Source:    midibus.cpp 
+  Used By:
+    perform.cpp: perform::play(long)
+    sequence.cpp: sequence::play_note_on(int)
+
+font()
+  Full name: font::font()
+  Source:    font.cpp 
+  Used By:
+    seq24.cpp: main
+
+get_bpm()
+  Full name: perform::get_bpm()
+  Source:    perform.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::timer_callback()
+    midifile.cpp: midifile::write(perform*)
+
+get_bpm()
+  Full name: sequence::get_bpm()
+  Source:    sequence.cpp 
+  Used By:
+    mainwid.cpp: mainwid::draw_sequence_on_pixmap(int)
+    perfnames.cpp: perfnames::draw_sequence(int)
+    seqedit.cpp: seqedit::set_measures(int)
+    seqevent.cpp: seqevent::draw_background()
+    seqroll.cpp: seqroll::update_background()
+    seqtime.cpp: seqtime::update_pixmap()
+
+get_bw()
+  Full name: sequence::get_bw()
+  Source:    sequence.cpp 
+  Used By:
+    mainwid.cpp: mainwid::draw_sequence_on_pixmap(int)
+    perfnames.cpp: perfnames::draw_sequence(int)
+    seqedit.cpp: seqedit::set_measures(int)
+    seqevent.cpp: seqevent::draw_background()
+    seqroll.cpp: seqroll::update_background()
+    seqtime.cpp: seqtime::update_pixmap()
+
+get_clipboard_box(long*, int*, long*, int*)
+  Full name: sequence::get_clipboard_box(long*, int*, long*, int*)
+  Source:    sequence.cpp 
+  Used By:
+    seqevent.cpp: seqevent::start_paste()
+    seqroll.cpp: seqroll::start_paste()
+
+get_clock(unsigned char)
+  Full name: mastermidibus::get_clock(unsigned char)
+  Source:    midibus.cpp 
+  Used By:
+    optionsfile.cpp: optionsfile::write(perform*)
+    options.cpp: options::add_midi_clock_page()
+
+get_clock_mod()
+  Full name: midibus::get_clock_mod()
+  Source:    midibus.cpp 
+  Used By:
+    optionsfile.cpp: optionsfile::write(perform*)
+    options.cpp: options::add_midi_clock_page()
+
+get_data(unsigned char*, unsigned char*)
+  Full name: event::get_data(unsigned char*, unsigned char*)
+  Source:    event.cpp 
+  Used By:
+    midibus.cpp: midibus::play(event*, unsigned char)
+    perform.cpp: perform::input_func()
+    sequence.cpp: sequence::get_num_selected_events(unsigned char, unsigned char)
+
+get_group_mute_state(int)
+  Full name: perform::get_group_mute_state(int)
+  Source:    perform.cpp 
+  Used By:
+    midifile.cpp: midifile::write(perform*)
+    optionsfile.cpp: optionsfile::write(perform*)
+
+get_highest_note_event()
+  Full name: sequence::get_highest_note_event()
+  Source:    sequence.cpp 
+  Used By:
+    mainwid.cpp: mainwid::draw_sequence_on_pixmap(int)
+    perfroll.cpp: perfroll::draw_sequence_on(Glib::RefPtr<Gdk::Drawable>, int)
+
+get_input(unsigned char)
+  Full name: mastermidibus::get_input(unsigned char)
+  Source:    midibus.cpp 
+  Used By:
+    optionsfile.cpp: optionsfile::write(perform*)
+    options.cpp: options::add_midi_input_page()
+
+get_last_tick()
+  Full name: sequence::get_last_tick()
+  Source:    sequence.cpp 
+  Used By:
+    seqroll.cpp: seqroll::draw_progress_on_window()
+
+get_left_tick()
+  Full name: perform::get_left_tick()
+  Source:    perform.cpp 
+  Used By:
+    perftime.cpp: perftime::on_expose_event(_GdkEventExpose*)
+
+get_length()
+  Full name: sequence::get_length()
+  Source:    sequence.cpp 
+  Used By:
+    mainwid.cpp: mainwid::draw_sequence_on_pixmap(int)
+    perfroll_input.cpp: Seq24PerfInput::on_motion_notify_event(_GdkEventMotion*, perfroll&)
+    perfroll.cpp: perfroll::draw_sequence_on(Glib::RefPtr<Gdk::Drawable>, int)
+    seqedit.cpp: seqedit::get_measures()
+    seqroll.cpp: seqroll::draw_events_on(Glib::RefPtr<Gdk::Drawable>)
+    seqtime.cpp: seqtime::update_pixmap()
+
+get_linked()
+  Full name: event::get_linked()
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::verify_and_link()
+
+get_lowest_note_event()
+  Full name: sequence::get_lowest_note_event()
+  Source:    sequence.cpp 
+  Used By:
+    mainwid.cpp: mainwid::draw_sequence_on_pixmap(int)
+    perfroll.cpp: perfroll::draw_sequence_on(Glib::RefPtr<Gdk::Drawable>, int)
+
+get_master_midi_bus()
+  Full name: perform::get_master_midi_bus()
+  Source:    perform.cpp 
+  Used By:
+    midifile.cpp: midifile::parse(perform*, int)
+    optionsfile.cpp: optionsfile::write(perform*)
+    options.cpp: options::clock_callback_off(int, Gtk::RadioButton*)
+    seqedit.cpp: seqedit::record_change_callback()
+    seqmenu.cpp: seqmenu::seqmenu(perform*)
+
+get_max_trigger()
+  Full name: sequence::get_max_trigger()
+  Source:    sequence.cpp 
+  Used By:
+    perform.cpp: perform::get_max_trigger()
+
+get_max_trigger()
+  Full name: perform::get_max_trigger()
+  Source:    perform.cpp 
+  Used By:
+    perfroll.cpp: perfroll::init_before_show()
+
+get_midi_bus()
+  Full name: sequence::get_midi_bus()
+  Source:    sequence.cpp 
+  Used By:
+    mainwid.cpp: mainwid::draw_sequence_on_pixmap(int)
+    perfnames.cpp: perfnames::draw_sequence(int)
+    seqedit.cpp: seqedit::set_data_type(unsigned char, unsigned char)
+
+get_midi_channel()
+  Full name: sequence::get_midi_channel()
+  Source:    sequence.cpp 
+  Used By:
+    mainwid.cpp: mainwid::draw_sequence_on_pixmap(int)
+    perfnames.cpp: perfnames::draw_sequence(int)
+    seqedit.cpp: seqedit::set_data_type(unsigned char, unsigned char)
+
+get_midi_control_off(unsigned int)
+  Full name: perform::get_midi_control_off(unsigned int)
+  Source:    perform.cpp 
+  Used By:
+    midifile.cpp: midifile::parse(perform*, int)
+    optionsfile.cpp: optionsfile::write(perform*)
+
+get_midi_control_on(unsigned int)
+  Full name: perform::get_midi_control_on(unsigned int)
+  Source:    perform.cpp 
+  Used By:
+    midifile.cpp: midifile::parse(perform*, int)
+    optionsfile.cpp: optionsfile::write(perform*)
+
+get_midi_control_toggle(unsigned int)
+  Full name: perform::get_midi_control_toggle(unsigned int)
+  Source:    perform.cpp 
+  Used By:
+    midifile.cpp: midifile::parse(perform*, int)
+    optionsfile.cpp: optionsfile::write(perform*)
+
+get_midi_event(event*)
+  Full name: mastermidibus::get_midi_event(event*)
+  Source:    midibus.cpp 
+  Used By:
+    perform.cpp: perform::input_func()
+
+get_midi_in_bus_name(int)
+  Full name: mastermidibus::get_midi_in_bus_name(int)
+  Source:    midibus.cpp 
+  Used By:
+    optionsfile.cpp: optionsfile::write(perform*)
+    options.cpp: options::add_midi_input_page()
+
+get_midi_out_bus_name(int)
+  Full name: mastermidibus::get_midi_out_bus_name(int)
+  Source:    midibus.cpp 
+  Used By:
+    optionsfile.cpp: optionsfile::write(perform*)
+    options.cpp: options::add_midi_clock_page()
+    seqedit.cpp: seqedit::set_midi_bus(int)
+    seqmenu.cpp: seqmenu::popup_menu()
+
+get_name()
+  Full name: sequence::get_name()
+  Source:    sequence.cpp 
+  Used By:
+    mainwid.cpp: mainwid::draw_sequence_on_pixmap(int)
+    perfnames.cpp: perfnames::draw_sequence(int)
+    seqedit.cpp: seqedit::set_background_sequence(int)
+
+get_next_event(unsigned char*, unsigned char*)
+  Full name: sequence::get_next_event(unsigned char*, unsigned char*)
+  Source:    sequence.cpp 
+  Used By:
+    seqedit.cpp: seqedit::popup_event_menu()
+
+get_next_event(unsigned char, unsigned char, long*, unsigned char*, unsigned char*, bool*)
+  Full name: sequence::get_next_event(unsigned char, unsigned char, long*, unsigned char*, unsigned char*, bool*)
+  Source:    sequence.cpp 
+  Used By:
+    seqdata.cpp: seqdata::draw_events_on(Glib::RefPtr<Gdk::Drawable>)
+    seqevent.cpp: seqevent::draw_events_on(Glib::RefPtr<Gdk::Drawable>)
+
+get_next_note_event(long*, long*, int*, bool*, int*)
+  Full name: sequence::get_next_note_event(long*, long*, int*, bool*, int*)
+  Source:    sequence.cpp 
+  Used By:
+    mainwid.cpp: mainwid::draw_sequence_on_pixmap(int)
+    perfroll.cpp: perfroll::draw_sequence_on(Glib::RefPtr<Gdk::Drawable>, int)
+    seqroll.cpp: seqroll::draw_events_on(Glib::RefPtr<Gdk::Drawable>)
+
+get_next_trigger(long*, long*, bool*, long*)
+  Full name: sequence::get_next_trigger(long*, long*, bool*, long*)
+  Source:    sequence.cpp 
+  Used By:
+    perfroll.cpp: perfroll::draw_sequence_on(Glib::RefPtr<Gdk::Drawable>, int)
+
+get_note()
+  Full name: event::get_note()
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::link_new()
+
+get_note_velocity()
+  Full name: event::get_note_velocity()
+  Source:    event.cpp 
+  Used By:
+    midibus.cpp: mastermidibus::get_midi_event(event*)
+    sequence.cpp: sequence::get_next_note_event(long*, long*, int*, bool*, int*)
+
+get_num_in_buses()
+  Full name: mastermidibus::get_num_in_buses()
+  Source:    midibus.cpp 
+  Used By:
+    optionsfile.cpp: optionsfile::write(perform*)
+    options.cpp: options::add_midi_input_page()
+
+get_num_out_buses()
+  Full name: mastermidibus::get_num_out_buses()
+  Source:    midibus.cpp 
+  Used By:
+    optionsfile.cpp: optionsfile::write(perform*)
+    options.cpp: options::add_midi_clock_page()
+    seqedit.cpp: seqedit::popup_midibus_menu()
+    seqmenu.cpp: seqmenu::popup_menu()
+
+get_playing()
+  Full name: sequence::get_playing()
+  Source:    sequence.cpp 
+  Used By:
+    mainwid.cpp: mainwid::draw_sequence_on_pixmap(int)
+    perform.cpp: perform::jack_session_event()
+    seqedit.cpp: seqedit::seqedit(sequence*, perform*, int)
+
+get_queued()
+  Full name: sequence::get_queued()
+  Source:    sequence.cpp 
+  Used By:
+    mainwid.cpp: mainwid::draw_sequence_on_pixmap(int)
+    perform.cpp: perform::jack_session_event()
+
+get_queued_tick()
+  Full name: sequence::get_queued_tick()
+  Source:    sequence.cpp 
+  Used By:
+    perform.cpp: perform::play(long)
+
+get_recording()
+  Full name: sequence::get_recording()
+  Source:    sequence.cpp 
+  Used By:
+    seqedit.cpp: seqedit::seqedit(sequence*, perform*, int)
+
+get_right_tick()
+  Full name: perform::get_right_tick()
+  Source:    perform.cpp 
+  Used By:
+    perftime.cpp: perftime::on_expose_event(_GdkEventExpose*)
+
+get_screen_set_notepad(int)
+  Full name: perform::get_screen_set_notepad(int)
+  Source:    perform.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::timer_callback()
+    midifile.cpp: midifile::write(perform*)
+
+get_screenset()
+  Full name: perform::get_screenset()
+  Source:    perform.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::timer_callback()
+
+get_selected_box(long*, int*, long*, int*)
+  Full name: sequence::get_selected_box(long*, int*, long*, int*)
+  Source:    sequence.cpp 
+  Used By:
+    seqevent.cpp: FruitySeqEventInput::on_button_press_event(_GdkEventButton*, seqevent&)
+    seqroll.cpp: FruitySeqRollInput::on_button_press_event(_GdkEventButton*, seqroll&)
+
+get_selected_trigger_end_tick()
+  Full name: sequence::get_selected_trigger_end_tick()
+  Source:    sequence.cpp 
+  Used By:
+    perfroll_input.cpp: FruityPerfInput::on_left_button_pressed(_GdkEventButton*, perfroll&)
+
+get_selected_trigger_start_tick()
+  Full name: sequence::get_selected_trigger_start_tick()
+  Source:    sequence.cpp 
+  Used By:
+    perfroll_input.cpp: FruityPerfInput::on_left_button_pressed(_GdkEventButton*, perfroll&)
+
+get_sequence(int)
+  Full name: perform::get_sequence(int)
+  Source:    perform.cpp 
+  Used By:
+    mainwid.cpp: mainwid::draw_sequence_on_pixmap(int)
+    midifile.cpp: midifile::write(perform*)
+    options.cpp: options::input_callback(int, Gtk::Button*)
+    perfnames.cpp: perfnames::on_button_press_event(_GdkEventButton*)
+    perfroll_input.cpp: Seq24PerfInput::on_motion_notify_event(_GdkEventMotion*, perfroll&)
+    perfroll.cpp: perfroll::on_key_press_event(_GdkEventKey*)
+    seqedit.cpp: seqedit::set_background_sequence(int)
+    seqmenu.cpp: seqmenu::set_bus_and_midi_channel(int, int)
+    seqroll.cpp: seqroll::draw_events_on(Glib::RefPtr<Gdk::Drawable>)
+
+get_size()
+  Full name: event::get_size()
+  Source:    event.cpp 
+  Used By:
+    midibus.cpp: midibus::sysex(event*)
+
+get_song_mute()
+  Full name: sequence::get_song_mute()
+  Source:    sequence.cpp 
+  Used By:
+    perfnames.cpp: perfnames::on_button_press_event(_GdkEventButton*)
+
+get_status()
+  Full name: event::get_status()
+  Source:    event.cpp 
+  Used By:
+    midibus.cpp: midibus::play(event*, unsigned char)
+    perform.cpp: perform::input_func()
+    sequence.cpp: sequence::get_num_selected_events(unsigned char, unsigned char)
+
+get_sysex()
+  Full name: event::get_sysex()
+  Source:    event.cpp 
+  Used By:
+    midibus.cpp: midibus::sysex(event*)
+
+get_thru()
+  Full name: sequence::get_thru()
+  Source:    sequence.cpp 
+  Used By:
+    seqedit.cpp: seqedit::seqedit(sequence*, perform*, int)
+
+get_timestamp()
+  Full name: event::get_timestamp()
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::verify_and_link()
+
+get_trigger_offset()
+  Full name: sequence::get_trigger_offset()
+  Source:    sequence.cpp 
+  Used By:
+    mainwid.cpp: mainwid::draw_marker_on_sequence(int, int)
+
+get_trigger_state(long)
+  Full name: sequence::get_trigger_state(long)
+  Source:    sequence.cpp 
+  Used By:
+    perfroll_input.cpp: FruityPerfInput::on_left_button_pressed(_GdkEventButton*, perfroll&)
+
+global_filename
+  Full name: global_filename
+  Source:    seq24.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::update_window_title()
+
+global_interactionmethod
+  Full name: global_interactionmethod
+  Source:    seq24.cpp 
+  Used By:
+    optionsfile.cpp: optionsfile::write(perform*)
+    options.cpp: options::mouse_seq24_callback(Gtk::RadioButton*)
+    perfroll.cpp: perfroll::perfroll(perform*, Gtk::Adjustment*, Gtk::Adjustment*)
+    seqevent.cpp: seqevent::on_button_press_event(_GdkEventButton*)
+    seqroll.cpp: seqroll::update_background()
+
+global_jack_session_uuid
+  Full name: global_jack_session_uuid
+  Source:    seq24.cpp 
+  Used By:
+    perform.cpp: perform::init_jack()
+
+global_jack_start_mode
+  Full name: global_jack_start_mode
+  Source:    seq24.cpp 
+  Used By:
+    optionsfile.cpp: optionsfile::write(perform*)
+    options.cpp: options::transport_callback(options::button, Gtk::Button*)
+    perform.cpp: perform::start(bool)
+
+global_manual_alsa_ports
+  Full name: global_manual_alsa_ports
+  Source:    seq24.cpp 
+  Used By:
+    midibus.cpp: mastermidibus::init()
+    optionsfile.cpp: optionsfile::write(perform*)
+
+global_pass_sysex
+  Full name: global_pass_sysex
+  Source:    seq24.cpp 
+  Used By:
+    perform.cpp: perform::input_func()
+
+global_print_keys
+  Full name: global_print_keys
+  Source:    seq24.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::on_key_press_event(_GdkEventKey*)
+    perfedit.cpp: perfedit::on_key_press_event(_GdkEventKey*)
+
+global_priority
+  Full name: global_priority
+  Source:    seq24.cpp 
+  Used By:
+    perform.cpp: perform::output_func()
+
+global_showmidi
+  Full name: global_showmidi
+  Source:    seq24.cpp 
+  Used By:
+    perform.cpp: perform::input_func()
+
+global_stats
+  Full name: global_stats
+  Source:    seq24.cpp 
+  Used By:
+    perform.cpp: perform::output_func()
+
+global_user_instrument_definitions
+  Full name: global_user_instrument_definitions
+  Source:    seq24.cpp 
+  Used By:
+    seqedit.cpp: seqedit::set_data_type(unsigned char, unsigned char)
+    seqmenu.cpp: seqmenu::popup_menu()
+    userfile.cpp: userfile::parse(perform*)
+
+global_user_midi_bus_definitions
+  Full name: global_user_midi_bus_definitions
+  Source:    seq24.cpp 
+  Used By:
+    midibus.cpp: midibus::midibus(int, int, int, _snd_seq*, char const*, char const*, int, int)
+    seqedit.cpp: seqedit::set_data_type(unsigned char, unsigned char)
+    seqmenu.cpp: seqmenu::popup_menu()
+    userfile.cpp: userfile::parse(perform*)
+
+global_with_jack_master
+  Full name: global_with_jack_master
+  Source:    seq24.cpp 
+  Used By:
+    optionsfile.cpp: optionsfile::write(perform*)
+    options.cpp: options::transport_callback(options::button, Gtk::Button*)
+    perform.cpp: jack_sync_callback(jack_transport_state_t, _jack_position*, void*)
+
+global_with_jack_master_cond
+  Full name: global_with_jack_master_cond
+  Source:    seq24.cpp 
+  Used By:
+    optionsfile.cpp: optionsfile::write(perform*)
+    options.cpp: options::transport_callback(options::button, Gtk::Button*)
+    perform.cpp: jack_sync_callback(jack_transport_state_t, _jack_position*, void*)
+
+global_with_jack_transport
+  Full name: global_with_jack_transport
+  Source:    seq24.cpp 
+  Used By:
+    optionsfile.cpp: optionsfile::write(perform*)
+    options.cpp: options::transport_callback(options::button, Gtk::Button*)
+    perform.cpp: perform::init_jack()
+
+grow_selected(long)
+  Full name: sequence::grow_selected(long)
+  Source:    sequence.cpp 
+  Used By:
+    seqroll.cpp: FruitySeqRollInput::on_button_release_event(_GdkEventButton*, seqroll&)
+
+grow_trigger(long, long, long)
+  Full name: sequence::grow_trigger(long, long, long)
+  Source:    sequence.cpp 
+  Used By:
+    perfroll_input.cpp: Seq24PerfInput::on_motion_notify_event(_GdkEventMotion*, perfroll&)
+
+idle_progress(long)
+  Full name: maintime::idle_progress(long)
+  Source:    maintime.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::timer_callback()
+
+increment_data1()
+  Full name: event::increment_data1()
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::increment_selected(unsigned char, unsigned char)
+
+increment_data2()
+  Full name: event::increment_data2()
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::increment_selected(unsigned char, unsigned char)
+
+increment_selected(unsigned char, unsigned char)
+  Full name: sequence::increment_selected(unsigned char, unsigned char)
+  Source:    sequence.cpp 
+  Used By:
+    seqdata.cpp: seqdata::on_scroll_event(_GdkEventScroll*)
+
+increment_size()
+  Full name: perfroll::increment_size()
+  Source:    perfroll.cpp 
+  Used By:
+    perfedit.cpp: perfedit::grow()
+
+increment_size()
+  Full name: perftime::increment_size()
+  Source:    perftime.cpp 
+  Used By:
+    perfedit.cpp: perfedit::grow()
+
+init()
+  Full name: perform::init()
+  Source:    perform.cpp 
+  Used By:
+    seq24.cpp: main
+
+init()
+  Full name: mastermidibus::init()
+  Source:    midibus.cpp 
+  Used By:
+    perform.cpp: perform::init()
+
+init(Glib::RefPtr<Gdk::Window>)
+  Full name: font::init(Glib::RefPtr<Gdk::Window>)
+  Source:    font.cpp 
+  Used By:
+    mainwid.cpp: mainwid::on_realize()
+
+init(perform*)
+  Full name: lash::init(perform*)
+  Source:    lash.cpp 
+  Used By:
+    seq24.cpp: main
+
+init_before_show()
+  Full name: perfedit::init_before_show()
+  Source:    perfedit.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::open_performance_edit()
+
+init_before_show()
+  Full name: perfroll::init_before_show()
+  Source:    perfroll.cpp 
+  Used By:
+    perfedit.cpp: perfedit::init_before_show()
+
+init_clock(long)
+  Full name: mastermidibus::init_clock(long)
+  Source:    midibus.cpp 
+  Used By:
+    perform.cpp: perform::output_func()
+
+init_jack()
+  Full name: perform::init_jack()
+  Source:    perform.cpp 
+  Used By:
+    options.cpp: options::transport_callback(options::button, Gtk::Button*)
+    seq24.cpp: main
+
+intersectEvents(long, long, long, long&)
+  Full name: sequence::intersectEvents(long, long, long, long&)
+  Source:    sequence.cpp 
+  Used By:
+    seqevent.cpp: FruitySeqEventInput::updateMousePtr(seqevent&)
+
+intersectNotes(long, long, long&, long&, long&)
+  Full name: sequence::intersectNotes(long, long, long&, long&, long&)
+  Source:    sequence.cpp 
+  Used By:
+    seqroll.cpp: FruitySeqRollInput::updateMousePtr(seqroll&)
+
+intersectTriggers(long, long&, long&)
+  Full name: sequence::intersectTriggers(long, long&, long&)
+  Source:    sequence.cpp 
+  Used By:
+    perfroll_input.cpp: FruityPerfInput::updateMousePtr(perfroll&)
+
+is_active(int)
+  Full name: perform::is_active(int)
+  Source:    perform.cpp 
+  Used By:
+    mainwid.cpp: mainwid::draw_sequence_on_pixmap(int)
+    mainwnd.cpp: mainwnd::sequence_key(int)
+    midifile.cpp: midifile::write(perform*)
+    perfnames.cpp: perfnames::on_button_press_event(_GdkEventButton*)
+    perfroll_input.cpp: Seq24PerfInput::on_motion_notify_event(_GdkEventMotion*, perfroll&)
+    perfroll.cpp: perfroll::on_key_press_event(_GdkEventKey*)
+    seqedit.cpp: seqedit::set_background_sequence(int)
+    seqmenu.cpp: seqmenu::set_bus_and_midi_channel(int, int)
+    seqroll.cpp: seqroll::draw_events_on(Glib::RefPtr<Gdk::Drawable>)
+
+is_dirty_edit()
+  Full name: sequence::is_dirty_edit()
+  Source:    sequence.cpp 
+  Used By:
+    perform.cpp: perform::is_dirty_edit(int)
+    seqedit.cpp: seqedit::timeout()
+
+is_dirty_main()
+  Full name: sequence::is_dirty_main()
+  Source:    sequence.cpp 
+  Used By:
+    perform.cpp: perform::is_dirty_main(int)
+
+is_dirty_main(int)
+  Full name: perform::is_dirty_main(int)
+  Source:    perform.cpp 
+  Used By:
+    mainwid.cpp: mainwid::draw_marker_on_sequence(int, int)
+
+is_dirty_names()
+  Full name: sequence::is_dirty_names()
+  Source:    sequence.cpp 
+  Used By:
+    perform.cpp: perform::is_dirty_names(int)
+
+is_dirty_names(int)
+  Full name: perform::is_dirty_names(int)
+  Source:    perform.cpp 
+  Used By:
+    perfnames.cpp: perfnames::redraw_dirty_sequences()
+
+is_dirty_perf()
+  Full name: sequence::is_dirty_perf()
+  Source:    sequence.cpp 
+  Used By:
+    perform.cpp: perform::is_dirty_perf(int)
+
+is_dirty_perf(int)
+  Full name: perform::is_dirty_perf(int)
+  Source:    perform.cpp 
+  Used By:
+    perfroll.cpp: perfroll::redraw_dirty_sequences()
+
+is_linked()
+  Full name: event::is_linked()
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::link_new()
+
+is_marked()
+  Full name: event::is_marked()
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::remove_marked()
+
+is_more_input()
+  Full name: mastermidibus::is_more_input()
+  Source:    midibus.cpp 
+  Used By:
+    perform.cpp: perform::input_func()
+
+is_note_off()
+  Full name: event::is_note_off()
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::link_new()
+
+is_note_on()
+  Full name: event::is_note_on()
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::link_new()
+
+is_painted()
+  Full name: event::is_painted()
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::add_note(long, long, int, bool)
+
+is_pattern_playing
+  Full name: is_pattern_playing
+  Source:    mainwnd.cpp 
+  Used By:
+    seqroll.cpp: seqroll::on_key_press_event(_GdkEventKey*)
+    sequence.cpp: sequence::stream_event(event*)
+
+is_running()
+  Full name: perform::is_running()
+  Source:    perform.cpp 
+  Used By:
+    perfedit.cpp: perfedit::on_key_press_event(_GdkEventKey*)
+
+is_selected()
+  Full name: event::is_selected()
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::mark_selected()
+
+is_sequence_in_edit(int)
+  Full name: perform::is_sequence_in_edit(int)
+  Source:    perform.cpp 
+  Used By:
+    mainwid.cpp: mainwid::on_button_release_event(_GdkEventButton*)
+    seqmenu.cpp: seqmenu::seq_cut()
+
+KeyBindEntry(KeyBindEntry::type, unsigned int*, perform*, long)
+  Full name: KeyBindEntry::KeyBindEntry(KeyBindEntry::type, unsigned int*, perform*, long)
+  Source:    keybindentry.cpp 
+  Used By:
+    options.cpp: options::add_keyboard_page()
+
+lash(int*, char***)
+  Full name: lash::lash(int*, char***)
+  Source:    lash.cpp 
+  Used By:
+    seq24.cpp: main
+
+lash_driver
+  Full name: lash_driver
+  Source:    seq24.cpp 
+  Used By:
+    midibus.cpp: mastermidibus::mastermidibus()
+
+last_used_dir
+  Full name: last_used_dir
+  Source:    seq24.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::open_file(Glib::ustring const&)
+    optionsfile.cpp: optionsfile::write(perform*)
+
+launch_input_thread()
+  Full name: perform::launch_input_thread()
+  Source:    perform.cpp 
+  Used By:
+    seq24.cpp: main
+
+launch_output_thread()
+  Full name: perform::launch_output_thread()
+  Source:    perform.cpp 
+  Used By:
+    seq24.cpp: main
+
+line_after(std::basic_ifstream<char, std::char_traits<char> >*, std::string const&)
+  Full name: configfile::line_after(std::basic_ifstream<char, std::char_traits<char> >*, std::string const&)
+  Source:    configfile.cpp 
+  Used By:
+    optionsfile.cpp: optionsfile::parse(perform*)
+    userfile.cpp: userfile::parse(perform*)
+
+link(event*)
+  Full name: event::link(event*)
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::link_new()
+
+lock()
+  Full name: mutex::lock()
+  Source:    mutex.cpp 
+  Used By:
+    midibus.cpp: midibus::lock()
+    perform.cpp: perform::inner_start(bool)
+    sequence.cpp: sequence::set_master_midi_bus(mastermidibus*)
+
+maintime()
+  Full name: maintime::maintime()
+  Source:    maintime.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::mainwnd(perform*)
+
+mainwid(perform*)
+  Full name: mainwid::mainwid(perform*)
+  Source:    mainwid.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::mainwnd(perform*)
+
+mainwnd(perform*)
+  Full name: mainwnd::mainwnd(perform*)
+  Source:    mainwnd.cpp 
+  Used By:
+    seq24.cpp: main
+
+mark()
+  Full name: event::mark()
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::verify_and_link()
+
+mark_selected()
+  Full name: sequence::mark_selected()
+  Source:    sequence.cpp 
+  Used By:
+    seqevent.cpp: seqevent::on_key_press_event(_GdkEventKey*)
+    seqroll.cpp: seqroll::on_key_press_event(_GdkEventKey*)
+
+mastermidibus()
+  Full name: mastermidibus::mastermidibus()
+  Source:    midibus.cpp 
+  Used By:
+    perform.cpp: perform::perform()
+
+midifile(Glib::ustring const&)
+  Full name: midifile::midifile(Glib::ustring const&)
+  Source:    midifile.cpp 
+  Used By:
+    lash.cpp: lash::handle_event(_lash_event*)
+    mainwnd.cpp: mainwnd::open_file(Glib::ustring const&)
+    perform.cpp: perform::jack_session_event()
+
+mod_timestamp(unsigned long)
+  Full name: event::mod_timestamp(unsigned long)
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::stream_event(event*)
+
+move_selected_notes(long, int)
+  Full name: sequence::move_selected_notes(long, int)
+  Source:    sequence.cpp 
+  Used By:
+    seqevent.cpp: FruitySeqEventInput::on_button_release_event(_GdkEventButton*, seqevent&)
+    seqroll.cpp: FruitySeqRollInput::on_button_release_event(_GdkEventButton*, seqroll&)
+
+move_selected_triggers_to(long, bool, int)
+  Full name: sequence::move_selected_triggers_to(long, bool, int)
+  Source:    sequence.cpp 
+  Used By:
+    perfroll_input.cpp: Seq24PerfInput::on_motion_notify_event(_GdkEventMotion*, perfroll&)
+
+move_triggers(bool)
+  Full name: perform::move_triggers(bool)
+  Source:    perform.cpp 
+  Used By:
+    perfedit.cpp: perfedit::collapse()
+
+move_triggers(long, long, bool)
+  Full name: sequence::move_triggers(long, long, bool)
+  Source:    sequence.cpp 
+  Used By:
+    perform.cpp: perform::move_triggers(bool)
+
+mute_all_tracks()
+  Full name: perform::mute_all_tracks()
+  Source:    perform.cpp 
+  Used By:
+    seqmenu.cpp: seqmenu::mute_all_tracks()
+
+mutex()
+  Full name: mutex::mutex()
+  Source:    mutex.cpp 
+  Used By:
+    midibus.cpp: midibus::midibus(int, int, int, _snd_seq*, char const*, char const*, int, int)
+    sequence.cpp: sequence::sequence()
+
+new_sequence(int)
+  Full name: perform::new_sequence(int)
+  Source:    perform.cpp 
+  Used By:
+    mainwid.cpp: mainwid::on_button_release_event(_GdkEventButton*)
+    seqmenu.cpp: seqmenu::seq_paste()
+
+next_data_line(std::basic_ifstream<char, std::char_traits<char> >*)
+  Full name: configfile::next_data_line(std::basic_ifstream<char, std::char_traits<char> >*)
+  Source:    configfile.cpp 
+  Used By:
+    optionsfile.cpp: optionsfile::parse(perform*)
+    userfile.cpp: userfile::parse(perform*)
+
+off_playing_notes()
+  Full name: sequence::off_playing_notes()
+  Source:    sequence.cpp 
+  Used By:
+    perform.cpp: perform::all_notes_off()
+
+open_file(Glib::ustring const&)
+  Full name: mainwnd::open_file(Glib::ustring const&)
+  Source:    mainwnd.cpp 
+  Used By:
+    seq24.cpp: main
+
+operator<(event const&)
+  Full name: event::operator<(event const&)
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: addLongList(std::list<char, std::allocator<char> >*, long)
+
+operator=(sequence const&)
+  Full name: sequence::operator=(sequence const&)
+  Source:    sequence.cpp 
+  Used By:
+    mainwid.cpp: mainwid::on_button_release_event(_GdkEventButton*)
+    seqmenu.cpp: seqmenu::seq_copy()
+
+options(Gtk::Window&, perform*)
+  Full name: options::options(Gtk::Window&, perform*)
+  Source:    options.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::options_dialog()
+
+optionsfile(Glib::ustring const&)
+  Full name: optionsfile::optionsfile(Glib::ustring const&)
+  Source:    optionsfile.cpp 
+  Used By:
+    seq24.cpp: main
+
+p_font_renderer
+  Full name: p_font_renderer
+  Source:    seq24.cpp 
+  Used By:
+    mainwid.cpp: mainwid::draw_sequence_on_pixmap(int)
+    perfnames.cpp: perfnames::draw_sequence(int)
+    perftime.cpp: perftime::on_expose_event(_GdkEventExpose*)
+    seqdata.cpp: seqdata::change_horz()
+    seqkeys.cpp: seqkeys::update_pixmap()
+    seqtime.cpp: seqtime::update_pixmap()
+
+paint()
+  Full name: event::paint()
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::add_note(long, long, int, bool)
+
+parse(perform*)
+  Full name: userfile::parse(perform*)
+  Source:    userfile.cpp 
+  Used By:
+    seq24.cpp: main
+
+parse(perform*)
+  Full name: optionsfile::parse(perform*)
+  Source:    optionsfile.cpp 
+  Used By:
+    seq24.cpp: main
+
+parse(perform*, int)
+  Full name: midifile::parse(perform*, int)
+  Source:    midifile.cpp 
+  Used By:
+    lash.cpp: lash::handle_event(_lash_event*)
+    mainwnd.cpp: mainwnd::open_file(Glib::ustring const&)
+
+paste_selected(long, int)
+  Full name: sequence::paste_selected(long, int)
+  Source:    sequence.cpp 
+  Used By:
+    seqevent.cpp: FruitySeqEventInput::on_button_press_event(_GdkEventButton*, seqevent&)
+    seqroll.cpp: FruitySeqRollInput::on_button_press_event(_GdkEventButton*, seqroll&)
+
+paste_trigger()
+  Full name: sequence::paste_trigger()
+  Source:    sequence.cpp 
+  Used By:
+    perfroll.cpp: perfroll::on_key_press_event(_GdkEventKey*)
+
+perfedit(perform*)
+  Full name: perfedit::perfedit(perform*)
+  Source:    perfedit.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::about_dialog()
+
+perfnames(perform*, Gtk::Adjustment*)
+  Full name: perfnames::perfnames(perform*, Gtk::Adjustment*)
+  Source:    perfnames.cpp 
+  Used By:
+    perfedit.cpp: perfedit::perfedit(perform*)
+
+perform()
+  Full name: perform::perform()
+  Source:    perform.cpp 
+  Used By:
+    seq24.cpp: main
+
+perfroll(perform*, Gtk::Adjustment*, Gtk::Adjustment*)
+  Full name: perfroll::perfroll(perform*, Gtk::Adjustment*, Gtk::Adjustment*)
+  Source:    perfroll.cpp 
+  Used By:
+    perfedit.cpp: perfedit::perfedit(perform*)
+
+perftime(perform*, Gtk::Adjustment*)
+  Full name: perftime::perftime(perform*, Gtk::Adjustment*)
+  Source:    perftime.cpp 
+  Used By:
+    perfedit.cpp: perfedit::perfedit(perform*)
+
+play(long, bool)
+  Full name: sequence::play(long, bool)
+  Source:    sequence.cpp 
+  Used By:
+    perform.cpp: perform::play(long)
+
+play(unsigned char, event*, unsigned char)
+  Full name: mastermidibus::play(unsigned char, event*, unsigned char)
+  Source:    midibus.cpp 
+  Used By:
+    sequence.cpp: sequence::remove(std::_List_iterator<event>)
+
+play_note_off(int)
+  Full name: sequence::play_note_off(int)
+  Source:    sequence.cpp 
+  Used By:
+    seqkeys.cpp: seqkeys::on_button_release_event(_GdkEventButton*)
+
+play_note_on(int)
+  Full name: sequence::play_note_on(int)
+  Source:    sequence.cpp 
+  Used By:
+    seqkeys.cpp: seqkeys::on_button_press_event(_GdkEventButton*)
+
+poll_for_midi()
+  Full name: mastermidibus::poll_for_midi()
+  Source:    midibus.cpp 
+  Used By:
+    perform.cpp: perform::input_func()
+
+pop_redo()
+  Full name: sequence::pop_redo()
+  Source:    sequence.cpp 
+  Used By:
+    seqedit.cpp: seqedit::redo_callback()
+
+pop_trigger_undo()
+  Full name: perform::pop_trigger_undo()
+  Source:    perform.cpp 
+  Used By:
+    perfedit.cpp: perfedit::undo()
+
+pop_trigger_undo()
+  Full name: sequence::pop_trigger_undo()
+  Source:    sequence.cpp 
+  Used By:
+    perform.cpp: perform::pop_trigger_undo()
+
+pop_undo()
+  Full name: sequence::pop_undo()
+  Source:    sequence.cpp 
+  Used By:
+    seqedit.cpp: seqedit::undo_callback()
+    seqevent.cpp: seqevent::on_key_press_event(_GdkEventKey*)
+    seqroll.cpp: seqroll::on_key_press_event(_GdkEventKey*)
+
+popup_menu()
+  Full name: seqmenu::popup_menu()
+  Source:    seqmenu.cpp 
+  Used By:
+    mainwid.cpp: mainwid::on_button_release_event(_GdkEventButton*)
+    perfnames.cpp: perfnames::on_button_release_event(_GdkEventButton*)
+
+position_jack(bool)
+  Full name: perform::position_jack(bool)
+  Source:    perform.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::start_playing()
+    perfedit.cpp: perfedit::start_playing()
+    perfroll.cpp: perfroll::start_playing()
+    seqroll.cpp: seqroll::on_key_press_event(_GdkEventKey*)
+
+print()
+  Full name: event::print()
+  Source:    event.cpp 
+  Used By:
+    perform.cpp: perform::input_func()
+    sequence.cpp: sequence::print()
+
+push_trigger_undo()
+  Full name: sequence::push_trigger_undo()
+  Source:    sequence.cpp 
+  Used By:
+    perform.cpp: perform::push_trigger_undo()
+
+push_trigger_undo()
+  Full name: perform::push_trigger_undo()
+  Source:    perform.cpp 
+  Used By:
+    perfedit.cpp: perfedit::collapse()
+    perfroll_input.cpp: FruityPerfInput::on_left_button_pressed(_GdkEventButton*, perfroll&)
+    perfroll.cpp: perfroll::on_key_press_event(_GdkEventKey*)
+    seqmenu.cpp: seqmenu::seq_clear_perf()
+
+push_undo()
+  Full name: sequence::push_undo()
+  Source:    sequence.cpp 
+  Used By:
+    seqdata.cpp: seqdata::on_button_press_event(_GdkEventButton*)
+    seqedit.cpp: seqedit::do_action(int, int)
+    seqevent.cpp: seqevent::on_key_press_event(_GdkEventKey*)
+    seqroll.cpp: seqroll::on_key_press_event(_GdkEventKey*)
+
+quanize_events(unsigned char, unsigned char, long, int, bool)
+  Full name: sequence::quanize_events(unsigned char, unsigned char, long, int, bool)
+  Source:    sequence.cpp 
+  Used By:
+    seqedit.cpp: seqedit::do_action(int, int)
+
+redraw()
+  Full name: seqtime::redraw()
+  Source:    seqtime.cpp 
+  Used By:
+    seqedit.cpp: seqedit::do_action(int, int)
+
+redraw()
+  Full name: seqdata::redraw()
+  Source:    seqdata.cpp 
+  Used By:
+    seqedit.cpp: seqedit::do_action(int, int)
+
+redraw()
+  Full name: seqevent::redraw()
+  Source:    seqevent.cpp 
+  Used By:
+    seqedit.cpp: seqedit::do_action(int, int)
+
+redraw()
+  Full name: seqroll::redraw()
+  Source:    seqroll.cpp 
+  Used By:
+    seqedit.cpp: seqedit::do_action(int, int)
+
+redraw_dirty_sequences()
+  Full name: perfroll::redraw_dirty_sequences()
+  Source:    perfroll.cpp 
+  Used By:
+    perfedit.cpp: perfedit::timeout()
+
+redraw_dirty_sequences()
+  Full name: perfnames::redraw_dirty_sequences()
+  Source:    perfnames.cpp 
+  Used By:
+    perfedit.cpp: perfedit::timeout()
+
+redraw_events()
+  Full name: seqroll::redraw_events()
+  Source:    seqroll.cpp 
+  Used By:
+    seqedit.cpp: seqedit::timeout()
+
+remove_marked()
+  Full name: sequence::remove_marked()
+  Source:    sequence.cpp 
+  Used By:
+    seqevent.cpp: seqevent::on_key_press_event(_GdkEventKey*)
+    seqroll.cpp: seqroll::on_key_press_event(_GdkEventKey*)
+
+render_string_on_drawable(Glib::RefPtr<Gdk::GC>, int, int, Glib::RefPtr<Gdk::Drawable>, char const*, font::Color)
+  Full name: font::render_string_on_drawable(Glib::RefPtr<Gdk::GC>, int, int, Glib::RefPtr<Gdk::Drawable>, char const*, font::Color)
+  Source:    font.cpp 
+  Used By:
+    mainwid.cpp: mainwid::draw_sequence_on_pixmap(int)
+    perfnames.cpp: perfnames::draw_sequence(int)
+    perftime.cpp: perftime::on_expose_event(_GdkEventExpose*)
+    seqdata.cpp: seqdata::change_horz()
+    seqkeys.cpp: seqkeys::update_pixmap()
+    seqtime.cpp: seqtime::update_pixmap()
+
+reset()
+  Full name: seqtime::reset()
+  Source:    seqtime.cpp 
+  Used By:
+    seqedit.cpp: seqedit::apply_length(int, int, int)
+
+reset()
+  Full name: seqevent::reset()
+  Source:    seqevent.cpp 
+  Used By:
+    seqedit.cpp: seqedit::apply_length(int, int, int)
+
+reset()
+  Full name: seqroll::reset()
+  Source:    seqroll.cpp 
+  Used By:
+    seqedit.cpp: seqedit::apply_length(int, int, int)
+
+reset()
+  Full name: seqdata::reset()
+  Source:    seqdata.cpp 
+  Used By:
+    seqedit.cpp: seqedit::apply_length(int, int, int)
+
+reset()
+  Full name: mainwid::reset()
+  Source:    mainwid.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::new_file()
+
+reset_draw_marker()
+  Full name: sequence::reset_draw_marker()
+  Source:    sequence.cpp 
+  Used By:
+    mainwid.cpp: mainwid::draw_sequence_on_pixmap(int)
+    perfroll.cpp: perfroll::draw_sequence_on(Glib::RefPtr<Gdk::Drawable>, int)
+    seqdata.cpp: seqdata::draw_events_on(Glib::RefPtr<Gdk::Drawable>)
+    seqedit.cpp: seqedit::popup_event_menu()
+    seqevent.cpp: seqevent::draw_events_on(Glib::RefPtr<Gdk::Drawable>)
+    seqroll.cpp: seqroll::draw_events_on(Glib::RefPtr<Gdk::Drawable>)
+
+reset_draw_trigger_marker()
+  Full name: sequence::reset_draw_trigger_marker()
+  Source:    sequence.cpp 
+  Used By:
+    perfroll.cpp: perfroll::draw_sequence_on(Glib::RefPtr<Gdk::Drawable>, int)
+
+select()
+  Full name: event::select()
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::select_note_events(long, int, long, int, sequence::select_action_e)
+
+select_all()
+  Full name: sequence::select_all()
+  Source:    sequence.cpp 
+  Used By:
+    seqroll.cpp: seqroll::on_key_press_event(_GdkEventKey*)
+
+select_and_mute_group(int)
+  Full name: perform::select_and_mute_group(int)
+  Source:    perform.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::on_key_press_event(_GdkEventKey*)
+
+select_events(long, long, unsigned char, unsigned char, sequence::select_action_e)
+  Full name: sequence::select_events(long, long, unsigned char, unsigned char, sequence::select_action_e)
+  Source:    sequence.cpp 
+  Used By:
+    seqevent.cpp: FruitySeqEventInput::on_button_press_event(_GdkEventButton*, seqevent&)
+
+select_events(unsigned char, unsigned char, bool)
+  Full name: sequence::select_events(unsigned char, unsigned char, bool)
+  Source:    sequence.cpp 
+  Used By:
+    seqedit.cpp: seqedit::do_action(int, int)
+
+select_group_mute(int)
+  Full name: perform::select_group_mute(int)
+  Source:    perform.cpp 
+  Used By:
+    midifile.cpp: midifile::write(perform*)
+    optionsfile.cpp: optionsfile::write(perform*)
+
+select_note_events(long, int, long, int, sequence::select_action_e)
+  Full name: sequence::select_note_events(long, int, long, int, sequence::select_action_e)
+  Source:    sequence.cpp 
+  Used By:
+    seqroll.cpp: FruitySeqRollInput::on_button_press_event(_GdkEventButton*, seqroll&)
+
+select_trigger(long)
+  Full name: sequence::select_trigger(long)
+  Source:    sequence.cpp 
+  Used By:
+    perfroll_input.cpp: FruityPerfInput::on_left_button_pressed(_GdkEventButton*, perfroll&)
+
+seqdata(sequence*, int, Gtk::Adjustment*)
+  Full name: seqdata::seqdata(sequence*, int, Gtk::Adjustment*)
+  Source:    seqdata.cpp 
+  Used By:
+    seqedit.cpp: seqedit::seqedit(sequence*, perform*, int)
+
+seqedit(sequence*, perform*, int)
+  Full name: seqedit::seqedit(sequence*, perform*, int)
+  Source:    seqedit.cpp 
+  Used By:
+    seqmenu.cpp: seqmenu::seq_edit()
+
+seqevent(sequence*, int, int, seqdata*, Gtk::Adjustment*)
+  Full name: seqevent::seqevent(sequence*, int, int, seqdata*, Gtk::Adjustment*)
+  Source:    seqevent.cpp 
+  Used By:
+    seqedit.cpp: seqedit::seqedit(sequence*, perform*, int)
+
+seqkeys(sequence*, Gtk::Adjustment*)
+  Full name: seqkeys::seqkeys(sequence*, Gtk::Adjustment*)
+  Source:    seqkeys.cpp 
+  Used By:
+    seqedit.cpp: seqedit::seqedit(sequence*, perform*, int)
+
+seqmenu(perform*)
+  Full name: seqmenu::seqmenu(perform*)
+  Source:    seqmenu.cpp 
+  Used By:
+    mainwid.cpp: mainwid::mainwid(perform*)
+    perfnames.cpp: perfnames::perfnames(perform*, Gtk::Adjustment*)
+
+seqroll(perform*, sequence*, int, int, seqdata*, seqevent*, seqkeys*, int, Gtk::Adjustment*, Gtk::Adjustment*)
+  Full name: seqroll::seqroll(perform*, sequence*, int, int, seqdata*, seqevent*, seqkeys*, int, Gtk::Adjustment*, Gtk::Adjustment*)
+  Source:    seqroll.cpp 
+  Used By:
+    seqedit.cpp: seqedit::seqedit(sequence*, perform*, int)
+
+seqtime(sequence*, int, Gtk::Adjustment*)
+  Full name: seqtime::seqtime(sequence*, int, Gtk::Adjustment*)
+  Source:    seqtime.cpp 
+  Used By:
+    seqedit.cpp: seqedit::seqedit(sequence*, perform*, int)
+
+sequence()
+  Full name: sequence::sequence()
+  Source:    sequence.cpp 
+  Used By:
+    mainwid.cpp: mainwid::mainwid(perform*)
+    midifile.cpp: midifile::parse(perform*, int)
+    perform.cpp: perform::new_sequence(int)
+    seqmenu.cpp: seqmenu::seqmenu(perform*)
+    seqroll.cpp: seqroll::seqroll(perform*, sequence*, int, int, seqdata*, seqevent*, seqkeys*, int, Gtk::Adjustment*, Gtk::Adjustment*)
+
+sequence_playing_toggle(int)
+  Full name: perform::sequence_playing_toggle(int)
+  Source:    perform.cpp 
+  Used By:
+    mainwid.cpp: mainwid::on_button_release_event(_GdkEventButton*)
+    mainwnd.cpp: mainwnd::sequence_key(int)
+
+set_alsa_client_id(int)
+  Full name: lash::set_alsa_client_id(int)
+  Source:    lash.cpp 
+  Used By:
+    midibus.cpp: mastermidibus::mastermidibus()
+
+set_background_sequence(bool, int)
+  Full name: seqroll::set_background_sequence(bool, int)
+  Source:    seqroll.cpp 
+  Used By:
+    seqedit.cpp: seqedit::set_background_sequence(int)
+
+set_bpm(int)
+  Full name: perform::set_bpm(int)
+  Source:    perform.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::adj_callback_bpm()
+    midifile.cpp: midifile::parse(perform*, int)
+
+set_bpm(int)
+  Full name: mastermidibus::set_bpm(int)
+  Source:    midibus.cpp 
+  Used By:
+    perform.cpp: perform::set_bpm(int)
+
+set_bpm(long)
+  Full name: sequence::set_bpm(long)
+  Source:    sequence.cpp 
+  Used By:
+    midifile.cpp: midifile::parse(perform*, int)
+    seqedit.cpp: seqedit::set_bpm(int)
+
+set_bw(long)
+  Full name: sequence::set_bw(long)
+  Source:    sequence.cpp 
+  Used By:
+    midifile.cpp: midifile::parse(perform*, int)
+    seqedit.cpp: seqedit::set_bw(int)
+
+set_clock(unsigned char, clock_e)
+  Full name: mastermidibus::set_clock(unsigned char, clock_e)
+  Source:    midibus.cpp 
+  Used By:
+    midifile.cpp: midifile::parse(perform*, int)
+    optionsfile.cpp: optionsfile::parse(perform*)
+    options.cpp: options::clock_callback_off(int, Gtk::RadioButton*)
+
+set_clock_mod(int)
+  Full name: midibus::set_clock_mod(int)
+  Source:    midibus.cpp 
+  Used By:
+    optionsfile.cpp: optionsfile::parse(perform*)
+    options.cpp: options::clock_mod_callback(Gtk::Adjustment*)
+
+set_data(char)
+  Full name: event::set_data(char)
+  Source:    event.cpp 
+  Used By:
+    midifile.cpp: midifile::parse(perform*, int)
+
+set_data(char, char)
+  Full name: event::set_data(char, char)
+  Source:    event.cpp 
+  Used By:
+    midibus.cpp: mastermidibus::get_midi_event(event*)
+    midifile.cpp: midifile::parse(perform*, int)
+    sequence.cpp: sequence::change_event_data_range(long, long, unsigned char, unsigned char, int, int)
+
+set_data_type(unsigned char, unsigned char)
+  Full name: seqdata::set_data_type(unsigned char, unsigned char)
+  Source:    seqdata.cpp 
+  Used By:
+    seqedit.cpp: seqedit::set_data_type(unsigned char, unsigned char)
+
+set_data_type(unsigned char, unsigned char)
+  Full name: seqevent::set_data_type(unsigned char, unsigned char)
+  Source:    seqevent.cpp 
+  Used By:
+    seqedit.cpp: seqedit::set_data_type(unsigned char, unsigned char)
+
+set_data_type(unsigned char, unsigned char)
+  Full name: seqroll::set_data_type(unsigned char, unsigned char)
+  Source:    seqroll.cpp 
+  Used By:
+    seqedit.cpp: seqedit::set_data_type(unsigned char, unsigned char)
+
+set_dirty()
+  Full name: sequence::set_dirty()
+  Source:    sequence.cpp 
+  Used By:
+    options.cpp: options::input_callback(int, Gtk::Button*)
+    seqevent.cpp: seqevent::on_key_press_event(_GdkEventKey*)
+    seqmenu.cpp: seqmenu::set_bus_and_midi_channel(int, int)
+    seqroll.cpp: seqroll::on_key_press_event(_GdkEventKey*)
+
+set_group_mute_state(int, bool)
+  Full name: perform::set_group_mute_state(int, bool)
+  Source:    perform.cpp 
+  Used By:
+    midifile.cpp: midifile::parse(perform*, int)
+    optionsfile.cpp: optionsfile::parse(perform*)
+
+set_guides(int, int)
+  Full name: perftime::set_guides(int, int)
+  Source:    perftime.cpp 
+  Used By:
+    perfedit.cpp: perfedit::set_guides()
+
+set_guides(int, int, int)
+  Full name: perfroll::set_guides(int, int, int)
+  Source:    perfroll.cpp 
+  Used By:
+    perfedit.cpp: perfedit::set_guides()
+
+set_hint_key(int)
+  Full name: seqkeys::set_hint_key(int)
+  Source:    seqkeys.cpp 
+  Used By:
+    seqroll.cpp: FruitySeqRollInput::on_motion_notify_event(_GdkEventMotion*, seqroll&)
+
+set_hint_state(bool)
+  Full name: seqkeys::set_hint_state(bool)
+  Source:    seqkeys.cpp 
+  Used By:
+    seqroll.cpp: seqroll::on_enter_notify_event(_GdkEventCrossing*)
+
+set_ignore_redraw(bool)
+  Full name: seqroll::set_ignore_redraw(bool)
+  Source:    seqroll.cpp 
+  Used By:
+    seqedit.cpp: seqedit::seqedit(sequence*, perform*, int)
+
+set_input(unsigned char, bool)
+  Full name: mastermidibus::set_input(unsigned char, bool)
+  Source:    midibus.cpp 
+  Used By:
+    optionsfile.cpp: optionsfile::parse(perform*)
+    options.cpp: options::input_callback(int, Gtk::Button*)
+
+set_key(int)
+  Full name: seqkeys::set_key(int)
+  Source:    seqkeys.cpp 
+  Used By:
+    seqedit.cpp: seqedit::set_key(int)
+
+set_key(int)
+  Full name: seqroll::set_key(int)
+  Source:    seqroll.cpp 
+  Used By:
+    seqedit.cpp: seqedit::set_key(int)
+
+set_key_event(unsigned int, long)
+  Full name: perform::set_key_event(unsigned int, long)
+  Source:    perform.cpp 
+  Used By:
+    keybindentry.cpp: KeyBindEntry::on_key_press_event(_GdkEventKey*)
+    optionsfile.cpp: optionsfile::parse(perform*)
+
+set_key_group(unsigned int, long)
+  Full name: perform::set_key_group(unsigned int, long)
+  Source:    perform.cpp 
+  Used By:
+    keybindentry.cpp: KeyBindEntry::on_key_press_event(_GdkEventKey*)
+    optionsfile.cpp: optionsfile::parse(perform*)
+
+set_left_tick(long)
+  Full name: perform::set_left_tick(long)
+  Source:    perform.cpp 
+  Used By:
+    perftime.cpp: perftime::on_button_press_event(_GdkEventButton*)
+
+set_length(long, bool)
+  Full name: sequence::set_length(long, bool)
+  Source:    sequence.cpp 
+  Used By:
+    midifile.cpp: midifile::parse(perform*, int)
+    seqedit.cpp: seqedit::apply_length(int, int, int)
+
+set_master_midi_bus(mastermidibus*)
+  Full name: sequence::set_master_midi_bus(mastermidibus*)
+  Source:    sequence.cpp 
+  Used By:
+    midifile.cpp: midifile::parse(perform*, int)
+    perform.cpp: perform::new_sequence(int)
+    seqmenu.cpp: seqmenu::seqmenu(perform*)
+
+set_midi_bus(char)
+  Full name: sequence::set_midi_bus(char)
+  Source:    sequence.cpp 
+  Used By:
+    midifile.cpp: midifile::parse(perform*, int)
+    seqedit.cpp: seqedit::set_midi_bus(int)
+    seqmenu.cpp: seqmenu::set_bus_and_midi_channel(int, int)
+
+set_midi_channel(unsigned char)
+  Full name: sequence::set_midi_channel(unsigned char)
+  Source:    sequence.cpp 
+  Used By:
+    midifile.cpp: midifile::parse(perform*, int)
+    seqedit.cpp: seqedit::set_midi_channel(int)
+    seqmenu.cpp: seqmenu::set_bus_and_midi_channel(int, int)
+
+set_mode_group_learn()
+  Full name: perform::set_mode_group_learn()
+  Source:    perform.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::learn_toggle()
+
+set_mode_group_mute()
+  Full name: perform::set_mode_group_mute()
+  Source:    perform.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::on_key_press_event(_GdkEventKey*)
+
+set_name(char*)
+  Full name: sequence::set_name(char*)
+  Source:    sequence.cpp 
+  Used By:
+    midifile.cpp: midifile::parse(perform*, int)
+
+set_name(std::string)
+  Full name: sequence::set_name(std::string)
+  Source:    sequence.cpp 
+  Used By:
+    seqedit.cpp: seqedit::name_change_callback()
+
+set_note(char)
+  Full name: event::set_note(char)
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::move_selected_notes(long, int)
+
+set_note_length(int)
+  Full name: seqroll::set_note_length(int)
+  Source:    seqroll.cpp 
+  Used By:
+    seqedit.cpp: seqedit::set_note_length(int)
+
+set_offset(int)
+  Full name: perform::set_offset(int)
+  Source:    perform.cpp 
+  Used By:
+    mainwid.cpp: mainwid::set_screenset(int)
+
+set_orig_tick(long)
+  Full name: sequence::set_orig_tick(long)
+  Source:    sequence.cpp 
+  Used By:
+    perform.cpp: perform::set_orig_ticks(long)
+    seqroll.cpp: seqroll::on_key_press_event(_GdkEventKey*)
+
+set_playing(bool)
+  Full name: sequence::set_playing(bool)
+  Source:    sequence.cpp 
+  Used By:
+    perform.cpp: perform::jack_session_event()
+    seqedit.cpp: seqedit::play_change_callback()
+
+set_playing_screenset()
+  Full name: perform::set_playing_screenset()
+  Source:    perform.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::on_key_press_event(_GdkEventKey*)
+
+set_quanized_rec(bool)
+  Full name: sequence::set_quanized_rec(bool)
+  Source:    sequence.cpp 
+  Used By:
+    seqedit.cpp: seqedit::q_rec_change_callback()
+
+set_rec_vol(long)
+  Full name: sequence::set_rec_vol(long)
+  Source:    sequence.cpp 
+  Used By:
+    seqedit.cpp: seqedit::set_rec_vol(int)
+
+set_recording(bool)
+  Full name: sequence::set_recording(bool)
+  Source:    sequence.cpp 
+  Used By:
+    seqedit.cpp: seqedit::record_change_callback()
+
+set_right_tick(long)
+  Full name: perform::set_right_tick(long)
+  Source:    perform.cpp 
+  Used By:
+    perftime.cpp: perftime::on_button_press_event(_GdkEventButton*)
+
+set_scale(int)
+  Full name: seqroll::set_scale(int)
+  Source:    seqroll.cpp 
+  Used By:
+    seqedit.cpp: seqedit::set_scale(int)
+
+set_scale(int)
+  Full name: seqkeys::set_scale(int)
+  Source:    seqkeys.cpp 
+  Used By:
+    seqedit.cpp: seqedit::set_scale(int)
+
+set_screen_set_notepad(int, std::string*)
+  Full name: perform::set_screen_set_notepad(int, std::string*)
+  Source:    perform.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::edit_callback_notepad()
+    midifile.cpp: midifile::parse(perform*, int)
+
+set_screenset(int)
+  Full name: perform::set_screenset(int)
+  Source:    perform.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::adj_callback_ss()
+
+set_screenset(int)
+  Full name: mainwid::set_screenset(int)
+  Source:    mainwid.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::timer_callback()
+
+set_sequence_control_status(int)
+  Full name: perform::set_sequence_control_status(int)
+  Source:    perform.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::on_key_press_event(_GdkEventKey*)
+
+set_sequence_input(bool, sequence*)
+  Full name: mastermidibus::set_sequence_input(bool, sequence*)
+  Source:    midibus.cpp 
+  Used By:
+    seqedit.cpp: seqedit::record_change_callback()
+
+set_size(long)
+  Full name: event::set_size(long)
+  Source:    event.cpp 
+  Used By:
+    midibus.cpp: mastermidibus::get_midi_event(event*)
+
+set_snap(int)
+  Full name: seqroll::set_snap(int)
+  Source:    seqroll.cpp 
+  Used By:
+    seqedit.cpp: seqedit::set_snap(int)
+
+set_snap(int)
+  Full name: seqevent::set_snap(int)
+  Source:    seqevent.cpp 
+  Used By:
+    seqedit.cpp: seqedit::set_snap(int)
+
+set_snap_tick(int)
+  Full name: sequence::set_snap_tick(int)
+  Source:    sequence.cpp 
+  Used By:
+    seqedit.cpp: seqedit::set_snap(int)
+
+set_song_mute(bool)
+  Full name: sequence::set_song_mute(bool)
+  Source:    sequence.cpp 
+  Used By:
+    perfnames.cpp: perfnames::on_button_press_event(_GdkEventButton*)
+    perform.cpp: perform::mute_all_tracks()
+
+set_status(char)
+  Full name: event::set_status(char)
+  Source:    event.cpp 
+  Used By:
+    midibus.cpp: mastermidibus::get_midi_event(event*)
+    midifile.cpp: midifile::parse(perform*, int)
+    sequence.cpp: sequence::play_note_on(int)
+
+set_thru(bool)
+  Full name: sequence::set_thru(bool)
+  Source:    sequence.cpp 
+  Used By:
+    seqedit.cpp: seqedit::thru_change_callback()
+
+set_timestamp(unsigned long)
+  Full name: event::set_timestamp(unsigned long)
+  Source:    event.cpp 
+  Used By:
+    midibus.cpp: mastermidibus::get_midi_event(event*)
+    midifile.cpp: midifile::parse(perform*, int)
+    perform.cpp: perform::input_func()
+    sequence.cpp: sequence::move_selected_notes(long, int)
+
+set_zoom(int)
+  Full name: seqdata::set_zoom(int)
+  Source:    seqdata.cpp 
+  Used By:
+    seqedit.cpp: seqedit::set_zoom(int)
+
+set_zoom(int)
+  Full name: seqevent::set_zoom(int)
+  Source:    seqevent.cpp 
+  Used By:
+    seqedit.cpp: seqedit::set_zoom(int)
+
+set_zoom(int)
+  Full name: seqtime::set_zoom(int)
+  Source:    seqtime.cpp 
+  Used By:
+    seqedit.cpp: seqedit::set_zoom(int)
+
+set_zoom(int)
+  Full name: seqroll::set_zoom(int)
+  Source:    seqroll.cpp 
+  Used By:
+    seqedit.cpp: seqedit::set_zoom(int)
+
+signal()
+  Full name: condition_var::signal()
+  Source:    mutex.cpp 
+  Used By:
+    perform.cpp: perform::inner_start(bool)
+
+split_trigger(int, long)
+  Full name: perfroll::split_trigger(int, long)
+  Source:    perfroll.cpp 
+  Used By:
+    perfroll_input.cpp: FruityPerfInput::on_left_button_pressed(_GdkEventButton*, perfroll&)
+
+split_trigger(long)
+  Full name: sequence::split_trigger(long)
+  Source:    sequence.cpp 
+  Used By:
+    perfroll.cpp: perfroll::split_trigger(int, long)
+
+start()
+  Full name: lash::start()
+  Source:    lash.cpp 
+  Used By:
+    seq24.cpp: main
+
+start(bool)
+  Full name: perform::start(bool)
+  Source:    perform.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::start_playing()
+    perfedit.cpp: perfedit::start_playing()
+    perfroll.cpp: perfroll::start_playing()
+    seqroll.cpp: seqroll::on_key_press_event(_GdkEventKey*)
+
+start_jack()
+  Full name: perform::start_jack()
+  Source:    perform.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::start_playing()
+    perfedit.cpp: perfedit::start_playing()
+    perfroll.cpp: perfroll::start_playing()
+    seqroll.cpp: seqroll::on_key_press_event(_GdkEventKey*)
+
+stop()
+  Full name: perform::stop()
+  Source:    perform.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::stop_playing()
+    perfedit.cpp: perfedit::stop_playing()
+    perfroll.cpp: perfroll::stop_playing()
+    seqroll.cpp: seqroll::on_key_press_event(_GdkEventKey*)
+
+stop()
+  Full name: mastermidibus::stop()
+  Source:    midibus.cpp 
+  Used By:
+    perform.cpp: perform::output_func()
+
+stop_jack()
+  Full name: perform::stop_jack()
+  Source:    perform.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::stop_playing()
+    perfedit.cpp: perfedit::stop_playing()
+    perfroll.cpp: perfroll::stop_playing()
+    seqroll.cpp: seqroll::on_key_press_event(_GdkEventKey*)
+
+stream_event(event*)
+  Full name: sequence::stream_event(event*)
+  Source:    sequence.cpp 
+  Used By:
+    perform.cpp: perform::input_func()
+
+stretch_selected(long)
+  Full name: sequence::stretch_selected(long)
+  Source:    sequence.cpp 
+  Used By:
+    seqroll.cpp: FruitySeqRollInput::on_button_release_event(_GdkEventButton*, seqroll&)
+
+sysex(event*)
+  Full name: mastermidibus::sysex(event*)
+  Source:    midibus.cpp 
+  Used By:
+    perform.cpp: perform::input_func()
+
+toggle_playing()
+  Full name: sequence::toggle_playing()
+  Source:    sequence.cpp 
+  Used By:
+    perform.cpp: perform::play(long)
+
+toggle_queued()
+  Full name: sequence::toggle_queued()
+  Source:    sequence.cpp 
+  Used By:
+    perform.cpp: perform::jack_session_event()
+
+transpose_notes(int, int)
+  Full name: sequence::transpose_notes(int, int)
+  Source:    sequence.cpp 
+  Used By:
+    seqedit.cpp: seqedit::do_action(int, int)
+
+unlock()
+  Full name: mutex::unlock()
+  Source:    mutex.cpp 
+  Used By:
+    midibus.cpp: midibus::unlock()
+    perform.cpp: perform::inner_start(bool)
+    sequence.cpp: sequence::set_master_midi_bus(mastermidibus*)
+
+unmark()
+  Full name: event::unmark()
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::verify_and_link()
+
+unpaint()
+  Full name: event::unpaint()
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::unpaint_all()
+
+unpaint_all()
+  Full name: sequence::unpaint_all()
+  Source:    sequence.cpp 
+  Used By:
+    seqevent.cpp: FruitySeqEventInput::on_button_release_event(_GdkEventButton*, seqevent&)
+    seqroll.cpp: FruitySeqRollInput::on_button_release_event(_GdkEventButton*, seqroll&)
+
+unselect()
+  Full name: sequence::unselect()
+  Source:    sequence.cpp 
+  Used By:
+    seqevent.cpp: FruitySeqEventInput::on_button_press_event(_GdkEventButton*, seqevent&)
+    seqroll.cpp: FruitySeqRollInput::on_button_press_event(_GdkEventButton*, seqroll&)
+
+unselect()
+  Full name: event::unselect()
+  Source:    event.cpp 
+  Used By:
+    sequence.cpp: sequence::select_note_events(long, int, long, int, sequence::select_action_e)
+
+unselect_triggers()
+  Full name: sequence::unselect_triggers()
+  Source:    sequence.cpp 
+  Used By:
+    perfroll_input.cpp: FruityPerfInput::on_button_press_event(_GdkEventButton*, perfroll&)
+
+unset_mode_group_learn()
+  Full name: perform::unset_mode_group_learn()
+  Source:    perform.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::learn_toggle()
+
+unset_mode_group_mute()
+  Full name: perform::unset_mode_group_mute()
+  Source:    perform.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::on_key_press_event(_GdkEventKey*)
+
+unset_sequence_control_status(int)
+  Full name: perform::unset_sequence_control_status(int)
+  Source:    perform.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::on_key_release_event(_GdkEventKey*)
+
+update_markers(int)
+  Full name: mainwid::update_markers(int)
+  Source:    mainwid.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::timer_callback()
+
+update_pixmap()
+  Full name: seqdata::update_pixmap()
+  Source:    seqdata.cpp 
+  Used By:
+    seqevent.cpp: seqevent::update_pixmap()
+
+update_sequences_on_window()
+  Full name: mainwid::update_sequences_on_window()
+  Source:    mainwid.cpp 
+  Used By:
+    mainwnd.cpp: mainwnd::stop_playing()
+
+userfile(std::string)
+  Full name: userfile::userfile(std::string)
+  Source:    userfile.cpp 
+  Used By:
+    seq24.cpp: main
+
+wait()
+  Full name: condition_var::wait()
+  Source:    mutex.cpp 
+  Used By:
+    perform.cpp: perform::output_func()
+
+write(perform*)
+  Full name: optionsfile::write(perform*)
+  Source:    optionsfile.cpp 
+  Used By:
+    seq24.cpp: main
+
+write(perform*)
+  Full name: midifile::write(perform*)
+  Source:    midifile.cpp 
+  Used By:
+    lash.cpp: lash::handle_event(_lash_event*)
+    mainwnd.cpp: mainwnd::save_file()
+    perform.cpp: perform::jack_session_event()
+
+zero_markers()
+  Full name: sequence::zero_markers()
+  Source:    sequence.cpp 
+  Used By:
+    midifile.cpp: midifile::parse(perform*, int)
+    perform.cpp: perform::reset_sequences()
+
+~event()
+  Full name: event::~event()
+  Source:    event.cpp 
+  Used By:
+    midifile.cpp: midifile::parse(perform*, int)
+    perform.cpp: perform::input_func()
+    sequence.cpp: sequence::remove(std::_List_iterator<event>)
+
+~mainwnd()
+  Full name: mainwnd::~mainwnd()
+  Source:    mainwnd.cpp 
+  Used By:
+    seq24.cpp: main
+
+~mastermidibus()
+  Full name: mastermidibus::~mastermidibus()
+  Source:    midibus.cpp 
+  Used By:
+    perform.cpp: perform::~perform()
+
+~midifile()
+  Full name: midifile::~midifile()
+  Source:    midifile.cpp 
+  Used By:
+    lash.cpp: lash::handle_event(_lash_event*)
+    mainwnd.cpp: mainwnd::open_file(Glib::ustring const&)
+    perform.cpp: perform::jack_session_event()
+
+~optionsfile()
+  Full name: optionsfile::~optionsfile()
+  Source:    optionsfile.cpp 
+  Used By:
+    seq24.cpp: main
+
+~perform()
+  Full name: perform::~perform()
+  Source:    perform.cpp 
+  Used By:
+    seq24.cpp: main
+
+~sequence()
+  Full name: sequence::~sequence()
+  Source:    sequence.cpp 
+  Used By:
+    mainwid.cpp: mainwid::~mainwid()
+    perfnames.cpp: GLOBALS perfnames.cpp perfnames.o
+    perform.cpp: perform::delete_sequence(int)
+    seqmenu.cpp: seqmenu::seqmenu(perform*)
+    seqroll.cpp: seqroll::~seqroll()
+
+~userfile()
+  Full name: userfile::~userfile()
+  Source:    userfile.cpp 
+  Used By:
+    seq24.cpp: main
+
+

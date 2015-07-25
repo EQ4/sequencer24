@@ -117,7 +117,7 @@ sequence::push_trigger_undo( void )
     lock();
     m_list_trigger_undo.push( m_list_trigger );
 
-    list<trigger>::iterator i;
+    std::list<trigger>::iterator i;
 
     for ( i  = m_list_trigger_undo.top().begin();
           i != m_list_trigger_undo.top().end(); i++ ){
@@ -310,7 +310,7 @@ sequence::play( long a_tick, bool a_playback_mode )
             long trigger_tick = 0;
 
 
-            list<trigger>::iterator i = m_list_trigger.begin();
+            std::list<trigger>::iterator i = m_list_trigger.begin();
 
             while ( i != m_list_trigger.end()){
 
@@ -377,7 +377,7 @@ sequence::play( long a_tick, bool a_playback_mode )
     /* play the notes in our frame */
     if ( m_playing ){
 
-        list<event>::iterator e = m_list_event.begin();
+        std::list<event>::iterator e = m_list_event.begin();
 
         while ( e != m_list_event.end()){
 
@@ -444,9 +444,9 @@ void
 sequence::verify_and_link()
 {
 
-    list<event>::iterator i;
-    list<event>::iterator on;
-    list<event>::iterator off;
+    std::list<event>::iterator i;
+    std::list<event>::iterator on;
+    std::list<event>::iterator off;
     bool end_found = false;
 
     lock();
@@ -543,8 +543,8 @@ sequence::verify_and_link()
 void
 sequence::link_new( )
 {
-    list<event>::iterator on;
-    list<event>::iterator off;
+    std::list<event>::iterator on;
+    std::list<event>::iterator off;
     bool end_found = false;
 
     lock();
@@ -612,7 +612,7 @@ sequence::link_new( )
 // supply iterator from m_list_event...
 // lock();  remove();  reset_draw_marker(); unlock()
 void
-sequence::remove(list<event>::iterator i)
+sequence::remove(std::list<event>::iterator i)
 {
     /* if its a note off, and that note is currently
        playing, send a note off */
@@ -632,7 +632,7 @@ sequence::remove(list<event>::iterator i)
 void
 sequence::remove( event* e )
 {
-    list<event>::iterator i = m_list_event.begin();
+    std::list<event>::iterator i = m_list_event.begin();
     while( i != m_list_event.end() )
     {
         if (e == &(*i))
@@ -648,7 +648,7 @@ sequence::remove( event* e )
 void
 sequence::remove_marked()
 {
-    list<event>::iterator i, t;
+    std::list<event>::iterator i, t;
 
     lock();
 
@@ -677,7 +677,7 @@ sequence::remove_marked()
 void
 sequence::mark_selected( )
 {
-    list<event>::iterator i, t;
+    std::list<event>::iterator i, t;
 
     lock();
 
@@ -698,7 +698,7 @@ sequence::mark_selected( )
 void
 sequence::unpaint_all( )
 {
-    list<event>::iterator i;
+    std::list<event>::iterator i;
 
     lock();
 
@@ -717,7 +717,7 @@ sequence::get_selected_box( long *a_tick_s, int *a_note_h,
                 long *a_tick_f, int *a_note_l )
 {
 
-    list<event>::iterator i;
+    std::list<event>::iterator i;
 
     *a_tick_s = c_maxbeats * c_ppqn;
     *a_tick_f = 0;
@@ -756,7 +756,7 @@ sequence::get_clipboard_box( long *a_tick_s, int *a_note_h,
                  long *a_tick_f, int *a_note_l )
 {
 
-    list<event>::iterator i;
+    std::list<event>::iterator i;
 
     *a_tick_s = c_maxbeats * c_ppqn;
     *a_tick_f = 0;
@@ -796,7 +796,7 @@ sequence::get_num_selected_notes( )
 {
     int ret = 0;
 
-    list<event>::iterator i;
+    std::list<event>::iterator i;
 
     lock();
 
@@ -820,7 +820,7 @@ sequence::get_num_selected_events( unsigned char a_status,
                                    unsigned char a_cc )
 {
     int ret = 0;
-    list<event>::iterator i;
+    std::list<event>::iterator i;
 
     lock();
 
@@ -857,7 +857,7 @@ sequence::select_note_events( long a_tick_s, int a_note_h,
     long tick_s = 0;
     long tick_f = 0;
 
-    list<event>::iterator i;
+    std::list<event>::iterator i;
 
     lock();
 
@@ -1006,7 +1006,7 @@ sequence::select_events( long a_tick_s, long a_tick_f,
 			 unsigned char a_cc, select_action_e a_action)
 {
     int ret=0;
-    list<event>::iterator i;
+    std::list<event>::iterator i;
 
     lock();
 
@@ -1082,7 +1082,7 @@ sequence::select_all( void )
 {
     lock();
 
-    list<event>::iterator i;
+    std::list<event>::iterator i;
 
     for ( i = m_list_event.begin(); i != m_list_event.end(); i++ )
 	(*i).select( );
@@ -1097,7 +1097,7 @@ sequence::unselect( void )
 {
     lock();
 
-    list<event>::iterator i;
+    std::list<event>::iterator i;
     for ( i = m_list_event.begin(); i != m_list_event.end(); i++ )
 	(*i).unselect();
 
@@ -1115,7 +1115,7 @@ sequence::move_selected_notes( long a_delta_tick, int a_delta_note )
 
     lock();
     mark_selected();
-    list<event>::iterator i;
+    std::list<event>::iterator i;
 
     for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
 
@@ -1172,7 +1172,7 @@ sequence::stretch_selected( long a_delta_tick )
 
     lock();
 
-    list<event>::iterator i;
+    std::list<event>::iterator i;
 
     int old_len = 0, new_len = 0;
     int first_ev = 0x7fffffff;
@@ -1226,7 +1226,7 @@ sequence::stretch_selected( long a_delta_tick )
 
     lock();
 
-    list<event>::iterator i;
+    std::list<event>::iterator i;
 
     int old_len = 0, new_len = 0;
     int first_ev = 0x7fffffff;
@@ -1297,7 +1297,7 @@ sequence::grow_selected( long a_delta_tick )
 
     lock();
 
-    list<event>::iterator i;
+    std::list<event>::iterator i;
 
     mark_selected();
 
@@ -1350,7 +1350,7 @@ sequence::increment_selected( unsigned char a_status, unsigned char a_control )
 {
     lock();
 
-    list<event>::iterator i;
+    std::list<event>::iterator i;
 
     for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
 
@@ -1383,7 +1383,7 @@ sequence::decrement_selected(unsigned char a_status, unsigned char a_control )
 {
     lock();
 
-    list<event>::iterator i;
+    std::list<event>::iterator i;
 
     for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
 
@@ -1417,7 +1417,7 @@ sequence::decrement_selected(unsigned char a_status, unsigned char a_control )
 void
 sequence::copy_selected( void )
 {
-    list<event>::iterator i;
+    std::list<event>::iterator i;
 
     lock();
 
@@ -1443,11 +1443,11 @@ sequence::copy_selected( void )
 void
 sequence::paste_selected( long a_tick, int a_note )
 {
-    list<event>::iterator i;
+    std::list<event>::iterator i;
     int highest_note = 0;
 
     lock();
-    list<event> clipboard = m_list_clipboard;
+    std::list<event> clipboard = m_list_clipboard;
 
     for ( i = clipboard.begin(); i != clipboard.end(); i++ ){
 	(*i).set_timestamp((*i).get_timestamp() + a_tick );
@@ -1490,7 +1490,7 @@ sequence::change_event_data_range( long a_tick_s, long a_tick_f,
     lock();
 
     unsigned char d0, d1;
-    list<event>::iterator i;
+    std::list<event>::iterator i;
 
     /* change only selected events, if any */
     bool have_selection = false;
@@ -1602,7 +1602,7 @@ sequence::add_note( long a_tick, long a_length, int a_note, bool a_paint)
          * overlap the one we want to add */
         if ( a_paint )
         {
-            list<event>::iterator i,t;
+            std::list<event>::iterator i,t;
             for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
 
                 if ( (*i).is_painted() &&
@@ -1672,7 +1672,7 @@ sequence::add_event( long a_tick,
          * overlap the one we want to add */
         if ( a_paint )
         {
-            list<event>::iterator i,t;
+            std::list<event>::iterator i,t;
             for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
 
                 if ( (*i).is_painted() &&
@@ -1913,7 +1913,7 @@ sequence::add_trigger( long a_tick, long a_length, long a_offset, bool a_adjust_
     e.m_tick_start  = a_tick;
     e.m_tick_end    = a_tick + a_length - 1;
 
-    list<trigger>::iterator i = m_list_trigger.begin();
+    std::list<trigger>::iterator i = m_list_trigger.begin();
 
     while ( i != m_list_trigger.end() ){
 
@@ -1954,7 +1954,7 @@ bool sequence::intersectTriggers( long position, long& start, long& end )
 {
     lock();
 
-    list<trigger>::iterator i = m_list_trigger.begin();
+    std::list<trigger>::iterator i = m_list_trigger.begin();
     while ( i != m_list_trigger.end() )
     {
         if ((*i).m_tick_start <= position && position <= (*i).m_tick_end)
@@ -1975,8 +1975,8 @@ bool sequence::intersectNotes( long position, long position_note, long& start, l
 {
     lock();
 
-    list<event>::iterator on = m_list_event.begin();
-    list<event>::iterator off = m_list_event.begin();
+    std::list<event>::iterator on = m_list_event.begin();
+    std::list<event>::iterator off = m_list_event.begin();
     while ( on != m_list_event.end() )
     {
         if (position_note == (*on).get_note() &&
@@ -2012,7 +2012,7 @@ bool sequence::intersectEvents( long posstart, long posend, long status, long& s
 {
     lock();
 
-    list<event>::iterator on = m_list_event.begin();
+    std::list<event>::iterator on = m_list_event.begin();
     while ( on != m_list_event.end() )
     {
         //printf( "intersect   looking for:%ld  found:%ld\n", status, (*on).get_status() );
@@ -2038,7 +2038,7 @@ sequence::grow_trigger (long a_tick_from, long a_tick_to, long a_length)
 {
     lock();
 
-    list<trigger>::iterator i = m_list_trigger.begin();
+    std::list<trigger>::iterator i = m_list_trigger.begin();
 
     while ( i != m_list_trigger.end() ){
 
@@ -2074,7 +2074,7 @@ sequence::del_trigger( long a_tick )
 {
     lock();
 
-    list<trigger>::iterator i = m_list_trigger.begin();
+    std::list<trigger>::iterator i = m_list_trigger.begin();
 
     while ( i != m_list_trigger.end() ){
         if ((*i).m_tick_start <= a_tick &&
@@ -2161,7 +2161,7 @@ sequence::adjust_trigger_offsets_to_legnth( long a_new_len )
     lock();
 
     // for all triggers, and undo triggers
-    list<trigger>::iterator i = m_list_trigger.begin();
+    std::list<trigger>::iterator i = m_list_trigger.begin();
 
     while ( i != m_list_trigger.end() ){
 
@@ -2238,7 +2238,7 @@ L       R
 		   a_distance,
 		   true );
 
-    list<trigger>::iterator i = m_list_trigger.begin();
+    std::list<trigger>::iterator i = m_list_trigger.begin();
     while(  i != m_list_trigger.end() ){
 
 
@@ -2289,7 +2289,7 @@ sequence::split_trigger( long a_tick )
 
     lock();
 
-    list<trigger>::iterator i = m_list_trigger.begin();
+    std::list<trigger>::iterator i = m_list_trigger.begin();
     while(  i != m_list_trigger.end() ){
 
         // trigger greater than L and R
@@ -2323,7 +2323,7 @@ sequence::move_triggers( long a_start_tick,
 
     lock();
 
-    list<trigger>::iterator i = m_list_trigger.begin();
+    std::list<trigger>::iterator i = m_list_trigger.begin();
     while(  i != m_list_trigger.end() ){
 
         // trigger greater than L and R
@@ -2420,7 +2420,7 @@ sequence::get_selected_trigger_start_tick( void )
     long ret = -1;
     lock();
 
-    list<trigger>::iterator i = m_list_trigger.begin();
+    std::list<trigger>::iterator i = m_list_trigger.begin();
 
     while(  i != m_list_trigger.end() ){
 
@@ -2442,7 +2442,7 @@ sequence::get_selected_trigger_end_tick( void )
     long ret = -1;
     lock();
 
-    list<trigger>::iterator i = m_list_trigger.begin();
+    std::list<trigger>::iterator i = m_list_trigger.begin();
 
     while(  i != m_list_trigger.end() ){
 
@@ -2469,8 +2469,8 @@ sequence::move_selected_triggers_to( long a_tick, bool a_adjust_offset, int a_wh
     long min_tick = 0;
     long max_tick = 0x7ffffff;
 
-    list<trigger>::iterator i = m_list_trigger.begin();
-    list<trigger>::iterator s = m_list_trigger.begin();
+    std::list<trigger>::iterator i = m_list_trigger.begin();
+    std::list<trigger>::iterator s = m_list_trigger.begin();
 
 
     // min_tick][0                1][max_tick
@@ -2607,7 +2607,7 @@ sequence::get_trigger_state( long a_tick )
     lock();
 
     bool ret = false;
-    list<trigger>::iterator i;
+    std::list<trigger>::iterator i;
 
     for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); i++ ){
 
@@ -2631,7 +2631,7 @@ sequence::select_trigger( long a_tick )
     lock();
 
     bool ret = false;
-    list<trigger>::iterator i;
+    std::list<trigger>::iterator i;
 
     for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); i++ ){
 
@@ -2655,7 +2655,7 @@ sequence::unselect_triggers( void )
     lock();
 
     bool ret = false;
-    list<trigger>::iterator i;
+    std::list<trigger>::iterator i;
 
     for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); i++ ){
         (*i).m_selected = false;
@@ -2673,7 +2673,7 @@ sequence::del_selected_trigger( void )
 {
     lock();
 
-    list<trigger>::iterator i;
+    std::list<trigger>::iterator i;
 
     for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); i++ ){
 
@@ -2700,7 +2700,7 @@ sequence::copy_selected_trigger( void )
 {
     lock();
 
-    list<trigger>::iterator i;
+    std::list<trigger>::iterator i;
 
     for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); i++ ){
 
@@ -2763,7 +2763,7 @@ sequence::get_lowest_note_event( void )
     lock();
 
     int ret = 127;
-    list<event>::iterator i;
+    std::list<event>::iterator i;
 
     for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
 
@@ -2785,7 +2785,7 @@ sequence::get_highest_note_event( void )
     lock();
 
     int ret = 0;
-    list<event>::iterator i;
+    std::list<event>::iterator i;
 
     for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
 
@@ -3196,34 +3196,36 @@ sequence::get_midi_channel( )
     return m_midi_channel;
 }
 
-
 void
 sequence::print()
 {
-    printf("[%s]\n", m_name.c_str()  );
-
-    for( list<event>::iterator i = m_list_event.begin(); i != m_list_event.end(); i++ )
-	(*i).print();
-    printf("events[%zd]\n\n",m_list_event.size());
-
+    printf("[%s]\n", m_name.c_str());
+    for
+    (
+        std::list<event>::iterator i = m_list_event.begin();
+        i != m_list_event.end(); i++
+    )
+	 (*i).print();
+    printf("events[%ld]\n\n", m_list_event.size());
 }
-
 
 void
 sequence::print_triggers()
 {
-    printf("[%s]\n", m_name.c_str()  );
-
-    for( list<trigger>::iterator i = m_list_trigger.begin();
-         i != m_list_trigger.end(); i++ ){
-
-        /*long d= c_ppqn / 8;*/
-
-        printf ("  tick_start[%ld] tick_end[%ld] off[%ld]\n", (*i).m_tick_start, (*i).m_tick_end, (*i).m_offset );
-
+    printf("[%s]\n", m_name.c_str());
+    for
+    (
+        std::list<trigger>::iterator i = m_list_trigger.begin();
+        i != m_list_trigger.end(); i++
+    )
+    {
+        printf
+        (
+            "  tick_start[%ld] tick_end[%ld] off[%ld]\n",
+            (*i).m_tick_start, (*i).m_tick_end, (*i).m_offset
+        );
     }
 }
-
 
 void
 sequence::put_event_on_bus( event *a_e )
@@ -3300,7 +3302,7 @@ sequence::select_events( unsigned char a_status, unsigned char a_cc, bool a_inve
     lock();
 
     unsigned char d0, d1;
-    list<event>::iterator i;
+    std::list<event>::iterator i;
 
     for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
 
@@ -3341,13 +3343,13 @@ sequence::transpose_notes( int a_steps, int a_scale )
 {
     event e;
 
-    list<event> transposed_events;
+    std::list<event> transposed_events;
 
     lock();
 
     mark_selected();
 
-    list<event>::iterator i;
+    std::list<event>::iterator i;
 
     const int *transpose_table = NULL;
 
@@ -3414,9 +3416,9 @@ sequence::quanize_events( unsigned char a_status, unsigned char a_cc,
     lock();
 
     unsigned char d0, d1;
-    list<event>::iterator i;
+    std::list<event>::iterator i;
 
-    list<event> quantized_events;
+    std::list<event> quantized_events;
 
     mark_selected();
 
@@ -3492,7 +3494,7 @@ sequence::quanize_events( unsigned char a_status, unsigned char a_cc,
 
 
 void
-addListVar( list<char> *a_list, long a_var )
+addListVar( std::list<char> *a_list, long a_var )
 {
     long buffer;
     buffer = a_var & 0x7F;
@@ -3517,7 +3519,7 @@ addListVar( list<char> *a_list, long a_var )
 }
 
 void
-addLongList( list<char> *a_list, long a_x )
+addLongList( std::list<char> *a_list, long a_x )
 {
     a_list->push_front(  (a_x & 0xFF000000) >> 24 );
     a_list->push_front(  (a_x & 0x00FF0000) >> 16 );
@@ -3527,26 +3529,22 @@ addLongList( list<char> *a_list, long a_x )
 
 
 void
-sequence::fill_list( list<char> *a_list, int a_pos )
+sequence::fill_list( std::list<char> *a_list, int a_pos )
 {
-
     lock();
 
-    /* clear list */
-    *a_list = list<char>();
-
-    /* sequence number */
-    addListVar( a_list, 0 );
-    a_list->push_front( 0xFF );
-    a_list->push_front( 0x00 );
-    a_list->push_front( 0x02 );
-    a_list->push_front( (a_pos & 0xFF00) >> 8 );
-    a_list->push_front( (a_pos & 0x00FF)      );
+    *a_list = std::list<char>(); /* clear list */
+    addListVar( a_list, 0 ); /* sequence number */
+    a_list->push_front(char(0xFF));
+    a_list->push_front(0x00);
+    a_list->push_front(0x02);
+    a_list->push_front(char((a_pos & 0xFF00) >> 8));
+    a_list->push_front(char(a_pos & 0x00FF));
 
     /* name */
     addListVar( a_list, 0 );
-    a_list->push_front( 0xFF );
-    a_list->push_front( 0x03 );
+    a_list->push_front(char(0xFF));
+    a_list->push_front(0x03);
 
     int length =  m_name.length();
     if ( length > 0x7F ) length = 0x7f;
@@ -3556,7 +3554,7 @@ sequence::fill_list( list<char> *a_list, int a_pos )
 	a_list->push_front( m_name.c_str()[i] );
 
     long timestamp = 0, delta_time = 0, prev_timestamp = 0;
-    list<event>::iterator i;
+    std::list<event>::iterator i;
 
     for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
 
@@ -3603,51 +3601,45 @@ sequence::fill_list( list<char> *a_list, int a_pos )
     }
 
     int num_triggers = m_list_trigger.size();
-    list<trigger>::iterator t = m_list_trigger.begin();
-    list<trigger>::iterator p;
+    std::list<trigger>::iterator t = m_list_trigger.begin();
+    std::list<trigger>::iterator p;
 
     addListVar( a_list, 0 );
-    a_list->push_front( 0xFF );
-    a_list->push_front( 0x7F );
+    a_list->push_front(char(0xFF));
+    a_list->push_front(char(0x7F));
     addListVar( a_list, (num_triggers * 3 * 4) + 4);
     addLongList( a_list, c_triggers_new );
-
-    //printf( "num_triggers[%d]\n", num_triggers );
-
-    for ( int i=0; i<num_triggers; i++ ){
-
+    for ( int i=0; i<num_triggers; i++ )
+    {
         p = t;
-        //printf( "> start[%d] end[%d] offset[%d]\n",
-        //        (*t).m_tick_start, (*t).m_tick_end, (*t).m_offset );
-
-	addLongList( a_list, (*t).m_tick_start );
+        addLongList( a_list, (*t).m_tick_start );
         addLongList( a_list, (*t).m_tick_end );
         addLongList( a_list, (*t).m_offset );
-	t++;
+	     t++;
     }
 
     /* bus */
     addListVar( a_list, 0 );
-    a_list->push_front( 0xFF );
-    a_list->push_front( 0x7F );
-    a_list->push_front( 0x05 );
+    a_list->push_front(char(0xF));
+    a_list->push_front(char(0x7F));
+    a_list->push_front(char(0x05));
     addLongList( a_list, c_midibus );
     a_list->push_front( m_bus  );
 
     /* timesig */
     addListVar( a_list, 0 );
-    a_list->push_front( 0xFF );
-    a_list->push_front( 0x7F );
-    a_list->push_front( 0x06 );
+    a_list->push_front(char(0xFF));
+    a_list->push_front(char(0x7F));
+    a_list->push_front(char(0x06));
     addLongList( a_list, c_timesig );
     a_list->push_front( m_time_beats_per_measure  );
     a_list->push_front( m_time_beat_width  );
 
     /* channel */
     addListVar( a_list, 0 );
-    a_list->push_front( 0xFF );
-    a_list->push_front( 0x7F );
-    a_list->push_front( 0x05 );
+    a_list->push_front(char(0xFF));
+    a_list->push_front(char(0x7F));
+    a_list->push_front(char(0x05));
     addLongList( a_list, c_midich );
     a_list->push_front( m_midi_channel );
 
@@ -3655,31 +3647,10 @@ sequence::fill_list( list<char> *a_list, int a_pos )
 
     /* meta track end */
     addListVar( a_list, delta_time );
-    a_list->push_front( 0xFF );
-    a_list->push_front( 0x2F );
-    a_list->push_front( 0x00 );
+    a_list->push_front(char(0xFF));
+    a_list->push_front(char(0x2F));
+    a_list->push_front(char(0x00));
 
     unlock();
 }
-
-
-
-//     list<char> triggers;
-
-//     /* triggers */
-
-//     list<trigger>::iterator t;
-//     for ( t = m_list_trigger.begin(); t != m_list_trigger.end(); t++ ){
-
-// 	addLongList( &triggers, (*t).m_tick );
-// 	printf ( "[%ld]\n", (*t).m_tick );
-//     }
-
-//     addListVar( a_list, 0 );
-//     a_list->push_front( 0xFF );
-//     a_list->push_front( 0x7F );
-
-//     a_list->push_front( 0x05 );
-//     addLongList( a_list, c_triggersmidibus );
-
 

@@ -19,8 +19,7 @@
 /**
  * \file          perform.cpp
  *
- *  This module defines the base class for configuration and options
- *  files.
+ *  This module defines the base class for the performance mode.
  *
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
@@ -40,15 +39,21 @@
 #include "perform.h"
 #include "midibus.h"
 #include "event.h"
+#include "easy_macros.h"               // nullptr
 
 using namespace Gtk;
 
-perform::perform ()
-    // MUST ADD MEMBER INIT HERE!!!!
-{
-    for (int i=0; i< c_max_sequence; i++) {
+/**
+ *  This construction initializes a number of member variables.
+ *
+ *  MUST ADD MEMBER INIT-LIST HERE!!!!
+ */
 
-        m_seqs[i] = NULL;
+perform::perform ()
+{
+    for (int i = 0; i < c_max_sequence; i++)
+    {
+        m_seqs[i] = nullptr;
         m_seqs_active[i] = false;
     }
 
@@ -70,10 +75,18 @@ perform::perform ()
     m_right_tick = c_ppqn * 16;
     m_starting_tick = 0;
 
-    midi_control zero = {false,false,0,0,0};
+    midi_control zero =
+    {
+        false,          // m_active;
+        false,          // m_inverse_active;
+        0,              // m_status;
+        0,              // m_data;
+        0,              // m_min_value;
+        0               // m_max_value;
+    };
 
-    for ( int i=0; i<c_midi_controls; i++ ){
-
+    for (int i = 0; i < c_midi_controls; i++)
+    {
         m_midi_cc_toggle[i] = zero;
         m_midi_cc_on[i] = zero;
         m_midi_cc_off[i] = zero;
@@ -81,71 +94,71 @@ perform::perform ()
 
     m_show_ui_sequence_key = true;
 
-    set_key_event( GDK_1, 0 );
-    set_key_event( GDK_q, 1 );
-    set_key_event( GDK_a, 2 );
-    set_key_event( GDK_z, 3 );
-    set_key_event( GDK_2, 4 );
-    set_key_event( GDK_w, 5 );
-    set_key_event( GDK_s, 6 );
-    set_key_event( GDK_x, 7 );
-    set_key_event( GDK_3, 8 );
-    set_key_event( GDK_e, 9 );
-    set_key_event( GDK_d, 10 );
-    set_key_event( GDK_c, 11 );
-    set_key_event( GDK_4, 12 );
-    set_key_event( GDK_r, 13 );
-    set_key_event( GDK_f, 14 );
-    set_key_event( GDK_v, 15 );
-    set_key_event( GDK_5, 16 );
-    set_key_event( GDK_t, 17 );
-    set_key_event( GDK_g, 18 );
-    set_key_event( GDK_b, 19 );
-    set_key_event( GDK_6, 20 );
-    set_key_event( GDK_y, 21 );
-    set_key_event( GDK_h, 22 );
-    set_key_event( GDK_n, 23 );
-    set_key_event( GDK_7, 24 );
-    set_key_event( GDK_u, 25 );
-    set_key_event( GDK_j, 26 );
-    set_key_event( GDK_m, 27 );
-    set_key_event( GDK_8, 28 );
-    set_key_event( GDK_i, 29 );
-    set_key_event( GDK_k, 30 );
-    set_key_event( GDK_comma, 31 );
+    set_key_event(GDK_1, 0);
+    set_key_event(GDK_q, 1);
+    set_key_event(GDK_a, 2);
+    set_key_event(GDK_z, 3);
+    set_key_event(GDK_2, 4);
+    set_key_event(GDK_w, 5);
+    set_key_event(GDK_s, 6);
+    set_key_event(GDK_x, 7);
+    set_key_event(GDK_3, 8);
+    set_key_event(GDK_e, 9);
+    set_key_event(GDK_d, 10);
+    set_key_event(GDK_c, 11);
+    set_key_event(GDK_4, 12);
+    set_key_event(GDK_r, 13);
+    set_key_event(GDK_f, 14);
+    set_key_event(GDK_v, 15);
+    set_key_event(GDK_5, 16);
+    set_key_event(GDK_t, 17);
+    set_key_event(GDK_g, 18);
+    set_key_event(GDK_b, 19);
+    set_key_event(GDK_6, 20);
+    set_key_event(GDK_y, 21);
+    set_key_event(GDK_h, 22);
+    set_key_event(GDK_n, 23);
+    set_key_event(GDK_7, 24);
+    set_key_event(GDK_u, 25);
+    set_key_event(GDK_j, 26);
+    set_key_event(GDK_m, 27);
+    set_key_event(GDK_8, 28);
+    set_key_event(GDK_i, 29);
+    set_key_event(GDK_k, 30);
+    set_key_event(GDK_comma, 31);
 
-    set_key_group( GDK_exclam,  0 );
-    set_key_group( GDK_quotedbl,  1  );
-    set_key_group( GDK_numbersign,  2  );
-    set_key_group( GDK_dollar,  3  );
-    set_key_group( GDK_percent,  4  );
-    set_key_group( GDK_ampersand,  5  );
-    set_key_group( GDK_parenleft,  7  );
-    set_key_group( GDK_slash,  6  );
-    set_key_group( GDK_semicolon,  31 );
-    set_key_group( GDK_A,  16 );
-    set_key_group( GDK_B,  28 );
-    set_key_group( GDK_C,  26 );
-    set_key_group( GDK_D,  18 );
-    set_key_group( GDK_E,  10 );
-    set_key_group( GDK_F,  19 );
-    set_key_group( GDK_G,  20 );
-    set_key_group( GDK_H,  21 );
-    set_key_group( GDK_I,  15 );
-    set_key_group( GDK_J,  22 );
-    set_key_group( GDK_K,  23 );
-    set_key_group( GDK_M,  30 );
-    set_key_group( GDK_N,  29 );
-    set_key_group( GDK_Q,  8  );
-    set_key_group( GDK_R,  11 );
-    set_key_group( GDK_S,  17 );
-    set_key_group( GDK_T,  12 );
-    set_key_group( GDK_U,  14 );
-    set_key_group( GDK_V,  27 );
-    set_key_group( GDK_W,  9  );
-    set_key_group( GDK_X,  25 );
-    set_key_group( GDK_Y,  13 );
-    set_key_group( GDK_Z,  24 );
+    set_key_group(GDK_exclam, 0);
+    set_key_group(GDK_quotedbl, 1);
+    set_key_group(GDK_numbersign, 2);
+    set_key_group(GDK_dollar, 3);
+    set_key_group(GDK_percent, 4);
+    set_key_group(GDK_ampersand, 5);
+    set_key_group(GDK_parenleft, 7);
+    set_key_group(GDK_slash, 6);
+    set_key_group(GDK_semicolon, 31);
+    set_key_group(GDK_A, 16);
+    set_key_group(GDK_B, 28);
+    set_key_group(GDK_C, 26);
+    set_key_group(GDK_D, 18);
+    set_key_group(GDK_E, 10);
+    set_key_group(GDK_F, 19);
+    set_key_group(GDK_G, 20);
+    set_key_group(GDK_H, 21);
+    set_key_group(GDK_I, 15);
+    set_key_group(GDK_J, 22);
+    set_key_group(GDK_K, 23);
+    set_key_group(GDK_M, 30);
+    set_key_group(GDK_N, 29);
+    set_key_group(GDK_Q, 8);
+    set_key_group(GDK_R, 11);
+    set_key_group(GDK_S, 17);
+    set_key_group(GDK_T, 12);
+    set_key_group(GDK_U, 14);
+    set_key_group(GDK_V, 27);
+    set_key_group(GDK_W, 9);
+    set_key_group(GDK_X, 25);
+    set_key_group(GDK_Y, 13);
+    set_key_group(GDK_Z, 24);
 
     m_key_bpm_up = GDK_apostrophe;
     m_key_bpm_dn = GDK_semicolon;
@@ -177,47 +190,86 @@ perform::perform ()
     m_in_thread_launched = false;
 }
 
+/**
+ *  The destructor sets some running flags to false, signals this
+ *  condition, then joins the input and output threads if the were
+ *  launched. Finally, any active patterns/sequences are deleted.
+ */
 
-void perform::init( void )
+perform::~perform()
 {
-    m_master_bus.init( );
+    m_inputing = false;
+    m_outputing = false;
+    m_running = false;
+    m_condition_var.signal();
+
+    if (m_out_thread_launched )
+        pthread_join(m_out_thread, NULL);
+
+    if (m_in_thread_launched )
+        pthread_join(m_in_thread, NULL);
+
+    for (int i = 0; i < c_max_sequence; i++)
+    {
+        if (is_active(i))
+        {
+            delete m_seqs[i];
+        }
+    }
 }
 
+/**
+ *  Initializes the master MIDI bus.
+ */
 
-void perform::init_jack( void )
+void
+perform::init (void)
+{
+    m_master_bus.init();
+}
+
+/**
+ *  Initializes JACK support, if JACK_SUPPORT is defined.
+ */
+
+void
+perform::init_jack (void)
 {
 
 #ifdef JACK_SUPPORT
 
-    if ( global_with_jack_transport  && !m_jack_running){
-
+    if ( global_with_jack_transport  && ! m_jack_running)
+    {
         m_jack_running = true;
         m_jack_master = true;
+        do
+        {
+            /*
+             * Become a new client of the JACK server.
+             */
 
-        //printf ( "init_jack() m_jack_running[%d]\n", m_jack_running );
-
-        do {
-
-            /* become a new client of the JACK server */
 #ifdef JACK_SESSION
 	    if (global_jack_session_uuid.empty())
-		m_jack_client = jack_client_open(PACKAGE, JackNullOption, NULL);
+            m_jack_client = jack_client_open(PACKAGE, JackNullOption, NULL);
 	    else
-		m_jack_client = jack_client_open(PACKAGE, JackSessionID, NULL,
+            m_jack_client = jack_client_open(PACKAGE, JackSessionID, NULL,
                         global_jack_session_uuid.c_str());
 #else
 	    m_jack_client = jack_client_open(PACKAGE, JackNullOption, NULL );
 #endif
 
-            if (m_jack_client == 0) {
-                printf( "JACK server is not running.\n[JACK sync disabled]\n");
+            if (m_jack_client == 0)
+            {
+                printf("JACK server is not running.\n[JACK sync disabled]\n");
                 m_jack_running = false;
                 break;
             }
 
             jack_on_shutdown( m_jack_client, jack_shutdown,(void *) this );
-            jack_set_sync_callback(m_jack_client, jack_sync_callback,
-                    (void *) this );
+            jack_set_sync_callback
+            (
+                m_jack_client, jack_sync_callback, (void *) this
+            );
 
             /*
              * ca 2015-07-23
@@ -229,180 +281,270 @@ void perform::init_jack( void )
 
 #ifdef JACK_SESSION
 	    if (jack_set_session_callback)
-		jack_set_session_callback(m_jack_client, jack_session_callback,
-			(void *) this );
+        {
+            jack_set_session_callback
+            (
+                m_jack_client, jack_session_callback, (void *) this
+            );
+        }
 #endif
-
             /* true if we want to fail if there is already a master */
+
             bool cond = global_with_jack_master_cond;
 
             if ( global_with_jack_master &&
                     jack_set_timebase_callback(m_jack_client, cond,
-                        jack_timebase_callback, this) == 0){
-
+                        jack_timebase_callback, this) == 0)
+            {
                 printf("[JACK transport master]\n");
                 m_jack_master = true;
             }
-            else {
+            else
+            {
                 printf("[JACK transport slave]\n");
                 m_jack_master = false;
-
             }
-            if (jack_activate(m_jack_client)) {
+            if (jack_activate(m_jack_client))
+            {
                 printf("Cannot register as JACK client\n");
                 m_jack_running = false;
                 break;
             }
+
         } while (0);
     }
-
-#endif
+#endif  // JACK_SUPPORT
 }
 
+/**
+ *  Tears down the JACK infrastructure.
+ */
 
-void perform::deinit_jack( void )
+void
+perform::deinit_jack(void)
 {
 #ifdef JACK_SUPPORT
 
-    if ( m_jack_running){
-
-        //printf ( "deinit_jack() m_jack_running[%d]\n", m_jack_running );
-
+    if ( m_jack_running)
+    {
         m_jack_running = false;
         m_jack_master = false;
-
-        if ( jack_release_timebase(m_jack_client)){
+        if ( jack_release_timebase(m_jack_client))
+        {
             printf("Cannot release Timebase.\n");
         }
-
-        if (jack_client_close(m_jack_client)) {
+        if (jack_client_close(m_jack_client))
+        {
             printf("Cannot close JACK client.\n");
         }
-
-
     }
-
-    if ( !m_jack_running ){
+    if (! m_jack_running)
+    {
         printf( "[JACK sync disabled]\n");
     }
 
-#endif
+#endif  // JACK_SUPPORT
 }
 
+/**
+ *  Clears all of the patterns/sequences.
+ */
 
-void perform::clear_all( void )
+void
+perform::clear_all (void)
 {
     reset_sequences();
-
-    for (int i=0; i< c_max_sequence; i++ ){
-
-        if ( is_active(i) )
-            delete_sequence( i );
+    for (int i = 0; i < c_max_sequence; i++)
+    {
+        if (is_active(i))
+            delete_sequence(i);
     }
 
-    string e( "" );
-
-    for (int i=0; i<c_max_sets; i++ ){
-        set_screen_set_notepad( i, &e );
+    std::string e;                              // ("");
+    for (int i = 0; i < c_max_sets; i++)
+    {
+        set_screen_set_notepad(i, &e);
     }
 }
 
+/**
+ * \setter m_mode_group
+ */
 
-void perform::set_mode_group_mute ()
+void
+perform::set_mode_group_mute ()
 {
     m_mode_group = true;
 }
 
-void perform::unset_mode_group_mute ()
+/**
+ * \setter m_mode_group
+ *  Unsets this member.
+ */
+
+void
+perform::unset_mode_group_mute ()
 {
     m_mode_group = false;
 }
 
+/**
+ * \setter m_mute_group
+ */
 
-void perform::set_group_mute_state (int a_g_track, bool a_mute_state)
+void
+perform::set_group_mute_state (int a_g_track, bool a_mute_state)
 {
+    /*
+     * Common code
+     */
+
     if (a_g_track < 0)
         a_g_track = 0;
+
     if (a_g_track > c_seqs_in_set)
         a_g_track = c_seqs_in_set -1;
-    m_mute_group[a_g_track + m_mute_group_selected * c_seqs_in_set] = a_mute_state;
+
+    int index = a_g_track + m_mute_group_selected * c_seqs_in_set;
+    m_mute_group[index] = a_mute_state;
 }
 
+/**
+ * \getter m_mute_group
+ */
 
 bool perform::get_group_mute_state (int a_g_track)
 {
+    /*
+     * Common code
+     */
+
     if (a_g_track < 0)
         a_g_track = 0;
+
     if (a_g_track > c_seqs_in_set)
         a_g_track = c_seqs_in_set -1;
-    return m_mute_group[a_g_track + m_mute_group_selected * c_seqs_in_set];
+
+    int index = a_g_track + m_mute_group_selected * c_seqs_in_set;
+    return m_mute_group[index];
 }
 
+/**
+ *  Makes some checks and sets the group mute flag.
+ */
 
-void perform::select_group_mute (int a_g_mute)
+void
+perform::select_group_mute (int a_g_mute)
 {
     int j = (a_g_mute * c_seqs_in_set);
     int k = m_playing_screen * c_seqs_in_set;
+
+    /*
+     * Common code
+     */
+
     if (a_g_mute < 0)
         a_g_mute = 0;
+
     if (a_g_mute > c_seqs_in_set)
         a_g_mute = c_seqs_in_set -1;
+
     if (m_mode_group_learn)
-        for (int i = 0; i < c_seqs_in_set; i++) {
-            if (is_active(i + k)) {
-                assert(m_seqs[i + k]);
-                m_mute_group[i + j] = m_seqs[i + k]->get_playing();
+    {
+        for (int i = 0; i < c_seqs_in_set; i++)
+        {
+            if (is_active(i + k))
+            {
+                assert(m_seqs[i+k]);
+                m_mute_group[i+j] = m_seqs[i+k]->get_playing();
             }
         }
+    }
     m_mute_group_selected = a_g_mute;
 }
 
+/**
+ *  Sets the group-mute mode, then the group-learn mode,
+ *  then notifies all of the notification subscribers.
+ */
 
-void perform::set_mode_group_learn (void)
+void
+perform::set_mode_group_learn (void)
 {
     set_mode_group_mute();
     m_mode_group_learn = true;
     for (size_t x = 0; x < m_notify.size(); ++x)
-        m_notify[x]->on_grouplearnchange( true );
+        m_notify[x]->on_grouplearnchange(true);
 }
 
+/**
+ *  Notifies all of the notification subscribers that group-learn
+ *  is being turned off.  Then unsets the group-learn mode flag..
+ */
 
-void perform::unset_mode_group_learn (void)
+void
+perform::unset_mode_group_learn (void)
 {
     for (size_t x = 0; x < m_notify.size(); ++x)
-        m_notify[x]->on_grouplearnchange( false );
+        m_notify[x]->on_grouplearnchange(false);
+
     m_mode_group_learn = false;
 }
 
+/**
+ *  Will need to study this one more closely.
+ */
 
-void perform::select_mute_group ( int a_group )
+void
+perform::select_mute_group (int a_group)
 {
     int j = (a_group * c_seqs_in_set);
     int k = m_playing_screen * c_seqs_in_set;
+
+    /*
+     * Common code
+     */
+
     if (a_group < 0)
         a_group = 0;
+
     if (a_group > c_seqs_in_set)
         a_group = c_seqs_in_set -1;
+
     m_mute_group_selected = a_group;
-    for (int i = 0; i < c_seqs_in_set; i++) {
-        if ((m_mode_group_learn) && (is_active(i + k))) {
+    for (int i = 0; i < c_seqs_in_set; i++)
+    {
+        if ((m_mode_group_learn) && (is_active(i + k)))
+        {
             assert(m_seqs[i + k]);
             m_mute_group[i + j] = m_seqs[i + k]->get_playing();
         }
-        m_tracks_mute_state[i] = m_mute_group[i + m_mute_group_selected * c_seqs_in_set];
+        int index = i + m_mute_group_selected * c_seqs_in_set;
+        m_tracks_mute_state[i] = m_mute_group[index];
     }
 }
 
+/**
+ *  Will need to study this one more closely.
+ */
 
-void perform::mute_group_tracks (void)
+void
+perform::mute_group_tracks (void)
 {
-    if (m_mode_group) {
-        for (int i=0; i< c_seqs_in_set; i++) {
-            for (int j=0; j < c_seqs_in_set; j++) {
-                if ( is_active(i * c_seqs_in_set + j) ) {
-                    if ((i == m_playing_screen) && (m_tracks_mute_state[j])) {
+    if (m_mode_group)
+    {
+        for (int i=0; i< c_seqs_in_set; i++)
+        {
+            for (int j=0; j < c_seqs_in_set; j++)
+            {
+                if (is_active(i * c_seqs_in_set + j) )
+                {
+                    if ((i == m_playing_screen) && m_tracks_mute_state[j])
+                    {
                         sequence_playing_on (i * c_seqs_in_set + j);
-                    } else {
+                    }
+                    else
+                    {
                         sequence_playing_off (i * c_seqs_in_set + j);
                     }
                 }
@@ -412,183 +554,266 @@ void perform::mute_group_tracks (void)
     }
 }
 
+/**
+ *  Select a mute group and then mutes the track in the group.
+ */
 
-void perform::select_and_mute_group (int a_g_group)
+void
+perform::select_and_mute_group (int a_g_group)
 {
     select_mute_group(a_g_group);
     mute_group_tracks();
 }
 
+/**
+ *  Mutes all tracks in the current set of active patterns/sequences.
+ */
 
-void perform::mute_all_tracks( void )
+void
+perform::mute_all_tracks (void)
 {
-    for (int i=0; i< c_max_sequence; i++ )
+    for (int i = 0; i < c_max_sequence; i++)
     {
-        if ( is_active(i) )
-            m_seqs[i]->set_song_mute( true );
-
+        if (is_active(i))
+            m_seqs[i]->set_song_mute(true);
     }
 }
 
+/**
+ *  Set the left marker at the given tick.
+ */
 
-perform::~perform()
-{
-    m_inputing = false;
-    m_outputing = false;
-    m_running = false;
-
-    m_condition_var.signal();
-
-    if (m_out_thread_launched )
-        pthread_join( m_out_thread, NULL );
-
-    if (m_in_thread_launched )
-        pthread_join( m_in_thread, NULL );
-
-    for (int i=0; i< c_max_sequence; i++ ){
-        if ( is_active(i) ){
-            delete m_seqs[i];
-        }
-    }
-}
-
-
-void perform::set_left_tick( long a_tick )
+void
+perform::set_left_tick (long a_tick)
 {
     m_left_tick = a_tick;
     m_starting_tick = a_tick;
-
-    if ( m_left_tick >= m_right_tick )
+    if (m_left_tick >= m_right_tick)
         m_right_tick = m_left_tick + c_ppqn * 4;
-
 }
 
+/**
+ * \getter m_left_tick
+ */
 
-long perform::get_left_tick( void )
+long
+perform::get_left_tick( void )
 {
     return m_left_tick;
 }
 
+/**
+ * \setter m_starting_tick
+ */
 
-void perform::set_starting_tick( long a_tick )
+void
+perform::set_starting_tick (long a_tick)
 {
     m_starting_tick = a_tick;
 }
 
+/**
+ * \getter m_starting_tick
+ */
 
-long perform::get_starting_tick( void )
+long
+perform::get_starting_tick (void)
 {
     return m_starting_tick;
 }
 
+/**
+ *  Set the right marker at the given tick.
+ */
 
-void perform::set_right_tick( long a_tick )
+void
+perform::set_right_tick (long a_tick)
 {
-    if ( a_tick >= c_ppqn * 4 ){
-
+    if ( a_tick >= c_ppqn * 4 )
+    {
         m_right_tick = a_tick;
-
-        if ( m_right_tick <= m_left_tick ){
+        if ( m_right_tick <= m_left_tick )
+        {
             m_left_tick = m_right_tick - c_ppqn * 4;
             m_starting_tick = m_left_tick;
         }
     }
 }
 
+/**
+ * \getter m_right_tick
+ */
 
-long perform::get_right_tick( void )
+long
+perform::get_right_tick( void )
 {
     return m_right_tick;
 }
 
+/**
+ *  Adds a pattern/sequence pointer to the list of patterns.
+ *  No check is made for a null pointer.
+ *
+ * \param a_seq
+ *      The pattern pointer.
+ *
+ * \param a_perf
+ *      The performance number of the pattern?
+ */
 
-void perform::add_sequence( sequence *a_seq, int a_perf )
+void
+perform::add_sequence (sequence * a_seq, int a_perf)
 {
-    /* check for perferred */
-    if ( a_perf < c_max_sequence &&
-            is_active(a_perf) == false &&
-            a_perf >= 0 ){
+    /**
+     * Check for preferred.  This occurs if a_perf is in the valid range
+     * (0 to c_max_sequence) and it is not active.  If preferred, then
+     * add it and activate it.
+     *
+     * Otherwise, iterate through all patterns from a_perf to
+     * c_max_sequence and add and activate the first one that is not
+     * active.
+     *
+     * Is there a usefulness in setting the sequence's tag?
+     */
 
+    if (a_perf < c_max_sequence && is_active(a_perf) == false && a_perf >= 0)
+    {
         m_seqs[a_perf] = a_seq;
         set_active(a_perf, true);
-        //a_seq->set_tag( a_perf );
-
-    } else {
-
-        for (int i=a_perf; i< c_max_sequence; i++ ){
-
-            if ( is_active(i) == false ){
-
+        // a_seq->set_tag(a_perf);
+    }
+    else
+    {
+        for (int i = a_perf; i < c_max_sequence; i++ )
+        {
+            if (is_active(i) == false)
+            {
                 m_seqs[i] = a_seq;
-                set_active(i,true);
-
-                //a_seq->set_tag( i  );
+                set_active(i, true);
+                // a_seq->set_tag(i);
                 break;
             }
         }
     }
 }
 
+/**
+ *  Sets or unsets the active state of the given pattern/sequence number.
+ */
 
-void perform::set_active( int a_sequence, bool a_active )
+void
+perform::set_active (int a_sequence, bool a_active)
 {
-    if ( a_sequence < 0 || a_sequence >= c_max_sequence )
+    /*
+     * Common code.
+     */
+
+    if (a_sequence < 0 || a_sequence >= c_max_sequence)
         return;
 
-    //printf ("set_active %d\n", a_active );
-
-    if ( m_seqs_active[ a_sequence ] == true && a_active == false )
+    if (m_seqs_active[a_sequence] == true && a_active == false)
     {
         set_was_active(a_sequence);
     }
-
-    m_seqs_active[ a_sequence ] = a_active;
+    m_seqs_active[a_sequence] = a_active;
 }
 
+/**
+ *  Sets was-active flags:  main, edit, perf, and names.
+ *
+ * \param a_sequence
+ *      The pattern number.  It is checked for invalidity.
+ */
 
-void perform::set_was_active( int a_sequence )
+void
+perform::set_was_active (int a_sequence)
 {
-    if ( a_sequence < 0 || a_sequence >= c_max_sequence )
+    /*
+     * Common code.
+     */
+
+    if (a_sequence < 0 || a_sequence >= c_max_sequence)
         return;
 
-    //printf( "was_active true\n" );
-
-    m_was_active_main[ a_sequence ] = true;
-    m_was_active_edit[ a_sequence ] = true;
-    m_was_active_perf[ a_sequence ] = true;
-    m_was_active_names[ a_sequence ] = true;
+    m_was_active_main[a_sequence] = true;
+    m_was_active_edit[a_sequence] = true;
+    m_was_active_perf[a_sequence] = true;
+    m_was_active_names[a_sequence] = true;
 }
 
+/**
+ *  Checks the pattern/sequence for activity.
+ *
+ * \param a_sequence
+ *      The pattern number.  It is checked for invalidity.
+ *
+ * \return
+ *      Returns the value of the active-flag, or false if the pattern was
+ *      invalid.
+ */
 
-
-bool perform::is_active( int a_sequence )
+bool
+perform::is_active( int a_sequence )
 {
+    /*
+     * Common code.
+     */
+
     if ( a_sequence < 0 || a_sequence >= c_max_sequence )
         return false;
 
-    return m_seqs_active[ a_sequence ];
+    return m_seqs_active[a_sequence];
 }
 
+/**
+ *  Checks the pattern/sequence for main-dirtiness.
+ *
+ * \param a_sequence
+ *      The pattern number.  It is checked for invalidity.
+ *
+ * \return
+ *      Returns the was-active-main flag value, before setting it to
+ *      false.  Returns false if the pattern was invalid.
+ */
 
-bool perform::is_dirty_main (int a_sequence)
+bool
+perform::is_dirty_main (int a_sequence)
 {
+    /*
+     * Common code.
+     */
+
     if ( a_sequence < 0 || a_sequence >= c_max_sequence )
         return false;
 
-    if ( is_active(a_sequence) )
+    if (is_active(a_sequence))
     {
         return m_seqs[a_sequence]->is_dirty_main();
     }
 
-    bool was_active = m_was_active_main[ a_sequence ];
-    m_was_active_main[ a_sequence ] = false;
-
+    bool was_active = m_was_active_main[a_sequence];
+    m_was_active_main[a_sequence] = false;
     return was_active;
 }
 
+/**
+ *  Checks the pattern/sequence for edit-dirtiness.
+ *
+ * \param a_sequence
+ *      The pattern number.  It is checked for invalidity.
+ *
+ * \return
+ *      Returns the was-active-edit flag value, before setting it to
+ *      false. Returns false if the pattern was invalid.
+ */
 
-bool perform::is_dirty_edit (int a_sequence)
+bool
+perform::is_dirty_edit (int a_sequence)
 {
+    /*
+     * Common code.
+     */
+
     if ( a_sequence < 0 || a_sequence >= c_max_sequence )
         return false;
 
@@ -597,15 +822,29 @@ bool perform::is_dirty_edit (int a_sequence)
         return m_seqs[a_sequence]->is_dirty_edit();
     }
 
-    bool was_active = m_was_active_edit[ a_sequence ];
-    m_was_active_edit[ a_sequence ] = false;
-
+    bool was_active = m_was_active_edit[a_sequence];
+    m_was_active_edit[a_sequence] = false;
     return was_active;
 }
 
+/**
+ *  Checks the pattern/sequence for perf-dirtiness.
+ *
+ * \param a_sequence
+ *      The pattern number.  It is checked for invalidity.
+ *
+ * \return
+ *      Returns the was-active-perf flag value, before setting it to
+ *      false.  Returns false if the pattern/sequence number was invalid.
+ */
 
-bool perform::is_dirty_perf (int a_sequence)
+bool
+perform::is_dirty_perf (int a_sequence)
 {
+    /*
+     * Common code.
+     */
+
     if ( a_sequence < 0 || a_sequence >= c_max_sequence )
         return false;
 
@@ -616,13 +855,27 @@ bool perform::is_dirty_perf (int a_sequence)
 
     bool was_active = m_was_active_perf[ a_sequence ];
     m_was_active_perf[ a_sequence ] = false;
-
     return was_active;
 }
 
+/**
+ *  Checks the pattern/sequence for names-dirtiness.
+ *
+ * \param a_sequence
+ *      The pattern number.  It is checked for invalidity.
+ *
+ * \return
+ *      Returns the was-active-names flag value, before setting it to
+ *      false.  Returns false if the pattern/sequence number was invalid.
+ */
 
-bool perform::is_dirty_names (int a_sequence)
+bool
+perform::is_dirty_names (int a_sequence)
 {
+    /*
+     * Common code.
+     */
+
     if ( a_sequence < 0 || a_sequence >= c_max_sequence )
         return false;
 
@@ -631,82 +884,139 @@ bool perform::is_dirty_names (int a_sequence)
         return m_seqs[a_sequence]->is_dirty_names();
     }
 
-    bool was_active = m_was_active_names[ a_sequence ];
-    m_was_active_names[ a_sequence ] = false;
-
+    bool was_active = m_was_active_names[a_sequence];
+    m_was_active_names[a_sequence] = false;
     return was_active;
 }
 
-sequence* perform::get_sequence( int a_sequence )
+/**
+ *  Retrieves the actual sequence, based on the pattern/sequence number.
+ */
+
+sequence *
+perform::get_sequence( int a_sequence )
 {
+    /*
+     * Needs a validity check.
+     */
+
     return m_seqs[a_sequence];
 }
 
-mastermidibus* perform::get_master_midi_bus( )
+/**
+ * \getter m_master_bus address
+ */
+
+mastermidibus *
+perform::get_master_midi_bus ( )
 {
     return &m_master_bus;
 }
 
+/**
+ * \setter m_running
+ */
 
-void perform::set_running( bool a_running )
+void
+perform::set_running( bool a_running )
 {
     m_running = a_running;
 }
 
+/**
+ * \getter m_running
+ */
 
-bool perform::is_running( void )
+bool
+perform::is_running( void )
 {
     return m_running;
 }
 
-void perform::set_bpm(int a_bpm)
-{
-    if ( a_bpm < 20 )  a_bpm = 20;
-    if ( a_bpm > 500 ) a_bpm = 500;
+/**
+ *  Sets the value of the BPM into the master MIDI buss, after making
+ *  sure it is squelched to be between 20 and 500.
+ *
+ *  The value is set only if neither JACK nor this performance object are
+ *  running.
+ */
 
-    if ( ! (m_jack_running && m_running )){
-        m_master_bus.set_bpm( a_bpm );
+void
+perform::set_bpm (int a_bpm)
+{
+    /*
+     * We need manifest constants here!
+     */
+
+    if ( a_bpm < 20 )
+        a_bpm = 20;
+
+    if ( a_bpm > 500 )
+        a_bpm = 500;
+
+    if (! (m_jack_running && m_running ))
+    {
+        m_master_bus.set_bpm(a_bpm);
     }
 }
 
+/**
+ *  Retrieves the BPM setting of the master MIDI buss.
+ */
 
-int  perform::get_bpm( )
+int
+perform::get_bpm( )
 {
     return  m_master_bus.get_bpm( );
 }
 
+/**
+ *  Deletes a pattern/sequence by number.
+ */
 
-void perform::delete_sequence( int a_num )
+void
+perform::delete_sequence (int a_num)
 {
     set_active(a_num, false);
-
-    if ( m_seqs[a_num] != NULL &&
-            !m_seqs[a_num]->get_editing() ){
-
-        m_seqs[a_num]->set_playing( false );
+    if (m_seqs[a_num] != nullptr && ! m_seqs[a_num]->get_editing())
+    {
+        m_seqs[a_num]->set_playing(false);
         delete m_seqs[a_num];
     }
 }
 
+/**
+ *  Check if the pattern/sequence, given by number, has an edit in
+ *  progress.
+ */
 
-bool perform::is_sequence_in_edit( int a_num )
+bool
+perform::is_sequence_in_edit (int a_num)
 {
-    return ( m_seqs[a_num] != NULL &&
-            m_seqs[a_num]->get_editing());
-
+    return m_seqs[a_num] != nullptr && m_seqs[a_num]->get_editing();
 }
 
+/**
+ *  Creates a new pattern/sequence for the given slot, and sets the new
+ *  pattern's master MIDI bus address.  Then it activates the pattern.
+ *
+ *  It doesn't deal with thrown exceptions.
+ */
 
-void perform::new_sequence( int a_sequence )
+void
+perform::new_sequence (int a_sequence)
 {
-    m_seqs[ a_sequence ] = new sequence();
-    m_seqs[ a_sequence ]->set_master_midi_bus( &m_master_bus );
+    m_seqs[a_sequence] = new sequence();
+    m_seqs[a_sequence]->set_master_midi_bus(&m_master_bus);
     set_active(a_sequence, true);
-
 }
 
+/**
+ *  HERE HERE HERE HERE
+ */
 
-midi_control * perform::get_midi_control_toggle( unsigned int a_seq )
+midi_control *
+perform::get_midi_control_toggle( unsigned int a_seq )
 {
     if ( a_seq >= (unsigned int) c_midi_controls )
         return NULL;
@@ -715,7 +1025,8 @@ midi_control * perform::get_midi_control_toggle( unsigned int a_seq )
 }
 
 
-midi_control * perform::get_midi_control_on( unsigned int a_seq )
+midi_control *
+perform::get_midi_control_on( unsigned int a_seq )
 {
     if ( a_seq >= (unsigned int) c_midi_controls )
         return NULL;
@@ -723,7 +1034,8 @@ midi_control * perform::get_midi_control_on( unsigned int a_seq )
 }
 
 
-midi_control* perform::get_midi_control_off( unsigned int a_seq )
+midi_control *
+perform::get_midi_control_off( unsigned int a_seq )
 {
     if ( a_seq >= (unsigned int) c_midi_controls )
         return NULL;
@@ -731,7 +1043,8 @@ midi_control* perform::get_midi_control_off( unsigned int a_seq )
 }
 
 
-void perform::print()
+void
+perform::print()
 {
     //   for( int i=0; i<m_numSeq; i++ ){
 
@@ -743,20 +1056,23 @@ void perform::print()
 }
 
 
-void perform::set_screen_set_notepad( int a_screen_set, string *a_notepad )
+void
+perform::set_screen_set_notepad( int a_screen_set, string *a_notepad )
 {
     if ( a_screen_set < c_max_sets )
         m_screen_set_notepad[a_screen_set] = *a_notepad;
 }
 
 
-string * perform::get_screen_set_notepad( int a_screen_set )
+std::string *
+perform::get_screen_set_notepad( int a_screen_set )
 {
     return &m_screen_set_notepad[a_screen_set];
 }
 
 
-void perform::set_screenset( int a_ss )
+void
+perform::set_screenset( int a_ss )
 {
     m_screen_set = a_ss;
 
@@ -768,13 +1084,15 @@ void perform::set_screenset( int a_ss )
 }
 
 
-int perform::get_screenset( void )
+int
+perform::get_screenset( void )
 {
     return m_screen_set;
 }
 
 
-void perform::set_playing_screenset (void)
+void
+perform::set_playing_screenset (void)
 {
     for (int j, i = 0; i < c_seqs_in_set; i++) {
         j = i + m_playing_screen * c_seqs_in_set;
@@ -787,20 +1105,21 @@ void perform::set_playing_screenset (void)
     mute_group_tracks();
 }
 
-
-int perform::get_playing_screenset (void)
+int
+perform::get_playing_screenset (void)
 {
     return m_playing_screen;
 }
 
-
-void perform::set_offset( int a_offset )
+void
+perform::set_offset (int a_offset)
 {
     m_offset = a_offset  * c_mainwnd_rows * c_mainwnd_cols;
 }
 
 
-void perform::play( long a_tick )
+void
+perform::play( long a_tick )
 {
 
     /* just run down the list of sequences and have them dump */
@@ -830,7 +1149,8 @@ void perform::play( long a_tick )
 }
 
 
-void perform::set_orig_ticks( long a_tick  )
+void
+perform::set_orig_ticks( long a_tick  )
 {
     for (int i=0; i< c_max_sequence; i++ ){
 
@@ -842,7 +1162,8 @@ void perform::set_orig_ticks( long a_tick  )
 }
 
 
-void perform::clear_sequence_triggers( int a_seq  )
+void
+perform::clear_sequence_triggers( int a_seq  )
 {
     if ( is_active(a_seq) == true ){
         assert( m_seqs[a_seq] );
@@ -851,7 +1172,8 @@ void perform::clear_sequence_triggers( int a_seq  )
 }
 
 
-void perform::move_triggers( bool a_direction )
+void
+perform::move_triggers( bool a_direction )
 {
     if ( m_left_tick < m_right_tick ){
 
@@ -868,7 +1190,8 @@ void perform::move_triggers( bool a_direction )
 }
 
 
-void perform::push_trigger_undo( void )
+void
+perform::push_trigger_undo( void )
 {
     for (int i=0; i< c_max_sequence; i++ ){
 
@@ -880,7 +1203,8 @@ void perform::push_trigger_undo( void )
 }
 
 
-void perform::pop_trigger_undo( void )
+void
+perform::pop_trigger_undo( void )
 {
     for (int i=0; i< c_max_sequence; i++ ){
 
@@ -893,7 +1217,8 @@ void perform::pop_trigger_undo( void )
 
 
 /* copies between L and R -> R */
-void perform::copy_triggers( )
+void
+perform::copy_triggers( )
 {
     if ( m_left_tick < m_right_tick ){
 
@@ -910,7 +1235,8 @@ void perform::copy_triggers( )
 }
 
 
-void perform::start_jack(  )
+void
+perform::start_jack(  )
 {
     //printf( "perform::start_jack()\n" );
 #ifdef JACK_SUPPORT
@@ -920,7 +1246,8 @@ void perform::start_jack(  )
 }
 
 
-void perform::stop_jack(  )
+void
+perform::stop_jack(  )
 {
     //printf( "perform::stop_jack()\n" );
 #ifdef JACK_SUPPORT
@@ -930,7 +1257,8 @@ void perform::stop_jack(  )
 }
 
 
-void perform::position_jack( bool a_state )
+void
+perform::position_jack( bool a_state )
 {
 
     //printf( "perform::position_jack()\n" );
@@ -994,7 +1322,8 @@ void perform::position_jack( bool a_state )
 }
 
 
-void perform::start(bool a_state)
+void
+perform::start(bool a_state)
 {
     if (m_jack_running) {
         return;
@@ -1004,7 +1333,8 @@ void perform::start(bool a_state)
 }
 
 
-void perform::stop()
+void
+perform::stop()
 {
     if (m_jack_running) {
         return;
@@ -1014,7 +1344,8 @@ void perform::stop()
 }
 
 
-void perform::inner_start(bool a_state)
+void
+perform::inner_start(bool a_state)
 {
     m_condition_var.lock();
 
@@ -1033,7 +1364,8 @@ void perform::inner_start(bool a_state)
 }
 
 
-void perform::inner_stop()
+void
+perform::inner_stop()
 {
     set_running(false);
     //off_sequences();
@@ -1042,7 +1374,8 @@ void perform::inner_stop()
 }
 
 
-void perform::off_sequences(void)
+void
+perform::off_sequences(void)
 {
     for (int i = 0; i < c_max_sequence; i++) {
 
@@ -1054,7 +1387,8 @@ void perform::off_sequences(void)
 }
 
 
-void perform::all_notes_off( void )
+void
+perform::all_notes_off( void )
 {
     for (int i=0; i< c_max_sequence; i++) {
 
@@ -1068,7 +1402,8 @@ void perform::all_notes_off( void )
 }
 
 
-void perform::reset_sequences(void)
+void
+perform::reset_sequences(void)
 {
     for (int i=0; i< c_max_sequence; i++) {
 
@@ -1090,7 +1425,8 @@ void perform::reset_sequences(void)
 }
 
 
-void perform::launch_output_thread(void)
+void
+perform::launch_output_thread(void)
 {
     int err;
 
@@ -1103,13 +1439,15 @@ void perform::launch_output_thread(void)
 }
 
 
-void perform::set_playback_mode( bool a_playback_mode )
+void
+perform::set_playback_mode( bool a_playback_mode )
 {
     m_playback_mode = a_playback_mode;
 }
 
 
-void perform::launch_input_thread()
+void
+perform::launch_input_thread()
 {
     int err;
 
@@ -1270,7 +1608,8 @@ bool perform::jack_session_event()
     return false;
 }
 
-void jack_session_callback(jack_session_event_t *event, void *arg )
+void
+jack_session_callback(jack_session_event_t *event, void *arg )
 {
     perform *p = (perform *) arg;
     p->m_jsession_ev = event;
@@ -1281,7 +1620,8 @@ void jack_session_callback(jack_session_event_t *event, void *arg )
 #endif
 
 
-void perform::output_func(void)
+void
+perform::output_func(void)
 {
     while (m_outputing) {
 
@@ -1437,10 +1777,9 @@ void perform::output_func(void)
                 current_tick   = m_midiclockpos;
                 total_tick     = m_midiclockpos;
                 m_midiclockpos = -1;
-                //init_clock = true;
+                // init_clock = true;
             }
 
-            //printf ( "    delta_tick[%lf]\n", delta_tick  );
 #ifdef JACK_SUPPORT
 
             // no init until we get a good lock
@@ -1476,18 +1815,14 @@ void perform::output_func(void)
                     current_tick = clock_tick = total_tick = jack_ticks_converted_last = jack_ticks_converted;
                     init_clock = true;
 
-                    if ( m_looping && m_playback_mode ){
-
-                        //printf( "left[%lf] right[%lf]\n", (double) get_left_tick(), (double) get_right_tick() );
-
-                        if ( current_tick >= get_right_tick() ){
-
-                            while ( current_tick >= get_right_tick() ){
-
+                    if ( m_looping && m_playback_mode )
+                    {
+                        if ( current_tick >= get_right_tick() )
+                        {
+                            while ( current_tick >= get_right_tick() )
+                            {
                                 double size = get_right_tick() - get_left_tick();
                                 current_tick = current_tick - size;
-
-                                //printf( "> current_tick[%lf]\n", current_tick );
                             }
                             reset_sequences();
                             set_orig_ticks( (long)current_tick );
@@ -1499,7 +1834,6 @@ void perform::output_func(void)
                         m_jack_transport_state  == JackTransportStopped ){
 
                     m_jack_transport_state_last = JackTransportStopped;
-                    //printf ("[Stop Playback]\n" );
                     jack_stopped = true;
                 }
 
@@ -1508,43 +1842,33 @@ void perform::output_func(void)
                 /* transport is in a sane state if dumping == true */
                 if ( dumping )
                 {
-                    m_jack_frame_current =  jack_get_current_transport_frame( m_jack_client );
-
-                    //printf( " frame[%7d]", m_jack_pos.frame );
-                    //printf( " current_transport_frame[%7d]", m_jack_frame_current );
+                    m_jack_frame_current =
+                        jack_get_current_transport_frame(m_jack_client);
 
                     // if we are moving ahead
-                    if ( (m_jack_frame_current > m_jack_frame_last)){
 
-
+                    if ( (m_jack_frame_current > m_jack_frame_last))
+                    {
                         m_jack_tick +=
                             (m_jack_frame_current - m_jack_frame_last)  *
                             m_jack_pos.ticks_per_beat *
-                            m_jack_pos.beats_per_minute / (m_jack_pos.frame_rate * 60.0);
-
-
-                        //printf ( "m_jack_tick += (m_jack_frame_current[%lf] - m_jack_frame_last[%lf]) *\n",
-                        //        (double) m_jack_frame_current, (double) m_jack_frame_last );
-                        //printf(  "m_jack_pos.ticks_per_beat[%lf] * m_jack_pos.beats_per_minute[%lf] / \n(m_jack_pos.frame_rate[%lf] * 60.0\n", (double) m_jack_pos.ticks_per_beat, (double) m_jack_pos.beats_per_minute, (double) m_jack_pos.frame_rate);
-
+                            m_jack_pos.beats_per_minute /
+                            (m_jack_pos.frame_rate * 60.0);
 
                         m_jack_frame_last = m_jack_frame_current;
                     }
 
-                    /* convert ticks */
+                    // convert ticks
+
                     jack_ticks_converted =
-                        m_jack_tick * ((double) c_ppqn /
-                                (m_jack_pos.ticks_per_beat * m_jack_pos.beat_type / 4.0  ));
+                        m_jack_tick *
+                        (
+                            (double) c_ppqn /
+                        (m_jack_pos.ticks_per_beat * m_jack_pos.beat_type / 4.0)
+                        );
 
-                    //printf ( "jack_ticks_conv[%lf] = \n",  jack_ticks_converted );
-                    //printf ( "    m_jack_tick[%lf] * ((double) c_ppqn[%lf] / \n", m_jack_tick, (double) c_ppqn );
-                    //printf ( "   (m_jack_pos.ticks_per_beat[%lf] * m_jack_pos.beat_type[%lf] / 4.0  )\n",
-                    //        m_jack_pos.ticks_per_beat, m_jack_pos.beat_type );
-
-
-
-
-                    jack_ticks_delta = jack_ticks_converted - jack_ticks_converted_last;
+                    jack_ticks_delta =
+                        jack_ticks_converted - jack_ticks_converted_last;
 
                     clock_tick     += jack_ticks_delta;
                     current_tick   += jack_ticks_delta;
@@ -1553,31 +1877,21 @@ void perform::output_func(void)
                     m_jack_transport_state_last = m_jack_transport_state;
                     jack_ticks_converted_last = jack_ticks_converted;
 
-                    /* printf( "current_tick[%lf] delta[%lf]\n", current_tick, jack_ticks_delta ); */
-
-
+#if USE_DEBUGGING_OUTPUT
                     long ptick, pbeat, pbar;
-
-                    pbar  = (long) ((long) m_jack_tick / (m_jack_pos.ticks_per_beat *  m_jack_pos.beats_per_bar ));
-
-                    pbeat = (long) ((long) m_jack_tick % (long) (m_jack_pos.ticks_per_beat *  m_jack_pos.beats_per_bar ));
+                    pbar  = (long)
+                    (
+                        (long) m_jack_tick /
+                        (m_jack_pos.ticks_per_beat * m_jack_pos.beats_per_bar)
+                    );
+                    pbeat = (long)
+                    (
+                        (long) m_jack_tick %
+                        (long) (m_jack_pos.ticks_per_beat * m_jack_pos.beats_per_bar)
+                    );
                     pbeat = pbeat / (long) m_jack_pos.ticks_per_beat;
-
                     ptick = (long) m_jack_tick % (long) m_jack_pos.ticks_per_beat;
-
-
-                    //printf( " bbb [%2d:%2d:%4d]", pbar+1, pbeat+1, ptick );
-                    //printf( " bbb [%2d:%2d:%4d]", m_jack_pos.bar, m_jack_pos.beat, m_jack_pos.tick );
-
-                    /*double jack_tick = (m_jack_pos.bar-1) * (m_jack_pos.ticks_per_beat *  m_jack_pos.beats_per_bar ) +
-                      (m_jack_pos.beat-1) * m_jack_pos.ticks_per_beat + m_jack_pos.tick;*/
-
-                    //printf( " jtick[%8.3f]", m_jack_tick );
-                    //printf( " mtick[%8.3f]", jack_tick );
-
-                    //printf( " delta[%8.3f]", m_jack_tick - jack_tick );
-
-                    //printf( "\n");
+#endif
 
                 } /* end if dumping / sane state */
 
@@ -1840,7 +2154,8 @@ void* input_thread_func(void *a_pef )
 }
 
 
-void perform::handle_midi_control( int a_control, bool a_state )
+void
+perform::handle_midi_control( int a_control, bool a_state )
 {
 
     switch (a_control) {
@@ -1920,7 +2235,8 @@ void perform::handle_midi_control( int a_control, bool a_state )
 }
 
 
-void perform::input_func(void)
+void
+perform::input_func(void)
 {
     event ev;
 
@@ -2077,7 +2393,8 @@ void perform::input_func(void)
 }
 
 
-void perform::save_playing_state( void )
+void
+perform::save_playing_state( void )
 {
     for( int i=0; i<c_total_seqs; i++ ){
 
@@ -2091,7 +2408,8 @@ void perform::save_playing_state( void )
 }
 
 
-void perform::restore_playing_state( void )
+void
+perform::restore_playing_state( void )
 {
     for( int i=0; i<c_total_seqs; i++ ){
 
@@ -2103,7 +2421,8 @@ void perform::restore_playing_state( void )
 }
 
 
-void perform::set_sequence_control_status( int a_status )
+void
+perform::set_sequence_control_status( int a_status )
 {
     if ( a_status & c_status_snapshot ){
         save_playing_state(  );
@@ -2113,7 +2432,8 @@ void perform::set_sequence_control_status( int a_status )
 }
 
 
-void perform::unset_sequence_control_status( int a_status )
+void
+perform::unset_sequence_control_status( int a_status )
 {
     if ( a_status & c_status_snapshot ){
         restore_playing_state(  );
@@ -2123,7 +2443,8 @@ void perform::unset_sequence_control_status( int a_status )
 }
 
 
-void perform::sequence_playing_toggle( int a_sequence )
+void
+perform::sequence_playing_toggle( int a_sequence )
 {
     if ( is_active(a_sequence) == true ){
         assert( m_seqs[a_sequence] );
@@ -2145,7 +2466,8 @@ void perform::sequence_playing_toggle( int a_sequence )
 }
 
 
-void perform::sequence_playing_on( int a_sequence )
+void
+perform::sequence_playing_on( int a_sequence )
 {
     if ( is_active(a_sequence) == true ){
         if (m_mode_group && (m_playing_screen == m_screen_set)
@@ -2167,7 +2489,8 @@ void perform::sequence_playing_on( int a_sequence )
 }
 
 
-void perform::sequence_playing_off( int a_sequence )
+void
+perform::sequence_playing_off( int a_sequence )
 {
     if ( is_active(a_sequence) == true ){
         if (m_mode_group && (m_playing_screen == m_screen_set)
@@ -2188,52 +2511,86 @@ void perform::sequence_playing_off( int a_sequence )
     }
 }
 
+/**
+ *  At construction time, this function sets up one keycode and one event
+ *  slot.
+ *
+ *  It is called 32 times, corresponding the pattern/sequence slots in the
+ *  Patterns window.
+ */
 
-void perform::set_key_event( unsigned int keycode, long sequence_slot )
+void
+perform::set_key_event (unsigned int keycode, long sequence_slot)
 {
-    // unhook previous binding...
-    std::map<unsigned int,long>::iterator it1 = key_events.find( keycode );
+    /*
+     * Unhook the previous binding.
+     */
+
+    ItemMap::iterator it1 = key_events.find(keycode);
     if (it1 != key_events.end())
     {
-        std::map<long,unsigned int>::iterator i = key_events_rev.find( it1->second );
+        ReverseItemMap::iterator i = key_events_rev.find(it1->second);
         if (i != key_events_rev.end())
-            key_events_rev.erase( i );
-        key_events.erase( it1 );
+            key_events_rev.erase(i);
+
+        key_events.erase(it1);
     }
-    std::map<long,unsigned int>::iterator it2 = key_events_rev.find( sequence_slot );
+    ReverseItemMap::iterator it2 = key_events_rev.find(sequence_slot);
     if (it2 != key_events_rev.end())
     {
-        std::map<unsigned int,long>::iterator i = key_events.find( it2->second );
+        ItemMap::iterator i = key_events.find(it2->second);
         if (i != key_events.end())
-            key_events.erase( i );
-        key_events_rev.erase( it2 );
+            key_events.erase(i);
+
+        key_events_rev.erase(it2);
     }
-    // set
+
+    /*
+     * Set the new binding.
+     */
+
     key_events[keycode] = sequence_slot;
     key_events_rev[sequence_slot] = keycode;
 }
 
+/**
+ *  At construction time, this function sets up one keycode and one group
+ *  slot.
+ *
+ *  It is called 32 times, corresponding the pattern/sequence slots in the
+ *  Patterns window.
+ */
 
-void perform::set_key_group( unsigned int keycode, long group_slot )
+void
+perform::set_key_group( unsigned int keycode, long group_slot )
 {
-    // unhook previous binding...
-    std::map<unsigned int,long>::iterator it1 = key_groups.find( keycode );
+    /*
+     * Unhook previous binding.
+     */
+
+    ItemMap::iterator it1 = key_groups.find(keycode);
     if (it1 != key_groups.end())
     {
-        std::map<long,unsigned int>::iterator i = key_groups_rev.find( it1->second );
+        ReverseItemMap::iterator i = key_groups_rev.find(it1->second);
         if (i != key_groups_rev.end())
-            key_groups_rev.erase( i );
-        key_groups.erase( it1 );
+            key_groups_rev.erase(i);
+
+        key_groups.erase(it1);
     }
-    std::map<long,unsigned int>::iterator it2 = key_groups_rev.find( group_slot );
+    ReverseItemMap::iterator it2 = key_groups_rev.find(group_slot);
     if (it2 != key_groups_rev.end())
     {
-        std::map<unsigned int,long>::iterator i = key_groups.find( it2->second );
+        ItemMap::iterator i = key_groups.find( it2->second);
         if (i != key_groups.end())
-            key_groups.erase( i );
-        key_groups_rev.erase( it2 );
+            key_groups.erase(i);
+
+        key_groups_rev.erase(it2);
     }
-    // set
+
+    /*
+     * Set the new binding.
+     */
+
     key_groups[keycode] = group_slot;
     key_groups_rev[group_slot] = keycode;
 }
@@ -2241,72 +2598,76 @@ void perform::set_key_group( unsigned int keycode, long group_slot )
 
 #ifdef JACK_SUPPORT
 
-void jack_timebase_callback(jack_transport_state_t state,
-        jack_nframes_t nframes,
-        jack_position_t *pos, int new_pos, void *arg)
+/**
+ *  This function...
+ */
+
+void
+    jack_timebase_callback
+(
+    jack_transport_state_t state,
+    jack_nframes_t nframes,
+    jack_position_t * pos,
+    int new_pos,
+    void * arg
+)
 {
     static double jack_tick;
-    static jack_nframes_t last_frame;
+//  static jack_nframes_t last_frame;
     static jack_nframes_t current_frame;
     static jack_transport_state_t state_current;
     static jack_transport_state_t state_last;
 
     state_current = state;
-
-    perform *p = (perform *) arg;
+    perform * p = (perform *) arg;
     current_frame = jack_get_current_transport_frame( p->m_jack_client );
-
-    //printf( "jack_timebase_callback() [%d] [%d] [%d]", state, new_pos, current_frame);
-
     pos->valid = JackPositionBBT;
     pos->beats_per_bar = 4;
     pos->beat_type = 4;
     pos->ticks_per_beat = c_ppqn * 10;
     pos->beats_per_minute = p->get_bpm();
 
-
-    /* Compute BBT info from frame number.  This is relatively
-     * simple here, but would become complex if we supported tempo
-     * or time signature changes at specific locations in the
-     * transport timeline. */
+    /*
+     * Compute BBT info from frame number.  This is relatively simple
+     * here, but would become complex if we supported tempo or time
+     * signature changes at specific locations in the transport timeline.
+     */
 
     // if we are in a new position
-    if (  state_last    ==  JackTransportStarting &&
-            state_current ==  JackTransportRolling ){
 
-        // printf ( "Starting [%d] [%d]\n", last_frame, current_frame );
-
-		 double jack_delta_tick =
+    if (state_last == JackTransportStarting &&
+            state_current == JackTransportRolling )
+    {
+        double jack_delta_tick =
             (current_frame) *
             pos->ticks_per_beat *
             pos->beats_per_minute / (pos->frame_rate * 60.0);
-		
+
 		jack_tick = (jack_delta_tick < 0) ? -jack_delta_tick : jack_delta_tick;
-		last_frame = current_frame;
-		
+//      last_frame = current_frame;
+
 		long ptick = 0, pbeat = 0, pbar = 0;
-	
-		pbar  = (long) ((long) jack_tick / (pos->ticks_per_beat *  pos->beats_per_bar ));
-
-		pbeat = (long) ((long) jack_tick % (long) (pos->ticks_per_beat *  pos->beats_per_bar ));
-		pbeat = pbeat / (long) pos->ticks_per_beat;
-
+		pbar  = (long)
+        (
+            (long) jack_tick / (pos->ticks_per_beat * pos->beats_per_bar)
+        );
+		pbeat = (long)
+        (
+            (long) jack_tick % (long) (pos->ticks_per_beat * pos->beats_per_bar)
+        );
+		pbeat /= (long) pos->ticks_per_beat;
 		ptick = (long) jack_tick % (long) pos->ticks_per_beat;
-
-		// printf( " bbb [%2d:%2d:%4d]\n", pos->bar, pos->beat, pos->tick );
-
 		pos->bar = pbar + 1;
 		pos->beat = pbeat + 1;
 		pos->tick = ptick;
-		pos->bar_start_tick = pos->bar * pos->beats_per_bar *
-			pos->ticks_per_beat;
+		pos->bar_start_tick = pos->bar * pos->beats_per_bar * pos->ticks_per_beat;
     }
-
     state_last = state_current;
 }
 
 
-void jack_shutdown(void *arg)
+void
+jack_shutdown(void *arg)
 {
     perform *p = (perform *) arg;
     p->m_jack_running = false;
@@ -2315,20 +2676,21 @@ void jack_shutdown(void *arg)
 }
 
 
-void print_jack_pos( jack_position_t* jack_pos ){
-
-    return;
+void
+print_jack_pos( jack_position_t* jack_pos )
+{
+    return;                                              /* tricky! */
     printf( "print_jack_pos()\n" );
     printf( "    bar  [%d]\n", jack_pos->bar  );
-    printf( "    beat [%d]\n", jack_pos->beat );		
+    printf( "    beat [%d]\n", jack_pos->beat );
     printf( "    tick [%d]\n", jack_pos->tick );
-    printf( "    bar_start_tick   [%lf]\n", jack_pos->bar_start_tick );
+    printf( "    bar_start_tick   [%f]\n", jack_pos->bar_start_tick );
     printf( "    beats_per_bar    [%f]\n", jack_pos->beats_per_bar );
     printf( "    beat_type        [%f]\n", jack_pos->beat_type );
-    printf( "    ticks_per_beat   [%lf]\n", jack_pos->ticks_per_beat );
-    printf( "    beats_per_minute [%lf]\n", jack_pos->beats_per_minute );
-    printf( "    frame_time       [%lf]\n", jack_pos->frame_time );
-    printf( "    next_time        [%lf]\n", jack_pos->next_time );
+    printf( "    ticks_per_beat   [%f]\n", jack_pos->ticks_per_beat );
+    printf( "    beats_per_minute [%f]\n", jack_pos->beats_per_minute );
+    printf( "    frame_time       [%f]\n", jack_pos->frame_time );
+    printf( "    next_time        [%f]\n", jack_pos->next_time );
 }
 
 
