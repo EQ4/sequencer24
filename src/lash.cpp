@@ -24,12 +24,12 @@
 
 #include "lash.h"
 #include "midifile.h"
-
+#include "platform_macros.h"
 
 lash::lash(int *argc, char ***argv)
 {
 #ifdef LASH_SUPPORT
-   m_lash_args = lash_extract_args(argc, argv);
+    m_lash_args = lash_extract_args(argc, argv);
 #endif // LASH_SUPPORT
 }
 
@@ -40,12 +40,15 @@ void lash::init(perform* perform)
     m_perform = perform;
 
     m_client = lash_init(m_lash_args, PACKAGE_NAME,
-            LASH_Config_File, LASH_PROTOCOL(2, 0));
+                         LASH_Config_File, LASH_PROTOCOL(2, 0));
 
-    if (m_client == NULL) {
+    if (m_client == NULL)
+    {
         fprintf(stderr, "Failed to connect to LASH.  "
                 "Session management will not occur.\n");
-    } else {
+    }
+    else
+    {
         lash_event_t* event = lash_event_new_with_type(LASH_Client_Name);
         lash_event_set_string(event, "Seq24");
         lash_send_event(m_client, event);
@@ -82,7 +85,8 @@ lash::process_events()
     lash_event_t *ev = NULL;
 
     // Process events
-    while ((ev = lash_get_event(m_client)) != NULL) {
+    while ((ev = lash_get_event(m_client)) != NULL)
+    {
         handle_event(ev);
         lash_event_destroy(ev);
     }
@@ -98,33 +102,49 @@ lash::handle_event(lash_event_t* ev)
     const char      *c_str = lash_event_get_string(ev);
     std::string     str    = (c_str == NULL) ? "" : c_str;
 
-    if (type == LASH_Save_File) {
+    if (type == LASH_Save_File)
+    {
         midifile f(str + "/seq24.mid");
         f.write(m_perform);
         lash_send_event(m_client, lash_event_new_with_type(LASH_Save_File));
-    } else if (type == LASH_Restore_File) {
+    }
+    else if (type == LASH_Restore_File)
+    {
         midifile f(str + "/seq24.mid");
         f.parse(m_perform, 0);
         lash_send_event(m_client, lash_event_new_with_type(LASH_Restore_File));
-    } else if (type == LASH_Quit) {
+    }
+    else if (type == LASH_Quit)
+    {
         m_client = NULL;
         Gtk::Main::quit();
-    } else {
+    }
+    else
+    {
         fprintf(stderr, "Warning:  Unhandled LASH event.\n");
     }
 }
 
+/*
+ * ca 2015-07-24
+ * Eliminate this annoying warning.  Will do it for Microsoft's bloddy
+ * compiler later.
+ */
+
+#ifdef PLATFORM_GNU
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
 
 void
-lash::handle_config(lash_config_t* conf)
+lash::handle_config(lash_config_t * conf)
 {
-    const char *key     = NULL;
-    const void *val     = NULL;
-    size_t     val_size = 0;
+    const char * key = lash_config_get_key(conf);
+    const void * val = lash_config_get_value(conf);
+    size_t val_size = lash_config_get_value_size(conf);
 
-    key      = lash_config_get_key(conf);
-    val      = lash_config_get_value(conf);
-    val_size = lash_config_get_value_size(conf);
+    /*
+     * Nothing is done with these, just gives warnings about "unused"
+     */
 }
 
 

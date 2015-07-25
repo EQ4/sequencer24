@@ -1,5 +1,7 @@
+#ifndef SEQ24_CONTROLLERS_H
+#define SEQ24_CONTROLLERS_H
+
 /*
- *
  *  This file is part of seq24/sequencer24.
  *
  *  seq24 is free software; you can redistribute it and/or modify
@@ -15,13 +17,10 @@
  *  You should have received a copy of the GNU General Public License
  *  along with seq24; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
-#ifndef SEQ24_CONTROLLERS
-#define SEQ24_CONTROLLERS
 
-string c_controller_names[128] = {
-
+string c_controller_names[128] =
+{
     "0 Bank Select",
     "1 Modulation Wheel ",
     "2 Breath controller ",
@@ -150,8 +149,6 @@ string c_controller_names[128] = {
     "125 Omni Mode On",
     "126 Mono Operation",
     "127 Poly Operation"
-
 };
 
-
-#endif
+#endif    // SEQ24_CONTROLLERS_H

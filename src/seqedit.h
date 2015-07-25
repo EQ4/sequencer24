@@ -71,11 +71,11 @@ using namespace Gtk;
 class seqedit : public Gtk::Window
 {
 
- private:
+private:
 
     static const int c_min_zoom = 1;
     static const int c_max_zoom = 32;
- 	
+
     sequence   * const m_seq;
     perform    * const m_mainperf;
 
@@ -167,7 +167,7 @@ class seqedit : public Gtk::Window
     Button      *m_button_bw;
     Entry       *m_entry_bw;
 
-    Button	*m_button_rec_vol;
+    Button  *m_button_rec_vol;
 
     ToggleButton *m_toggle_play;
     ToggleButton *m_toggle_record;
@@ -208,66 +208,66 @@ class seqedit : public Gtk::Window
     unsigned char m_editing_status;
     unsigned char m_editing_cc;
 
-    void set_zoom( int a_zoom );
-    void set_snap( int a_snap );
-    void set_note_length( int a_note_length );
+    void set_zoom(int a_zoom);
+    void set_snap(int a_snap);
+    void set_note_length(int a_note_length);
 
-    void set_bpm( int a_beats_per_measure );
-    void set_bw( int a_beat_width );
-    void set_rec_vol( int a_rec_vol );
-    void set_measures( int a_length_measures  );
-    void apply_length( int a_bpm, int a_bw, int a_measures );
-    long get_measures( void );
+    void set_bpm(int a_beats_per_measure);
+    void set_bw(int a_beat_width);
+    void set_rec_vol(int a_rec_vol);
+    void set_measures(int a_length_measures);
+    void apply_length(int a_bpm, int a_bw, int a_measures);
+    long get_measures(void);
 
-    void set_midi_channel( int a_midichannel );
-    void set_midi_bus( int a_midibus );
+    void set_midi_channel(int a_midichannel);
+    void set_midi_bus(int a_midibus);
 
-    void set_scale( int a_scale );
-    void set_key( int a_note );
+    void set_scale(int a_scale);
+    void set_key(int a_note);
 
-    void set_background_sequence( int a_seq );
+    void set_background_sequence(int a_seq);
 
-    void name_change_callback( void );
-    void play_change_callback( void );
-    void record_change_callback( void );
-    void q_rec_change_callback( void );
-    void thru_change_callback( void );
-    void undo_callback( void );
-    void redo_callback( void );
+    void name_change_callback(void);
+    void play_change_callback(void);
+    void record_change_callback(void);
+    void q_rec_change_callback(void);
+    void thru_change_callback(void);
+    void undo_callback(void);
+    void redo_callback(void);
 
-    void set_data_type( unsigned char a_status,
-			unsigned char a_control = 0 );
+    void set_data_type(unsigned char a_status,
+                       unsigned char a_control = 0);
 
-    void update_all_windows( );
+    void update_all_windows();
 
-    void fill_top_bar( void );
-    void create_menus( void );
+    void fill_top_bar(void);
+    void create_menus(void);
 
-    void menu_action_quantise( void );
+    void menu_action_quantise(void);
 
-    void popup_menu( Menu *a_menu );
-    void popup_event_menu( void );
-    void popup_midibus_menu( void );
-    void popup_sequence_menu( void );
-    void popup_tool_menu( void );
+    void popup_menu(Menu *a_menu);
+    void popup_event_menu(void);
+    void popup_midibus_menu(void);
+    void popup_sequence_menu(void);
+    void popup_tool_menu(void);
     void popup_midich_menu(void);
 
-    Gtk::Image* create_menu_image( bool a_state = false );
+    Gtk::Image* create_menu_image(bool a_state = false);
 
     void on_realize();
 
-    bool timeout( void );
+    bool timeout(void);
 
-    void do_action( int a_action, int a_var );
+    void do_action(int a_action, int a_var);
 
-    void mouse_action( mouse_action_e a_action );
+    void mouse_action(mouse_action_e a_action);
 
- public:
+public:
 
     seqedit(sequence *a_seq,
-	    perform *a_perf,
-	    // mainwid *a_mainwid,
-	    int a_pos);
+            perform *a_perf,
+            // mainwid *a_mainwid,
+            int a_pos);
 
     ~seqedit();
 

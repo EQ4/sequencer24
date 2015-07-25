@@ -31,35 +31,35 @@ class perform;                          // forward reference
 class midifile
 {
 
- private:
+private:
 
     int m_pos;
     const std::string m_name;
 
     /* holds our data */
-	std::vector<unsigned char> m_d;
+    std::vector<unsigned char> m_d;
 
-   std::list<unsigned char> m_l;
+    std::list<unsigned char> m_l;
 
     unsigned long read_long();
     unsigned short read_short();
     unsigned char read_byte();
     unsigned long read_var();
 
-    void write_long( unsigned long );
-    void write_short( unsigned short );
-    void write_byte( unsigned char );
+    void write_long(unsigned long);
+    void write_short(unsigned short);
+    void write_byte(unsigned char);
 
- public:
+public:
 
     midifile(const Glib::ustring&);
- 
+
     ~midifile();
 
-    bool parse( perform *a_perf, int a_screen_set );
-    bool write( perform *a_perf );
+    bool parse(perform *a_perf, int a_screen_set);
+    bool write(perform *a_perf);
 
 };
 
 
-#endif 
+#endif

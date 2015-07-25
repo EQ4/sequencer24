@@ -70,13 +70,13 @@ const int c_mainwid_spacing = 2;
 const int c_control_height = 0;
 
 
-const int c_mainwid_x = ((c_seqarea_x + c_mainwid_spacing )
-			 * c_mainwnd_cols - c_mainwid_spacing
-			 +  c_mainwid_border * 2 );
-const int c_mainwid_y = ((c_seqarea_y  + c_mainwid_spacing )
-			 * c_mainwnd_rows
-			 +  c_mainwid_border * 2
-			 +  c_control_height );
+const int c_mainwid_x = ((c_seqarea_x + c_mainwid_spacing)
+                         * c_mainwnd_cols - c_mainwid_spacing
+                         +  c_mainwid_border * 2);
+const int c_mainwid_y = ((c_seqarea_y  + c_mainwid_spacing)
+                         * c_mainwnd_rows
+                         +  c_mainwid_border * 2
+                         +  c_control_height);
 
 
 
@@ -107,7 +107,7 @@ const int c_timearea_y = 18;
 
 /* sequences */
 const int c_midi_notes = 256;
-const std::string c_dummy( "Untitled" );
+const std::string c_dummy("Untitled");
 
 /* maximum size of sequence, default size */
 const int c_maxbeats     = 0xFFFF;   /* max number of beats in a sequence */
@@ -184,11 +184,12 @@ extern user_midi_bus_definition   global_user_midi_bus_definitions[c_maxBuses];
 extern user_instrument_definition global_user_instrument_definitions[c_max_instruments];
 
 /* scales */
-enum c_music_scales {
-  c_scale_off,
-  c_scale_major,
-  c_scale_minor,
-  c_scale_size
+enum c_music_scales
+{
+    c_scale_off,
+    c_scale_major,
+    c_scale_minor,
+    c_scale_size
 
 };
 
@@ -196,24 +197,24 @@ enum c_music_scales {
 const bool c_scales_policy[c_scale_size][12] =
 {
     /* off = chromatic */
-    { true,true,true,true,true,true,true,true,true,true,true,true},
+    { true, true, true, true, true, true, true, true, true, true, true, true},
 
     /* major */
-    { true,false,true,false,true,true,false,true,false,true,false,true},
+    { true, false, true, false, true, true, false, true, false, true, false, true},
 
     /* minor */
-    { true,false,true,true,false,true,false,true,true,false,true,false},
+    { true, false, true, true, false, true, false, true, true, false, true, false},
 
 };
 
 const int c_scales_transpose_up[c_scale_size][12] =
 {
     /* off = chromatic */
-    { 1,1,1,1,1,1,1,1,1,1,1,1},
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
     /* major */
-    { 2,0,2,0,1,2,0,2,0,2,0,1},
+    { 2, 0, 2, 0, 1, 2, 0, 2, 0, 2, 0, 1},
     /* minor */
-    { 2,0,1,2,0,2,0,1,2,0,2,0},
+    { 2, 0, 1, 2, 0, 2, 0, 1, 2, 0, 2, 0},
 
 };
 
@@ -223,24 +224,24 @@ const int c_scales_transpose_up[c_scale_size][12] =
 const int c_scales_transpose_dn[c_scale_size][12] =
 {
     /* off = chromatic */
-    { -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
     /* major */
-    { -1,0,-2,0,-2,-1,0,-2,0,-2,0,-2},
+    { -1, 0, -2, 0, -2, -1, 0, -2, 0, -2, 0, -2},
     /* minor */
-    { -2,0,-2,-1,0,-2,0,-2,-1,0,-2,0},
+    { -2, 0, -2, -1, 0, -2, 0, -2, -1, 0, -2, 0},
 
 };
 
 const int c_scales_symbol[c_scale_size][12] =
 {
     /* off = chromatic */
-    { 32,32,32,32,32,32,32,32,32,32,32,32},
+    { 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32},
 
     /* major */
-    { 32,32,32,32,32,32,32,32,32,32,32,32},
+    { 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32},
 
     /* minor */
-    { 32,32,32,32,32,32,32,32,129,128,129,128},
+    { 32, 32, 32, 32, 32, 32, 32, 32, 129, 128, 129, 128},
 
 };
 
@@ -290,7 +291,7 @@ const char c_interval_text[][3] =
     "M9",
     ""
 };
- 	  	  	
+
 const char c_chord_text[][5] =
 {
     "I",

@@ -28,13 +28,13 @@
 class userfile  : public configfile
 {
 
- public:
+public:
 
-    userfile( string a_name );
-    ~userfile( );
+    userfile(string a_name);
+    ~userfile();
 
-    bool parse( perform *a_perf );
-    bool write( perform *a_perf );
+    bool parse(perform *a_perf);
+    bool write(perform *a_perf);
 };
 
 

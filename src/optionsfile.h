@@ -30,13 +30,13 @@
 class optionsfile : public configfile
 {
 
- public:
+public:
 
     optionsfile(const Glib::ustring& a_name);
-    ~optionsfile( );
+    ~optionsfile();
 
-    bool parse( perform *a_perf );
-    bool write( perform *a_perf );
+    bool parse(perform *a_perf);
+    bool write(perform *a_perf);
 
 };
 

@@ -57,7 +57,7 @@ using namespace Gtk;
 class options : public Gtk::Dialog
 {
 
- private:
+private:
 
 #if GTK_MINOR_VERSION < 12
     Tooltips *m_tooltips;
@@ -74,7 +74,8 @@ class options : public Gtk::Dialog
 
     Notebook *m_notebook;
 
-    enum button {
+    enum button
+    {
         e_jack_transport,
         e_jack_master,
         e_jack_master_cond,
@@ -85,15 +86,15 @@ class options : public Gtk::Dialog
         e_jack_disconnect
     };
 
-    void clock_callback_off( int a_bus, RadioButton *a_button );
-    void clock_callback_on ( int a_bus, RadioButton *a_button );
-    void clock_callback_mod( int a_bus, RadioButton *a_button );
+    void clock_callback_off(int a_bus, RadioButton *a_button);
+    void clock_callback_on(int a_bus, RadioButton *a_button);
+    void clock_callback_mod(int a_bus, RadioButton *a_button);
 
-    void clock_mod_callback( Adjustment *adj );
+    void clock_mod_callback(Adjustment *adj);
 
-    void input_callback( int a_bus, Button *a_button );
+    void input_callback(int a_bus, Button *a_button);
 
-    void transport_callback( button a_type, Button *a_button );
+    void transport_callback(button a_type, Button *a_button);
 
     void mouse_seq24_callback(Gtk::RadioButton*);
     void mouse_fruity_callback(Gtk::RadioButton*);
@@ -107,7 +108,7 @@ class options : public Gtk::Dialog
 
 public:
 
-    options( Gtk::Window &parent, perform *a_p );
+    options(Gtk::Window &parent, perform *a_p);
 };
 
 #endif

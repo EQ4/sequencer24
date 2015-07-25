@@ -46,7 +46,7 @@ const unsigned char  EVENT_SYSEX_END        = 0xF7;
 class event
 {
 
- private:
+private:
 
     /* timestamp in ticks */
     unsigned long m_timestamp;
@@ -81,61 +81,61 @@ class event
     bool m_painted;
 
     /* used in sorting */
-    int get_rank( ) const;
+    int get_rank() const;
 
- public:
+public:
 
     event();
     ~event();
 
-    void set_timestamp( const unsigned long time );
+    void set_timestamp(const unsigned long time);
     long get_timestamp();
-    void mod_timestamp( unsigned long a_mod );
+    void mod_timestamp(unsigned long a_mod);
 
-    void set_status( const char status  );
-    unsigned char get_status( );
-    void set_data( const char D1 );
-    void set_data( const char D1, const char D2 );
-    void get_data( unsigned char *D0, unsigned char *D1 );
-	void increment_data1(void );
-	void decrement_data1(void );
-	void increment_data2(void );
-	void decrement_data2(void );
+    void set_status(const char status);
+    unsigned char get_status();
+    void set_data(const char D1);
+    void set_data(const char D1, const char D2);
+    void get_data(unsigned char *D0, unsigned char *D1);
+    void increment_data1(void);
+    void decrement_data1(void);
+    void increment_data2(void);
+    void decrement_data2(void);
 
-    void start_sysex( void );
-    bool append_sysex( unsigned char *a_data, long size );
-    unsigned char *get_sysex( void );
+    void start_sysex(void);
+    bool append_sysex(unsigned char *a_data, long size);
+    unsigned char *get_sysex(void);
 
-    void set_note( char a_note );
+    void set_note(char a_note);
 
-    void set_size( long a_size );
-    long get_size( void );
+    void set_size(long a_size);
+    long get_size(void);
 
-    void link( event *event );
-    event *get_linked( );
-    bool is_linked( );
-    void clear_link( );
+    void link(event *event);
+    event *get_linked();
+    bool is_linked();
+    void clear_link();
 
-    void paint( );
-    void unpaint( );
-    bool is_painted( );
+    void paint();
+    void unpaint();
+    bool is_painted();
 
-    void mark( );
-    void unmark( );
-    bool is_marked( );
+    void mark();
+    void unmark();
+    bool is_marked();
 
-    void select( );
-    void unselect( );
-    bool is_selected( );
+    void select();
+    void unselect();
+    bool is_selected();
 
     /* set status to midi clock */
-    void make_clock( );
+    void make_clock();
 
 
     /* gets the note assuming its note on/off */
     unsigned char get_note();
     unsigned char get_note_velocity();
-    void set_note_velocity( int a_vel );
+    void set_note_velocity(int a_vel);
 
     /* returns true if status is set */
     bool is_note_on();
@@ -145,11 +145,11 @@ class event
 
     /* overloads */
 
-    bool operator> ( const event &rhsevent );
-    bool operator< ( const event &rhsevent );
+    bool operator> (const event &rhsevent);
+    bool operator< (const event &rhsevent);
 
-    bool operator<=( const unsigned long &rhslong );
-    bool operator> ( const unsigned long &rhslong );
+    bool operator<=(const unsigned long &rhslong);
+    bool operator> (const unsigned long &rhslong);
 
     friend class sequence;
 };

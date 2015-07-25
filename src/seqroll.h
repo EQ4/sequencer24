@@ -49,14 +49,14 @@ using namespace Gtk;
 
 class rect
 {
- public:
+public:
     int x, y, height, width;
 };
 
 class seqroll;
 struct FruitySeqRollInput
 {
-    FruitySeqRollInput() : m_adding( false ), m_canadd( true ), m_erase_painting( false )
+    FruitySeqRollInput() : m_adding(false), m_canadd(true), m_erase_painting(false)
     {}
     bool on_button_press_event(GdkEventButton* a_ev, seqroll& ths);
     bool on_button_release_event(GdkEventButton* a_ev, seqroll& ths);
@@ -69,12 +69,12 @@ struct FruitySeqRollInput
 };
 struct Seq24SeqRollInput
 {
-    Seq24SeqRollInput() : m_adding( false )
+    Seq24SeqRollInput() : m_adding(false)
     {}
     bool on_button_press_event(GdkEventButton* a_ev, seqroll& ths);
     bool on_button_release_event(GdkEventButton* a_ev, seqroll& ths);
     bool on_motion_notify_event(GdkEventMotion* a_ev, seqroll& ths);
-    void set_adding( bool a_adding, seqroll& ths );
+    void set_adding(bool a_adding, seqroll& ths);
     bool m_adding;
 };
 
@@ -83,7 +83,7 @@ struct Seq24SeqRollInput
 class seqroll : public Gtk::DrawingArea
 {
 
- private:
+private:
     friend struct FruitySeqRollInput;
     FruitySeqRollInput m_fruity_interaction;
 
@@ -120,7 +120,7 @@ class seqroll : public Gtk::DrawingArea
 
     int m_window_x, m_window_y;
 
-	/* what is the data window currently editing ? */
+    /* what is the data window currently editing ? */
     unsigned char m_status;
     unsigned char m_cc;
 
@@ -169,53 +169,53 @@ class seqroll : public Gtk::DrawingArea
     bool on_key_press_event(GdkEventKey* a_p0);
     bool on_focus_in_event(GdkEventFocus*);
     bool on_focus_out_event(GdkEventFocus*);
-    bool on_scroll_event( GdkEventScroll* a_ev);
+    bool on_scroll_event(GdkEventScroll* a_ev);
 
-    bool on_leave_notify_event	(GdkEventCrossing* a_p0);
-    bool on_enter_notify_event	(GdkEventCrossing* a_p0);
+    bool on_leave_notify_event(GdkEventCrossing* a_p0);
+    bool on_enter_notify_event(GdkEventCrossing* a_p0);
 
 
-    void convert_xy( int a_x, int a_y, long *a_ticks, int *a_note);
-    void convert_tn( long a_ticks, int a_note, int *a_x, int *a_y);
+    void convert_xy(int a_x, int a_y, long *a_ticks, int *a_note);
+    void convert_tn(long a_ticks, int a_note, int *a_x, int *a_y);
 
-    void snap_y( int *a_y );
-    void snap_x( int *a_x );
+    void snap_y(int *a_y);
+    void snap_x(int *a_x);
 
-    void xy_to_rect( int a_x1,  int a_y1,
-		     int a_x2,  int a_y2,
-		     int *a_x,  int *a_y,
-		     int *a_w,  int *a_h );
+    void xy_to_rect(int a_x1,  int a_y1,
+                    int a_x2,  int a_y2,
+                    int *a_x,  int *a_y,
+                    int *a_w,  int *a_h);
 
-    void convert_tn_box_to_rect( long a_tick_s, long a_tick_f,
-				 int a_note_h, int a_note_l,
-				 int *a_x, int *a_y,
-				 int *a_w, int *a_h );
-	
-    void draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw );
+    void convert_tn_box_to_rect(long a_tick_s, long a_tick_f,
+                                int a_note_h, int a_note_l,
+                                int *a_x, int *a_y,
+                                int *a_w, int *a_h);
+
+    void draw_events_on(Glib::RefPtr<Gdk::Drawable> a_draw);
 
 
     int idle_progress();
 
-    void on_size_allocate(Gtk::Allocation& );
+    void on_size_allocate(Gtk::Allocation&);
 
-    void change_horz( void );
-    void change_vert( void );
+    void change_horz(void);
+    void change_vert(void);
 
-    void force_draw( void );
+    void force_draw(void);
 
 
- public:
+public:
 
     void reset();
     void redraw();
     void redraw_events();
-    void set_zoom( int a_zoom );
-    void set_snap( int a_snap );
-	void set_note_length( int a_note_length );
+    void set_zoom(int a_zoom);
+    void set_snap(int a_snap);
+    void set_note_length(int a_note_length);
     void set_ignore_redraw(bool a_ignore);
 
-    void set_scale( int a_scale );
-    void set_key( int a_key );
+    void set_scale(int a_scale);
+    void set_key(int a_key);
 
     void update_sizes();
     void update_background();
@@ -227,22 +227,22 @@ class seqroll : public Gtk::DrawingArea
 
     void draw_progress_on_window();
 
-    void start_paste( );
+    void start_paste();
 
-    void set_background_sequence( bool a_state, int a_seq );
+    void set_background_sequence(bool a_state, int a_seq);
 
-    seqroll( perform *a_perf,
-             sequence *a_seq, int a_zoom, int a_snap,
-             seqdata *a_seqdata_wid,
-             seqevent *a_seqevent_wid,
-             seqkeys *a_seqkeys_wid,
-             int a_pos,
-             Adjustment *a_hadjust,
-             Adjustment *a_vadjust );
+    seqroll(perform *a_perf,
+            sequence *a_seq, int a_zoom, int a_snap,
+            seqdata *a_seqdata_wid,
+            seqevent *a_seqevent_wid,
+            seqkeys *a_seqkeys_wid,
+            int a_pos,
+            Adjustment *a_hadjust,
+            Adjustment *a_vadjust);
 
-    void set_data_type( unsigned char a_status, unsigned char a_control  );
+    void set_data_type(unsigned char a_status, unsigned char a_control);
 
-    ~seqroll( );
+    ~seqroll();
 };
 
 #endif

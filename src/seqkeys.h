@@ -43,7 +43,7 @@
 /* holds the left side piano */
 class seqkeys : public Gtk::DrawingArea
 {
- private:
+private:
 
     Glib::RefPtr<Gdk::GC> m_gc;
     Glib::RefPtr<Gdk::Window> m_window;
@@ -68,11 +68,11 @@ class seqkeys : public Gtk::DrawingArea
     bool on_motion_notify_event(GdkEventMotion* a_p0);
     bool on_leave_notify_event(GdkEventCrossing* p0);
     bool on_enter_notify_event(GdkEventCrossing* p0);
-    bool on_scroll_event( GdkEventScroll* a_ev);
+    bool on_scroll_event(GdkEventScroll* a_ev);
 
     void draw_area();
     void update_pixmap();
-    void convert_y( int a_y, int *a_note);
+    void convert_y(int a_y, int *a_note);
 
     bool m_hint_state;
     int m_hint_key;
@@ -83,30 +83,30 @@ class seqkeys : public Gtk::DrawingArea
     int          m_scale;
     int          m_key;
 
-    void draw_key( int a_key, bool a_state );
+    void draw_key(int a_key, bool a_state);
     void on_size_allocate(Gtk::Allocation&);
 
-    void change_vert( void );
-    void force_draw( void );
+    void change_vert(void);
+    void force_draw(void);
 
-    void update_sizes( void );
+    void update_sizes(void);
 
     void reset();
 
 public:
 
     /* sets key to grey */
-    void set_hint_key( int a_key );
+    void set_hint_key(int a_key);
 
     /* true == on, false == off */
-    void set_hint_state( bool a_state );
+    void set_hint_state(bool a_state);
 
-    seqkeys( sequence *a_seq,
-             Gtk::Adjustment *a_vadjust );
+    seqkeys(sequence *a_seq,
+            Gtk::Adjustment *a_vadjust);
 
 
-    void set_scale( int a_scale );
-    void set_key( int a_key );
+    void set_scale(int a_scale);
+    void set_key(int a_key);
 
 
 };

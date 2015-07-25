@@ -49,13 +49,13 @@ using namespace Gtk;
 
 const int c_perfroll_background_x = (c_ppqn * 4 * 16) / c_perf_scale_x;
 const int c_perfroll_size_box_w = 3;
-const int c_perfroll_size_box_click_w = c_perfroll_size_box_w+1 ;
+const int c_perfroll_size_box_click_w = c_perfroll_size_box_w + 1 ;
 
 /* performance roll */
 class perfroll : public Gtk::DrawingArea
 {
 
- private:
+private:
     friend class FruityPerfInput;
     friend class Seq24PerfInput;
 
@@ -105,57 +105,57 @@ class perfroll : public Gtk::DrawingArea
     bool on_button_press_event(GdkEventButton* a_ev);
     bool on_button_release_event(GdkEventButton* a_ev);
     bool on_motion_notify_event(GdkEventMotion* a_ev);
-    bool on_scroll_event( GdkEventScroll* a_ev ) ;
+    bool on_scroll_event(GdkEventScroll* a_ev) ;
 
     bool on_focus_in_event(GdkEventFocus*);
     bool on_focus_out_event(GdkEventFocus*);
 
-    void on_size_request(GtkRequisition* );
-    void on_size_allocate(Gtk::Allocation& );
+    void on_size_request(GtkRequisition*);
+    void on_size_allocate(Gtk::Allocation&);
 
     bool on_key_press_event(GdkEventKey* a_p0);
 
-    void convert_xy( int a_x, int a_y, long *a_ticks, int *a_seq);
-    void convert_x( int a_x, long *a_ticks);
-    void snap_x( int *a_x );
+    void convert_xy(int a_x, int a_y, long *a_ticks, int *a_seq);
+    void convert_x(int a_x, long *a_ticks);
+    void snap_x(int *a_x);
 
 
-    void start_playing( void );
-    void stop_playing( void );
-
-
-
-    void draw_sequence_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_sequence );
-    void draw_background_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_sequence );
-
-    void draw_drawable_row( Glib::RefPtr<Gdk::Drawable> a_dest, Glib::RefPtr<Gdk::Drawable> a_src,  long a_y );
-
-
-    void change_horz( void );
-    void change_vert( void );
-
-    void split_trigger( int a_sequence, long a_tick );
+    void start_playing(void);
+    void stop_playing(void);
 
 
 
- public:
-    void set_guides( int a_snap, int a_measure, int a_beat );
+    void draw_sequence_on(Glib::RefPtr<Gdk::Drawable> a_draw, int a_sequence);
+    void draw_background_on(Glib::RefPtr<Gdk::Drawable> a_draw, int a_sequence);
+
+    void draw_drawable_row(Glib::RefPtr<Gdk::Drawable> a_dest, Glib::RefPtr<Gdk::Drawable> a_src,  long a_y);
+
+
+    void change_horz(void);
+    void change_vert(void);
+
+    void split_trigger(int a_sequence, long a_tick);
+
+
+
+public:
+    void set_guides(int a_snap, int a_measure, int a_beat);
 
     void update_sizes();
-    void init_before_show( );
+    void init_before_show();
     void fill_background_pixmap();
 
     void increment_size();
 
     void draw_progress();
 
-    void redraw_dirty_sequences( void );
+    void redraw_dirty_sequences(void);
 
-    perfroll( perform *a_perf,
-	      Adjustment *a_hadjust,
-	      Adjustment *a_vadjust );
+    perfroll(perform *a_perf,
+             Adjustment *a_hadjust,
+             Adjustment *a_vadjust);
 
-    ~perfroll( );
+    ~perfroll();
 };
 
 #endif

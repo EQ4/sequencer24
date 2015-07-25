@@ -50,8 +50,8 @@ class seqevent;
 struct FruitySeqEventInput
 {
     FruitySeqEventInput() : m_justselected_one(false),
-                            m_is_drag_pasting_start(false),
-                            m_is_drag_pasting(false)
+        m_is_drag_pasting_start(false),
+        m_is_drag_pasting(false)
     {}
     bool m_justselected_one;
     bool m_is_drag_pasting_start;
@@ -63,11 +63,11 @@ struct FruitySeqEventInput
 };
 struct Seq24SeqEventInput
 {
-    Seq24SeqEventInput() : m_adding( false ) {}
+    Seq24SeqEventInput() : m_adding(false) {}
     bool on_button_press_event(GdkEventButton* a_ev, seqevent& ths);
     bool on_button_release_event(GdkEventButton* a_ev, seqevent& ths);
     bool on_motion_notify_event(GdkEventMotion* a_ev, seqevent& ths);
-    void set_adding( bool a_adding, seqevent& ths );
+    void set_adding(bool a_adding, seqevent& ths);
     bool m_adding;
 };
 
@@ -76,7 +76,7 @@ struct Seq24SeqEventInput
 class seqevent : public Gtk::DrawingArea
 {
 
- private:
+private:
     friend struct FruitySeqEventInput;
     FruitySeqEventInput m_fruity_interaction;
 
@@ -136,39 +136,39 @@ class seqevent : public Gtk::DrawingArea
     bool on_focus_in_event(GdkEventFocus*);
     bool on_focus_out_event(GdkEventFocus*);
 
-    void convert_x( int a_x, long *a_ticks );
-    void convert_t( long a_ticks, int *a_x );
+    void convert_x(int a_x, long *a_ticks);
+    void convert_t(long a_ticks, int *a_x);
 
-    void snap_y( int *a_y );
-    void snap_x( int *a_x );
+    void snap_y(int *a_y);
+    void snap_x(int *a_x);
 
-    void x_to_w( int a_x1, int a_x2,
-		 int *a_x, int *a_w  );
+    void x_to_w(int a_x1, int a_x2,
+                int *a_x, int *a_w);
 
-    void drop_event( long a_tick );
-    void draw_events_on ( Glib::RefPtr<Gdk::Drawable> a_draw );
+    void drop_event(long a_tick);
+    void draw_events_on(Glib::RefPtr<Gdk::Drawable> a_draw);
 
-    void start_paste( void );
+    void start_paste(void);
 
-    void on_size_allocate(Gtk::Allocation& );
-    void change_horz( void );
+    void on_size_allocate(Gtk::Allocation&);
+    void change_horz(void);
 
-    void force_draw( void );
+    void force_draw(void);
 
- public:
+public:
 
-    seqevent( sequence *a_seq,
-              int a_zoom,
-              int a_snap,
-              seqdata *a_seqdata_wid,
-              Gtk::Adjustment   *a_hadjust );
+    seqevent(sequence *a_seq,
+             int a_zoom,
+             int a_snap,
+             seqdata *a_seqdata_wid,
+             Gtk::Adjustment   *a_hadjust);
 
     void reset();
     void redraw();
-    void set_zoom( int a_zoom );
-    void set_snap( int a_snap );
+    void set_zoom(int a_zoom);
+    void set_snap(int a_snap);
 
-    void set_data_type( unsigned char a_status, unsigned char a_control  );
+    void set_data_type(unsigned char a_status, unsigned char a_control);
 
     void update_sizes();
     void draw_background();

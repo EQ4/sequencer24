@@ -37,9 +37,9 @@ event::event() :
 
 event::~event()
 {
-  delete[] m_sysex;
+    delete[] m_sysex;
 
-  m_sysex = NULL;
+    m_sysex = NULL;
 }
 
 long
@@ -49,145 +49,146 @@ event::get_timestamp()
 }
 
 void
-event::set_timestamp( const unsigned long a_time )
+event::set_timestamp(const unsigned long a_time)
 {
     m_timestamp = a_time;
 }
 
 void
-event::mod_timestamp( unsigned long a_mod )
+event::mod_timestamp(unsigned long a_mod)
 {
     m_timestamp %= a_mod;
 }
 
 void
-event::set_status( const char a_status  )
+event::set_status(const char a_status)
 {
-   /* bitwise AND to clear the channel portion of the status */
-    if ( (unsigned char) a_status >= 0xF0 )
-      m_status = (char) a_status;
+    /* bitwise AND to clear the channel portion of the status */
+    if ((unsigned char) a_status >= 0xF0)
+        m_status = (char) a_status;
     else
-      m_status = (char) (a_status & EVENT_CLEAR_CHAN_MASK);
+        m_status = (char)(a_status & EVENT_CLEAR_CHAN_MASK);
 }
 
 void
-event::make_clock( )
+event::make_clock()
 {
     m_status = (unsigned char) EVENT_MIDI_CLOCK;
 }
 
 void
-event::set_data( char a_D1  )
+event::set_data(char a_D1)
 {
     m_data[0] = a_D1 & 0x7F;
 }
 
 void
-event::set_data( char a_D1, char a_D2 )
+event::set_data(char a_D1, char a_D2)
 {
     m_data[0] = a_D1 & 0x7F;
     m_data[1] = a_D2 & 0x7F;
 }
 
 void
-event::increment_data2(void )
+event::increment_data2(void)
 {
-	m_data[1] = (m_data[1]+1) & 0x7F;
+    m_data[1] = (m_data[1] + 1) & 0x7F;
 }
 
 void
-event::decrement_data2(void )
+event::decrement_data2(void)
 {
-	m_data[1] = (m_data[1]-1) & 0x7F;
+    m_data[1] = (m_data[1] - 1) & 0x7F;
 }
 
 
 
 void
-event::increment_data1(void )
+event::increment_data1(void)
 {
-	m_data[0] = (m_data[0]+1) & 0x7F;
+    m_data[0] = (m_data[0] + 1) & 0x7F;
 }
 
 void
-event::decrement_data1(void )
+event::decrement_data1(void)
 {
-	m_data[0] = (m_data[0]-1) & 0x7F;
+    m_data[0] = (m_data[0] - 1) & 0x7F;
 }
 
 
 void
-event::get_data( unsigned char *D0, unsigned char *D1 )
+event::get_data(unsigned char *D0, unsigned char *D1)
 {
     *D0 = m_data[0];
     *D1 = m_data[1];
 }
 
 unsigned char
-event::get_status( )
+event::get_status()
 {
     return m_status;
 }
 
 
 void
-event::start_sysex( void  )
+event::start_sysex(void)
 {
-  delete[] m_sysex;
+    delete[] m_sysex;
 
-  m_sysex = NULL;
-  m_size = 0;
+    m_sysex = NULL;
+    m_size = 0;
 }
 
 bool
-event::append_sysex( unsigned char *a_data, long a_size )
+event::append_sysex(unsigned char *a_data, long a_size)
 {
-  bool ret = true;
+    bool ret = true;
 
-  unsigned char *buffer = new unsigned char[m_size + a_size];
+    unsigned char *buffer = new unsigned char[m_size + a_size];
 
-  /* copy old and append */
-  memcpy(  buffer        , m_sysex, m_size );
-  memcpy( &buffer[m_size], a_data, a_size );
+    /* copy old and append */
+    memcpy(buffer        , m_sysex, m_size);
+    memcpy(&buffer[m_size], a_data, a_size);
 
-  delete[] m_sysex;
+    delete[] m_sysex;
 
-  m_size = m_size + a_size;
-  m_sysex = buffer;
+    m_size = m_size + a_size;
+    m_sysex = buffer;
 
-  for ( int i=0; i<a_size; i++ ){
+    for (int i = 0; i < a_size; i++)
+    {
 
-    if ( a_data[i] == EVENT_SYSEX_END )
-      ret = false;
-  }
+        if (a_data[i] == EVENT_SYSEX_END)
+            ret = false;
+    }
 
-  return ret;
+    return ret;
 
 }
 
 
 unsigned char *
-event::get_sysex( void )
+event::get_sysex(void)
 {
-  return m_sysex;
+    return m_sysex;
 }
 
 
 
 void
-event::set_size( long a_size )
+event::set_size(long a_size)
 {
-  m_size = a_size;
+    m_size = a_size;
 }
 
 long
-event::get_size( void )
+event::get_size(void)
 {
-  return m_size;
+    return m_size;
 }
 
 void
-event::set_note_velocity( int a_vel )
+event::set_note_velocity(int a_vel)
 {
     m_data[1] = a_vel & 0x7F;
 }
@@ -211,7 +212,7 @@ event::get_note()
 }
 
 void
-event::set_note( char a_note )
+event::set_note(char a_note)
 {
     m_data[0] = a_note & 0x7F;
 }
@@ -226,60 +227,63 @@ event::get_note_velocity()
 void
 event::print()
 {
-    printf( "[%06ld] [%04lX] %02X ",
-	    m_timestamp,
-	    m_size,
-	    m_status );
+    printf("[%06ld] [%04lX] %02X ",
+           m_timestamp,
+           m_size,
+           m_status);
 
-    if ( m_status == EVENT_SYSEX ){
+    if (m_status == EVENT_SYSEX)
+    {
 
-      for( int i=0; i<m_size; i++ ){
+        for (int i = 0; i < m_size; i++)
+        {
 
-	if ( i%16 == 0 )
-	  printf( "\n    " );
+            if (i % 16 == 0)
+                printf("\n    ");
 
-	printf( "%02X ", m_sysex[i] );
+            printf("%02X ", m_sysex[i]);
 
-      }
+        }
 
-      printf( "\n" );
+        printf("\n");
     }
-    else {
+    else
+    {
 
-      printf( "%02X %02X\n",
-	      m_data[0],
-	      m_data[1] );
+        printf("%02X %02X\n",
+               m_data[0],
+               m_data[1]);
     }
 }
 
 int
-event::get_rank( void ) const
+event::get_rank(void) const
 {
-    switch ( m_status )
+    switch (m_status)
     {
-        case EVENT_NOTE_OFF:
-            return 0x100;
-        case EVENT_NOTE_ON:
-            return 0x090;
+    case EVENT_NOTE_OFF:
+        return 0x100;
+    case EVENT_NOTE_ON:
+        return 0x090;
 
-        case EVENT_AFTERTOUCH:
-        case EVENT_CHANNEL_PRESSURE:
-        case EVENT_PITCH_WHEEL:
-            return 0x050;
+    case EVENT_AFTERTOUCH:
+    case EVENT_CHANNEL_PRESSURE:
+    case EVENT_PITCH_WHEEL:
+        return 0x050;
 
-        case EVENT_CONTROL_CHANGE:
-            return 0x010;
-        case EVENT_PROGRAM_CHANGE:
-            return 0x000;
-        default:
-            return 0;
+    case EVENT_CONTROL_CHANGE:
+        return 0x010;
+    case EVENT_PROGRAM_CHANGE:
+        return 0x000;
+    default:
+        return 0;
     }
 }
 
 bool
-event::operator>( const event &a_rhsevent )
+event::operator>(const event &a_rhsevent)
 {
-    if ( m_timestamp == a_rhsevent.m_timestamp )
+    if (m_timestamp == a_rhsevent.m_timestamp)
     {
         return (get_rank() > a_rhsevent.get_rank());
     }
@@ -291,9 +295,9 @@ event::operator>( const event &a_rhsevent )
 
 
 bool
-event::operator<( const event &a_rhsevent )
+event::operator<(const event &a_rhsevent)
 {
-    if ( m_timestamp == a_rhsevent.m_timestamp )
+    if (m_timestamp == a_rhsevent.m_timestamp)
     {
         return (get_rank() < a_rhsevent.get_rank());
     }
@@ -304,7 +308,7 @@ event::operator<( const event &a_rhsevent )
 }
 
 bool
-event::operator<=( const unsigned long &a_rhslong )
+event::operator<=(const unsigned long &a_rhslong)
 {
     return (m_timestamp <= a_rhslong);
 }
@@ -312,85 +316,85 @@ event::operator<=( const unsigned long &a_rhslong )
 
 
 bool
-event::operator>( const unsigned long &a_rhslong )
+event::operator>(const unsigned long &a_rhslong)
 {
     return (m_timestamp > a_rhslong);
 }
 
 void
-event::link( event *a_event )
+event::link(event *a_event)
 {
     m_has_link = true;
     m_linked = a_event;
 }
 
 event*
-event::get_linked( )
+event::get_linked()
 {
     return m_linked;
 }
 
 bool
-event::is_linked( )
+event::is_linked()
 {
     return m_has_link;
 }
 
 void
-event::clear_link( )
+event::clear_link()
 {
     m_has_link = false;
 }
 
 void
-event::select( )
+event::select()
 {
     m_selected = true;
 }
 
 void
-event::unselect( )
+event::unselect()
 {
     m_selected = false;
 }
 
 bool
-event::is_selected( )
+event::is_selected()
 {
     return m_selected;
 }
 void
-event::paint( )
+event::paint()
 {
     m_painted = true;
 }
 
 void
-event::unpaint( )
+event::unpaint()
 {
     m_painted = false;
 }
 
 bool
-event::is_painted( )
+event::is_painted()
 {
     return m_painted;
 }
 
 void
-event::mark( )
+event::mark()
 {
     m_marked = true;
 }
 
 void
-event::unmark( )
+event::unmark()
 {
     m_marked = false;
 }
 
 bool
-event::is_marked( )
+event::is_marked()
 {
     return m_marked;
 }

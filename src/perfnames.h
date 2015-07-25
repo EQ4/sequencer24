@@ -47,7 +47,7 @@ using namespace Gtk;
 /* holds the left side piano */
 class perfnames : public virtual Gtk::DrawingArea, public virtual seqmenu
 {
- private:
+private:
 
     Glib::RefPtr<Gdk::GC>       m_gc;
     Glib::RefPtr<Gdk::Window>   m_window;
@@ -69,26 +69,26 @@ class perfnames : public virtual Gtk::DrawingArea, public virtual seqmenu
     bool on_expose_event(GdkEventExpose* a_ev);
     bool on_button_press_event(GdkEventButton* a_ev);
     bool on_button_release_event(GdkEventButton* a_ev);
-    void on_size_allocate(Gtk::Allocation& );
-    bool on_scroll_event( GdkEventScroll* a_ev ) ;
+    void on_size_allocate(Gtk::Allocation&);
+    bool on_scroll_event(GdkEventScroll* a_ev) ;
 
     void draw_area();
     void update_pixmap();
 
-    void convert_y( int a_y, int *a_note);
+    void convert_y(int a_y, int *a_note);
 
-    void draw_sequence( int a_sequence );
+    void draw_sequence(int a_sequence);
 
-    void change_vert( void );
+    void change_vert(void);
 
-    void redraw( int a_sequence );
+    void redraw(int a_sequence);
 
- public:
+public:
 
-    void redraw_dirty_sequences( void );
+    void redraw_dirty_sequences(void);
 
-    perfnames( perform *a_perf,
-	       Adjustment *a_vadjust   );
+    perfnames(perform *a_perf,
+              Adjustment *a_vadjust);
 
 
 };

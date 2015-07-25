@@ -42,9 +42,9 @@ public:
     enum type { location, events, groups };
 
     KeyBindEntry(type t, unsigned int* location_to_write = NULL,
-            perform* p = NULL, long s = 0);
+                 perform* p = NULL, long s = 0);
 
-    void set( unsigned int val );
+    void set(unsigned int val);
     virtual bool on_key_press_event(GdkEventKey* event);
 
 private:

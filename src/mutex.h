@@ -25,7 +25,8 @@
 
 #include <pthread.h>
 
-class mutex {
+class mutex
+{
 
 private:
 
@@ -45,7 +46,8 @@ public:
 
 };
 
-class condition_var : public mutex {
+class condition_var : public mutex
+{
 
 private:
 

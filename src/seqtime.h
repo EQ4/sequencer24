@@ -45,7 +45,7 @@
 class seqtime: public Gtk::DrawingArea
 {
 
- private:
+private:
 
     Glib::RefPtr<Gdk::GC>     m_gc;
     Glib::RefPtr<Gdk::Window>   m_window;
@@ -75,23 +75,23 @@ class seqtime: public Gtk::DrawingArea
 
     bool idle_progress();
 
-    void on_size_allocate(Gtk::Allocation& );
+    void on_size_allocate(Gtk::Allocation&);
 
-    void change_horz( void );
+    void change_horz(void);
 
-    void update_sizes( void );
+    void update_sizes(void);
 
-    void force_draw( void );
+    void force_draw(void);
 
 
- public:
+public:
 
-    seqtime( sequence *a_seq, int a_zoom,
-             Gtk::Adjustment   *a_hadjust );
+    seqtime(sequence *a_seq, int a_zoom,
+            Gtk::Adjustment   *a_hadjust);
 
     void reset();
-    void redraw( void );
-    void set_zoom( int a_zoom );
+    void redraw(void);
+    void set_zoom(int a_zoom);
 
 };
 

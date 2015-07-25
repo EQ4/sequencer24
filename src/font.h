@@ -42,14 +42,15 @@ private:
 
 public:
 
-    enum Color {
+    enum Color
+    {
         BLACK = 0,
         WHITE = 1
     };
 
-    font( );
+    font();
 
-    void init( Glib::RefPtr<Gdk::Window> a_window );
+    void init(Glib::RefPtr<Gdk::Window> a_window);
 
     void render_string_on_drawable(
         Glib::RefPtr<Gdk::GC> m_gc,
@@ -57,7 +58,7 @@ public:
         int y,
         Glib::RefPtr<Gdk::Drawable> a_draw,
         const char *str,
-        font::Color col );
+        font::Color col);
 
 };
 

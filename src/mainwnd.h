@@ -51,7 +51,7 @@ class mainwnd : public Gtk::Window, public performcallback
     /* notification handler for learn mode toggle */
     virtual void on_grouplearnchange(bool state);
 
- private:
+private:
 
     perform  *m_mainperf;
     bool      m_modified;
@@ -93,20 +93,20 @@ class mainwnd : public Gtk::Window, public performcallback
 
     sigc::connection   m_timeout_connect;
 
-    void file_import_dialog( void );
-    void options_dialog( void );
-    void about_dialog( void );
+    void file_import_dialog(void);
+    void options_dialog(void);
+    void about_dialog(void);
 
-    void adj_callback_ss( );
-    void adj_callback_bpm( );
-    void edit_callback_notepad( );
-    bool timer_callback( );
+    void adj_callback_ss();
+    void adj_callback_bpm();
+    void edit_callback_notepad();
+    bool timer_callback();
 
     void start_playing();
     void stop_playing();
     void learn_toggle();
-    void open_performance_edit( );
-    void sequence_key( int a_seq );
+    void open_performance_edit();
+    void sequence_key(int a_seq);
     void update_window_title();
     void toLower(basic_string<char>&);
     bool is_modified();
@@ -124,7 +124,7 @@ class mainwnd : public Gtk::Window, public performcallback
     bool install_signal_handlers();
     bool signal_action(Glib::IOCondition condition);
 
- public:
+public:
 
     mainwnd(perform *a_p);
     ~mainwnd();

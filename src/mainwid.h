@@ -56,7 +56,7 @@ const int c_seqarea_seq_y = c_text_y * 2;
 class mainwid : public Gtk::DrawingArea, public seqmenu
 {
 
- private:
+private:
 
     Glib::RefPtr<Gdk::GC> m_gc;
     Glib::RefPtr<Gdk::Window> m_window;
@@ -104,34 +104,34 @@ class mainwid : public Gtk::DrawingArea, public seqmenu
     bool on_focus_in_event(GdkEventFocus*);
     bool on_focus_out_event(GdkEventFocus*);
 
-    void draw_sequence_on_pixmap( int a_seq );
+    void draw_sequence_on_pixmap(int a_seq);
     void draw_sequences_on_pixmap();
 
     void fill_background_window();
     void draw_pixmap_on_window();
-    void draw_sequence_pixmap_on_window( int a_seq );
+    void draw_sequence_pixmap_on_window(int a_seq);
 
-    int seq_from_xy( int a_x, int a_y );
+    int seq_from_xy(int a_x, int a_y);
 
-    int timeout( void );
+    int timeout(void);
 
-    void redraw( int a_seq );
+    void redraw(int a_seq);
 
- public:
+public:
 
-    mainwid( perform *a_p );
-    ~mainwid( );
+    mainwid(perform *a_p);
+    ~mainwid();
 
     void reset();
 
     //int get_screenset( );
-    void set_screenset( int a_ss );
+    void set_screenset(int a_ss);
 
-    void update_sequence_on_window( int a_seq  );
-    void update_sequences_on_window( );
+    void update_sequence_on_window(int a_seq);
+    void update_sequences_on_window();
 
-    void update_markers( int a_ticks );
-    void draw_marker_on_sequence( int a_seq, int a_tick );
+    void update_markers(int a_ticks);
+    void draw_marker_on_sequence(int a_seq, int a_tick);
 
 };
 

@@ -23,7 +23,7 @@
 
 list < event > sequence::m_list_clipboard;
 
-sequence::sequence( ) :
+sequence::sequence() :
     m_midi_channel(0),
     m_bus(0),
 
@@ -66,26 +66,27 @@ sequence::sequence( ) :
 {
 
     /* no notes are playing */
-    for (int i=0; i< c_midi_notes; i++ )
+    for (int i = 0; i < c_midi_notes; i++)
         m_playing_notes[i] = 0;
 }
 
 void
-sequence::push_undo( void )
+sequence::push_undo(void)
 {
     lock();
-    m_list_undo.push( m_list_event );
+    m_list_undo.push(m_list_event);
     unlock();
 }
 
 
 void
-sequence::pop_undo( void )
+sequence::pop_undo(void)
 {
     lock();
 
-    if (m_list_undo.size() > 0 ){
-    m_list_redo.push( m_list_event );
+    if (m_list_undo.size() > 0)
+    {
+        m_list_redo.push(m_list_event);
         m_list_event = m_list_undo.top();
         m_list_undo.pop();
         verify_and_link();
@@ -96,12 +97,13 @@ sequence::pop_undo( void )
 }
 
 void
-sequence::pop_redo( void )
+sequence::pop_redo(void)
 {
     lock();
 
-    if (m_list_redo.size() > 0 ){
-        m_list_undo.push( m_list_event );
+    if (m_list_redo.size() > 0)
+    {
+        m_list_undo.push(m_list_event);
         m_list_event = m_list_redo.top();
         m_list_redo.pop();
         verify_and_link();
@@ -112,16 +114,17 @@ sequence::pop_redo( void )
 }
 
 void
-sequence::push_trigger_undo( void )
+sequence::push_trigger_undo(void)
 {
     lock();
-    m_list_trigger_undo.push( m_list_trigger );
+    m_list_trigger_undo.push(m_list_trigger);
 
     std::list<trigger>::iterator i;
 
-    for ( i  = m_list_trigger_undo.top().begin();
-          i != m_list_trigger_undo.top().end(); i++ ){
-      (*i).m_selected = false;
+    for (i  = m_list_trigger_undo.top().begin();
+            i != m_list_trigger_undo.top().end(); i++)
+    {
+        (*i).m_selected = false;
     }
 
 
@@ -130,13 +133,14 @@ sequence::push_trigger_undo( void )
 
 
 void
-sequence::pop_trigger_undo( void )
+sequence::pop_trigger_undo(void)
 {
     lock();
 
-    if (m_list_trigger_undo.size() > 0 ){
+    if (m_list_trigger_undo.size() > 0)
+    {
 
-    m_list_trigger_redo.push( m_list_trigger );
+        m_list_trigger_redo.push(m_list_trigger);
         m_list_trigger = m_list_trigger_undo.top();
         m_list_trigger_undo.pop();
     }
@@ -147,7 +151,7 @@ sequence::pop_trigger_undo( void )
 
 
 void
-sequence::set_master_midi_bus( mastermidibus *a_mmb )
+sequence::set_master_midi_bus(mastermidibus *a_mmb)
 {
     lock();
 
@@ -158,19 +162,19 @@ sequence::set_master_midi_bus( mastermidibus *a_mmb )
 
 
 void
-sequence::set_song_mute( bool a_mute )
+sequence::set_song_mute(bool a_mute)
 {
     m_song_mute = a_mute;
 }
 
 bool
-sequence::get_song_mute( void )
+sequence::get_song_mute(void)
 {
     return m_song_mute;
 }
 
 void
-sequence::set_bpm( long a_beats_per_measure )
+sequence::set_bpm(long a_beats_per_measure)
 {
     lock();
     m_time_beats_per_measure = a_beats_per_measure;
@@ -179,13 +183,13 @@ sequence::set_bpm( long a_beats_per_measure )
 }
 
 long
-sequence::get_bpm( void )
+sequence::get_bpm(void)
 {
     return m_time_beats_per_measure;
 }
 
 void
-sequence::set_bw( long a_beat_width )
+sequence::set_bw(long a_beat_width)
 {
     lock();
     m_time_beat_width = a_beat_width;
@@ -194,7 +198,7 @@ sequence::set_bw( long a_beat_width )
 }
 
 void
-sequence::set_rec_vol( long a_rec_vol )
+sequence::set_rec_vol(long a_rec_vol)
 {
     lock();
     m_rec_vol = a_rec_vol;
@@ -202,7 +206,7 @@ sequence::set_rec_vol( long a_rec_vol )
 }
 
 long
-sequence::get_bw( void )
+sequence::get_bw(void)
 {
     return m_time_beat_width;
 }
@@ -215,12 +219,12 @@ sequence::~sequence()
 
 /* adds event in sorted manner */
 void
-sequence::add_event( const event *a_e )
+sequence::add_event(const event *a_e)
 {
     lock();
 
-    m_list_event.push_front( *a_e );
-    m_list_event.sort( );
+    m_list_event.push_front(*a_e);
+    m_list_event.sort();
 
     reset_draw_marker();
 
@@ -230,7 +234,7 @@ sequence::add_event( const event *a_e )
 }
 
 void
-sequence::set_orig_tick( long a_tick )
+sequence::set_orig_tick(long a_tick)
 {
     lock();
     m_last_tick = a_tick;
@@ -239,7 +243,7 @@ sequence::set_orig_tick( long a_tick )
 
 
 void
-sequence::toggle_queued( void )
+sequence::toggle_queued(void)
 {
     lock();
 
@@ -252,7 +256,7 @@ sequence::toggle_queued( void )
 }
 
 void
-sequence::off_queued( void )
+sequence::off_queued(void)
 {
 
     lock();
@@ -265,21 +269,21 @@ sequence::off_queued( void )
 }
 
 bool
-sequence::get_queued( void )
+sequence::get_queued(void)
 {
     return m_queued;
 }
 
 long
-sequence::get_queued_tick( void )
+sequence::get_queued_tick(void)
 {
     return m_queued_tick;
 }
 
 
 /* tick comes in as global tick */
-    void
-sequence::play( long a_tick, bool a_playback_mode )
+void
+sequence::play(long a_tick, bool a_playback_mode)
 {
 
     lock();
@@ -296,7 +300,7 @@ sequence::play( long a_tick, bool a_playback_mode )
     long end_tick = a_tick;
     long trigger_offset = 0;
 
-    if (  m_song_mute )
+    if (m_song_mute)
     {
         set_playing(false);
     }
@@ -304,7 +308,8 @@ sequence::play( long a_tick, bool a_playback_mode )
     {
 
         /* if we are using our in sequence on/off triggers */
-        if ( a_playback_mode ){
+        if (a_playback_mode)
+        {
 
             bool trigger_state = false;
             long trigger_tick = 0;
@@ -312,22 +317,25 @@ sequence::play( long a_tick, bool a_playback_mode )
 
             std::list<trigger>::iterator i = m_list_trigger.begin();
 
-            while ( i != m_list_trigger.end()){
+            while (i != m_list_trigger.end())
+            {
 
-                if ( (*i).m_tick_start <= end_tick ){
+                if ((*i).m_tick_start <= end_tick)
+                {
                     trigger_state = true;
                     trigger_tick = (*i).m_tick_start;
                     trigger_offset = (*i).m_offset;
                 }
 
-                if ( (*i).m_tick_end <= end_tick ){
+                if ((*i).m_tick_end <= end_tick)
+                {
                     trigger_state = false;
                     trigger_tick = (*i).m_tick_end;
                     trigger_offset = (*i).m_offset;
                 }
 
-                if ( (*i).m_tick_start >  end_tick ||
-                        (*i).m_tick_end   >  end_tick )
+                if ((*i).m_tick_start >  end_tick ||
+                        (*i).m_tick_end   >  end_tick)
                 {
                     break;
                 }
@@ -336,21 +344,25 @@ sequence::play( long a_tick, bool a_playback_mode )
             }
 
             /* we had triggers in our slice and its not equal to current state */
-            if ( trigger_state != m_playing ){
+            if (trigger_state != m_playing)
+            {
 
                 //printf( "trigger %d\n", trigger_state );
 
                 /* we are turning on */
-                if ( trigger_state ){
+                if (trigger_state)
+                {
 
-                    if ( trigger_tick < m_last_tick )
+                    if (trigger_tick < m_last_tick)
                         start_tick = m_last_tick;
                     else
                         start_tick = trigger_tick;
 
-                    set_playing( true );
+                    set_playing(true);
 
-                } else {
+                }
+                else
+                {
 
                     /* we are on and turning off */
                     end_tick = trigger_tick;
@@ -359,8 +371,9 @@ sequence::play( long a_tick, bool a_playback_mode )
 
             }
 
-            if( m_list_trigger.size() == 0 &&
-                    m_playing ){
+            if (m_list_trigger.size() == 0 &&
+                    m_playing)
+            {
 
                 set_playing(false);
 
@@ -375,22 +388,26 @@ sequence::play( long a_tick, bool a_playback_mode )
     long end_tick_offset = (end_tick + m_length - m_trigger_offset);
 
     /* play the notes in our frame */
-    if ( m_playing ){
+    if (m_playing)
+    {
 
         std::list<event>::iterator e = m_list_event.begin();
 
-        while ( e != m_list_event.end()){
+        while (e != m_list_event.end())
+        {
 
 
             //printf ( "s[%ld] -> t[%ld] ", start_tick, end_tick  ); (*e).print();
-            if ( ((*e).get_timestamp() + offset_base ) >= (start_tick_offset) &&
-                    ((*e).get_timestamp() + offset_base ) <= (end_tick_offset) ){
+            if (((*e).get_timestamp() + offset_base) >= (start_tick_offset) &&
+                    ((*e).get_timestamp() + offset_base) <= (end_tick_offset))
+            {
 
-                put_event_on_bus( &(*e) );
+                put_event_on_bus(&(*e));
                 //printf( "bus: ");(*e).print();
             }
 
-            else if ( ((*e).get_timestamp() + offset_base) >  end_tick_offset ){
+            else if (((*e).get_timestamp() + offset_base) >  end_tick_offset)
+            {
                 break;
             }
 
@@ -398,7 +415,8 @@ sequence::play( long a_tick, bool a_playback_mode )
             e++;
 
             /* did we hit the end ? */
-            if ( e == m_list_event.end() ){
+            if (e == m_list_event.end())
+            {
 
                 e = m_list_event.begin();
                 offset_base += m_length;
@@ -407,9 +425,10 @@ sequence::play( long a_tick, bool a_playback_mode )
     }
 
     /* if our triggers said we should turn off */
-    if ( trigger_turning_off ){
+    if (trigger_turning_off)
+    {
 
-        set_playing( false );
+        set_playing(false);
     }
 
     /* update for next frame */
@@ -426,7 +445,7 @@ sequence::play( long a_tick, bool a_playback_mode )
 
 
 void
-sequence::zero_markers( void )
+sequence::zero_markers(void)
 {
     lock();
 
@@ -451,88 +470,100 @@ sequence::verify_and_link()
 
     lock();
 
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
-    (*i).clear_link();
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+    {
+        (*i).clear_link();
         (*i).unmark();
     }
 
     on = m_list_event.begin();
 
     /* pair ons and offs */
-    while ( on != m_list_event.end() ){
+    while (on != m_list_event.end())
+    {
 
-    /* check for a note on, then look for its
-       note off */
-    if ( (*on).is_note_on() ){
+        /* check for a note on, then look for its
+           note off */
+        if ((*on).is_note_on())
+        {
 
-        /* get next possible off node */
-        off = on; off++;
-        end_found = false;
+            /* get next possible off node */
+            off = on;
+            off++;
+            end_found = false;
 
-        while ( off != m_list_event.end() ){
+            while (off != m_list_event.end())
+            {
 
-        /* is a off event, == notes, and isnt
-           markeded  */
-        if ( (*off).is_note_off()                  &&
-             (*off).get_note() == (*on).get_note() &&
-             ! (*off).is_marked()                  ){
+                /* is a off event, == notes, and isnt
+                   markeded  */
+                if ((*off).is_note_off()                  &&
+                        (*off).get_note() == (*on).get_note() &&
+                        !(*off).is_marked())
+                {
 
-            /* link + mark */
-            (*on).link( &(*off) );
-            (*off).link( &(*on) );
-            (*on).mark(  );
-            (*off).mark( );
-            end_found = true;
+                    /* link + mark */
+                    (*on).link(&(*off));
+                    (*off).link(&(*on));
+                    (*on).mark();
+                    (*off).mark();
+                    end_found = true;
 
-            break;
-        }
-        off++;
-        }
-        if (!end_found) {
-        off = m_list_event.begin();
-        while ( off != on){
-            if ( (*off).is_note_off()                  &&
-                 (*off).get_note() == (*on).get_note() &&
-                 ! (*off).is_marked()                  ){
-
-                /* link + mark */
-                (*on).link( &(*off) );
-                (*off).link( &(*on) );
-                (*on).mark(  );
-                (*off).mark( );
-                end_found = true;
-
-                break;
+                    break;
+                }
+                off++;
             }
-              off++;
+            if (!end_found)
+            {
+                off = m_list_event.begin();
+                while (off != on)
+                {
+                    if ((*off).is_note_off()                  &&
+                            (*off).get_note() == (*on).get_note() &&
+                            !(*off).is_marked())
+                    {
 
+                        /* link + mark */
+                        (*on).link(&(*off));
+                        (*off).link(&(*on));
+                        (*on).mark();
+                        (*off).mark();
+                        end_found = true;
+
+                        break;
+                    }
+                    off++;
+
+                }
+            }
         }
-        }
-    }
-    on++;
+        on++;
     }
 
     /* unmark all */
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
-    (*i).unmark();
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+    {
+        (*i).unmark();
     }
 
     /* kill those not in range */
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+    {
 
-    /* if our current time stamp is greater then the length */
+        /* if our current time stamp is greater then the length */
 
-    if ( (*i).get_timestamp() >= m_length ||
-         (*i).get_timestamp() < 0            ){
+        if ((*i).get_timestamp() >= m_length ||
+                (*i).get_timestamp() < 0)
+        {
 
-        /* we have to prune it */
-        (*i).mark();
-        if ( (*i).is_linked() )
-        (*i).get_linked()->mark();
+            /* we have to prune it */
+            (*i).mark();
+            if ((*i).is_linked())
+                (*i).get_linked()->mark();
+        }
     }
-    }
 
-    remove_marked( );
+    remove_marked();
     unlock();
 }
 
@@ -541,7 +572,7 @@ sequence::verify_and_link()
 
 
 void
-sequence::link_new( )
+sequence::link_new()
 {
     std::list<event>::iterator on;
     std::list<event>::iterator off;
@@ -552,56 +583,64 @@ sequence::link_new( )
     on = m_list_event.begin();
 
     /* pair ons and offs */
-    while ( on != m_list_event.end()){
+    while (on != m_list_event.end())
+    {
 
-    /* check for a note on, then look for its
-       note off */
-    if ( (*on).is_note_on() &&
-         ! (*on).is_linked() ){
+        /* check for a note on, then look for its
+           note off */
+        if ((*on).is_note_on() &&
+                !(*on).is_linked())
+        {
 
-        /* get next element */
-        off = on; off++;
-        end_found = false;
-        while ( off != m_list_event.end()){
+            /* get next element */
+            off = on;
+            off++;
+            end_found = false;
+            while (off != m_list_event.end())
+            {
 
-            /* is a off event, == notes, and isnt
-                  selected  */
-            if ( (*off).is_note_off()                    &&
-                 (*off).get_note() == (*on).get_note() &&
-                 ! (*off).is_linked()                    ){
+                /* is a off event, == notes, and isnt
+                      selected  */
+                if ((*off).is_note_off()                    &&
+                        (*off).get_note() == (*on).get_note() &&
+                        !(*off).is_linked())
+                {
 
-                /* link */
-                (*on).link( &(*off) );
-                (*off).link( &(*on) );
-            end_found = true;
+                    /* link */
+                    (*on).link(&(*off));
+                    (*off).link(&(*on));
+                    end_found = true;
 
-            break;
-        }
-        off++;
-        }
+                    break;
+                }
+                off++;
+            }
 
-        if (!end_found) {
+            if (!end_found)
+            {
                 off = m_list_event.begin();
-            while ( off != on){
+                while (off != on)
+                {
 
-            /* is a off event, == notes, and isnt
-                  selected  */
-            if ( (*off).is_note_off()                    &&
-                 (*off).get_note() == (*on).get_note() &&
-                 ! (*off).is_linked()                    ){
+                    /* is a off event, == notes, and isnt
+                          selected  */
+                    if ((*off).is_note_off()                    &&
+                            (*off).get_note() == (*on).get_note() &&
+                            !(*off).is_linked())
+                    {
 
-                /* link */
-                (*on).link( &(*off) );
-                (*off).link( &(*on) );
-            end_found = true;
+                        /* link */
+                        (*on).link(&(*off));
+                        (*off).link(&(*on));
+                        end_found = true;
 
-                break;
+                        break;
+                    }
+                    off++;
+                }
+            }
         }
-        off++;
-        }
-        }
-    }
-    on++;
+        on++;
     }
     unlock();
 }
@@ -616,10 +655,11 @@ sequence::remove(std::list<event>::iterator i)
 {
     /* if its a note off, and that note is currently
        playing, send a note off */
-    if ( (*i).is_note_off()  &&
-     m_playing_notes[ (*i).get_note()] > 0 ){
+    if ((*i).is_note_off()  &&
+            m_playing_notes[(*i).get_note()] > 0)
+    {
 
-        m_masterbus->play( m_bus, &(*i), m_midi_channel );
+        m_masterbus->play(m_bus, &(*i), m_midi_channel);
         m_playing_notes[(*i).get_note()]--;
     }
     m_list_event.erase(i);
@@ -630,14 +670,14 @@ sequence::remove(std::list<event>::iterator i)
 // lock();  remove();  reset_draw_marker(); unlock()
 // finds e in m_list_event, removes the first iterator matching that.
 void
-sequence::remove( event* e )
+sequence::remove(event* e)
 {
     std::list<event>::iterator i = m_list_event.begin();
-    while( i != m_list_event.end() )
+    while (i != m_list_event.end())
     {
         if (e == &(*i))
         {
-            remove( i );
+            remove(i);
             return;
         }
         ++i;
@@ -653,18 +693,22 @@ sequence::remove_marked()
     lock();
 
     i = m_list_event.begin();
-    while( i != m_list_event.end() ){
+    while (i != m_list_event.end())
+    {
 
-    if ((*i).is_marked()){
+        if ((*i).is_marked())
+        {
 
-        t = i; t++;
-        remove( i );
-        i = t;
-    }
-    else {
+            t = i;
+            t++;
+            remove(i);
+            i = t;
+        }
+        else
+        {
 
-        i++;
-    }
+            i++;
+        }
     }
 
     reset_draw_marker();
@@ -675,20 +719,22 @@ sequence::remove_marked()
 
 
 void
-sequence::mark_selected( )
+sequence::mark_selected()
 {
     std::list<event>::iterator i, t;
 
     lock();
 
     i = m_list_event.begin();
-    while( i != m_list_event.end() ){
+    while (i != m_list_event.end())
+    {
 
-    if ((*i).is_selected()){
+        if ((*i).is_selected())
+        {
 
-        (*i).mark();
-    }
-    ++i;
+            (*i).mark();
+        }
+        ++i;
     }
     reset_draw_marker();
 
@@ -696,14 +742,15 @@ sequence::mark_selected( )
 }
 
 void
-sequence::unpaint_all( )
+sequence::unpaint_all()
 {
     std::list<event>::iterator i;
 
     lock();
 
     i = m_list_event.begin();
-    while( i != m_list_event.end() ){
+    while (i != m_list_event.end())
+    {
         (*i).unpaint();
         i++;
     }
@@ -713,8 +760,8 @@ sequence::unpaint_all( )
 
 /* returns the 'box' of the selected items */
 void
-sequence::get_selected_box( long *a_tick_s, int *a_note_h,
-                long *a_tick_f, int *a_note_l )
+sequence::get_selected_box(long *a_tick_s, int *a_note_h,
+                           long *a_tick_f, int *a_note_l)
 {
 
     std::list<event>::iterator i;
@@ -730,21 +777,23 @@ sequence::get_selected_box( long *a_tick_s, int *a_note_h,
 
     lock();
 
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+    {
 
-        if( (*i).is_selected() ){
+        if ((*i).is_selected())
+        {
 
             time = (*i).get_timestamp();
 
             // can't check on/off here. screws up seqevent
             // selection which has no "off"
-            if ( time < *a_tick_s ) *a_tick_s = time;
-            if ( time > *a_tick_f ) *a_tick_f = time;
+            if (time < *a_tick_s) *a_tick_s = time;
+            if (time > *a_tick_f) *a_tick_f = time;
 
             note = (*i).get_note();
 
-            if ( note < *a_note_l ) *a_note_l = note;
-            if ( note > *a_note_h ) *a_note_h = note;
+            if (note < *a_note_l) *a_note_l = note;
+            if (note > *a_note_h) *a_note_h = note;
         }
     }
 
@@ -752,8 +801,8 @@ sequence::get_selected_box( long *a_tick_s, int *a_note_h,
 }
 
 void
-sequence::get_clipboard_box( long *a_tick_s, int *a_note_h,
-                 long *a_tick_f, int *a_note_l )
+sequence::get_clipboard_box(long *a_tick_s, int *a_note_h,
+                            long *a_tick_f, int *a_note_l)
 {
 
     std::list<event>::iterator i;
@@ -769,21 +818,23 @@ sequence::get_clipboard_box( long *a_tick_s, int *a_note_h,
 
     lock();
 
-    if ( m_list_clipboard.size() == 0 ) {
-    *a_tick_s = *a_tick_f = *a_note_h = *a_note_l = 0;
+    if (m_list_clipboard.size() == 0)
+    {
+        *a_tick_s = *a_tick_f = *a_note_h = *a_note_l = 0;
     }
 
-    for ( i = m_list_clipboard.begin(); i != m_list_clipboard.end(); i++ ){
+    for (i = m_list_clipboard.begin(); i != m_list_clipboard.end(); i++)
+    {
 
-    time = (*i).get_timestamp();
+        time = (*i).get_timestamp();
 
-    if ( time < *a_tick_s ) *a_tick_s = time;
-    if ( time > *a_tick_f ) *a_tick_f = time;
+        if (time < *a_tick_s) *a_tick_s = time;
+        if (time > *a_tick_f) *a_tick_f = time;
 
-    note = (*i).get_note();
+        note = (*i).get_note();
 
-    if ( note < *a_note_l ) *a_note_l = note;
-    if ( note > *a_note_h ) *a_note_h = note;
+        if (note < *a_note_l) *a_note_l = note;
+        if (note > *a_note_h) *a_note_h = note;
     }
 
     unlock();
@@ -792,7 +843,7 @@ sequence::get_clipboard_box( long *a_tick_s, int *a_note_h,
 
 
 int
-sequence::get_num_selected_notes( )
+sequence::get_num_selected_notes()
 {
     int ret = 0;
 
@@ -800,10 +851,12 @@ sequence::get_num_selected_notes( )
 
     lock();
 
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+    {
 
-        if( (*i).is_note_on()                &&
-            (*i).is_selected() ){
+        if ((*i).is_note_on()                &&
+                (*i).is_selected())
+        {
             ret++;
         }
     }
@@ -816,25 +869,28 @@ sequence::get_num_selected_notes( )
 
 
 int
-sequence::get_num_selected_events( unsigned char a_status,
-                                   unsigned char a_cc )
+sequence::get_num_selected_events(unsigned char a_status,
+                                  unsigned char a_cc)
 {
     int ret = 0;
     std::list<event>::iterator i;
 
     lock();
 
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+    {
 
-        if( (*i).get_status()    == a_status ){
+        if ((*i).get_status()    == a_status)
+        {
 
-            unsigned char d0,d1;
-            (*i).get_data( &d0, &d1 );
+            unsigned char d0, d1;
+            (*i).get_data(&d0, &d1);
 
-            if ( (a_status == EVENT_CONTROL_CHANGE && d0 == a_cc )
-                 || (a_status != EVENT_CONTROL_CHANGE) ){
+            if ((a_status == EVENT_CONTROL_CHANGE && d0 == a_cc)
+                    || (a_status != EVENT_CONTROL_CHANGE))
+            {
 
-                if ( (*i).is_selected( ))
+                if ((*i).is_selected())
                     ret++;
             }
         }
@@ -848,11 +904,11 @@ sequence::get_num_selected_events( unsigned char a_status,
 
 /* selects events in range..  tick start, note high, tick end
    note low */
-    int
-sequence::select_note_events( long a_tick_s, int a_note_h,
-        long a_tick_f, int a_note_l, select_action_e a_action)
+int
+sequence::select_note_events(long a_tick_s, int a_note_h,
+                             long a_tick_f, int a_note_l, select_action_e a_action)
 {
-    int ret=0;
+    int ret = 0;
 
     long tick_s = 0;
     long tick_f = 0;
@@ -861,65 +917,70 @@ sequence::select_note_events( long a_tick_s, int a_note_h,
 
     lock();
 
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ) {
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+    {
 
-        if( (*i).get_note()      <= a_note_h &&
-            (*i).get_note()      >= a_note_l ) {
+        if ((*i).get_note()      <= a_note_h &&
+                (*i).get_note()      >= a_note_l)
+        {
 
-            if ( (*i).is_linked() ) {
+            if ((*i).is_linked())
+            {
                 event *ev = (*i).get_linked();
 
-                if ( (*i).is_note_off() ) {
+                if ((*i).is_note_off())
+                {
                     tick_s = ev->get_timestamp();
                     tick_f = (*i).get_timestamp();
                 }
 
-                if ( (*i).is_note_on() ) {
+                if ((*i).is_note_on())
+                {
                     tick_f = ev->get_timestamp();
                     tick_s = (*i).get_timestamp();
                 }
 
                 if (
-                       (    (tick_s <= tick_f) &&
-                            ((tick_s <= a_tick_f) && (tick_f >= a_tick_s)) ) ||
-                       (    (tick_s > tick_f) &&
-                        ((tick_s <= a_tick_f) || (tick_f >= a_tick_s)) ) )
+                    ((tick_s <= tick_f) &&
+                     ((tick_s <= a_tick_f) && (tick_f >= a_tick_s))) ||
+                    ((tick_s > tick_f) &&
+                     ((tick_s <= a_tick_f) || (tick_f >= a_tick_s))))
                 {
-                    if ( a_action == e_select ||
-                         a_action == e_select_one )
+                    if (a_action == e_select ||
+                            a_action == e_select_one)
                     {
-                        (*i).select( );
-                        ev->select( );
+                        (*i).select();
+                        ev->select();
                         ret++;
-                        if ( a_action == e_select_one )
+                        if (a_action == e_select_one)
                             break;
                     }
-                    if ( a_action == e_is_selected )
+                    if (a_action == e_is_selected)
                     {
-                        if ( (*i).is_selected())
+                        if ((*i).is_selected())
                         {
                             ret = 1;
                             break;
                         }
                     }
-                    if ( a_action == e_would_select )
+                    if (a_action == e_would_select)
                     {
                         ret = 1;
                         break;
                     }
-                    if ( a_action == e_deselect )
+                    if (a_action == e_deselect)
                     {
                         ret = 0;
-                        (*i).unselect( );
+                        (*i).unselect();
                         ev->unselect();
                         //break;
                     }
-                    if ( a_action == e_toggle_selection &&
-                         (*i).is_note_on()) // don't toggle twice
+                    if (a_action == e_toggle_selection &&
+                            (*i).is_note_on()) // don't toggle twice
                     {
                         if ((*i).is_selected())
                         {
-                            (*i).unselect( );
+                            (*i).unselect();
                             ev->unselect();
                             ret ++;
                         }
@@ -930,45 +991,47 @@ sequence::select_note_events( long a_tick_s, int a_note_h,
                             ret ++;
                         }
                     }
-                    if ( a_action == e_remove_one )
+                    if (a_action == e_remove_one)
                     {
-                        remove( &(*i) );
-                        remove( ev );
+                        remove(&(*i));
+                        remove(ev);
                         reset_draw_marker();
                         ret++;
                         break;
                     }
                 }
-            } else {
+            }
+            else
+            {
                 tick_s = tick_f = (*i).get_timestamp();
-                if ( tick_s  >= a_tick_s - 16 && tick_f <= a_tick_f)
+                if (tick_s  >= a_tick_s - 16 && tick_f <= a_tick_f)
                 {
-                    if ( a_action == e_select || a_action == e_select_one )
+                    if (a_action == e_select || a_action == e_select_one)
                     {
-                        (*i).select( );
+                        (*i).select();
                         ret++;
-                        if ( a_action == e_select_one )
+                        if (a_action == e_select_one)
                             break;
                     }
-                    if ( a_action == e_is_selected )
+                    if (a_action == e_is_selected)
                     {
-                        if ( (*i).is_selected())
+                        if ((*i).is_selected())
                         {
                             ret = 1;
                             break;
                         }
                     }
-                    if ( a_action == e_would_select )
+                    if (a_action == e_would_select)
                     {
                         ret = 1;
                         break;
                     }
-                    if ( a_action == e_deselect )
+                    if (a_action == e_deselect)
                     {
                         ret = 0;
                         (*i).unselect();
                     }
-                    if ( a_action == e_toggle_selection )
+                    if (a_action == e_toggle_selection)
                     {
                         if ((*i).is_selected())
                         {
@@ -981,12 +1044,12 @@ sequence::select_note_events( long a_tick_s, int a_note_h,
                             ret ++;
                         }
                     }
-                    if ( a_action == e_remove_one )
+                    if (a_action == e_remove_one)
                     {
-                         remove( &(*i) );
-                         reset_draw_marker();
-                         ret++;
-                         break;
+                        remove(&(*i));
+                        reset_draw_marker();
+                        ret++;
+                        break;
                     }
                 }
             }
@@ -1001,91 +1064,94 @@ sequence::select_note_events( long a_tick_s, int a_note_h,
 /* select events in range, returns number
    selected */
 int
-sequence::select_events( long a_tick_s, long a_tick_f,
-			 unsigned char a_status,
-			 unsigned char a_cc, select_action_e a_action)
+sequence::select_events(long a_tick_s, long a_tick_f,
+                        unsigned char a_status,
+                        unsigned char a_cc, select_action_e a_action)
 {
-    int ret=0;
+    int ret = 0;
     std::list<event>::iterator i;
 
     lock();
 
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+    {
 
-        if( (*i).get_status()    == a_status &&
+        if ((*i).get_status()    == a_status &&
                 (*i).get_timestamp() >= a_tick_s &&
-                (*i).get_timestamp() <= a_tick_f ){
+                (*i).get_timestamp() <= a_tick_f)
+        {
 
-            unsigned char d0,d1;
-            (*i).get_data( &d0, &d1 );
+            unsigned char d0, d1;
+            (*i).get_data(&d0, &d1);
 
-            if ( (a_status == EVENT_CONTROL_CHANGE &&
-                        d0 == a_cc )
-                    || (a_status != EVENT_CONTROL_CHANGE) ){
+            if ((a_status == EVENT_CONTROL_CHANGE &&
+                    d0 == a_cc)
+                    || (a_status != EVENT_CONTROL_CHANGE))
+            {
 
 
-                if ( a_action == e_select ||
-                     a_action == e_select_one )
+                if (a_action == e_select ||
+                        a_action == e_select_one)
                 {
-                    (*i).select( );
+                    (*i).select();
                     ret++;
-                    if ( a_action == e_select_one )
+                    if (a_action == e_select_one)
                         break;
                 }
-                if ( a_action == e_is_selected )
+                if (a_action == e_is_selected)
                 {
-                    if ( (*i).is_selected())
+                    if ((*i).is_selected())
                     {
                         ret = 1;
                         break;
                     }
                 }
-                if ( a_action == e_would_select )
+                if (a_action == e_would_select)
                 {
                     ret = 1;
                     break;
                 }
-                if ( a_action == e_toggle_selection )
+                if (a_action == e_toggle_selection)
                 {
-                    if ( (*i).is_selected())
+                    if ((*i).is_selected())
                     {
-                        (*i).unselect( );
+                        (*i).unselect();
                     }
                     else
                     {
-                        (*i).select( );
+                        (*i).select();
                     }
                 }
-                if ( a_action == e_deselect )
+                if (a_action == e_deselect)
                 {
-                    (*i).unselect( );
+                    (*i).unselect();
                 }
-                if ( a_action == e_remove_one )
+                if (a_action == e_remove_one)
                 {
-                     remove( &(*i) );
-                     reset_draw_marker();
-                     ret++;
-                     break;
+                    remove(&(*i));
+                    reset_draw_marker();
+                    ret++;
+                    break;
                 }
             }
         }
     }
-        unlock();
+    unlock();
 
-        return ret;
+    return ret;
 }
 
 
 
 void
-sequence::select_all( void )
+sequence::select_all(void)
 {
     lock();
 
     std::list<event>::iterator i;
 
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ )
-	(*i).select( );
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+        (*i).select();
 
     unlock();
 }
@@ -1093,13 +1159,13 @@ sequence::select_all( void )
 
 /* unselects every event */
 void
-sequence::unselect( void )
+sequence::unselect(void)
 {
     lock();
 
     std::list<event>::iterator i;
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ )
-	(*i).unselect();
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+        (*i).unselect();
 
     unlock();
 }
@@ -1107,52 +1173,59 @@ sequence::unselect( void )
 
 /* removes and adds readds selected in position */
 void
-sequence::move_selected_notes( long a_delta_tick, int a_delta_note )
+sequence::move_selected_notes(long a_delta_tick, int a_delta_note)
 {
     event e;
-    bool noteon=false;
-    long timestamp=0;
+    bool noteon = false;
+    long timestamp = 0;
 
     lock();
     mark_selected();
     std::list<event>::iterator i;
 
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+    {
 
         /* is it being moved ? */
-        if ( (*i).is_marked() ){
+        if ((*i).is_marked())
+        {
 
             /* copy event */
             e  = (*i);
             e.unmark();
 
-            if ( (e.get_note() + a_delta_note)      >= 0   &&
-                 (e.get_note() + a_delta_note)      <  c_num_keys ){
+            if ((e.get_note() + a_delta_note)      >= 0   &&
+                    (e.get_note() + a_delta_note)      <  c_num_keys)
+            {
 
-		noteon = e.is_note_on();
+                noteon = e.is_note_on();
                 timestamp = e.get_timestamp() + a_delta_tick;
 
-		if (timestamp > m_length) {
-			timestamp = timestamp - m_length;
-		}
+                if (timestamp > m_length)
+                {
+                    timestamp = timestamp - m_length;
+                }
 
-		if (timestamp < 0) {
-			timestamp = m_length + timestamp;
-		}
+                if (timestamp < 0)
+                {
+                    timestamp = m_length + timestamp;
+                }
 
-		if ((timestamp==0) && !noteon) {
-			timestamp = m_length-2;
-		}
+                if ((timestamp == 0) && !noteon)
+                {
+                    timestamp = m_length - 2;
+                }
 
-		if ((timestamp==m_length) && noteon) {
-			timestamp = 0;
-		}
+                if ((timestamp == m_length) && noteon)
+                {
+                    timestamp = 0;
+                }
 
-                e.set_timestamp( timestamp );
-                e.set_note( e.get_note() + a_delta_note );
+                e.set_timestamp(timestamp);
+                e.set_note(e.get_note() + a_delta_note);
                 e.select();
 
-                add_event( &e );
+                add_event(&e);
             }
         }
     }
@@ -1166,7 +1239,7 @@ sequence::move_selected_notes( long a_delta_tick, int a_delta_note )
 
 /* stretch */
 void
-sequence::stretch_selected( long a_delta_tick )
+sequence::stretch_selected(long a_delta_tick)
 {
     event *e, new_e;
 
@@ -1178,15 +1251,18 @@ sequence::stretch_selected( long a_delta_tick )
     int first_ev = 0x7fffffff;
     int last_ev = 0x00000000;
 
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
-        if ( (*i).is_selected() )
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+    {
+        if ((*i).is_selected())
         {
             e = &(*i);
 
-            if (e->get_timestamp() < first_ev) {
+            if (e->get_timestamp() < first_ev)
+            {
                 first_ev = e->get_timestamp();
             }
-            if (e->get_timestamp() > last_ev) {
+            if (e->get_timestamp() > last_ev)
+            {
                 last_ev = e->get_timestamp();
             }
         }
@@ -1194,24 +1270,27 @@ sequence::stretch_selected( long a_delta_tick )
 
     old_len = last_ev - first_ev;
     new_len = old_len + a_delta_tick;
-    float ratio = float(new_len)/float(old_len);
+    float ratio = float(new_len) / float(old_len);
 
-    if( new_len > 1) {
+    if (new_len > 1)
+    {
 
         mark_selected();
 
-        for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
-            if ( (*i).is_marked() ){
+        for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+        {
+            if ((*i).is_marked())
+            {
 
                 e = &(*i);
 
                 /* copy & scale event */
                 new_e = *e;
-                new_e.set_timestamp( long((e->get_timestamp() - first_ev) * ratio) + first_ev );
+                new_e.set_timestamp(long((e->get_timestamp() - first_ev) * ratio) + first_ev);
 
                 new_e.unmark();
 
-                add_event( &new_e );
+                add_event(&new_e);
             }
         }
 
@@ -1232,18 +1311,22 @@ sequence::stretch_selected( long a_delta_tick )
     int first_ev = 0x7fffffff;
     int last_ev = 0x00000000;
 
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
-        if ( (*i).is_selected() &&
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+    {
+        if ((*i).is_selected() &&
                 (*i).is_note_on() &&
-                (*i).is_linked() ){
+                (*i).is_linked())
+        {
 
             on = &(*i);
             off = (*i).get_linked();
 
-            if (on->get_timestamp() < first_ev) {
+            if (on->get_timestamp() < first_ev)
+            {
                 first_ev = on->get_timestamp();
             }
-            if (off->get_timestamp() > last_ev) {
+            if (off->get_timestamp() > last_ev)
+            {
                 last_ev = off->get_timestamp();
             }
         }
@@ -1251,31 +1334,34 @@ sequence::stretch_selected( long a_delta_tick )
 
     old_len = last_ev - first_ev;
     new_len = old_len + a_delta_tick;
-    float ratio = float(new_len)/float(old_len);
+    float ratio = float(new_len) / float(old_len);
 
-    if( new_len > 1) {
+    if (new_len > 1)
+    {
 
         mark_selected();
 
-        for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
-            if ( (*i).is_marked() &&
+        for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+        {
+            if ((*i).is_marked() &&
                     (*i).is_note_on() &&
-                    (*i).is_linked() ){
+                    (*i).is_linked())
+            {
 
                 on = &(*i);
                 off = (*i).get_linked();
 
                 /* copy & scale event */
                 new_on = *on;
-                new_on.set_timestamp( long((on->get_timestamp() - first_ev) * ratio) + first_ev );
+                new_on.set_timestamp(long((on->get_timestamp() - first_ev) * ratio) + first_ev);
                 new_off = *off;
-                new_off.set_timestamp( long((off->get_timestamp() - first_ev) * ratio) + first_ev );
+                new_off.set_timestamp(long((off->get_timestamp() - first_ev) * ratio) + first_ev);
 
                 new_on.unmark();
                 new_off.unmark();
 
-                add_event( &new_on );
-                add_event( &new_off );
+                add_event(&new_on);
+                add_event(&new_off);
             }
         }
 
@@ -1291,7 +1377,7 @@ sequence::stretch_selected( long a_delta_tick )
 
 /* moves note off event */
 void
-sequence::grow_selected( long a_delta_tick )
+sequence::grow_selected(long a_delta_tick)
 {
     event *on, *off, e;
 
@@ -1301,11 +1387,13 @@ sequence::grow_selected( long a_delta_tick )
 
     mark_selected();
 
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+    {
 
-        if ( (*i).is_marked() &&
+        if ((*i).is_marked() &&
                 (*i).is_note_on() &&
-                (*i).is_linked() ){
+                (*i).is_linked())
+        {
 
             on = &(*i);
             off = (*i).get_linked();
@@ -1314,18 +1402,21 @@ sequence::grow_selected( long a_delta_tick )
                 off->get_timestamp() +
                 a_delta_tick;
 
-	    //If timestamp + delta is greater that m_length we do round robbin magic
-	    if (length > m_length) {
-	    	length = length - m_length;
-	    }
+            //If timestamp + delta is greater that m_length we do round robbin magic
+            if (length > m_length)
+            {
+                length = length - m_length;
+            }
 
-	    if (length < 0) {
-	    	length = m_length + length;
-	    }
+            if (length < 0)
+            {
+                length = m_length + length;
+            }
 
-	    if (length==0) {
-	    	length = m_length-2;
-	    }
+            if (length == 0)
+            {
+                length = m_length - 2;
+            }
 
             on->unmark();
 
@@ -1333,8 +1424,8 @@ sequence::grow_selected( long a_delta_tick )
             e  = *off;
             e.unmark();
 
-            e.set_timestamp( length );
-            add_event( &e );
+            e.set_timestamp(length);
+            add_event(&e);
         }
     }
 
@@ -1346,28 +1437,32 @@ sequence::grow_selected( long a_delta_tick )
 
 
 void
-sequence::increment_selected( unsigned char a_status, unsigned char a_control )
+sequence::increment_selected(unsigned char a_status, unsigned char a_control)
 {
     lock();
 
     std::list<event>::iterator i;
 
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+    {
 
-        if ( (*i).is_selected() &&
-             (*i).get_status() == a_status ){
+        if ((*i).is_selected() &&
+                (*i).get_status() == a_status)
+        {
 
-            if ( a_status == EVENT_NOTE_ON ||
-                 a_status == EVENT_NOTE_OFF ||
-                 a_status == EVENT_AFTERTOUCH ||
-                 a_status == EVENT_CONTROL_CHANGE ||
-                 a_status == EVENT_PITCH_WHEEL ){
+            if (a_status == EVENT_NOTE_ON ||
+                    a_status == EVENT_NOTE_OFF ||
+                    a_status == EVENT_AFTERTOUCH ||
+                    a_status == EVENT_CONTROL_CHANGE ||
+                    a_status == EVENT_PITCH_WHEEL)
+            {
 
                 (*i).increment_data2();
             }
 
-            if ( a_status == EVENT_PROGRAM_CHANGE ||
-                 a_status == EVENT_CHANNEL_PRESSURE ){
+            if (a_status == EVENT_PROGRAM_CHANGE ||
+                    a_status == EVENT_CHANNEL_PRESSURE)
+            {
 
                 (*i).increment_data1();
             }
@@ -1379,28 +1474,32 @@ sequence::increment_selected( unsigned char a_status, unsigned char a_control )
 
 
 void
-sequence::decrement_selected(unsigned char a_status, unsigned char a_control )
+sequence::decrement_selected(unsigned char a_status, unsigned char a_control)
 {
     lock();
 
     std::list<event>::iterator i;
 
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+    {
 
-        if ( (*i).is_selected() &&
-             (*i).get_status() == a_status ){
+        if ((*i).is_selected() &&
+                (*i).get_status() == a_status)
+        {
 
-            if ( a_status == EVENT_NOTE_ON ||
-                 a_status == EVENT_NOTE_OFF ||
-                 a_status == EVENT_AFTERTOUCH ||
-                 a_status == EVENT_CONTROL_CHANGE ||
-                 a_status == EVENT_PITCH_WHEEL ){
+            if (a_status == EVENT_NOTE_ON ||
+                    a_status == EVENT_NOTE_OFF ||
+                    a_status == EVENT_AFTERTOUCH ||
+                    a_status == EVENT_CONTROL_CHANGE ||
+                    a_status == EVENT_PITCH_WHEEL)
+            {
 
                 (*i).decrement_data2();
             }
 
-            if ( a_status == EVENT_PROGRAM_CHANGE ||
-                 a_status == EVENT_CHANNEL_PRESSURE ){
+            if (a_status == EVENT_PROGRAM_CHANGE ||
+                    a_status == EVENT_CHANNEL_PRESSURE)
+            {
 
                 (*i).decrement_data1();
             }
@@ -1415,33 +1514,36 @@ sequence::decrement_selected(unsigned char a_status, unsigned char a_control )
 
 
 void
-sequence::copy_selected( void )
+sequence::copy_selected(void)
 {
     std::list<event>::iterator i;
 
     lock();
 
-    m_list_clipboard.clear( );
+    m_list_clipboard.clear();
 
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+    {
 
-	if ( (*i).is_selected() ){
-	    m_list_clipboard.push_back( (*i) );
-	}
+        if ((*i).is_selected())
+        {
+            m_list_clipboard.push_back((*i));
+        }
     }
 
     long first_tick = (*m_list_clipboard.begin()).get_timestamp();
 
-    for ( i = m_list_clipboard.begin(); i != m_list_clipboard.end(); i++ ){
+    for (i = m_list_clipboard.begin(); i != m_list_clipboard.end(); i++)
+    {
 
-	(*i).set_timestamp((*i).get_timestamp() - first_tick );
+        (*i).set_timestamp((*i).get_timestamp() - first_tick);
     }
 
     unlock();
 }
 
 void
-sequence::paste_selected( long a_tick, int a_note )
+sequence::paste_selected(long a_tick, int a_note)
 {
     std::list<event>::iterator i;
     int highest_note = 0;
@@ -1449,25 +1551,28 @@ sequence::paste_selected( long a_tick, int a_note )
     lock();
     std::list<event> clipboard = m_list_clipboard;
 
-    for ( i = clipboard.begin(); i != clipboard.end(); i++ ){
-	(*i).set_timestamp((*i).get_timestamp() + a_tick );
+    for (i = clipboard.begin(); i != clipboard.end(); i++)
+    {
+        (*i).set_timestamp((*i).get_timestamp() + a_tick);
     }
 
     if ((*clipboard.begin()).is_note_on() ||
-	(*clipboard.begin()).is_note_off() ){
+            (*clipboard.begin()).is_note_off())
+    {
 
-	for ( i = clipboard.begin(); i != clipboard.end(); i++ )
-	    if ( (*i).get_note( ) > highest_note ) highest_note = (*i).get_note();
+        for (i = clipboard.begin(); i != clipboard.end(); i++)
+            if ((*i).get_note() > highest_note) highest_note = (*i).get_note();
 
 
 
-	for ( i = clipboard.begin(); i != clipboard.end(); i++ ){
+        for (i = clipboard.begin(); i != clipboard.end(); i++)
+        {
 
-	    (*i).set_note( (*i).get_note( ) - (highest_note - a_note) );
-	}
+            (*i).set_note((*i).get_note() - (highest_note - a_note));
+        }
     }
 
-    m_list_event.merge( clipboard );
+    m_list_event.merge(clipboard);
     m_list_event.sort();
 
     verify_and_link();
@@ -1481,11 +1586,11 @@ sequence::paste_selected( long a_tick, int a_note )
 
 /* change */
 void
-sequence::change_event_data_range( long a_tick_s, long a_tick_f,
-				   unsigned char a_status,
-				   unsigned char a_cc,
-				   int a_data_s,
-				   int a_data_f )
+sequence::change_event_data_range(long a_tick_s, long a_tick_f,
+                                  unsigned char a_status,
+                                  unsigned char a_cc,
+                                  int a_data_s,
+                                  int a_data_f)
 {
     lock();
 
@@ -1494,41 +1599,43 @@ sequence::change_event_data_range( long a_tick_s, long a_tick_f,
 
     /* change only selected events, if any */
     bool have_selection = false;
-    if( get_num_selected_events(a_status, a_cc) )
+    if (get_num_selected_events(a_status, a_cc))
         have_selection = true;
 
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+    {
 
         /* initially false */
         bool set = false;
-        (*i).get_data( &d0, &d1 );
+        (*i).get_data(&d0, &d1);
 
         /* correct status and not CC */
-        if ( a_status != EVENT_CONTROL_CHANGE &&
-                (*i).get_status() == a_status )
+        if (a_status != EVENT_CONTROL_CHANGE &&
+                (*i).get_status() == a_status)
             set = true;
 
         /* correct status and correct cc */
-        if ( a_status == EVENT_CONTROL_CHANGE &&
+        if (a_status == EVENT_CONTROL_CHANGE &&
                 (*i).get_status() == a_status &&
-                d0 == a_cc )
+                d0 == a_cc)
             set = true;
 
         /* in range? */
-        if ( !((*i).get_timestamp() >= a_tick_s &&
-                    (*i).get_timestamp() <= a_tick_f ))
+        if (!((*i).get_timestamp() >= a_tick_s &&
+                (*i).get_timestamp() <= a_tick_f))
             set = false;
 
         /* in selection? */
-        if ( have_selection && (!(*i).is_selected()) )
+        if (have_selection && (!(*i).is_selected()))
             set = false;
 
-        if ( set ){
+        if (set)
+        {
 
             //float weight;
 
             /* no divide by 0 */
-            if( a_tick_f == a_tick_s )
+            if (a_tick_f == a_tick_s)
                 a_tick_f = a_tick_s + 1;
 
             /* ratio of v1 to v2 */
@@ -1547,34 +1654,34 @@ sequence::change_event_data_range( long a_tick_s, long a_tick_f,
             //printf("ticks: %d %d %d\n", a_tick_s, tick, a_tick_f);
             //printf("datas: %d %d\n", a_data_s, a_data_f);
 
-            int newdata = ((tick-a_tick_s)*a_data_f + (a_tick_f-tick)*a_data_s)
-                /(a_tick_f - a_tick_s);
+            int newdata = ((tick - a_tick_s) * a_data_f + (a_tick_f - tick) * a_data_s)
+                          / (a_tick_f - a_tick_s);
 
-            if ( newdata < 0 ) newdata = 0;
-            if ( newdata > 127 ) newdata = 127;
+            if (newdata < 0) newdata = 0;
+            if (newdata > 127) newdata = 127;
 
-            if ( a_status == EVENT_NOTE_ON )
+            if (a_status == EVENT_NOTE_ON)
                 d1 = newdata;
 
-            if ( a_status == EVENT_NOTE_OFF )
+            if (a_status == EVENT_NOTE_OFF)
                 d1 = newdata;
 
-            if ( a_status == EVENT_AFTERTOUCH )
+            if (a_status == EVENT_AFTERTOUCH)
                 d1 = newdata;
 
-            if ( a_status == EVENT_CONTROL_CHANGE )
+            if (a_status == EVENT_CONTROL_CHANGE)
                 d1 = newdata;
 
-            if ( a_status == EVENT_PROGRAM_CHANGE )
+            if (a_status == EVENT_PROGRAM_CHANGE)
                 d0 = newdata; /* d0 == new patch */
 
-            if ( a_status == EVENT_CHANNEL_PRESSURE )
+            if (a_status == EVENT_CHANNEL_PRESSURE)
                 d0 = newdata; /* d0 == pressure */
 
-            if ( a_status == EVENT_PITCH_WHEEL )
+            if (a_status == EVENT_PITCH_WHEEL)
                 d1 = newdata;
 
-            (*i).set_data( d0, d1 );
+            (*i).set_data(d0, d1);
         }
     }
 
@@ -1585,7 +1692,7 @@ sequence::change_event_data_range( long a_tick_s, long a_tick_f,
 
 
 void
-sequence::add_note( long a_tick, long a_length, int a_note, bool a_paint)
+sequence::add_note(long a_tick, long a_length, int a_note, bool a_paint)
 {
 
     lock();
@@ -1593,23 +1700,25 @@ sequence::add_note( long a_tick, long a_length, int a_note, bool a_paint)
     event e;
     bool ignore = false;
 
-    if ( a_tick >= 0 &&
-         a_note >= 0 &&
-         a_note < c_num_keys ){
+    if (a_tick >= 0 &&
+            a_note >= 0 &&
+            a_note < c_num_keys)
+    {
 
         /* if we care about the painted, run though
          * our events, delete the painted ones that
          * overlap the one we want to add */
-        if ( a_paint )
+        if (a_paint)
         {
-            std::list<event>::iterator i,t;
-            for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
+            std::list<event>::iterator i, t;
+            for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+            {
 
-                if ( (*i).is_painted() &&
-                     (*i).is_note_on() &&
-                     (*i).get_timestamp() == a_tick )
+                if ((*i).is_painted() &&
+                        (*i).is_note_on() &&
+                        (*i).get_timestamp() == a_tick)
                 {
-                    if ((*i).get_note() == a_note )
+                    if ((*i).get_note() == a_note)
                     {
                         ignore = true;
                         break;
@@ -1617,7 +1726,7 @@ sequence::add_note( long a_tick, long a_length, int a_note, bool a_paint)
 
                     (*i).mark();
 
-                    if ( (*i).is_linked())
+                    if ((*i).is_linked())
                     {
                         (*i).get_linked()->mark();
                     }
@@ -1629,24 +1738,24 @@ sequence::add_note( long a_tick, long a_length, int a_note, bool a_paint)
             remove_marked();
         }
 
-        if ( !ignore )
+        if (!ignore)
         {
 
-        if ( a_paint )
-            e.paint();
+            if (a_paint)
+                e.paint();
 
-        e.set_status( EVENT_NOTE_ON );
-        e.set_data( a_note, 100 );
-        e.set_timestamp( a_tick );
+            e.set_status(EVENT_NOTE_ON);
+            e.set_data(a_note, 100);
+            e.set_timestamp(a_tick);
 
-        add_event( &e );
+            add_event(&e);
 
-        e.set_status( EVENT_NOTE_OFF );
-        e.set_data( a_note, 100 );
-        e.set_timestamp( a_tick + a_length );
+            e.set_status(EVENT_NOTE_OFF);
+            e.set_data(a_note, 100);
+            e.set_timestamp(a_tick + a_length);
 
-        add_event( &e );
-    }
+            add_event(&e);
+        }
     }
 
     verify_and_link();
@@ -1655,32 +1764,34 @@ sequence::add_note( long a_tick, long a_length, int a_note, bool a_paint)
 
 
 void
-sequence::add_event( long a_tick,
-		     unsigned char a_status,
-		     unsigned char a_d0,
-		     unsigned char a_d1,
-             bool a_paint)
+sequence::add_event(long a_tick,
+                    unsigned char a_status,
+                    unsigned char a_d0,
+                    unsigned char a_d1,
+                    bool a_paint)
 {
     lock();
 
-    if ( a_tick >= 0 ){
+    if (a_tick >= 0)
+    {
 
         event e;
 
         /* if we care about the painted, run though
          * our events, delete the painted ones that
          * overlap the one we want to add */
-        if ( a_paint )
+        if (a_paint)
         {
-            std::list<event>::iterator i,t;
-            for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
+            std::list<event>::iterator i, t;
+            for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+            {
 
-                if ( (*i).is_painted() &&
-                     (*i).get_timestamp() == a_tick )
+                if ((*i).is_painted() &&
+                        (*i).get_timestamp() == a_tick)
                 {
                     (*i).mark();
 
-                    if ( (*i).is_linked())
+                    if ((*i).is_linked())
                     {
                         (*i).get_linked()->mark();
                     }
@@ -1693,15 +1804,15 @@ sequence::add_event( long a_tick,
         }
 
 
-        if ( a_paint )
+        if (a_paint)
             e.paint();
 
 
-        e.set_status( a_status );
-        e.set_data( a_d0, a_d1 );
-        e.set_timestamp( a_tick );
+        e.set_status(a_status);
+        e.set_data(a_d0, a_d1);
+        e.set_timestamp(a_tick);
 
-        add_event( &e );
+        add_event(&e);
     }
     verify_and_link();
 
@@ -1710,46 +1821,50 @@ sequence::add_event( long a_tick,
 
 
 void
-sequence::stream_event(  event *a_ev  )
+sequence::stream_event(event *a_ev)
 {
     lock();
 
     /* adjust tick */
 
-    a_ev->mod_timestamp( m_length );
+    a_ev->mod_timestamp(m_length);
 
-    if ( m_recording )
-	{
-		if ( is_pattern_playing )
-		{
-			add_event( a_ev );
-			set_dirty();
-		} else {
-			if ( a_ev->is_note_on() )
-			{
-				push_undo();
-				add_note( m_last_tick % m_length, m_snap_tick - 2, a_ev->get_note(), false );
-				set_dirty();
-				m_notes_on++;
-			}
-			if (a_ev->is_note_off()) m_notes_on--;
-			if (m_notes_on <= 0) m_last_tick += m_snap_tick;
-		}
-    }
-	
-    if ( m_thru )
+    if (m_recording)
     {
-        put_event_on_bus( a_ev );
+        if (is_pattern_playing)
+        {
+            add_event(a_ev);
+            set_dirty();
+        }
+        else
+        {
+            if (a_ev->is_note_on())
+            {
+                push_undo();
+                add_note(m_last_tick % m_length, m_snap_tick - 2, a_ev->get_note(), false);
+                set_dirty();
+                m_notes_on++;
+            }
+            if (a_ev->is_note_off()) m_notes_on--;
+            if (m_notes_on <= 0) m_last_tick += m_snap_tick;
+        }
+    }
+
+    if (m_thru)
+    {
+        put_event_on_bus(a_ev);
     }
 
     link_new();
 
-    if ( m_quanized_rec && is_pattern_playing){
-        if (a_ev->is_note_off()) {
-            select_note_events( a_ev->get_timestamp(), a_ev->get_note(),
-            a_ev->get_timestamp(), a_ev->get_note(), e_select);
-            quanize_events( EVENT_NOTE_ON, 0, m_snap_tick, 1 , true );
-	}
+    if (m_quanized_rec && is_pattern_playing)
+    {
+        if (a_ev->is_note_off())
+        {
+            select_note_events(a_ev->get_timestamp(), a_ev->get_note(),
+                               a_ev->get_timestamp(), a_ev->get_note(), e_select);
+            quanize_events(EVENT_NOTE_ON, 0, m_snap_tick, 1 , true);
+        }
     }
     /* update view */
 
@@ -1774,7 +1889,7 @@ sequence::set_dirty()
 
 
 bool
-sequence::is_dirty_names( )
+sequence::is_dirty_names()
 {
     lock();
 
@@ -1787,7 +1902,7 @@ sequence::is_dirty_names( )
 }
 
 bool
-sequence::is_dirty_main( )
+sequence::is_dirty_main()
 {
     lock();
 
@@ -1801,7 +1916,7 @@ sequence::is_dirty_main( )
 
 
 bool
-sequence::is_dirty_perf( )
+sequence::is_dirty_perf()
 {
     lock();
 
@@ -1815,7 +1930,7 @@ sequence::is_dirty_perf( )
 
 
 bool
-sequence::is_dirty_edit( )
+sequence::is_dirty_edit()
 {
     lock();
 
@@ -1830,15 +1945,15 @@ sequence::is_dirty_edit( )
 
 /* plays a note from the paino roll */
 void
-sequence::play_note_on( int a_note )
+sequence::play_note_on(int a_note)
 {
     lock();
 
     event e;
 
-    e.set_status( EVENT_NOTE_ON );
-    e.set_data( a_note, 127 );
-    m_masterbus->play( m_bus, &e, m_midi_channel );
+    e.set_status(EVENT_NOTE_ON);
+    e.set_data(a_note, 127);
+    m_masterbus->play(m_bus, &e, m_midi_channel);
 
     m_masterbus->flush();
 
@@ -1848,15 +1963,15 @@ sequence::play_note_on( int a_note )
 
 /* plays a note from the paino roll */
 void
-sequence::play_note_off( int a_note )
+sequence::play_note_off(int a_note)
 {
     lock();
 
     event e;
 
-    e.set_status( EVENT_NOTE_OFF );
-    e.set_data( a_note, 127 );
-    m_masterbus->play( m_bus, &e, m_midi_channel );
+    e.set_status(EVENT_NOTE_OFF);
+    e.set_data(a_note, 127);
+    m_masterbus->play(m_bus, &e, m_midi_channel);
 
     m_masterbus->flush();
 
@@ -1865,7 +1980,7 @@ sequence::play_note_off( int a_note )
 
 
 void
-sequence::clear_triggers( void )
+sequence::clear_triggers(void)
 {
     lock();
     m_list_trigger.clear();
@@ -1897,13 +2012,13 @@ sequence::clear_triggers( void )
    <    >
 */
 void
-sequence::add_trigger( long a_tick, long a_length, long a_offset, bool a_adjust_offset )
+sequence::add_trigger(long a_tick, long a_length, long a_offset, bool a_adjust_offset)
 {
     lock();
 
     trigger e;
 
-    if ( a_adjust_offset )
+    if (a_adjust_offset)
         e.m_offset = adjust_offset(a_offset);
     else
         e.m_offset = a_offset;
@@ -1915,11 +2030,12 @@ sequence::add_trigger( long a_tick, long a_length, long a_offset, bool a_adjust_
 
     std::list<trigger>::iterator i = m_list_trigger.begin();
 
-    while ( i != m_list_trigger.end() ){
+    while (i != m_list_trigger.end())
+    {
 
         // Is it inside the new one ? erase
         if ((*i).m_tick_start >= e.m_tick_start &&
-            (*i).m_tick_end   <= e.m_tick_end  )
+                (*i).m_tick_end   <= e.m_tick_end)
         {
             //printf ( "erase start[%d] end[%d]\n", (*i).m_tick_start, (*i).m_tick_end );
             m_list_trigger.erase(i);
@@ -1927,15 +2043,15 @@ sequence::add_trigger( long a_tick, long a_length, long a_offset, bool a_adjust_
             continue;
         }
         // Is the e's end inside  ?
-        else if ( (*i).m_tick_end   >= e.m_tick_end &&
-                  (*i).m_tick_start <= e.m_tick_end )
+        else if ((*i).m_tick_end   >= e.m_tick_end &&
+                 (*i).m_tick_start <= e.m_tick_end)
         {
             (*i).m_tick_start = e.m_tick_end + 1;
             //printf ( "mvstart start[%d] end[%d]\n", (*i).m_tick_start, (*i).m_tick_end );
         }
         // Is the last start inside the new end ?
         else if ((*i).m_tick_end   >= e.m_tick_start &&
-                 (*i).m_tick_start <= e.m_tick_start )
+                 (*i).m_tick_start <= e.m_tick_start)
         {
             (*i).m_tick_end = e.m_tick_start - 1;
             //printf ( "mvend start[%d] end[%d]\n", (*i).m_tick_start, (*i).m_tick_end );
@@ -1944,18 +2060,18 @@ sequence::add_trigger( long a_tick, long a_length, long a_offset, bool a_adjust_
         ++i;
     }
 
-    m_list_trigger.push_front( e );
+    m_list_trigger.push_front(e);
     m_list_trigger.sort();
 
     unlock();
 }
 
-bool sequence::intersectTriggers( long position, long& start, long& end )
+bool sequence::intersectTriggers(long position, long& start, long& end)
 {
     lock();
 
     std::list<trigger>::iterator i = m_list_trigger.begin();
-    while ( i != m_list_trigger.end() )
+    while (i != m_list_trigger.end())
     {
         if ((*i).m_tick_start <= position && position <= (*i).m_tick_end)
         {
@@ -1971,26 +2087,27 @@ bool sequence::intersectTriggers( long position, long& start, long& end )
     return false;
 }
 
-bool sequence::intersectNotes( long position, long position_note, long& start, long& end, long& note )
+bool sequence::intersectNotes(long position, long position_note, long& start, long& end, long& note)
 {
     lock();
 
     std::list<event>::iterator on = m_list_event.begin();
     std::list<event>::iterator off = m_list_event.begin();
-    while ( on != m_list_event.end() )
+    while (on != m_list_event.end())
     {
         if (position_note == (*on).get_note() &&
-            (*on).is_note_on())
+                (*on).is_note_on())
         {
             // find next "off" event for the note
-            off = on; ++off;
+            off = on;
+            ++off;
             while (off != m_list_event.end() &&
-                   ((*on).get_note() != (*off).get_note() || (*off).is_note_on()))
+                    ((*on).get_note() != (*off).get_note() || (*off).is_note_on()))
             {
                 ++off;
             }
             if ((*on).get_note() == (*off).get_note() && (*off).is_note_off() &&
-                (*on).get_timestamp() <= position && position <= (*off).get_timestamp())
+                    (*on).get_timestamp() <= position && position <= (*off).get_timestamp())
             {
                 start = (*on).get_timestamp();
                 end = (*off).get_timestamp();
@@ -2008,17 +2125,17 @@ bool sequence::intersectNotes( long position, long position_note, long& start, l
     return false;
 }
 
-bool sequence::intersectEvents( long posstart, long posend, long status, long& start )
+bool sequence::intersectEvents(long posstart, long posend, long status, long& start)
 {
     lock();
 
     std::list<event>::iterator on = m_list_event.begin();
-    while ( on != m_list_event.end() )
+    while (on != m_list_event.end())
     {
         //printf( "intersect   looking for:%ld  found:%ld\n", status, (*on).get_status() );
         if (status == (*on).get_status())
         {
-            if ((*on).get_timestamp() <= posstart && posstart <= ((*on).get_timestamp()+(posend-posstart)))
+            if ((*on).get_timestamp() <= posstart && posstart <= ((*on).get_timestamp() + (posend - posstart)))
             {
                 start = (*on).get_timestamp();
                 unlock();
@@ -2034,32 +2151,33 @@ bool sequence::intersectEvents( long posstart, long posend, long status, long& s
 
 
 void
-sequence::grow_trigger (long a_tick_from, long a_tick_to, long a_length)
+sequence::grow_trigger(long a_tick_from, long a_tick_to, long a_length)
 {
     lock();
 
     std::list<trigger>::iterator i = m_list_trigger.begin();
 
-    while ( i != m_list_trigger.end() ){
+    while (i != m_list_trigger.end())
+    {
 
         // Find our pair
         if ((*i).m_tick_start <= a_tick_from &&
-            (*i).m_tick_end   >= a_tick_from  )
+                (*i).m_tick_end   >= a_tick_from)
         {
             long start = (*i).m_tick_start;
             long end   = (*i).m_tick_end;
 
-            if ( a_tick_to < start )
+            if (a_tick_to < start)
             {
                 start = a_tick_to;
             }
 
-            if ( (a_tick_to + a_length - 1) > end )
+            if ((a_tick_to + a_length - 1) > end)
             {
                 end = (a_tick_to + a_length - 1);
             }
 
-            add_trigger( start, end - start + 1, (*i).m_offset );
+            add_trigger(start, end - start + 1, (*i).m_offset);
             break;
         }
         ++i;
@@ -2070,15 +2188,17 @@ sequence::grow_trigger (long a_tick_from, long a_tick_to, long a_length)
 
 
 void
-sequence::del_trigger( long a_tick )
+sequence::del_trigger(long a_tick)
 {
     lock();
 
     std::list<trigger>::iterator i = m_list_trigger.begin();
 
-    while ( i != m_list_trigger.end() ){
+    while (i != m_list_trigger.end())
+    {
         if ((*i).m_tick_start <= a_tick &&
-            (*i).m_tick_end   >= a_tick ){
+                (*i).m_tick_end   >= a_tick)
+        {
 
             m_list_trigger.erase(i);
             break;
@@ -2090,7 +2210,7 @@ sequence::del_trigger( long a_tick )
 }
 
 void
-sequence::set_trigger_offset( long a_trigger_offset )
+sequence::set_trigger_offset(long a_trigger_offset)
 {
     lock();
 
@@ -2103,13 +2223,13 @@ sequence::set_trigger_offset( long a_trigger_offset )
 
 
 long
-sequence::get_trigger_offset( void )
+sequence::get_trigger_offset(void)
 {
     return m_trigger_offset;
 }
 
 void
-sequence::split_trigger( trigger &trig, long a_split_tick)
+sequence::split_trigger(trigger &trig, long a_split_tick)
 {
     lock();
 
@@ -2119,8 +2239,8 @@ sequence::split_trigger( trigger &trig, long a_split_tick)
     trig.m_tick_end = a_split_tick - 1;
 
     long length = new_tick_end - new_tick_start;
-    if ( length > 1 )
-        add_trigger( new_tick_start, length + 1, trig.m_offset );
+    if (length > 1)
+        add_trigger(new_tick_start, length + 1, trig.m_offset);
 
     unlock();
 }
@@ -2156,16 +2276,17 @@ sequence::split_trigger( trigger &trig, long a_split_tick)
 
 
 void
-sequence::adjust_trigger_offsets_to_legnth( long a_new_len )
+sequence::adjust_trigger_offsets_to_legnth(long a_new_len)
 {
     lock();
 
     // for all triggers, and undo triggers
     std::list<trigger>::iterator i = m_list_trigger.begin();
 
-    while ( i != m_list_trigger.end() ){
+    while (i != m_list_trigger.end())
+    {
 
-        i->m_offset = adjust_offset( i->m_offset );
+        i->m_offset = adjust_offset(i->m_offset);
         i->m_offset = m_length - i->m_offset; // flip
         long inverse_offset = m_length - (i->m_tick_start % m_length);
 
@@ -2207,26 +2328,26 @@ L       R
 [        ] [     ]  []  orig
 [                    ]
 
-<<
-    [     ]    [  ][ ]  [] split on the R marker, shift first
-    [     ]        [     ]
-    delete middle
-    [     ][ ]  []         move ticks
-    [     ][     ]
+        <<
+        [     ]    [  ][ ]  [] split on the R marker, shift first
+        [     ]        [     ]
+        delete middle
+        [     ][ ]  []         move ticks
+        [     ][     ]
 
-    L       R
-    [     ][ ] [     ]  [] split on L
-    [     ][             ]
+        L       R
+        [     ][ ] [     ]  [] split on L
+        [     ][             ]
 
-    [     ]        [ ] [     ]  [] increase all after L
-    [     ]        [             ]
+        [     ]        [ ] [     ]  [] increase all after L
+        [     ]        [             ]
 
 
 #endif
 
-    void
-    sequence::copy_triggers( long a_start_tick,
-                             long a_distance  )
+        void
+        sequence::copy_triggers(long a_start_tick,
+                                long a_distance)
 {
 
     long from_start_tick = a_start_tick + a_distance;
@@ -2234,17 +2355,18 @@ L       R
 
     lock();
 
-    move_triggers( a_start_tick,
-		   a_distance,
-		   true );
+    move_triggers(a_start_tick,
+                  a_distance,
+                  true);
 
     std::list<trigger>::iterator i = m_list_trigger.begin();
-    while(  i != m_list_trigger.end() ){
+    while (i != m_list_trigger.end())
+    {
 
 
 
-	if ( (*i).m_tick_start >= from_start_tick &&
-             (*i).m_tick_start <= from_end_tick )
+        if ((*i).m_tick_start >= from_start_tick &&
+                (*i).m_tick_start <= from_end_tick)
         {
             trigger e;
             e.m_offset = (*i).m_offset;
@@ -2252,25 +2374,25 @@ L       R
 
             e.m_tick_start  = (*i).m_tick_start - a_distance;
 
-            if ((*i).m_tick_end   <= from_end_tick )
+            if ((*i).m_tick_end   <= from_end_tick)
             {
                 e.m_tick_end  = (*i).m_tick_end - a_distance;
             }
 
-            if ((*i).m_tick_end   > from_end_tick )
+            if ((*i).m_tick_end   > from_end_tick)
             {
-                e.m_tick_end = from_start_tick -1;
+                e.m_tick_end = from_start_tick - 1;
             }
 
             e.m_offset += (m_length - (a_distance % m_length));
             e.m_offset %= m_length;
 
-            if ( e.m_offset < 0 )
+            if (e.m_offset < 0)
                 e.m_offset += m_length;
 
 
 
-            m_list_trigger.push_front( e );
+            m_list_trigger.push_front(e);
         }
 
         ++i;
@@ -2284,17 +2406,18 @@ L       R
 
 
 void
-sequence::split_trigger( long a_tick )
+sequence::split_trigger(long a_tick)
 {
 
     lock();
 
     std::list<trigger>::iterator i = m_list_trigger.begin();
-    while(  i != m_list_trigger.end() ){
+    while (i != m_list_trigger.end())
+    {
 
         // trigger greater than L and R
-        if ( (*i).m_tick_start <= a_tick &&
-             (*i).m_tick_end >= a_tick )
+        if ((*i).m_tick_start <= a_tick &&
+                (*i).m_tick_end >= a_tick)
         {
             //printf( "split trigger %ld %ld\n", (*i).m_tick_start, (*i).m_tick_end );
             {
@@ -2312,9 +2435,9 @@ sequence::split_trigger( long a_tick )
 }
 
 void
-sequence::move_triggers( long a_start_tick,
-			 long a_distance,
-			 bool a_direction )
+sequence::move_triggers(long a_start_tick,
+                        long a_distance,
+                        bool a_direction)
 {
 
     long a_end_tick = a_start_tick + a_distance;
@@ -2324,29 +2447,30 @@ sequence::move_triggers( long a_start_tick,
     lock();
 
     std::list<trigger>::iterator i = m_list_trigger.begin();
-    while(  i != m_list_trigger.end() ){
+    while (i != m_list_trigger.end())
+    {
 
         // trigger greater than L and R
-	if ( (*i).m_tick_start < a_start_tick &&
-             (*i).m_tick_end > a_start_tick )
+        if ((*i).m_tick_start < a_start_tick &&
+                (*i).m_tick_end > a_start_tick)
         {
-            if ( a_direction ) // forward
+            if (a_direction)   // forward
             {
-                split_trigger(*i,a_start_tick);
+                split_trigger(*i, a_start_tick);
             }
             else // back
             {
-                split_trigger(*i,a_end_tick);
+                split_trigger(*i, a_end_tick);
             }
         }
 
         // triggers on L
-	if ( (*i).m_tick_start < a_start_tick &&
-             (*i).m_tick_end > a_start_tick )
+        if ((*i).m_tick_start < a_start_tick &&
+                (*i).m_tick_end > a_start_tick)
         {
-            if ( a_direction ) // forward
+            if (a_direction)   // forward
             {
-                split_trigger(*i,a_start_tick);
+                split_trigger(*i, a_start_tick);
             }
             else // back
             {
@@ -2355,19 +2479,19 @@ sequence::move_triggers( long a_start_tick,
         }
 
         // In betweens
-        if ( (*i).m_tick_start >= a_start_tick &&
-             (*i).m_tick_end <= a_end_tick &&
-             !a_direction )
+        if ((*i).m_tick_start >= a_start_tick &&
+                (*i).m_tick_end <= a_end_tick &&
+                !a_direction)
         {
             m_list_trigger.erase(i);
             i = m_list_trigger.begin();
         }
 
         // triggers on R
-	if ( (*i).m_tick_start < a_end_tick &&
-             (*i).m_tick_end > a_end_tick )
+        if ((*i).m_tick_start < a_end_tick &&
+                (*i).m_tick_end > a_end_tick)
         {
-            if ( !a_direction ) // forward
+            if (!a_direction)   // forward
             {
                 (*i).m_tick_start = a_end_tick;
             }
@@ -2378,11 +2502,13 @@ sequence::move_triggers( long a_start_tick,
 
 
     i = m_list_trigger.begin();
-    while(  i != m_list_trigger.end() ){
+    while (i != m_list_trigger.end())
+    {
 
-        if ( a_direction ) // forward
+        if (a_direction)   // forward
         {
-            if ( (*i).m_tick_start >= a_start_tick ){
+            if ((*i).m_tick_start >= a_start_tick)
+            {
                 (*i).m_tick_start += a_distance;
                 (*i).m_tick_end   += a_distance;
                 (*i).m_offset += a_distance;
@@ -2392,7 +2518,8 @@ sequence::move_triggers( long a_start_tick,
         }
         else // back
         {
-            if ( (*i).m_tick_start >= a_end_tick ){
+            if ((*i).m_tick_start >= a_end_tick)
+            {
                 (*i).m_tick_start -= a_distance;
                 (*i).m_tick_end   -= a_distance;
 
@@ -2402,7 +2529,7 @@ sequence::move_triggers( long a_start_tick,
             }
         }
 
-        (*i).m_offset = adjust_offset( (*i).m_offset );
+        (*i).m_offset = adjust_offset((*i).m_offset);
 
 
         ++i;
@@ -2415,16 +2542,18 @@ sequence::move_triggers( long a_start_tick,
 }
 
 long
-sequence::get_selected_trigger_start_tick( void )
+sequence::get_selected_trigger_start_tick(void)
 {
     long ret = -1;
     lock();
 
     std::list<trigger>::iterator i = m_list_trigger.begin();
 
-    while(  i != m_list_trigger.end() ){
+    while (i != m_list_trigger.end())
+    {
 
-	if ( i->m_selected ){
+        if (i->m_selected)
+        {
             ret = i->m_tick_start;
         }
 
@@ -2437,16 +2566,18 @@ sequence::get_selected_trigger_start_tick( void )
 }
 
 long
-sequence::get_selected_trigger_end_tick( void )
+sequence::get_selected_trigger_end_tick(void)
 {
     long ret = -1;
     lock();
 
     std::list<trigger>::iterator i = m_list_trigger.begin();
 
-    while(  i != m_list_trigger.end() ){
+    while (i != m_list_trigger.end())
+    {
 
-	if ( i->m_selected ){
+        if (i->m_selected)
+        {
 
             ret = i->m_tick_end;
         }
@@ -2461,7 +2592,7 @@ sequence::get_selected_trigger_end_tick( void )
 
 
 void
-sequence::move_selected_triggers_to( long a_tick, bool a_adjust_offset, int a_which )
+sequence::move_selected_triggers_to(long a_tick, bool a_adjust_offset, int a_which)
 {
 
     lock();
@@ -2476,14 +2607,16 @@ sequence::move_selected_triggers_to( long a_tick, bool a_adjust_offset, int a_wh
     // min_tick][0                1][max_tick
     //                   2
 
-    while(  i != m_list_trigger.end() ){
+    while (i != m_list_trigger.end())
+    {
 
-	if ( i->m_selected ){
+        if (i->m_selected)
+        {
 
             s = i;
 
-            if (     i != m_list_trigger.end() &&
-                     ++i != m_list_trigger.end())
+            if (i != m_list_trigger.end() &&
+                    ++i != m_list_trigger.end())
             {
                 max_tick = (*i).m_tick_start - 1;
             }
@@ -2495,74 +2628,76 @@ sequence::move_selected_triggers_to( long a_tick, bool a_adjust_offset, int a_wh
 
             long a_delta_tick = 0;
 
-            if ( a_which == 1 )
+            if (a_which == 1)
             {
                 a_delta_tick = a_tick - s->m_tick_end;
 
-                if (  a_delta_tick > 0 &&
-                      (a_delta_tick + s->m_tick_end) > max_tick )
+                if (a_delta_tick > 0 &&
+                        (a_delta_tick + s->m_tick_end) > max_tick)
                 {
                     a_delta_tick = ((max_tick) - s->m_tick_end);
                 }
 
                 // not past first
-                if (  a_delta_tick < 0 &&
-                      (a_delta_tick + s->m_tick_end <= (s->m_tick_start + c_ppqn / 8 )))
+                if (a_delta_tick < 0 &&
+                        (a_delta_tick + s->m_tick_end <= (s->m_tick_start + c_ppqn / 8)))
                 {
-                    a_delta_tick = ((s->m_tick_start + c_ppqn / 8 ) - s->m_tick_end);
+                    a_delta_tick = ((s->m_tick_start + c_ppqn / 8) - s->m_tick_end);
                 }
             }
 
-            if ( a_which == 0 )
+            if (a_which == 0)
             {
                 a_delta_tick = a_tick - s->m_tick_start;
 
-                if (  a_delta_tick < 0 &&
-                      (a_delta_tick + s->m_tick_start) < min_tick )
+                if (a_delta_tick < 0 &&
+                        (a_delta_tick + s->m_tick_start) < min_tick)
                 {
                     a_delta_tick = ((min_tick) - s->m_tick_start);
                 }
 
                 // not past last
-                if (  a_delta_tick > 0 &&
-                      (a_delta_tick + s->m_tick_start >= (s->m_tick_end - c_ppqn / 8 )))
+                if (a_delta_tick > 0 &&
+                        (a_delta_tick + s->m_tick_start >= (s->m_tick_end - c_ppqn / 8)))
                 {
-                    a_delta_tick = ((s->m_tick_end - c_ppqn / 8 ) - s->m_tick_start);
+                    a_delta_tick = ((s->m_tick_end - c_ppqn / 8) - s->m_tick_start);
                 }
             }
 
-            if ( a_which == 2 )
+            if (a_which == 2)
             {
                 a_delta_tick = a_tick - s->m_tick_start;
 
-                if (  a_delta_tick < 0 &&
-                      (a_delta_tick + s->m_tick_start) < min_tick )
+                if (a_delta_tick < 0 &&
+                        (a_delta_tick + s->m_tick_start) < min_tick)
                 {
                     a_delta_tick = ((min_tick) - s->m_tick_start);
                 }
 
-                if ( a_delta_tick > 0 &&
-                     (a_delta_tick + s->m_tick_end) > max_tick )
+                if (a_delta_tick > 0 &&
+                        (a_delta_tick + s->m_tick_end) > max_tick)
                 {
                     a_delta_tick = ((max_tick) - s->m_tick_end);
                 }
             }
 
-            if ( a_which == 0 || a_which == 2 )
+            if (a_which == 0 || a_which == 2)
                 s->m_tick_start += a_delta_tick;
 
-            if ( a_which == 1 || a_which == 2 )
+            if (a_which == 1 || a_which == 2)
                 s->m_tick_end   += a_delta_tick;
 
-            if ( a_adjust_offset ){
+            if (a_adjust_offset)
+            {
 
                 s->m_offset += a_delta_tick;
-                s->m_offset = adjust_offset( s->m_offset );
+                s->m_offset = adjust_offset(s->m_offset);
             }
 
             break;
-	}
-        else {
+        }
+        else
+        {
             min_tick = (*i).m_tick_end + 1;
         }
 
@@ -2574,16 +2709,16 @@ sequence::move_selected_triggers_to( long a_tick, bool a_adjust_offset, int a_wh
 
 
 long
-sequence::get_max_trigger( void )
+sequence::get_max_trigger(void)
 {
     lock();
 
     long ret;
 
-    if ( m_list_trigger.size() > 0 )
-	ret = m_list_trigger.back().m_tick_end;
+    if (m_list_trigger.size() > 0)
+        ret = m_list_trigger.back().m_tick_end;
     else
-	ret = 0;
+        ret = 0;
 
     unlock();
 
@@ -2591,29 +2726,31 @@ sequence::get_max_trigger( void )
 }
 
 long
-sequence::adjust_offset( long a_offset )
+sequence::adjust_offset(long a_offset)
 {
     a_offset %= m_length;
 
-    if ( a_offset < 0 )
+    if (a_offset < 0)
         a_offset += m_length;
 
     return a_offset;
 }
 
 bool
-sequence::get_trigger_state( long a_tick )
+sequence::get_trigger_state(long a_tick)
 {
     lock();
 
     bool ret = false;
     std::list<trigger>::iterator i;
 
-    for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); i++ ){
+    for (i = m_list_trigger.begin(); i != m_list_trigger.end(); i++)
+    {
 
-	if ( (*i).m_tick_start <= a_tick &&
-             (*i).m_tick_end >= a_tick){
-	    ret = true;
+        if ((*i).m_tick_start <= a_tick &&
+                (*i).m_tick_end >= a_tick)
+        {
+            ret = true;
             break;
         }
     }
@@ -2626,20 +2763,22 @@ sequence::get_trigger_state( long a_tick )
 
 
 bool
-sequence::select_trigger( long a_tick )
+sequence::select_trigger(long a_tick)
 {
     lock();
 
     bool ret = false;
     std::list<trigger>::iterator i;
 
-    for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); i++ ){
+    for (i = m_list_trigger.begin(); i != m_list_trigger.end(); i++)
+    {
 
-	if ( (*i).m_tick_start <= a_tick &&
-             (*i).m_tick_end   >= a_tick){
+        if ((*i).m_tick_start <= a_tick &&
+                (*i).m_tick_end   >= a_tick)
+        {
 
             (*i).m_selected = true;
-	    ret = true;
+            ret = true;
         }
     }
 
@@ -2650,14 +2789,15 @@ sequence::select_trigger( long a_tick )
 
 
 bool
-sequence::unselect_triggers( void )
+sequence::unselect_triggers(void)
 {
     lock();
 
     bool ret = false;
     std::list<trigger>::iterator i;
 
-    for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); i++ ){
+    for (i = m_list_trigger.begin(); i != m_list_trigger.end(); i++)
+    {
         (*i).m_selected = false;
     }
 
@@ -2669,15 +2809,17 @@ sequence::unselect_triggers( void )
 
 
 void
-sequence::del_selected_trigger( void )
+sequence::del_selected_trigger(void)
 {
     lock();
 
     std::list<trigger>::iterator i;
 
-    for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); i++ ){
+    for (i = m_list_trigger.begin(); i != m_list_trigger.end(); i++)
+    {
 
-        if ( i->m_selected ){
+        if (i->m_selected)
+        {
             m_list_trigger.erase(i);
             break;
         }
@@ -2688,7 +2830,7 @@ sequence::del_selected_trigger( void )
 
 
 void
-sequence::cut_selected_trigger( void )
+sequence::cut_selected_trigger(void)
 {
     copy_selected_trigger();
     del_selected_trigger();
@@ -2696,15 +2838,17 @@ sequence::cut_selected_trigger( void )
 
 
 void
-sequence::copy_selected_trigger( void )
+sequence::copy_selected_trigger(void)
 {
     lock();
 
     std::list<trigger>::iterator i;
 
-    for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); i++ ){
+    for (i = m_list_trigger.begin(); i != m_list_trigger.end(); i++)
+    {
 
-        if ( i->m_selected ){
+        if (i->m_selected)
+        {
             m_trigger_clipboard = *i;
             m_trigger_copied = true;
             break;
@@ -2716,17 +2860,18 @@ sequence::copy_selected_trigger( void )
 
 
 void
-sequence::paste_trigger( void )
+sequence::paste_trigger(void)
 {
-    if ( m_trigger_copied ){
+    if (m_trigger_copied)
+    {
         long length =  m_trigger_clipboard.m_tick_end -
-            m_trigger_clipboard.m_tick_start + 1;
+                       m_trigger_clipboard.m_tick_start + 1;
         // paste at copy end
-        add_trigger( m_trigger_clipboard.m_tick_end + 1,
-                     length,
-                     m_trigger_clipboard.m_offset + length );
+        add_trigger(m_trigger_clipboard.m_tick_end + 1,
+                    length,
+                    m_trigger_clipboard.m_offset + length);
 
-        m_trigger_clipboard.m_tick_start = m_trigger_clipboard.m_tick_end +1;
+        m_trigger_clipboard.m_tick_start = m_trigger_clipboard.m_tick_end + 1;
         m_trigger_clipboard.m_tick_end = m_trigger_clipboard.m_tick_start + length - 1;
 
         m_trigger_clipboard.m_offset += length;
@@ -2737,7 +2882,7 @@ sequence::paste_trigger( void )
 
 /* this refreshes the play marker to the LastTick */
 void
-sequence::reset_draw_marker( void )
+sequence::reset_draw_marker(void)
 {
     lock();
 
@@ -2747,7 +2892,7 @@ sequence::reset_draw_marker( void )
 }
 
 void
-sequence::reset_draw_trigger_marker( void )
+sequence::reset_draw_trigger_marker(void)
 {
     lock();
 
@@ -2758,18 +2903,19 @@ sequence::reset_draw_trigger_marker( void )
 
 
 int
-sequence::get_lowest_note_event( void )
+sequence::get_lowest_note_event(void)
 {
     lock();
 
     int ret = 127;
     std::list<event>::iterator i;
 
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+    {
 
-	if ( (*i).is_note_on() || (*i).is_note_off() )
-	    if ( (*i).get_note() < ret )
-		ret = (*i).get_note();
+        if ((*i).is_note_on() || (*i).is_note_off())
+            if ((*i).get_note() < ret)
+                ret = (*i).get_note();
     }
 
     unlock();
@@ -2780,18 +2926,19 @@ sequence::get_lowest_note_event( void )
 
 
 int
-sequence::get_highest_note_event( void )
+sequence::get_highest_note_event(void)
 {
     lock();
 
     int ret = 0;
     std::list<event>::iterator i;
 
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+    {
 
-	if ( (*i).is_note_on() || (*i).is_note_off() )
-	    if ( (*i).get_note() > ret )
-		ret = (*i).get_note();
+        if ((*i).is_note_on() || (*i).is_note_off())
+            if ((*i).get_note() > ret)
+                ret = (*i).get_note();
     }
 
     unlock();
@@ -2800,67 +2947,71 @@ sequence::get_highest_note_event( void )
 }
 
 draw_type
-sequence::get_next_note_event( long *a_tick_s,
-			       long *a_tick_f,
-			       int  *a_note,
-			       bool *a_selected,
-			       int  *a_velocity  )
+sequence::get_next_note_event(long *a_tick_s,
+                              long *a_tick_f,
+                              int  *a_note,
+                              bool *a_selected,
+                              int  *a_velocity)
 {
 
     draw_type ret = DRAW_FIN;
     *a_tick_f = 0;
 
-    while (  m_iterator_draw  != m_list_event.end() )
+    while (m_iterator_draw  != m_list_event.end())
     {
-	*a_tick_s   = (*m_iterator_draw).get_timestamp();
-	*a_note     = (*m_iterator_draw).get_note();
-	*a_selected = (*m_iterator_draw).is_selected();
-	*a_velocity = (*m_iterator_draw).get_note_velocity();
+        *a_tick_s   = (*m_iterator_draw).get_timestamp();
+        *a_note     = (*m_iterator_draw).get_note();
+        *a_selected = (*m_iterator_draw).is_selected();
+        *a_velocity = (*m_iterator_draw).get_note_velocity();
 
-	/* note on, so its linked */
-	if( (*m_iterator_draw).is_note_on() &&
-	    (*m_iterator_draw).is_linked() ){
+        /* note on, so its linked */
+        if ((*m_iterator_draw).is_note_on() &&
+                (*m_iterator_draw).is_linked())
+        {
 
-	    *a_tick_f   = (*m_iterator_draw).get_linked()->get_timestamp();
+            *a_tick_f   = (*m_iterator_draw).get_linked()->get_timestamp();
 
-	    ret = DRAW_NORMAL_LINKED;
-	    m_iterator_draw++;
-	    return ret;
-	}
+            ret = DRAW_NORMAL_LINKED;
+            m_iterator_draw++;
+            return ret;
+        }
 
-	else if( (*m_iterator_draw).is_note_on() &&
-		 (! (*m_iterator_draw).is_linked()) ){
+        else if ((*m_iterator_draw).is_note_on() &&
+                 (!(*m_iterator_draw).is_linked()))
+        {
 
-	    ret = DRAW_NOTE_ON;
-	    m_iterator_draw++;
-	    return ret;
-	}
+            ret = DRAW_NOTE_ON;
+            m_iterator_draw++;
+            return ret;
+        }
 
-	else if( (*m_iterator_draw).is_note_off() &&
-		 (! (*m_iterator_draw).is_linked()) ){
+        else if ((*m_iterator_draw).is_note_off() &&
+                 (!(*m_iterator_draw).is_linked()))
+        {
 
-	    ret = DRAW_NOTE_OFF;
-	    m_iterator_draw++;
-	    return ret;
-	}
+            ret = DRAW_NOTE_OFF;
+            m_iterator_draw++;
+            return ret;
+        }
 
-	/* keep going until we hit null or find a NoteOn */
-	m_iterator_draw++;
+        /* keep going until we hit null or find a NoteOn */
+        m_iterator_draw++;
     }
     return DRAW_FIN;
 }
 
 
 bool
-sequence::get_next_event( unsigned char *a_status,
-                          unsigned char *a_cc)
+sequence::get_next_event(unsigned char *a_status,
+                         unsigned char *a_cc)
 {
     unsigned char j;
 
-    while (  m_iterator_draw  != m_list_event.end() ){
+    while (m_iterator_draw  != m_list_event.end())
+    {
 
         *a_status = (*m_iterator_draw).get_status();
-        (*m_iterator_draw).get_data( a_cc, &j );
+        (*m_iterator_draw).get_data(a_cc, &j);
 
         /* we have a good one */
         /* update and return */
@@ -2872,59 +3023,63 @@ sequence::get_next_event( unsigned char *a_status,
 
 
 bool
-sequence::get_next_event( unsigned char a_status,
-			  unsigned char a_cc,
-			  long *a_tick,
-			  unsigned char *a_D0,
-			  unsigned char *a_D1,
-			  bool *a_selected )
+sequence::get_next_event(unsigned char a_status,
+                         unsigned char a_cc,
+                         long *a_tick,
+                         unsigned char *a_D0,
+                         unsigned char *a_D1,
+                         bool *a_selected)
 {
-    while (  m_iterator_draw  != m_list_event.end() ){
+    while (m_iterator_draw  != m_list_event.end())
+    {
 
-	/* note on, so its linked */
-	if( (*m_iterator_draw).get_status() == a_status ){
+        /* note on, so its linked */
+        if ((*m_iterator_draw).get_status() == a_status)
+        {
 
-	    (*m_iterator_draw).get_data( a_D0, a_D1 );
-	    *a_tick   = (*m_iterator_draw).get_timestamp();
-	    *a_selected = (*m_iterator_draw).is_selected();
+            (*m_iterator_draw).get_data(a_D0, a_D1);
+            *a_tick   = (*m_iterator_draw).get_timestamp();
+            *a_selected = (*m_iterator_draw).is_selected();
 
-	    /* either we have a control chage with the right CC
-	       or its a different type of event */
-	    if ( (a_status == EVENT_CONTROL_CHANGE &&
-		  *a_D0 == a_cc )
-		 || (a_status != EVENT_CONTROL_CHANGE) ){
+            /* either we have a control chage with the right CC
+               or its a different type of event */
+            if ((a_status == EVENT_CONTROL_CHANGE &&
+                    *a_D0 == a_cc)
+                    || (a_status != EVENT_CONTROL_CHANGE))
+            {
 
-		/* we have a good one */
-		/* update and return */
-		m_iterator_draw++;
-		return true;
-	    }
-	}
-	/* keep going until we hit null or find a NoteOn */
-	m_iterator_draw++;
+                /* we have a good one */
+                /* update and return */
+                m_iterator_draw++;
+                return true;
+            }
+        }
+        /* keep going until we hit null or find a NoteOn */
+        m_iterator_draw++;
     }
     return false;
 }
 
 bool
-sequence::get_next_trigger( long *a_tick_on, long *a_tick_off, bool *a_selected, long *a_offset )
+sequence::get_next_trigger(long *a_tick_on, long *a_tick_off, bool *a_selected, long *a_offset)
 {
-    while (  m_iterator_draw_trigger  != m_list_trigger.end() ){
+    while (m_iterator_draw_trigger  != m_list_trigger.end())
+    {
 
-	*a_tick_on  = (*m_iterator_draw_trigger).m_tick_start;
+        *a_tick_on  = (*m_iterator_draw_trigger).m_tick_start;
         *a_selected = (*m_iterator_draw_trigger).m_selected;
-        *a_offset =   (*m_iterator_draw_trigger).m_offset;
-	*a_tick_off = (*m_iterator_draw_trigger).m_tick_end;
-	m_iterator_draw_trigger++;
+        *a_offset = (*m_iterator_draw_trigger).m_offset;
+        *a_tick_off = (*m_iterator_draw_trigger).m_tick_end;
+        m_iterator_draw_trigger++;
 
-	return true;
+        return true;
     }
     return false;
 }
 
 
 void
-sequence::remove_all( void )
+sequence::remove_all(void)
 {
     lock();
 
@@ -2942,28 +3097,29 @@ sequence::operator= (const sequence& a_rhs)
     lock();
 
     /* dont copy to self */
-    if (this != &a_rhs){
+    if (this != &a_rhs)
+    {
 
-	m_list_event   = a_rhs.m_list_event;
-	m_list_trigger   = a_rhs.m_list_trigger;
+        m_list_event   = a_rhs.m_list_event;
+        m_list_trigger   = a_rhs.m_list_trigger;
 
-	m_midi_channel = a_rhs.m_midi_channel;
-	m_masterbus    = a_rhs.m_masterbus;
-	m_bus          = a_rhs.m_bus;
-	m_name         = a_rhs.m_name;
-	m_length       = a_rhs.m_length;
+        m_midi_channel = a_rhs.m_midi_channel;
+        m_masterbus    = a_rhs.m_masterbus;
+        m_bus          = a_rhs.m_bus;
+        m_name         = a_rhs.m_name;
+        m_length       = a_rhs.m_length;
 
-	m_time_beats_per_measure = a_rhs.m_time_beats_per_measure;
-	m_time_beat_width = a_rhs.m_time_beat_width;
+        m_time_beats_per_measure = a_rhs.m_time_beats_per_measure;
+        m_time_beat_width = a_rhs.m_time_beat_width;
 
-	m_playing      = false;
+        m_playing      = false;
 
-	/* no notes are playing */
-	for (int i=0; i< c_midi_notes; i++ )
-	    m_playing_notes[i] = 0;
+        /* no notes are playing */
+        for (int i = 0; i < c_midi_notes; i++)
+            m_playing_notes[i] = 0;
 
-	/* reset */
-	zero_markers( );
+        /* reset */
+        zero_markers();
 
     }
 
@@ -2978,14 +3134,14 @@ sequence::operator= (const sequence& a_rhs)
 
 
 void
-sequence::lock( )
+sequence::lock()
 {
     m_mutex.lock();
 }
 
 
 void
-sequence::unlock( )
+sequence::unlock()
 {
     m_mutex.unlock();
 }
@@ -2999,18 +3155,18 @@ sequence::get_name()
 }
 
 long
-sequence::get_last_tick( )
+sequence::get_last_tick()
 {
     return (m_last_tick + (m_length -  m_trigger_offset)) % m_length;
 }
 
 void
-sequence::set_midi_bus( char  a_mb )
+sequence::set_midi_bus(char  a_mb)
 {
     lock();
 
     /* off notes except initial */
-    off_playing_notes( );
+    off_playing_notes();
 
     this->m_bus = a_mb;
     set_dirty();
@@ -3019,7 +3175,7 @@ sequence::set_midi_bus( char  a_mb )
 }
 
 char
-sequence::get_midi_bus(  )
+sequence::get_midi_bus()
 {
     return this->m_bus;
 }
@@ -3027,20 +3183,20 @@ sequence::get_midi_bus(  )
 
 
 void
-sequence::set_length( long a_len, bool a_adjust_triggers )
+sequence::set_length(long a_len, bool a_adjust_triggers)
 {
     lock();
 
     bool was_playing = get_playing();
 
     /* turn everything off */
-    set_playing( false );
+    set_playing(false);
 
-    if ( a_len < (c_ppqn / 4) )
-        a_len = (c_ppqn /4);
+    if (a_len < (c_ppqn / 4))
+        a_len = (c_ppqn / 4);
 
-    if ( a_adjust_triggers )
-        adjust_trigger_offsets_to_legnth( a_len  );
+    if (a_adjust_triggers)
+        adjust_trigger_offsets_to_legnth(a_len);
 
     m_length = a_len;
 
@@ -3049,15 +3205,15 @@ sequence::set_length( long a_len, bool a_adjust_triggers )
     reset_draw_marker();
 
     /* start up and refresh */
-    if ( was_playing )
-	set_playing( true );
+    if (was_playing)
+        set_playing(true);
 
     unlock();
 }
 
 
 long
-sequence::get_length( )
+sequence::get_length()
 {
     return m_length;
 }
@@ -3065,19 +3221,22 @@ sequence::get_length( )
 
 
 void
-sequence::set_playing( bool a_p )
+sequence::set_playing(bool a_p)
 {
     lock();
 
-    if ( a_p != get_playing() )
+    if (a_p != get_playing())
     {
 
-        if (a_p){
+        if (a_p)
+        {
 
             /* turn on */
             m_playing = true;
 
-        } else {
+        }
+        else
+        {
 
             /* turn off */
             m_playing = false;
@@ -3098,11 +3257,11 @@ sequence::set_playing( bool a_p )
 void
 sequence::toggle_playing()
 {
-    set_playing( ! get_playing() );
+    set_playing(! get_playing());
 }
 
 bool
-sequence::get_playing( )
+sequence::get_playing()
 {
     return m_playing;
 }
@@ -3110,23 +3269,23 @@ sequence::get_playing( )
 
 
 void
-sequence::set_recording( bool a_r )
+sequence::set_recording(bool a_r)
 {
     lock();
     m_recording = a_r;
-	m_notes_on = 0;
+    m_notes_on = 0;
     unlock();
 }
 
 
 bool
-sequence::get_recording( )
+sequence::get_recording()
 {
     return m_recording;
 }
 
 void
-sequence::set_snap_tick( int a_st )
+sequence::set_snap_tick(int a_st)
 {
     lock();
     m_snap_tick = a_st;
@@ -3134,7 +3293,7 @@ sequence::set_snap_tick( int a_st )
 }
 
 void
-sequence::set_quanized_rec( bool a_qr )
+sequence::set_quanized_rec(bool a_qr)
 {
     lock();
     m_quanized_rec = a_qr;
@@ -3143,14 +3302,14 @@ sequence::set_quanized_rec( bool a_qr )
 
 
 bool
-sequence::get_quanidez_rec( )
+sequence::get_quanidez_rec()
 {
     return m_quanized_rec;
 }
 
 
 void
-sequence::set_thru( bool a_r )
+sequence::set_thru(bool a_r)
 {
     lock();
     m_thru = a_r;
@@ -3159,7 +3318,7 @@ sequence::set_thru( bool a_r )
 
 
 bool
-sequence::get_thru( )
+sequence::get_thru()
 {
     return m_thru;
 }
@@ -3167,31 +3326,31 @@ sequence::get_thru( )
 
 /* sets sequence name */
 void
-sequence::set_name( char *a_name )
+sequence::set_name(char *a_name)
 {
     m_name = a_name;
     set_dirty_mp();
 }
 
 void
-sequence::set_name( string a_name )
+sequence::set_name(string a_name)
 {
     m_name = a_name;
     set_dirty_mp();
 }
 
 void
-sequence::set_midi_channel( unsigned char a_ch )
+sequence::set_midi_channel(unsigned char a_ch)
 {
     lock();
-    off_playing_notes( );
+    off_playing_notes();
     m_midi_channel = a_ch;
     set_dirty();
     unlock();
 }
 
 unsigned char
-sequence::get_midi_channel( )
+sequence::get_midi_channel()
 {
     return m_midi_channel;
 }
@@ -3205,7 +3364,7 @@ sequence::print()
         std::list<event>::iterator i = m_list_event.begin();
         i != m_list_event.end(); i++
     )
-	 (*i).print();
+        (*i).print();
     printf("events[%ld]\n\n", m_list_event.size());
 }
 
@@ -3228,29 +3387,34 @@ sequence::print_triggers()
 }
 
 void
-sequence::put_event_on_bus( event *a_e )
+sequence::put_event_on_bus(event *a_e)
 {
     lock();
 
     unsigned char note = a_e->get_note();
     bool skip = false;
 
-    if ( a_e->is_note_on() ){
+    if (a_e->is_note_on())
+    {
 
         m_playing_notes[note]++;
     }
-    if ( a_e->is_note_off() ){
+    if (a_e->is_note_off())
+    {
 
-        if (  m_playing_notes[note] <= 0 ){
+        if (m_playing_notes[note] <= 0)
+        {
             skip = true;
         }
-        else {
+        else
+        {
             m_playing_notes[note]--;
         }
     }
 
-    if ( !skip ){
-        m_masterbus->play( m_bus, a_e,  m_midi_channel );
+    if (!skip)
+    {
+        m_masterbus->play(m_bus, a_e,  m_midi_channel);
     }
 
     m_masterbus->flush();
@@ -3267,14 +3431,16 @@ sequence::off_playing_notes()
 
     event e;
 
-    for ( int x=0; x< c_midi_notes; x++ ){
+    for (int x = 0; x < c_midi_notes; x++)
+    {
 
-        while( m_playing_notes[x] > 0 ){
+        while (m_playing_notes[x] > 0)
+        {
 
-            e.set_status( EVENT_NOTE_OFF );
-            e.set_data( x, 0 );
+            e.set_status(EVENT_NOTE_OFF);
+            e.set_data(x, 0);
 
-            m_masterbus->play( m_bus, &e, m_midi_channel );
+            m_masterbus->play(m_bus, &e, m_midi_channel);
 
             m_playing_notes[x]--;
         }
@@ -3297,49 +3463,52 @@ sequence::off_playing_notes()
 
 /* change */
 void
-sequence::select_events( unsigned char a_status, unsigned char a_cc, bool a_inverse )
+sequence::select_events(unsigned char a_status, unsigned char a_cc, bool a_inverse)
 {
     lock();
 
     unsigned char d0, d1;
     std::list<event>::iterator i;
 
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+    {
 
-	/* initially false */
-	bool set = false;
-	(*i).get_data( &d0, &d1 );
+        /* initially false */
+        bool set = false;
+        (*i).get_data(&d0, &d1);
 
-	/* correct status and not CC */
-	if ( a_status != EVENT_CONTROL_CHANGE &&
-	     (*i).get_status() == a_status )
-	    set = true;
+        /* correct status and not CC */
+        if (a_status != EVENT_CONTROL_CHANGE &&
+                (*i).get_status() == a_status)
+            set = true;
 
-	/* correct status and correct cc */
-	if ( a_status == EVENT_CONTROL_CHANGE &&
-	     (*i).get_status() == a_status &&
-	     d0 == a_cc )
-	    set = true;
+        /* correct status and correct cc */
+        if (a_status == EVENT_CONTROL_CHANGE &&
+                (*i).get_status() == a_status &&
+                d0 == a_cc)
+            set = true;
 
-        if ( set ){
+        if (set)
+        {
 
-            if ( a_inverse ){
-                if ( !(*i).is_selected( ) )
-                    (*i).select( );
+            if (a_inverse)
+            {
+                if (!(*i).is_selected())
+                    (*i).select();
                 else
-                    (*i).unselect( );
+                    (*i).unselect();
 
             }
             else
-                (*i).select( );
-	}
+                (*i).select();
+        }
     }
 
     unlock();
 }
 
 void
-sequence::transpose_notes( int a_steps, int a_scale )
+sequence::transpose_notes(int a_steps, int a_scale)
 {
     event e;
 
@@ -3353,20 +3522,24 @@ sequence::transpose_notes( int a_steps, int a_scale )
 
     const int *transpose_table = NULL;
 
-    if ( a_steps < 0 ){
+    if (a_steps < 0)
+    {
         transpose_table = &c_scales_transpose_dn[a_scale][0];
         a_steps *= -1;
     }
-    else {
+    else
+    {
         transpose_table = &c_scales_transpose_up[a_scale][0];
     }
 
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+    {
 
-	/* is it being moved ? */
-	if ( ((*i).get_status() ==  EVENT_NOTE_ON ||
-              (*i).get_status() ==  EVENT_NOTE_OFF) &&
-             (*i).is_marked() ){
+        /* is it being moved ? */
+        if (((*i).get_status() ==  EVENT_NOTE_ON ||
+                (*i).get_status() ==  EVENT_NOTE_OFF) &&
+                (*i).is_marked())
+        {
 
             e = (*i);
             e.unmark();
@@ -3374,27 +3547,28 @@ sequence::transpose_notes( int a_steps, int a_scale )
             int  note = e.get_note();
 
             bool off_scale = false;
-            if (  transpose_table[note % 12] == 0 ){
+            if (transpose_table[note % 12] == 0)
+            {
                 off_scale = true;
                 note -= 1;
             }
 
-            for( int x=0; x<a_steps; ++x )
+            for (int x = 0; x < a_steps; ++x)
                 note += transpose_table[note % 12];
 
-            if ( off_scale )
+            if (off_scale)
                 note += 1;
 
-            e.set_note( note );
+            e.set_note(note);
 
             transposed_events.push_front(e);
 
-	}
+        }
     }
 
     remove_marked();
     transposed_events.sort();
-    m_list_event.merge( transposed_events);
+    m_list_event.merge(transposed_events);
 
 
     verify_and_link();
@@ -3408,10 +3582,10 @@ sequence::transpose_notes( int a_steps, int a_scale )
 
 // NOT DELETING THE ENDS, NOT SELECTED.
 void
-sequence::quanize_events( unsigned char a_status, unsigned char a_cc,
-                          long a_snap_tick,  int a_divide, bool a_linked )
+sequence::quanize_events(unsigned char a_status, unsigned char a_cc,
+                         long a_snap_tick,  int a_divide, bool a_linked)
 {
-    event e,f;
+    event e, f;
 
     lock();
 
@@ -3422,30 +3596,32 @@ sequence::quanize_events( unsigned char a_status, unsigned char a_cc,
 
     mark_selected();
 
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+    {
 
         /* initially false */
-	bool set = false;
-	(*i).get_data( &d0, &d1 );
+        bool set = false;
+        (*i).get_data(&d0, &d1);
 
-	/* correct status and not CC */
-	if ( a_status != EVENT_CONTROL_CHANGE &&
-	     (*i).get_status() == a_status )
-	    set = true;
+        /* correct status and not CC */
+        if (a_status != EVENT_CONTROL_CHANGE &&
+                (*i).get_status() == a_status)
+            set = true;
 
-	/* correct status and correct cc */
-	if ( a_status == EVENT_CONTROL_CHANGE &&
-	     (*i).get_status() == a_status &&
-	     d0 == a_cc )
-	    set = true;
+        /* correct status and correct cc */
+        if (a_status == EVENT_CONTROL_CHANGE &&
+                (*i).get_status() == a_status &&
+                d0 == a_cc)
+            set = true;
 
-        if( !(*i).is_marked() )
+        if (!(*i).is_marked())
             set = false;
 
-        if ( set ){
+        if (set)
+        {
 
             /* copy event */
-	    e = (*i);
+            e = (*i);
             (*i).select();
             e.unmark();
 
@@ -3453,26 +3629,30 @@ sequence::quanize_events( unsigned char a_status, unsigned char a_cc,
             long timestamp_remander = (timestamp % a_snap_tick);
             long timestamp_delta = 0;
 
-            if ( timestamp_remander < a_snap_tick/2 ){
-                timestamp_delta = - (timestamp_remander / a_divide );
+            if (timestamp_remander < a_snap_tick / 2)
+            {
+                timestamp_delta = - (timestamp_remander / a_divide);
             }
-            else {
+            else
+            {
                 timestamp_delta = (a_snap_tick - timestamp_remander) / a_divide;
             }
-	    if ((timestamp_delta + timestamp) >= m_length) {
-		timestamp_delta = - e.get_timestamp() ;
-	    }
+            if ((timestamp_delta + timestamp) >= m_length)
+            {
+                timestamp_delta = - e.get_timestamp() ;
+            }
 
-            e.set_timestamp( e.get_timestamp() + timestamp_delta );
+            e.set_timestamp(e.get_timestamp() + timestamp_delta);
             quantized_events.push_front(e);
 
-            if ( (*i).is_linked() && a_linked ){
+            if ((*i).is_linked() && a_linked)
+            {
 
                 f = *(*i).get_linked();
                 f.unmark();
                 (*i).get_linked()->select();
 
-                f.set_timestamp( f.get_timestamp() + timestamp_delta );
+                f.set_timestamp(f.get_timestamp() + timestamp_delta);
                 quantized_events.push_front(f);
             }
         }
@@ -3494,7 +3674,7 @@ sequence::quanize_events( unsigned char a_status, unsigned char a_cc,
 
 
 void
-addListVar( std::list<char> *a_list, long a_var )
+addListVar(std::list<char> *a_list, long a_var)
 {
     long buffer;
     buffer = a_var & 0x7F;
@@ -3502,39 +3682,41 @@ addListVar( std::list<char> *a_list, long a_var )
     /* we shift it right 7, if there is
        still set bits, encode into buffer
        in reverse order */
-    while ( ( a_var >>= 7) ){
-	buffer <<= 8;
-	buffer |= ((a_var & 0x7F) | 0x80);
+    while ((a_var >>= 7))
+    {
+        buffer <<= 8;
+        buffer |= ((a_var & 0x7F) | 0x80);
     }
 
-    while (true){
+    while (true)
+    {
 
-	a_list->push_front( (char) buffer & 0xFF );
+        a_list->push_front((char) buffer & 0xFF);
 
-	if (buffer & 0x80)
-	    buffer >>= 8;
-	else
-	    break;
+        if (buffer & 0x80)
+            buffer >>= 8;
+        else
+            break;
     }
 }
 
 void
-addLongList( std::list<char> *a_list, long a_x )
+addLongList(std::list<char> *a_list, long a_x)
 {
-    a_list->push_front(  (a_x & 0xFF000000) >> 24 );
-    a_list->push_front(  (a_x & 0x00FF0000) >> 16 );
-    a_list->push_front(  (a_x & 0x0000FF00) >> 8  );
-    a_list->push_front(  (a_x & 0x000000FF)       );
+    a_list->push_front((a_x & 0xFF000000) >> 24);
+    a_list->push_front((a_x & 0x00FF0000) >> 16);
+    a_list->push_front((a_x & 0x0000FF00) >> 8);
+    a_list->push_front((a_x & 0x000000FF));
 }
 
 
 void
-sequence::fill_list( std::list<char> *a_list, int a_pos )
+sequence::fill_list(std::list<char> *a_list, int a_pos)
 {
     lock();
 
     *a_list = std::list<char>(); /* clear list */
-    addListVar( a_list, 0 ); /* sequence number */
+    addListVar(a_list, 0);   /* sequence number */
     a_list->push_front(char(0xFF));
     a_list->push_front(0x00);
     a_list->push_front(0x02);
@@ -3542,111 +3724,113 @@ sequence::fill_list( std::list<char> *a_list, int a_pos )
     a_list->push_front(char(a_pos & 0x00FF));
 
     /* name */
-    addListVar( a_list, 0 );
+    addListVar(a_list, 0);
     a_list->push_front(char(0xFF));
     a_list->push_front(0x03);
 
     int length =  m_name.length();
-    if ( length > 0x7F ) length = 0x7f;
-    a_list->push_front( length );
+    if (length > 0x7F) length = 0x7f;
+    a_list->push_front(length);
 
-    for ( int i=0; i< length; i++ )
-	a_list->push_front( m_name.c_str()[i] );
+    for (int i = 0; i < length; i++)
+        a_list->push_front(m_name.c_str()[i]);
 
     long timestamp = 0, delta_time = 0, prev_timestamp = 0;
     std::list<event>::iterator i;
 
-    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
+    for (i = m_list_event.begin(); i != m_list_event.end(); i++)
+    {
 
-	event e = (*i);
-	timestamp = e.get_timestamp();
-	delta_time = timestamp - prev_timestamp;
-	prev_timestamp = timestamp;
+        event e = (*i);
+        timestamp = e.get_timestamp();
+        delta_time = timestamp - prev_timestamp;
+        prev_timestamp = timestamp;
 
-	/* encode delta_time */
-	addListVar( a_list, delta_time );
+        /* encode delta_time */
+        addListVar(a_list, delta_time);
 
-	/* now that the timestamp is encoded, do the status and
-	   data */
+        /* now that the timestamp is encoded, do the status and
+           data */
 
-	a_list->push_front( e.m_status | m_midi_channel );
+        a_list->push_front(e.m_status | m_midi_channel);
 
-	switch( e.m_status & 0xF0 ){
+        switch (e.m_status & 0xF0)
+        {
 
-            case 0x80:
-            case 0x90:
-            case 0xA0:
-            case 0xB0:
-            case 0xE0:
+        case 0x80:
+        case 0x90:
+        case 0xA0:
+        case 0xB0:
+        case 0xE0:
 
-                a_list->push_front(  e.m_data[0] );
-                a_list->push_front(  e.m_data[1] );
+            a_list->push_front(e.m_data[0]);
+            a_list->push_front(e.m_data[1]);
 
-                //printf ( "- d[%2X %2X]\n" , e.m_data[0], e.m_data[1] );
+            //printf ( "- d[%2X %2X]\n" , e.m_data[0], e.m_data[1] );
 
-                break;
+            break;
 
-            case 0xC0:
-            case 0xD0:
+        case 0xC0:
+        case 0xD0:
 
-                a_list->push_front(  e.m_data[0] );
+            a_list->push_front(e.m_data[0]);
 
-                //printf ( "- d[%2X]\n" , e.m_data[0] );
+            //printf ( "- d[%2X]\n" , e.m_data[0] );
 
-                break;
+            break;
 
-            default:
-                break;
-	}
+        default:
+            break;
+        }
     }
 
     int num_triggers = m_list_trigger.size();
     std::list<trigger>::iterator t = m_list_trigger.begin();
     std::list<trigger>::iterator p;
 
-    addListVar( a_list, 0 );
+    addListVar(a_list, 0);
     a_list->push_front(char(0xFF));
     a_list->push_front(char(0x7F));
-    addListVar( a_list, (num_triggers * 3 * 4) + 4);
-    addLongList( a_list, c_triggers_new );
-    for ( int i=0; i<num_triggers; i++ )
+    addListVar(a_list, (num_triggers * 3 * 4) + 4);
+    addLongList(a_list, c_triggers_new);
+    for (int i = 0; i < num_triggers; i++)
     {
         p = t;
-        addLongList( a_list, (*t).m_tick_start );
-        addLongList( a_list, (*t).m_tick_end );
-        addLongList( a_list, (*t).m_offset );
-	     t++;
+        addLongList(a_list, (*t).m_tick_start);
+        addLongList(a_list, (*t).m_tick_end);
+        addLongList(a_list, (*t).m_offset);
+        t++;
     }
 
     /* bus */
-    addListVar( a_list, 0 );
+    addListVar(a_list, 0);
     a_list->push_front(char(0xF));
     a_list->push_front(char(0x7F));
     a_list->push_front(char(0x05));
-    addLongList( a_list, c_midibus );
-    a_list->push_front( m_bus  );
+    addLongList(a_list, c_midibus);
+    a_list->push_front(m_bus);
 
     /* timesig */
-    addListVar( a_list, 0 );
+    addListVar(a_list, 0);
     a_list->push_front(char(0xFF));
     a_list->push_front(char(0x7F));
     a_list->push_front(char(0x06));
-    addLongList( a_list, c_timesig );
-    a_list->push_front( m_time_beats_per_measure  );
-    a_list->push_front( m_time_beat_width  );
+    addLongList(a_list, c_timesig);
+    a_list->push_front(m_time_beats_per_measure);
+    a_list->push_front(m_time_beat_width);
 
     /* channel */
-    addListVar( a_list, 0 );
+    addListVar(a_list, 0);
     a_list->push_front(char(0xFF));
     a_list->push_front(char(0x7F));
     a_list->push_front(char(0x05));
-    addLongList( a_list, c_midich );
-    a_list->push_front( m_midi_channel );
+    addLongList(a_list, c_midich);
+    a_list->push_front(m_midi_channel);
 
     delta_time = m_length - prev_timestamp;
 
     /* meta track end */
-    addListVar( a_list, delta_time );
+    addListVar(a_list, delta_time);
     a_list->push_front(char(0xFF));
     a_list->push_front(char(0x2F));
     a_list->push_front(char(0x00));

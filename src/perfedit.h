@@ -74,10 +74,10 @@ using namespace Gtk;
  */
 
 /* has a seqroll and piano roll */
-class perfedit:public Gtk::Window
+class perfedit: public Gtk::Window
 {
 
-  private:
+private:
 
     perform * m_mainperf;
 
@@ -130,39 +130,39 @@ class perfedit:public Gtk::Window
     int m_bpm;
     int m_bw;
 
-    void set_bpm( int a_beats_per_measure );
-    void set_bw( int a_beat_width );
-    void set_snap (int a_snap);
+    void set_bpm(int a_beats_per_measure);
+    void set_bw(int a_beat_width);
+    void set_snap(int a_snap);
 
-    void set_guides( void );
+    void set_guides(void);
 
-    void grow (void);
+    void grow(void);
 
-    void on_realize ();
+    void on_realize();
 
-    void start_playing (void);
-    void stop_playing (void);
+    void start_playing(void);
+    void stop_playing(void);
 
-    void set_looped (void);
+    void set_looped(void);
 
-    void expand (void);
-    void collapse (void);
-    void copy (void);
-    void undo ( void );
+    void expand(void);
+    void collapse(void);
+    void copy(void);
+    void undo(void);
 
-    void popup_menu (Menu * a_menu);
+    void popup_menu(Menu * a_menu);
 
-    bool timeout (void);
+    bool timeout(void);
 
-    bool on_delete_event (GdkEventAny * a_event);
+    bool on_delete_event(GdkEventAny * a_event);
     bool on_key_press_event(GdkEventKey* a_ev);
 
-  public:
+public:
 
-    void init_before_show ();
+    void init_before_show();
 
-    perfedit (perform * a_perf);
-    ~perfedit ();
+    perfedit(perform * a_perf);
+    ~perfedit();
 };
 
 

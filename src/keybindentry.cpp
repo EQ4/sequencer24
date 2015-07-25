@@ -28,47 +28,59 @@
 
 
 KeyBindEntry::KeyBindEntry(type t, unsigned int* location_to_write,
-        perform* p, long s):
+                           perform* p, long s):
     Entry(),
-    m_key( location_to_write ),
-    m_type( t ),
-    m_perf( p ),
-    m_slot( s )
+    m_key(location_to_write),
+    m_type(t),
+    m_perf(p),
+    m_slot(s)
 {
     switch (m_type)
     {
-        case location: if (m_key) set( *m_key ); break;
-        case events: set( m_perf->lookup_keyevent_key( m_slot ) ); break;
-        case groups: set( m_perf->lookup_keygroup_key( m_slot ) ); break;
+    case location:
+        if (m_key) set(*m_key);
+        break;
+    case events:
+        set(m_perf->lookup_keyevent_key(m_slot));
+        break;
+    case groups:
+        set(m_perf->lookup_keygroup_key(m_slot));
+        break;
     }
 }
 
-void KeyBindEntry::set( unsigned int val )
+void KeyBindEntry::set(unsigned int val)
 {
     char buf[256] = "";
-    char* special = gdk_keyval_name( val );
+    char* special = gdk_keyval_name(val);
     char* p_buf = &buf[strlen(buf)];
 
     if (special)
-        snprintf( p_buf, sizeof buf - (p_buf - buf), "%s", special );
+        snprintf(p_buf, sizeof buf - (p_buf - buf), "%s", special);
     else
-        snprintf( p_buf, sizeof buf - (p_buf - buf), "'%c'", (char)val );
-    
-    set_text( buf );
-    int width = strlen(buf)-1;
-    set_width_chars( 1 <= width ? width : 1 );
+        snprintf(p_buf, sizeof buf - (p_buf - buf), "'%c'", (char)val);
+
+    set_text(buf);
+    int width = strlen(buf) - 1;
+    set_width_chars(1 <= width ? width : 1);
 }
 
 bool KeyBindEntry::on_key_press_event(GdkEventKey* event)
 {
-    bool result = Entry::on_key_press_event( event );
-    set( event->keyval );
-    
+    bool result = Entry::on_key_press_event(event);
+    set(event->keyval);
+
     switch (m_type)
     {
-        case location: if (m_key) *m_key = event->keyval; break;
-        case events: m_perf->set_key_event( event->keyval, m_slot ); break;
-        case groups: m_perf->set_key_group( event->keyval, m_slot ); break;
+    case location:
+        if (m_key) *m_key = event->keyval;
+        break;
+    case events:
+        m_perf->set_key_event(event->keyval, m_slot);
+        break;
+    case groups:
+        m_perf->set_key_group(event->keyval, m_slot);
+        break;
     }
     return result;
 }
