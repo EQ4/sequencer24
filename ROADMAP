@@ -22,7 +22,7 @@ x  -  Branch off to a "Catchup" branch:
       -  Other easy fixes found anywhere?
       -  Merge "Catchup" back into the main trunk.
       -  Tagged as "Catchup", commit 8ea385884b7629424243b347f645b7d3720a3857.
-   -  Branch off to a "Packaging" branch:
+x  -  Branch off to a "Packaging" branch:
       -  Add a bootstrap script and its helper scripts.
       -  Update configure.in to configure.ac and add our standard features
          for better-tailored builds.
@@ -30,7 +30,7 @@ x  -  Branch off to a "Catchup" branch:
       -  Add our licensing (for clarification)
       -  Fix and verify any Debian packaging issues that crop up.
       -  Merge "Packaging" back into the main trunk.
-   -  Branch off to a "Gtkmm-3" branch.
+x  -  Branch off to a "Gtkmm-3" branch.
       -  Update the GUI, document the changes, and verify functionality.
       -  Merge "Gtkmm-3" back into the main trunk.
    -  Branch off to a "Document" branch:

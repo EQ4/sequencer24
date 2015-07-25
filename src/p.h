@@ -1,4 +1,5 @@
 /*
+ *
  *  This file is part of seq24/sequencer24.
  *
  *  seq24 is free software; you can redistribute it and/or modify
@@ -14,6 +15,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with seq24; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
  */
 
 #ifndef SEQ24_PERFORM
@@ -31,10 +33,11 @@ class perform;
 #ifndef PLATFORM_WINDOWS
 #include <unistd.h>
 #endif
+
 #include <pthread.h>
 
-
 /* if we have jack, include the jack headers */
+
 #ifdef JACK_SUPPORT
 #include <jack/jack.h>
 #include <jack/transport.h>
@@ -62,35 +65,32 @@ const int c_status_replace  = 0x01;
 const int c_status_snapshot = 0x02;
 const int c_status_queue    = 0x04;
 
-	 const int c_midi_track_ctrl = c_seqs_in_set * 2;
-	 const int c_midi_control_bpm_up       = c_midi_track_ctrl ;
-	 const int c_midi_control_bpm_dn       = c_midi_track_ctrl + 1;
-	 const int c_midi_control_ss_up        = c_midi_track_ctrl + 2;
-	 const int c_midi_control_ss_dn        = c_midi_track_ctrl + 3;
-	 const int c_midi_control_mod_replace  = c_midi_track_ctrl + 4;
-	 const int c_midi_control_mod_snapshot = c_midi_track_ctrl + 5;
-	 const int c_midi_control_mod_queue    = c_midi_track_ctrl + 6;
-	 //andy midi_control_mod_mute_group
-	 const int c_midi_control_mod_gmute    = c_midi_track_ctrl + 7;
-	 //andy learn_mute_toggle_mode
-	 const int c_midi_control_mod_glearn   = c_midi_track_ctrl + 8;
-	 //andy play only this screen set
-	 const int c_midi_control_play_ss      = c_midi_track_ctrl + 9;
-	 const int c_midi_controls             = c_midi_track_ctrl + 10;//7
+const int c_midi_track_ctrl = c_seqs_in_set * 2;
+const int c_midi_control_bpm_up       = c_midi_track_ctrl ;
+const int c_midi_control_bpm_dn       = c_midi_track_ctrl + 1;
+const int c_midi_control_ss_up        = c_midi_track_ctrl + 2;
+const int c_midi_control_ss_dn        = c_midi_track_ctrl + 3;
+const int c_midi_control_mod_replace  = c_midi_track_ctrl + 4;
+const int c_midi_control_mod_snapshot = c_midi_track_ctrl + 5;
+const int c_midi_control_mod_queue    = c_midi_track_ctrl + 6;
+//andy midi_control_mod_mute_group
+const int c_midi_control_mod_gmute    = c_midi_track_ctrl + 7;
+//andy learn_mute_toggle_mode
+const int c_midi_control_mod_glearn   = c_midi_track_ctrl + 8;
+//andy play only this screen set
+const int c_midi_control_play_ss      = c_midi_track_ctrl + 9;
+const int c_midi_controls             = c_midi_track_ctrl + 10;//7
 
 struct performcallback
 {
-   /*
-    * ca 2015-07-2
-    * Eliminate this annoying warning.  Will do it for Microsoft's bloddy
-    * compiler later.
-    */
 
 #ifdef PLATFORM_GNU
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
-    virtual void on_grouplearnchange(bool state) {}
+    virtual void on_grouplearnchange (bool state)
+    {
+    }
 };
 
 class perform
