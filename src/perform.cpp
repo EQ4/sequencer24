@@ -1,5 +1,4 @@
 /*
- *
  *  This file is part of seq24/sequencer24.
  *
  *  seq24 is free software; you can redistribute it and/or modify
@@ -15,25 +14,37 @@
  *  You should have received a copy of the GNU General Public License
  *  along with seq24; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/**
+ * \file          perform.cpp
+ *
+ *  This module defines the base class for configuration and options
+ *  files.
+ *
+ * \library       sequencer24 application
+ * \author        Seq24 team; modifications by Chris Ahlstrom
+ * \date          2015-07-24
+ * \updates       2015-07-25
+ * \license       GNU GPLv2 or above
  *
  */
+
+#include <sched.h>
+#include <stdio.h>
+#ifndef PLATFORM_WINDOWS
+#include <time.h>
+#endif
+#include <gtkmm/accelkey.h>            // For keys
 
 #include "perform.h"
 #include "midibus.h"
 #include "event.h"
-#include <stdio.h>
-#ifndef __WIN32__
-#  include <time.h>
-#endif
-#include <sched.h>
-
-//For keys
-#include <gtkmm/accelkey.h>
-
 
 using namespace Gtk;
 
-perform::perform()
+perform::perform ()
+    // MUST ADD MEMBER INIT HERE!!!!
 {
     for (int i=0; i< c_max_sequence; i++) {
 
@@ -2229,6 +2240,7 @@ void perform::set_key_group( unsigned int keycode, long group_slot )
 
 
 #ifdef JACK_SUPPORT
+
 void jack_timebase_callback(jack_transport_state_t state,
         jack_nframes_t nframes,
         jack_position_t *pos, int new_pos, void *arg)
@@ -2320,52 +2332,54 @@ void print_jack_pos( jack_position_t* jack_pos ){
 }
 
 
-#if 0
+#if USE_MAIN_ROUTINE_FOR_JACK_TEST
+
+/*
+ * This section provides a main routine for testing purposes.
+ */
 
 int main ( void )
 {
     jack_client_t *client;
 
     /* become a new client of the JACK server */
-    if ((client = jack_client_new("transport tester")) == 0) {
+
+    if ((client = jack_client_new("transport tester")) == 0)
+    {
         fprintf(stderr, "jack server not running?\n");
         return 1;
     }
-
     jack_on_shutdown(client, jack_shutdown, 0);
     jack_set_sync_callback(client, jack_sync_callback, NULL);
-
-    if (jack_activate(client)) {
+    if (jack_activate(client))
+    {
         fprintf(stderr, "cannot activate client");
         return 1;
     }
 
     bool cond = false; /* true if we want to fail if there is already a master */
-    if (jack_set_timebase_callback(client, cond, timebase, NULL) != 0){
+    if (jack_set_timebase_callback(client, cond, timebase, NULL) != 0)
+    {
         printf("Unable to take over timebase or there is already a master.\n");
         exit(1);
     }
 
     jack_position_t pos;
-
     pos.valid = JackPositionBBT;
-
     pos.bar = 0;
     pos.beat = 0;
     pos.tick = 0;
-
     pos.beats_per_bar = time_beats_per_bar;
     pos.beat_type = time_beat_type;
     pos.ticks_per_beat = time_ticks_per_beat;
     pos.beats_per_minute = time_beats_per_minute;
     pos.bar_start_tick = 0.0;
 
-
-    //jack_transport_reposition( client, &pos );
+    // jack_transport_reposition( client, &pos );
 
     jack_transport_start (client);
 
-    //void jack_transport_stop (jack_client_t *client);
+    // void jack_transport_stop (jack_client_t *client);
 
     int bob;
     scanf ("%d", &bob);
@@ -2373,11 +2387,15 @@ int main ( void )
     jack_transport_stop (client);
     jack_release_timebase(client);
     jack_client_close(client);
-
     return 0;
 }
 
-#endif
+#endif   // USE_MAIN_ROUTINE_FOR_JACK_TEST
 
+#endif   // JACK_SUPPORT
 
-#endif
+/*
+ * perform.cpp
+ *
+ * vim: sw=4 ts=4 wm=8 et ft=cpp
+ */

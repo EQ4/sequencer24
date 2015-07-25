@@ -19,6 +19,7 @@
  */
 
 #include <iostream>
+#include "perform.h"                    // must precede midifile.h !
 #include "midifile.h"
 
 midifile::midifile(const Glib::ustring& a_name) :

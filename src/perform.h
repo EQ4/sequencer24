@@ -1,3 +1,6 @@
+#ifndef SEQ24_PERFORM_H
+#define SEQ24_PERFORM_H
+
 /*
  *  This file is part of seq24/sequencer24.
  *
@@ -16,15 +19,27 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef SEQ24_PERFORM
-#define SEQ24_PERFORM
-
-class perform;
+/**
+ * \file          perform.h
+ *
+ *  This module declares/defines the base class for configuration and
+ *  options files.
+ *
+ * \library       sequencer24 application
+ * \author        Seq24 team; modifications by Chris Ahlstrom
+ * \date          2015-07-24
+ * \updates       2015-07-25
+ * \license       GNU GPLv2 or above
+ *
+ */
 
 #include "globals.h"
 #include "event.h"
 #include "platform_macros.h"
 #include "midibus.h"
+
+// class perform;                          // forward reference
+
 #include "midifile.h"
 #include "sequence.h"
 
@@ -33,22 +48,24 @@ class perform;
 #endif
 #include <pthread.h>
 
-
-/* if we have jack, include the jack headers */
 #ifdef JACK_SUPPORT
 #include <jack/jack.h>
 #include <jack/transport.h>
+
 #ifdef JACK_SESSION
 #include <jack/session.h>
 #endif
-#endif
 
+#endif   // JACK_SUPPORT
 
-/* class contains sequences that make up a live set */
+/*
+ * This class (actually a struct) contains sequences that make up a live
+ * set.
+ */
 
 class midi_control
 {
- public:
+public:
 
 	bool m_active;
 	bool m_inverse_active;
@@ -93,45 +110,68 @@ struct performcallback
     virtual void on_grouplearnchange(bool state) {}
 };
 
+/**
+ *  This class supports the performance mode.
+ *
+ *  It has way too many data members, many of the public.
+ *  Might be ripe for refactoring.
+ */
+
 class perform
 {
- private:
-    //andy mute group
+private:
+
+    /**
+     *  Mute group support.
+     */
+
     bool m_mute_group[c_gmute_tracks];
     bool m_tracks_mute_state[c_seqs_in_set];
     bool m_mode_group;
     bool m_mode_group_learn;
     int m_mute_group_selected;
-    //andy playing screen
+
+    /**
+     *  Playing screen support.
+     */
+
     int m_playing_screen;
 
+    /**
+     *  Provides a vector of patterns/sequences.
+     */
 
-    /* vector of sequences */
-    sequence *m_seqs[c_max_sequence];
-
+    sequence * m_seqs[c_max_sequence];
     bool m_seqs_active[ c_max_sequence ];
-
     bool m_was_active_main[ c_max_sequence ];
     bool m_was_active_edit[ c_max_sequence ];
     bool m_was_active_perf[ c_max_sequence ];
     bool m_was_active_names[ c_max_sequence ];
-
     bool m_sequence_state[  c_max_sequence ];
 
-    /* our midibus */
+    /**
+     *  Provides our MIDI buss.
+     */
+
     mastermidibus m_master_bus;
 
-    /* pthread info */
+    /**
+     *  Provides information for managing pthreads.
+     */
+
     pthread_t m_out_thread;
     pthread_t m_in_thread;
     bool m_out_thread_launched;
     bool m_in_thread_launched;
 
+    /*
+     * More variables.
+     */
+
     bool m_running;
     bool m_inputing;
     bool m_outputing;
     bool m_looping;
-
     bool m_playback_mode;
 
     int thread_trigger_width_ms;
@@ -140,24 +180,23 @@ class perform
     long m_right_tick;
     long m_starting_tick;
 
+    /**
+     *  MIDI Clock support.
+     */
+
     long m_tick;
     bool m_usemidiclock;
-    bool m_midiclockrunning; // stopped or started
+    bool m_midiclockrunning;            // stopped or started
     int  m_midiclocktick;
     int  m_midiclockpos;
 
     bool m_show_ui_sequence_key;
 
-
-    void set_running( bool a_running );
-
-    void set_playback_mode( bool a_playback_mode );
-
     string m_screen_set_notepad[c_max_sets];
 
-    midi_control m_midi_cc_toggle[ c_midi_controls ];
-    midi_control m_midi_cc_on[ c_midi_controls ];
-    midi_control m_midi_cc_off[ c_midi_controls ];
+    midi_control m_midi_cc_toggle[c_midi_controls];
+    midi_control m_midi_cc_on[c_midi_controls];
+    midi_control m_midi_cc_off[c_midi_controls];
 
     int m_offset;
     int m_control_status;
@@ -165,197 +204,244 @@ class perform
 
     condition_var m_condition_var;
 
-    // do not access these directly, use set/lookup below
+    /*
+     *  Do not access these directly, use set/lookup below.
+     */
+
     std::map<unsigned int,long> key_events;
     std::map<unsigned int,long> key_groups;
-    std::map<long,unsigned int> key_events_rev; // reverse lookup, keep this in sync!!
-    std::map<long,unsigned int> key_groups_rev; // reverse lookup, keep this in sync!!
-
+    std::map<long,unsigned int> key_events_rev; // reverse lookup, keep in sync!!
+    std::map<long,unsigned int> key_groups_rev; // reverse lookup, keep in sync!!
 
 #ifdef JACK_SUPPORT
 
-    jack_client_t *m_jack_client;
-    jack_nframes_t m_jack_frame_current,
-                   m_jack_frame_last;
+    jack_client_t * m_jack_client;
+    jack_nframes_t m_jack_frame_current;
+    jack_nframes_t m_jack_frame_last;
     jack_position_t m_jack_pos;
     jack_transport_state_t m_jack_transport_state;
     jack_transport_state_t m_jack_transport_state_last;
     double m_jack_tick;
+
 #ifdef JACK_SESSION
- public:
-    jack_session_event_t *m_jsession_ev;
+public:
+
+    jack_session_event_t * m_jsession_ev;
     bool jack_session_event();
- private:
-#endif
-#endif
+
+private:
+
+#endif  // JACK_SESSION
+#endif  // JACK_SUPPORT
 
     bool m_jack_running;
     bool m_jack_master;
 
-    void inner_start( bool a_state );
-    void inner_stop();
+    void set_running (bool a_running);
+    void set_playback_mode (bool a_playback_mode);
 
- public:
-    bool is_running();
-    bool is_learn_mode() const { return m_mode_group_learn; }
+    void inner_start (bool a_state);
+    void inner_stop ();
 
-    // can register here for events...
-    std::vector<performcallback*> m_notify;
+public:
+
+    bool is_running ();
+    bool is_learn_mode () const
+    {
+        return m_mode_group_learn;
+    }
+
+    /*
+     * Can register here for events...
+     */
+
+    std::vector<performcallback *> m_notify;
 
     unsigned int m_key_bpm_up;
     unsigned int m_key_bpm_dn;
-
     unsigned int m_key_replace;
     unsigned int m_key_queue;
     unsigned int m_key_keep_queue;
     unsigned int m_key_snapshot_1;
     unsigned int m_key_snapshot_2;
-
     unsigned int m_key_screenset_up;
     unsigned int m_key_screenset_dn;
     unsigned int m_key_set_playing_screenset;
-
     unsigned int m_key_group_on;
     unsigned int m_key_group_off;
     unsigned int m_key_group_learn;
-
-
     unsigned int m_key_start;
     unsigned int m_key_stop;
 
-    bool show_ui_sequence_key() const { return m_show_ui_sequence_key; }
+    bool show_ui_sequence_key () const
+    {
+        return m_show_ui_sequence_key;
+    }
 
-    perform();
-    ~perform();
+public:
 
-    void init( void );
+    perform ();
+    ~perform ();
 
-    void clear_all( void );
+    void init (void);
+    void clear_all (void);
 
-    void launch_input_thread( void );
-    void launch_output_thread( void );
-    void init_jack( void );
-    void deinit_jack( void );
+    void launch_input_thread (void);
+    void launch_output_thread (void);
+    void init_jack (void);
+    void deinit_jack (void);
 
-    void add_sequence( sequence *a_seq, int a_perf );
-    void delete_sequence( int a_num );
-    bool is_sequence_in_edit( int a_num );
+    void add_sequence (sequence * a_seq, int a_perf);
+    void delete_sequence (int a_num);
+    bool is_sequence_in_edit (int a_num);
 
-    void clear_sequence_triggers( int a_seq  );
+    void clear_sequence_triggers (int a_seq );
 
+    long get_tick( )
+    {
+        return m_tick;
+    }
 
-    long get_tick( ) { return m_tick; };
+    void set_left_tick (long a_tick);
+    long get_left_tick (void);
+    void set_starting_tick (long a_tick);
+    long get_starting_tick (void);
+    void set_right_tick (long a_tick);
+    long get_right_tick (void);
 
-    void set_left_tick( long a_tick );
-    long get_left_tick( void );
-
-    void set_starting_tick( long a_tick );
-    long get_starting_tick( void );
-
-    void set_right_tick( long a_tick );
-    long get_right_tick( void );
-
-    void move_triggers( bool a_direction );
-    void copy_triggers(  );
-
-    void push_trigger_undo( void );
-    void pop_trigger_undo( void );
+    void move_triggers (bool a_direction);
+    void copy_triggers ();
+    void push_trigger_undo (void);
+    void pop_trigger_undo (void);
 
     void print();
 
-    midi_control *get_midi_control_toggle( unsigned int a_seq );
-    midi_control *get_midi_control_on( unsigned int a_seq );
-    midi_control *get_midi_control_off( unsigned int a_seq );
+    midi_control * get_midi_control_toggle (unsigned int a_seq);
+    midi_control * get_midi_control_on (unsigned int a_seq);
+    midi_control * get_midi_control_off (unsigned int a_seq);
 
-    void handle_midi_control( int a_control, bool a_state );
+    void handle_midi_control (int a_control, bool a_state);
 
-    void set_screen_set_notepad( int a_screen_set, string *a_note );
-    string *get_screen_set_notepad( int a_screen_set );
+    void set_screen_set_notepad (int a_screen_set, std::string * a_note);
+    std::string * get_screen_set_notepad (int a_screen_set);
 
-    void set_screenset( int a_ss );
-    int get_screenset( void );
-    void set_playing_screenset( void );
-    int get_playing_screenset( void );
+    void set_screenset (int a_ss);
+    int get_screenset (void);
+    void set_playing_screenset (void);
+    int get_playing_screenset (void);
     void mute_group_tracks (void);
     void select_and_mute_group (int a_g_group);
     void set_mode_group_mute ();
     void select_group_mute (int a_g_mute);
     void set_mode_group_learn (void);
     void unset_mode_group_learn (void);
-    bool is_group_learning( void ) { return m_mode_group_learn; }
-    void select_mute_group ( int a_group );
+    bool is_group_learning (void) { return m_mode_group_learn; }
+    void select_mute_group  (int a_group);
     void unset_mode_group_mute ();
-    void start( bool a_state );
+    void start (bool a_state);
     void stop();
 
     void start_jack();
     void stop_jack();
-    void position_jack( bool a_state );
+    void position_jack (bool a_state);
 
-    void off_sequences( void );
-    void all_notes_off( void );
+    void off_sequences (void);
+    void all_notes_off (void);
 
-    void set_active(int a_sequence, bool a_active);
-    void set_was_active( int a_sequence );
-    bool is_active(int a_sequence);
+    void set_active (int a_sequence, bool a_active);
+    void set_was_active (int a_sequence);
+    bool is_active (int a_sequence);
     bool is_dirty_main (int a_sequence);
     bool is_dirty_edit (int a_sequence);
     bool is_dirty_perf (int a_sequence);
     bool is_dirty_names (int a_sequence);
 
-    void new_sequence( int a_sequence );
+    void new_sequence (int a_sequence);
 
     /* plays all notes to Curent tick */
-    void play( long a_tick );
-    void set_orig_ticks( long a_tick  );
+    void play (long a_tick);
+    void set_orig_ticks (long a_tick );
 
-    sequence * get_sequence( int a_sequence );
+    sequence * get_sequence (int a_sequence);
 
-    void reset_sequences( void );
+    void reset_sequences (void);
 
-    void set_bpm(int a_bpm);
-    int  get_bpm( );
+    void set_bpm (int a_bpm);
+    int  get_bpm ();
 
-    void set_looping( bool a_looping ){ m_looping = a_looping; };
+    void set_looping (bool a_looping)
+    {
+        m_looping = a_looping;
+    }
 
-    void set_sequence_control_status( int a_status );
-    void unset_sequence_control_status( int a_status );
+    void set_sequence_control_status (int a_status);
+    void unset_sequence_control_status (int a_status);
 
-    void sequence_playing_toggle( int a_sequence );
-    void sequence_playing_on( int a_sequence );
-    void sequence_playing_off( int a_sequence );
+    void sequence_playing_toggle (int a_sequence);
+    void sequence_playing_on (int a_sequence);
+    void sequence_playing_off (int a_sequence);
     void set_group_mute_state (int a_g_track, bool a_mute_state);
     bool get_group_mute_state (int a_g_track);
+    void mute_all_tracks (void);
 
-    void mute_all_tracks( void );
+    mastermidibus * get_master_midi_bus ();
 
-    mastermidibus* get_master_midi_bus( );
+    void output_func ();
+    void input_func ();
 
-    void output_func();
-    void input_func();
+    long get_max_trigger (void);
 
-    long get_max_trigger( void );
+    void set_offset (int a_offset);
 
-    void set_offset( int a_offset );
+    void save_playing_state (void);
+    void restore_playing_state (void);
 
-    void save_playing_state( void );
-    void restore_playing_state( void );
+    const std::map<unsigned int, long> * get_key_events (void) const
+    {
+        return &key_events;
+    }
+    const std::map<unsigned int, long> * get_key_groups (void) const
+    {
+        return &key_groups;
+    }
 
+    void set_key_event (unsigned int keycode, long sequence_slot);
+    void set_key_group (unsigned int keycode, long group_slot);
 
-    const std::map<unsigned int,long> *get_key_events( void ) const { return &key_events; };
-    const std::map<unsigned int,long> *get_key_groups( void ) const { return &key_groups; };
+    /*
+     * Getters of keyboard mapping for sequence and groups.
+     * If not found, returns something "safe" [so use get_key()->count()
+     * to see if it's there first]
+     */
 
-    void set_key_event( unsigned int keycode, long sequence_slot );
-    void set_key_group( unsigned int keycode, long group_slot );
-
-    // getters of keyboard mapping for sequence and groups,
-    // if not found, returns something "safe" (so use get_key()->count() to see if it's there first)
-    unsigned int lookup_keyevent_key( long seqnum ) { if (key_events_rev.count( seqnum )) return key_events_rev[seqnum]; else return '?';}
-    long lookup_keyevent_seq( unsigned int keycode ) { if (key_events.count( keycode )) return key_events[keycode]; else return 0; }
-    unsigned int lookup_keygroup_key( long groupnum ) { if (key_groups_rev.count( groupnum )) return key_groups_rev[groupnum]; else return '?'; }
-    long lookup_keygroup_group( unsigned int keycode ) { if (key_groups.count( keycode )) return key_groups[keycode]; else return 0; }
-
-
+    unsigned int lookup_keyevent_key (long seqnum)
+    {
+        if (key_events_rev.count( seqnum))
+            return key_events_rev[seqnum];
+        else
+            return '?';
+    }
+    long lookup_keyevent_seq (unsigned int keycode)
+    {
+        if (key_events.count( keycode))
+            return key_events[keycode];
+        else
+            return 0;
+    }
+    unsigned int lookup_keygroup_key (long groupnum)
+    {
+        if (key_groups_rev.count(groupnum))
+            return key_groups_rev[groupnum];
+        else
+            return '?';
+    }
+    long lookup_keygroup_group (unsigned int keycode )
+    {
+        if (key_groups.count(keycode))
+            return key_groups[keycode];
+        else
+            return 0;
+    }
 
     friend class midifile;
     friend class optionsfile;
@@ -363,28 +449,55 @@ class perform
 
 #ifdef JACK_SUPPORT
 
-    friend int jack_sync_callback(jack_transport_state_t state,
-                              jack_position_t *pos, void *arg);
-    friend void jack_shutdown(void *arg);
-    friend void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes,
-                                       jack_position_t *pos, int new_pos, void *arg);
-#endif
+    friend int jack_sync_callback
+    (
+        jack_transport_state_t state,
+        jack_position_t * pos,
+        void * arg
+    );
+    friend void jack_shutdown (void * arg);
+    friend void jack_timebase_callback
+    (
+        jack_transport_state_t state,
+        jack_nframes_t nframes,
+        jack_position_t * pos,
+        int new_pos,
+        void * arg
+    );
+
+#endif  // JACK_SUPPORT
+
 };
 
-/* located in perform.C */
-extern void *output_thread_func(void *a_p);
-extern void *input_thread_func(void *a_p);
+/**
+ * Global functions defined in perform.cpp.
+ */
 
+extern void * output_thread_func (void * a_p);
+extern void * input_thread_func (void * a_p);
 
+/**
+ *  Global functions for JACK support and JACK sessions.
+ */
 
 #ifdef JACK_SUPPORT
 
-int jack_sync_callback(jack_transport_state_t state,
-					   jack_position_t *pos, void *arg);
-void print_jack_pos( jack_position_t* jack_pos );
-void jack_shutdown(void *arg);
-void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes,
-                            jack_position_t *pos, int new_pos, void *arg);
+int jack_sync_callback
+(
+    jack_transport_state_t state,
+    jack_position_t * pos,
+    void * arg
+);
+void print_jack_pos (jack_position_t * jack_pos);
+void jack_shutdown (void * arg);
+void jack_timebase_callback
+(
+    jack_transport_state_t state,
+    jack_nframes_t nframes,
+    jack_position_t * pos,
+    int new_pos,
+    void * arg
+);
 
 /*
  * ca 2015-07-23
@@ -392,12 +505,19 @@ void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes
  * GitHub project.  Added the following function.
  */
 
-int jack_process_callback(jack_nframes_t nframes, void* arg);
+int jack_process_callback (jack_nframes_t nframes, void * arg);
 
 #ifdef JACK_SESSION
-void jack_session_callback(jack_session_event_t *ev, void *arg);
-#endif
+void jack_session_callback (jack_session_event_t * ev, void * arg);
 #endif
 
+#endif   // JACK_SUPPORT
 
-#endif
+#endif   // SEQ24_PERFORM_H
+
+/*
+ * perform.h
+ *
+ * vim: sw=4 ts=4 wm=8 et ft=cpp
+ */
+

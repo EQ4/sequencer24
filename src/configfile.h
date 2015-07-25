@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-24
+ * \updates       2015-07-25
  * \license       GNU GPLv2 or above
  *
  */
@@ -106,7 +106,7 @@ public:
 
 };
 
-#endif          /* SEQ24_CONFIGFILE_H */
+#endif  // SEQ24_CONFIGFILE_H
 
 /*
  * configfile.h

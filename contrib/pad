@@ -1,0 +1,10 @@
+#!/bin/bash
+
+DISABLE_TOUCHPAD="0"
+
+if [ "$1" == "off" ] ; then
+   DISABLE_TOUCHPAD="1"
+fi
+
+synclient TouchpadOff=$DISABLE_TOUCHPAD
+

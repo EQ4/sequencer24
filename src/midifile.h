@@ -21,24 +21,25 @@
 #ifndef SEQ24_MIDIFILE
 #define SEQ24_MIDIFILE
 
-#include "perform.h"
 #include <fstream>
 #include <string>
 #include <list>
 #include <vector>
 
-class midifile 
+class perform;                          // forward reference
+
+class midifile
 {
 
  private:
-    
+
     int m_pos;
     const std::string m_name;
 
     /* holds our data */
 	std::vector<unsigned char> m_d;
-    
-    list<unsigned char> m_l;
+
+   std::list<unsigned char> m_l;
 
     unsigned long read_long();
     unsigned short read_short();
