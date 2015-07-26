@@ -10,17 +10,22 @@
  * \library       sequencer24
  * \author        Chris Ahlstrom and other authors; see documentation
  * \date          2013-11-17
- * \updates       2015-07-24
+ * \updates       2015-07-26
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
  *    The macros in this file cover:
  *
- *       -  Language-support macros.
+ *       -  Compiler-support macros.
  *       -  Error and information output macros.
+ *       -  One or more global debugging functions that are better suited
+ *          than using a macro.
  *
  * Copyright (C) 2013-2015 Chris Ahlstrom <ahlstromcj@gmail.com>
  */
+
+#include <string>
+#include "platform_macros.h"
 
 /**
  * Language macros:
@@ -90,6 +95,57 @@ typedef bool cbool_t;
 #endif
 
 /**
+ *    GCC provides three magic variables which hold the name of the current
+ *    function, as a string.  The first of these is `__func__', which is part
+ *    of the C99 standard:
+ *
+ *    The identifier `__func__' is implicitly declared by the translator.  It
+ *    is the name of the lexically-enclosing function.  This name is the
+ *    unadorned name of the function.
+ *
+ *    `__FUNCTION__' is another name for `__func__'.  Older versions of GCC
+ *    recognize only this name.  However, it is not standardized.  For maximum
+ *    portability, use `__func__', but provide a fallback definition with
+ *    the preprocessor, as done below.
+ *
+ *    `__PRETTY_FUNCTION__' is the decorated version of the function name.
+ *    It is longer, but more informative.  It is also deprecated.  But, for
+ *    now, we'll continue to use it
+ *
+ *    Visual Studio defines only __FUNCTION__, so a definition is provided
+ *    below.
+ *
+ *//*-------------------------------------------------------------------------*/
+
+#define USE_PRETTY_FUNCTION   1
+
+#ifdef PLATFORM_GNU
+
+#ifndef __func__
+#if __STDC_VERSION__ < 199901L
+#if __GNUC__ >= 2
+
+#ifdef USE_PRETTY_FUNCTION                            /* TODO                 */
+#define __func__        __PRETTY_FUNCTION__           /* adorned func names   */
+#else
+#define __func__        __FUNCTION__                  /* bald func names      */
+#endif
+
+#else
+#define __func__        "<unknown>"
+#endif  // __GNUC__
+#endif  // __STDC_VERSION__
+#endif  // __func__
+
+#else   // ! PLATFORM_GNU
+
+#ifndef __func__
+#define __func__        __FUNCTION__    // Windows?
+#endif
+
+#endif  // PLATFORM_GNU
+
+/**
  *    Provides an error reporting macro (which happens to match Chris's XPC
  *    error function.
  */
@@ -131,10 +187,16 @@ typedef bool cbool_t;
 
 #define infoprintf(fmt, x)    fprintf(stderr, fmt, x)
 
+/*
+ * Global functions
+ */
+
+extern bool not_nullptr_assert (void * ptr, const std::string & context);
+
 #endif         /* SEQ24_EASY_MACROS_H */
 
 /*
  * easy_macros.h
  *
- * vim: sw=4 ts=4 wm=8 et ft=c
+ * vim: sw=4 ts=4 wm=8 et ft=cpp
  */

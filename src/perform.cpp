@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-25
+ * \updates       2015-07-26
  * \license       GNU GPLv2 or above
  *
  */
@@ -39,7 +39,6 @@
 #include "perform.h"
 #include "midibus.h"
 #include "event.h"
-#include "easy_macros.h"               // nullptr
 
 using namespace Gtk;
 
@@ -49,7 +48,7 @@ using namespace Gtk;
  *  MUST ADD MEMBER INIT-LIST HERE!!!!
  */
 
-perform::perform()
+perform::perform ()
 {
     for (int i = 0; i < c_max_sequence; i++)
     {
@@ -196,7 +195,7 @@ perform::perform()
  *  launched. Finally, any active patterns/sequences are deleted.
  */
 
-perform::~perform()
+perform::~perform ()
 {
     m_inputing = false;
     m_outputing = false;
@@ -223,7 +222,7 @@ perform::~perform()
  */
 
 void
-perform::init(void)
+perform::init (void)
 {
     m_master_bus.init();
 }
@@ -233,7 +232,7 @@ perform::init(void)
  */
 
 void
-perform::init_jack(void)
+perform::init_jack (void)
 {
 
 #ifdef JACK_SUPPORT
@@ -252,8 +251,11 @@ perform::init_jack(void)
             if (global_jack_session_uuid.empty())
                 m_jack_client = jack_client_open(PACKAGE, JackNullOption, NULL);
             else
-                m_jack_client = jack_client_open(PACKAGE, JackSessionID, NULL,
-                                                 global_jack_session_uuid.c_str());
+                m_jack_client = jack_client_open
+                (
+                    PACKAGE, JackSessionID, NULL,
+                    global_jack_session_uuid.c_str()
+                );
 #else
             m_jack_client = jack_client_open(PACKAGE, JackNullOption, NULL);
 #endif
@@ -322,7 +324,7 @@ perform::init_jack(void)
  */
 
 void
-perform::deinit_jack(void)
+perform::deinit_jack (void)
 {
 #ifdef JACK_SUPPORT
 
@@ -352,7 +354,7 @@ perform::deinit_jack(void)
  */
 
 void
-perform::clear_all(void)
+perform::clear_all (void)
 {
     reset_sequences();
     for (int i = 0; i < c_max_sequence; i++)
@@ -373,7 +375,7 @@ perform::clear_all(void)
  */
 
 void
-perform::set_mode_group_mute()
+perform::set_mode_group_mute ()
 {
     m_mode_group = true;
 }
@@ -384,7 +386,7 @@ perform::set_mode_group_mute()
  */
 
 void
-perform::unset_mode_group_mute()
+perform::unset_mode_group_mute ()
 {
     m_mode_group = false;
 }
@@ -394,7 +396,7 @@ perform::unset_mode_group_mute()
  */
 
 void
-perform::set_group_mute_state(int a_g_track, bool a_mute_state)
+perform::set_group_mute_state (int a_g_track, bool a_mute_state)
 {
     /*
      * Common code
@@ -414,7 +416,7 @@ perform::set_group_mute_state(int a_g_track, bool a_mute_state)
  * \getter m_mute_group
  */
 
-bool perform::get_group_mute_state(int a_g_track)
+bool perform::get_group_mute_state (int a_g_track)
 {
     /*
      * Common code
@@ -435,11 +437,8 @@ bool perform::get_group_mute_state(int a_g_track)
  */
 
 void
-perform::select_group_mute(int a_g_mute)
+perform::select_group_mute (int a_g_mute)
 {
-    int j = (a_g_mute * c_seqs_in_set);
-    int k = m_playing_screen * c_seqs_in_set;
-
     /*
      * Common code
      */
@@ -450,18 +449,28 @@ perform::select_group_mute(int a_g_mute)
     if (a_g_mute > c_seqs_in_set)
         a_g_mute = c_seqs_in_set - 1;
 
+    int j = a_g_mute * c_seqs_in_set;
+    int k = m_playing_screen * c_seqs_in_set;
+    bool error = false;
     if (m_mode_group_learn)
     {
         for (int i = 0; i < c_seqs_in_set; i++)
         {
-            if (is_active(i + k))
+            if (is_active(i+k))
             {
-                assert(m_seqs[i + k]);
-                m_mute_group[i + j] = m_seqs[i + k]->get_playing();
+                // assert(m_seqs[i + k]);
+                if (not_nullptr_assert(m_seqs[i+k], "select_group_mute"))
+                    m_mute_group[i+j] = m_seqs[i+k]->get_playing();
+                else
+                {
+                    error = true;
+                    break;
+                }
             }
         }
     }
-    m_mute_group_selected = a_g_mute;
+    if (! error)
+        m_mute_group_selected = a_g_mute;
 }
 
 /**
@@ -470,7 +479,7 @@ perform::select_group_mute(int a_g_mute)
  */
 
 void
-perform::set_mode_group_learn(void)
+perform::set_mode_group_learn (void)
 {
     set_mode_group_mute();
     m_mode_group_learn = true;
@@ -484,7 +493,7 @@ perform::set_mode_group_learn(void)
  */
 
 void
-perform::unset_mode_group_learn(void)
+perform::unset_mode_group_learn (void)
 {
     for (size_t x = 0; x < m_notify.size(); ++x)
         m_notify[x]->on_grouplearnchange(false);
@@ -497,7 +506,7 @@ perform::unset_mode_group_learn(void)
  */
 
 void
-perform::select_mute_group(int a_group)
+perform::select_mute_group (int a_group)
 {
     int j = (a_group * c_seqs_in_set);
     int k = m_playing_screen * c_seqs_in_set;
@@ -512,16 +521,30 @@ perform::select_mute_group(int a_group)
     if (a_group > c_seqs_in_set)
         a_group = c_seqs_in_set - 1;
 
+    /*
+     * Should make this assignment contingent upon error.
+     */
+
     m_mute_group_selected = a_group;
+    bool error = false;
     for (int i = 0; i < c_seqs_in_set; i++)
     {
         if ((m_mode_group_learn) && (is_active(i + k)))
         {
-            assert(m_seqs[i + k]);
-            m_mute_group[i + j] = m_seqs[i + k]->get_playing();
+            // assert(m_seqs[i + k]);
+            if (not_nullptr_assert(m_seqs[i+k], "select_mute_group"))
+                m_mute_group[i+j] = m_seqs[i+k]->get_playing();
+            else
+            {
+                error = true;
+                break;
+            }
         }
-        int index = i + m_mute_group_selected * c_seqs_in_set;
-        m_tracks_mute_state[i] = m_mute_group[index];
+        if (! error)
+        {
+            int index = i + m_mute_group_selected * c_seqs_in_set;
+            m_tracks_mute_state[i] = m_mute_group[index];
+        }
     }
 }
 
@@ -530,7 +553,7 @@ perform::select_mute_group(int a_group)
  */
 
 void
-perform::mute_group_tracks(void)
+perform::mute_group_tracks (void)
 {
     if (m_mode_group)
     {
@@ -560,7 +583,7 @@ perform::mute_group_tracks(void)
  */
 
 void
-perform::select_and_mute_group(int a_g_group)
+perform::select_and_mute_group (int a_g_group)
 {
     select_mute_group(a_g_group);
     mute_group_tracks();
@@ -571,7 +594,7 @@ perform::select_and_mute_group(int a_g_group)
  */
 
 void
-perform::mute_all_tracks(void)
+perform::mute_all_tracks (void)
 {
     for (int i = 0; i < c_max_sequence; i++)
     {
@@ -585,7 +608,7 @@ perform::mute_all_tracks(void)
  */
 
 void
-perform::set_left_tick(long a_tick)
+perform::set_left_tick (long a_tick)
 {
     m_left_tick = a_tick;
     m_starting_tick = a_tick;
@@ -598,7 +621,7 @@ perform::set_left_tick(long a_tick)
  */
 
 long
-perform::get_left_tick(void)
+perform::get_left_tick (void)
 {
     return m_left_tick;
 }
@@ -608,7 +631,7 @@ perform::get_left_tick(void)
  */
 
 void
-perform::set_starting_tick(long a_tick)
+perform::set_starting_tick (long a_tick)
 {
     m_starting_tick = a_tick;
 }
@@ -618,7 +641,7 @@ perform::set_starting_tick(long a_tick)
  */
 
 long
-perform::get_starting_tick(void)
+perform::get_starting_tick (void)
 {
     return m_starting_tick;
 }
@@ -628,7 +651,7 @@ perform::get_starting_tick(void)
  */
 
 void
-perform::set_right_tick(long a_tick)
+perform::set_right_tick (long a_tick)
 {
     if (a_tick >= c_ppqn * 4)
     {
@@ -646,7 +669,7 @@ perform::set_right_tick(long a_tick)
  */
 
 long
-perform::get_right_tick(void)
+perform::get_right_tick (void)
 {
     return m_right_tick;
 }
@@ -663,7 +686,7 @@ perform::get_right_tick(void)
  */
 
 void
-perform::add_sequence(sequence * a_seq, int a_perf)
+perform::add_sequence (sequence * a_seq, int a_perf)
 {
     /**
      * Check for preferred.  This occurs if a_perf is in the valid range
@@ -703,7 +726,7 @@ perform::add_sequence(sequence * a_seq, int a_perf)
  */
 
 void
-perform::set_active(int a_sequence, bool a_active)
+perform::set_active (int a_sequence, bool a_active)
 {
     /*
      * Common code.
@@ -727,7 +750,7 @@ perform::set_active(int a_sequence, bool a_active)
  */
 
 void
-perform::set_was_active(int a_sequence)
+perform::set_was_active (int a_sequence)
 {
     /*
      * Common code.
@@ -754,7 +777,7 @@ perform::set_was_active(int a_sequence)
  */
 
 bool
-perform::is_active(int a_sequence)
+perform::is_active (int a_sequence)
 {
     /*
      * Common code.
@@ -778,7 +801,7 @@ perform::is_active(int a_sequence)
  */
 
 bool
-perform::is_dirty_main(int a_sequence)
+perform::is_dirty_main (int a_sequence)
 {
     /*
      * Common code.
@@ -809,7 +832,7 @@ perform::is_dirty_main(int a_sequence)
  */
 
 bool
-perform::is_dirty_edit(int a_sequence)
+perform::is_dirty_edit (int a_sequence)
 {
     /*
      * Common code.
@@ -840,7 +863,7 @@ perform::is_dirty_edit(int a_sequence)
  */
 
 bool
-perform::is_dirty_perf(int a_sequence)
+perform::is_dirty_perf (int a_sequence)
 {
     /*
      * Common code.
@@ -871,7 +894,7 @@ perform::is_dirty_perf(int a_sequence)
  */
 
 bool
-perform::is_dirty_names(int a_sequence)
+perform::is_dirty_names (int a_sequence)
 {
     /*
      * Common code.
@@ -895,7 +918,7 @@ perform::is_dirty_names(int a_sequence)
  */
 
 sequence *
-perform::get_sequence(int a_sequence)
+perform::get_sequence (int a_sequence)
 {
     /*
      * Needs a validity check.
@@ -909,7 +932,7 @@ perform::get_sequence(int a_sequence)
  */
 
 mastermidibus *
-perform::get_master_midi_bus()
+perform::get_master_midi_bus ()
 {
     return &m_master_bus;
 }
@@ -919,7 +942,7 @@ perform::get_master_midi_bus()
  */
 
 void
-perform::set_running(bool a_running)
+perform::set_running (bool a_running)
 {
     m_running = a_running;
 }
@@ -929,7 +952,7 @@ perform::set_running(bool a_running)
  */
 
 bool
-perform::is_running(void)
+perform::is_running (void)
 {
     return m_running;
 }
@@ -943,7 +966,7 @@ perform::is_running(void)
  */
 
 void
-perform::set_bpm(int a_bpm)
+perform::set_bpm (int a_bpm)
 {
     /*
      * We need manifest constants here!
@@ -966,7 +989,7 @@ perform::set_bpm(int a_bpm)
  */
 
 int
-perform::get_bpm()
+perform::get_bpm ()
 {
     return  m_master_bus.get_bpm();
 }
@@ -976,7 +999,7 @@ perform::get_bpm()
  */
 
 void
-perform::delete_sequence(int a_num)
+perform::delete_sequence (int a_num)
 {
     set_active(a_num, false);
     if (m_seqs[a_num] != nullptr && ! m_seqs[a_num]->get_editing())
@@ -992,7 +1015,7 @@ perform::delete_sequence(int a_num)
  */
 
 bool
-perform::is_sequence_in_edit(int a_num)
+perform::is_sequence_in_edit (int a_num)
 {
     return m_seqs[a_num] != nullptr && m_seqs[a_num]->get_editing();
 }
@@ -1005,7 +1028,7 @@ perform::is_sequence_in_edit(int a_num)
  */
 
 void
-perform::new_sequence(int a_sequence)
+perform::new_sequence (int a_sequence)
 {
     m_seqs[a_sequence] = new sequence();
     m_seqs[a_sequence]->set_master_midi_bus(&m_master_bus);
@@ -1083,7 +1106,7 @@ perform::get_midi_control_off (unsigned int a_seq)
  */
 
 void
-perform::print()
+perform::print ()
 {
     // for( int i=0; i<m_numSeq; i++ )
     // {
@@ -1153,7 +1176,7 @@ perform::set_screenset (int a_ss)
  */
 
 int
-perform::get_screenset(void)
+perform::get_screenset (void)
 {
     return m_screen_set;
 }
@@ -1162,25 +1185,52 @@ perform::get_screenset(void)
  *  Sets the screen set that is active, based on the value of
  *  m_playing_screen.
  *
- *  Modifies m_playing_screen, and mutes the group tracks.
+ *  For each value up to c_seqs_in_set (32), the index of the current
+ *  sequence in the currently screen set (m_playing_screen) is obtained.
+ *  If it is active and the sequence actually exists
  *
- *  HERE HERE HERE
+ *  Modifies m_playing_screen, and mutes the group tracks.
  */
 
 void
 perform::set_playing_screenset (void)
 {
+    /*
+     * This loop could be changed to avoid the multiplication.
+     */
+
+    bool error = false;
     for (int j, i = 0; i < c_seqs_in_set; i++)
     {
         j = i + m_playing_screen * c_seqs_in_set;
         if (is_active(j))
         {
-            assert(m_seqs[j]);
-            m_tracks_mute_state[i] = m_seqs[j]->get_playing();
+            /*
+             * Not a big fan of asserts in production code, since they do
+             * nothing; we still want to have a way to report null
+             * pointers in production code, and keep going.  So we wrote
+             * a function in the easy_macros module to do it.
+             */
+
+            if (not_nullptr_assert(m_seqs[j], "set_playing_screenset"))
+                m_tracks_mute_state[i] = m_seqs[j]->get_playing();
+            else
+            {
+                error = true;
+                break;
+            }
         }
     }
-    m_playing_screen = m_screen_set;
-    mute_group_tracks();
+
+    /*
+     * Do we need to avoid doing this if the pointer is null? No.
+     */
+
+    if (! error)
+    {
+        m_playing_screen = m_screen_set;
+        mute_group_tracks();
+    }
 }
 
 /**
@@ -1188,179 +1238,232 @@ perform::set_playing_screenset (void)
  */
 
 int
-perform::get_playing_screenset(void)
+perform::get_playing_screenset (void)
 {
     return m_playing_screen;
 }
 
+/**
+ *  Calculates the offset into the screen sets.
+ *
+ *  Sets m_offset = a_offset * c_mainwnd_rows * c_mainwnd_cols;
+ *
+ * \param a_offset
+ *      The desired offset.
+ */
+
 void
-perform::set_offset(int a_offset)
+perform::set_offset (int a_offset)
 {
-    m_offset = a_offset  * c_mainwnd_rows * c_mainwnd_cols;
+    m_offset = a_offset * c_mainwnd_rows * c_mainwnd_cols;
 }
 
+/**
+ *  Starts the playing of all the patterns/sequences.
+ *
+ *  This function just runs down the list of sequences and has them dump
+ *  their events.
+ *
+ * \param a_tick
+ *      Provides the tick at which to start playing.
+ */
 
 void
-perform::play(long a_tick)
+perform::play (long a_tick)
 {
-
-    /* just run down the list of sequences and have them dump */
-
-    //printf( "play [%d]\n", a_tick );
-
     m_tick = a_tick;
     for (int i = 0; i < c_max_sequence; i++)
     {
-
         if (is_active(i))
         {
-            assert(m_seqs[i]);
-
-
-            if (m_seqs[i]->get_queued() &&
-                    m_seqs[i]->get_queued_tick() <= a_tick)
+            // assert(m_seqs[i]);
+            if (not_nullptr_assert(m_seqs[i], "play"))
             {
-
-                m_seqs[i]->play(m_seqs[i]->get_queued_tick() - 1, m_playback_mode);
-                m_seqs[i]->toggle_playing();
+                if (m_seqs[i]->get_queued() &&
+                        m_seqs[i]->get_queued_tick() <= a_tick)
+                {
+                    m_seqs[i]->play
+                    (
+                        m_seqs[i]->get_queued_tick() - 1, m_playback_mode
+                    );
+                    m_seqs[i]->toggle_playing();
+                }
+                m_seqs[i]->play(a_tick, m_playback_mode);
             }
-
-            m_seqs[i]->play(a_tick, m_playback_mode);
         }
     }
-
-    /* flush the bus */
-    m_master_bus.flush();
+    m_master_bus.flush();              // flush the MIDI buss
 }
 
+/**
+ *  For every pattern/sequence that is active, sets the "original ticks"
+ *  value for the pattern.
+ *
+ * \param a_tick
+ */
 
 void
-perform::set_orig_ticks(long a_tick)
+perform::set_orig_ticks (long a_tick)
 {
     for (int i = 0; i < c_max_sequence; i++)
     {
-
         if (is_active(i) == true)
         {
-            assert(m_seqs[i]);
-            m_seqs[i]->set_orig_tick(a_tick);
+            // assert(m_seqs[i]);
+            if (not_nullptr_assert(m_seqs[i], "set_orig_ticks"))
+                m_seqs[i]->set_orig_tick(a_tick);
         }
     }
 }
 
+/**
+ *  Clears the patterns/sequence for the given sequence, if it is active.
+ *
+ * \param a_seq
+ *      Provides the desired sequence.  Hopefull, the is_active() function
+ *      validates this value.
+ */
 
 void
-perform::clear_sequence_triggers(int a_seq)
+perform::clear_sequence_triggers (int a_seq)
 {
     if (is_active(a_seq) == true)
     {
-        assert(m_seqs[a_seq]);
-        m_seqs[a_seq]->clear_triggers();
+        // assert(m_seqs[a_seq]);
+        if (not_nullptr_assert(m_seqs[a_seq], "clear_sequence_triggers"))
+            m_seqs[a_seq]->clear_triggers();
     }
 }
 
+/**
+ *  If the left tick is less than the right tick, then, for each sequence
+ *  that is active, its triggers are moved by the difference between the
+ *  right and left in the specified direction.
+ *
+ * \param a_direction
+ *      Specifies the desired direction; false = left, true = right.
+ */
 
 void
-perform::move_triggers(bool a_direction)
+perform::move_triggers (bool a_direction)
 {
     if (m_left_tick < m_right_tick)
     {
-
         long distance = m_right_tick - m_left_tick;
-
         for (int i = 0; i < c_max_sequence; i++)
         {
-
             if (is_active(i) == true)
             {
-                assert(m_seqs[i]);
-                m_seqs[i]->move_triggers(m_left_tick, distance, a_direction);
+                // assert(m_seqs[i]);
+                if (not_nullptr_assert(m_seqs[i], "move_triggers"))
+                    m_seqs[i]->move_triggers(m_left_tick, distance, a_direction);
             }
         }
     }
 }
 
+/**
+ *  For every active sequence, call that sequence's push_trigger_undo()
+ *  function.
+ */
 
 void
-perform::push_trigger_undo(void)
+perform::push_trigger_undo (void)
 {
     for (int i = 0; i < c_max_sequence; i++)
     {
-
-        if (is_active(i) == true)
+        if (is_active(i))
         {
-            assert(m_seqs[i]);
-            m_seqs[i]->push_trigger_undo();
+            // assert(m_seqs[i]);
+            if (not_nullptr_assert(m_seqs[i], "push_trigger_undo"))
+                m_seqs[i]->push_trigger_undo();
         }
     }
 }
 
+/**
+ *  For every active sequence, call that sequence's pop_trigger_undo()
+ *  function.
+ */
 
 void
-perform::pop_trigger_undo(void)
+perform::pop_trigger_undo (void)
 {
     for (int i = 0; i < c_max_sequence; i++)
     {
-
         if (is_active(i) == true)
         {
-            assert(m_seqs[i]);
-            m_seqs[i]->pop_trigger_undo();
+            // assert(m_seqs[i]);
+            if (not_nullptr_assert(m_seqs[i], "pop_trigger_undo"))
+                m_seqs[i]->pop_trigger_undo();
         }
     }
 }
 
+/**
+ *  If the left tick is less than the right tick, then, for each sequence
+ *  that is active, its triggers are copied, offset by the difference
+ *  between the right and left.
+ *
+ *  This copies the triggers between the L marker and R marker to the R
+ *  marker.
+ */
 
-/* copies between L and R -> R */
 void
-perform::copy_triggers()
+perform::copy_triggers ()
 {
     if (m_left_tick < m_right_tick)
     {
-
         long distance = m_right_tick - m_left_tick;
-
         for (int i = 0; i < c_max_sequence; i++)
         {
-
             if (is_active(i) == true)
             {
-                assert(m_seqs[i]);
-                m_seqs[i]->copy_triggers(m_left_tick, distance);
+                // assert(m_seqs[i]);
+                if (not_nullptr_assert(m_seqs[i], "copy_triggers"))
+                    m_seqs[i]->copy_triggers(m_left_tick, distance);
             }
         }
     }
 }
 
+/**
+ *  If JACK is supported, starts the JACK transport.
+ */
 
 void
-perform::start_jack()
+perform::start_jack ()
 {
-    //printf( "perform::start_jack()\n" );
 #ifdef JACK_SUPPORT
     if (m_jack_running)
         jack_transport_start(m_jack_client);
 #endif
 }
 
+/**
+ *  If JACK is supported, stops the JACK transport.
+ */
 
 void
-perform::stop_jack()
+perform::stop_jack ()
 {
-    //printf( "perform::stop_jack()\n" );
 #ifdef JACK_SUPPORT
     if (m_jack_running)
         jack_transport_stop(m_jack_client);
 #endif
 }
 
+/**
+ *  If JACK is supported and running, sets the position of the transport.
+ *
+ * \warning
+ *      A lot of this code is effectively disabled by an early return
+ *      statement.
+ */
 
 void
-perform::position_jack(bool a_state)
+perform::position_jack (bool a_state)
 {
-
-    //printf( "perform::position_jack()\n" );
-
 #ifdef JACK_SUPPORT
 
     if (m_jack_running)
@@ -1369,180 +1472,204 @@ perform::position_jack(bool a_state)
     }
     return;
 
-
-    jack_nframes_t rate = jack_get_sample_rate(m_jack_client) ;
-
+#ifdef WHY_IS_THIS_CODE_EFFECTIVELY_DISABLED
+    jack_nframes_t rate = jack_get_sample_rate(m_jack_client);
     long current_tick = 0;
-
     if (a_state)
     {
         current_tick = m_left_tick;
     }
 
     jack_position_t pos;
-
     pos.valid = JackPositionBBT;
     pos.beats_per_bar = 4;
     pos.beat_type = 4;
     pos.ticks_per_beat = c_ppqn * 10;
     pos.beats_per_minute =  m_master_bus.get_bpm();
 
-    /* Compute BBT info from frame number.  This is relatively
-     * simple here, but would become complex if we supported tempo
-     * or time signature changes at specific locations in the
-     * transport timeline. */
+    /*
+     * Compute BBT info from frame number.  This is relatively simple
+     * here, but would become complex if we supported tempo or time
+     * signature changes at specific locations in the transport timeline.
+     */
 
     current_tick *= 10;
+    pos.bar = (int32_t) (current_tick /
+        (long) pos.ticks_per_beat / pos.beats_per_bar);
 
-    pos.bar = (int32_t)(current_tick / (long) pos.ticks_per_beat
-                        / pos.beats_per_bar);
     pos.beat = (int32_t)((current_tick / (long) pos.ticks_per_beat) % 4);
     pos.tick = (int32_t)(current_tick % (c_ppqn * 10));
-
     pos.bar_start_tick = pos.bar * pos.beats_per_bar * pos.ticks_per_beat;
     pos.frame_rate = rate;
-    pos.frame = (jack_nframes_t)((current_tick * rate * 60.0)
-                                 / (pos.ticks_per_beat * pos.beats_per_minute));
+    pos.frame = (jack_nframes_t)
+    (
+        (current_tick * rate * 60.0) / (pos.ticks_per_beat * pos.beats_per_minute)
+    );
 
     /*
-       ticks * 10 = jack ticks;
-       jack ticks / ticks per beat = num beats;
-       num beats / beats per minute = num minutes
-       num minutes * 60 = num seconds
-       num secords * frame_rate  = frame */
+     * ticks * 10 = jack ticks;
+     * jack ticks / ticks per beat = num beats;
+     * num beats / beats per minute = num minutes
+     * num minutes * 60 = num seconds
+     * num secords * frame_rate  = frame
+     */
 
     pos.bar++;
     pos.beat++;
-
-    //printf( "position bbb[%d:%d:%4d]\n", pos.bar, pos.beat, pos.tick );
-
     jack_transport_reposition(m_jack_client, &pos);
+
+#endif  // WHY_IS_THIS_CODE_EFFECTIVELY_DISABLED
 
 #endif
 }
 
+/**
+ *  If JACK is note running, call inner_start() with the given state.
+ *
+ * \param a_state
+ *      What does this state mean?
+ */
 
 void
-perform::start(bool a_state)
+perform::start (bool a_state)
 {
-    if (m_jack_running)
-    {
-        return;
-    }
-
-    inner_start(a_state);
+    if (! m_jack_running)
+        inner_start(a_state);
 }
 
+/**
+ *  If JACK is note running, call inner_stop().
+ *
+ *  The logic seems backward her, in that we call inner_stop() if JACK is
+ *  not running.  Or perhaps we misunderstand the meaning of
+ *  m_jack_running?
+ */
 
 void
-perform::stop()
+perform::stop ()
 {
-    if (m_jack_running)
-    {
-        return;
-    }
-
-    inner_stop();
+    if (! m_jack_running)
+        inner_stop();
 }
 
+/**
+ *  Locks on m_condition_var.  Then, if not is_running(), the playback
+ *  mode is set to the given state.  If that state is true, call
+ *  off_sequences().  Set the running status, and signal the condition.
+ *  Then unlock.
+ */
 
 void
 perform::inner_start(bool a_state)
 {
     m_condition_var.lock();
-
-    if (!is_running())
+    if (! is_running())
     {
-
         set_playback_mode(a_state);
-
         if (a_state)
             off_sequences();
 
         set_running(true);
         m_condition_var.signal();
     }
-
     m_condition_var.unlock();
 }
 
+/**
+ *  Unconditionally, and without locking, clears the running status,
+ *  resets the sequences, and set m_usemidiclock false.
+ */
 
 void
-perform::inner_stop()
+perform::inner_stop ()
 {
     set_running(false);
-    //off_sequences();
-    reset_sequences();
+    reset_sequences();                 // off_sequences();
     m_usemidiclock = false;
 }
 
+/**
+ *  For all active patterns/sequences, set the playing state to false.
+ */
 
 void
-perform::off_sequences(void)
+perform::off_sequences (void)
 {
     for (int i = 0; i < c_max_sequence; i++)
     {
-
         if (is_active(i))
         {
-            assert(m_seqs[i]);
-            m_seqs[i]->set_playing(false);
+            // assert(m_seqs[i]);
+            if (not_nullptr_assert(m_seqs[i], "off_sequences"))
+                m_seqs[i]->set_playing(false);
         }
     }
 }
 
+/**
+ *  For all active patterns/sequences, turn off its playing notes.
+ *  Then flush the MIDI buss.
+ */
 
 void
-perform::all_notes_off(void)
+perform::all_notes_off (void)
 {
     for (int i = 0; i < c_max_sequence; i++)
     {
-
         if (is_active(i))
         {
-            assert(m_seqs[i]);
-            m_seqs[i]->off_playing_notes();
+            // assert(m_seqs[i]);
+            if (not_nullptr_assert(m_seqs[i], "all_notes_off"))
+                m_seqs[i]->off_playing_notes();
         }
     }
-    /* flush the bus */
-    m_master_bus.flush();
+    m_master_bus.flush();              // flush the MIDI buss
 }
 
+/**
+ *  For all active patterns/sequences, get its playing state, turn off the
+ *  playing notes, set playing to false, zero the markers, and, if not in
+ *  playback mode, restore the playing state.
+ *
+ *  Then flush the MIDI buss.
+ */
 
 void
-perform::reset_sequences(void)
+perform::reset_sequences (void)
 {
     for (int i = 0; i < c_max_sequence; i++)
     {
-
         if (is_active(i))
         {
-            assert(m_seqs[i]);
-
-            bool state = m_seqs[i]->get_playing();
-
-            m_seqs[i]->off_playing_notes();
-            m_seqs[i]->set_playing(false);
-            m_seqs[i]->zero_markers();
-
-            if (!m_playback_mode)
-                m_seqs[i]->set_playing(state);
+            // assert(m_seqs[i]);
+            if (not_nullptr_assert(m_seqs[i], "reset_sequences"))
+            {
+                bool state = m_seqs[i]->get_playing();
+                m_seqs[i]->off_playing_notes();
+                m_seqs[i]->set_playing(false);
+                m_seqs[i]->zero_markers();
+                if (! m_playback_mode)
+                    m_seqs[i]->set_playing(state);
+            }
         }
     }
-    /* flush the bus */
-    m_master_bus.flush();
+    m_master_bus.flush();              // flush the MIDI bus
 }
 
+/**
+ *  Creates the output thread using output_thread_func().
+ *
+ *  This might be a good candidate for a small thread class derived from a
+ *  small base class.
+ */
 
 void
-perform::launch_output_thread(void)
+perform::launch_output_thread (void)
 {
-    int err;
-
-    err = pthread_create(&m_out_thread, NULL, output_thread_func, this);
+    int err = pthread_create(&m_out_thread, NULL, output_thread_func, this);
     if (err != 0)
     {
-        /*TODO: error handling*/
+        /* TODO: error handling */
     }
     else
         m_out_thread_launched = true;
@@ -1550,84 +1677,97 @@ perform::launch_output_thread(void)
 
 
 void
-perform::set_playback_mode(bool a_playback_mode)
+perform::set_playback_mode (bool a_playback_mode)
 {
     m_playback_mode = a_playback_mode;
 }
 
+/**
+ *  Creates the input thread using input_thread_func().
+ *
+ *  This might be a good candidate for a small thread class derived from a
+ *  small base class.
+ */
 
 void
-perform::launch_input_thread()
+perform::launch_input_thread (void)
 {
-    int err;
-
-    err = pthread_create(&m_in_thread, NULL, input_thread_func, this);
+    int err = pthread_create(&m_in_thread, NULL, input_thread_func, this);
     if (err != 0)
     {
-        /*TODO: error handling*/
+        /* TODO: error handling */
     }
     else
         m_in_thread_launched = true;
 }
 
+/**
+ *  Locates the largest trigger value among the active sequences.
+ *
+ * \return
+ *      Returns the highest trigger value, or zero.  It is not clear why
+ *      this function doesn't return a "no trigger found" value. Is there
+ *      always at least one trigger, at 0?
+ */
 
-long perform::get_max_trigger(void)
+long
+perform::get_max_trigger (void)
 {
-    long ret = 0, t;
-
+    long result = 0;
     for (int i = 0; i < c_max_sequence; i++)
     {
-
         if (is_active(i) == true)
         {
-            assert(m_seqs[i]);
-
-            t = m_seqs[i]->get_max_trigger();
-            if (t > ret)
-                ret = t;
+            // assert(m_seqs[i]);
+            if (not_nullptr_assert(m_seqs[i], "get_max_trigger"))
+            {
+                long t = m_seqs[i]->get_max_trigger();
+                if (t > result)
+                    result = t;
+            }
         }
     }
-
-    return ret;
+    return result;
 }
 
+/**
+ *  Set up the performance, and set the process to realtime privileges.
+ */
 
-void* output_thread_func(void *a_pef)
+void *
+output_thread_func (void * a_pef)
 {
-    /* set our performance */
-    perform *p = (perform *) a_pef;
-    assert(p);
-
-    struct sched_param schp;
-    /*
-     * set the process to realtime privs
-     */
-
-    if (global_priority)
+    perform * p = (perform *) a_pef;
+    // assert(p);
+    if (not_nullptr_assert(p, "output_thread_func"))
     {
-
-        memset(&schp, 0, sizeof(sched_param));
-        schp.sched_priority = 1;
-
-#ifndef __WIN32__
-        // Not in MinGW RCB
-        if (sched_setscheduler(0, SCHED_FIFO, &schp) != 0)
+        if (global_priority)
         {
-            printf("output_thread_func: couldnt sched_setscheduler"
-                   " (FIFO), you need to be root.\n");
-            pthread_exit(0);
+            struct sched_param schp;
+            memset(&schp, 0, sizeof(sched_param));
+            schp.sched_priority = 1;
+
+#ifndef PLATFORM_WINDOWS            // Not in MinGW RCB
+            if (sched_setscheduler(0, SCHED_FIFO, &schp) != 0)
+            {
+                errprint
+                (
+                    "output_thread_func: couldn't sched_setscheduler"
+                    " (FIFO), need to be root.\n"
+                );
+                pthread_exit(0);
+            }
+#endif
         }
+
+#ifdef PLATFORM_WINDOWS
+        timeBeginPeriod(1);
+        p->output_func();
+        timeEndPeriod(1);
+#else
+        p->output_func();
 #endif
     }
-
-#ifdef __WIN32__
-    timeBeginPeriod(1);
-#endif
-    p->output_func();
-#ifdef __WIN32__
-    timeEndPeriod(1);
-#endif
-
     return 0;
 }
 
@@ -1637,35 +1777,48 @@ void* output_thread_func(void *a_pef)
  * GitHub project.  Added the following function.
  */
 
-int jack_process_callback(jack_nframes_t nframes, void* arg)
+int
+jack_process_callback (jack_nframes_t nframes, void * arg)
 {
     return 0;
 }
 
 #ifdef JACK_SUPPORT
 
-int jack_sync_callback(jack_transport_state_t state,
-                       jack_position_t *pos, void *arg)
+/**
+ *  This JACK synchronization callback informs the specified perform
+ *  object of the current state and parameters of JACK.
+ *
+ * \param state
+ *      The JACK Transport state.
+ *
+ * \param pos
+ *      The JACK position value.
+ *
+ * \param arg
+ *      The pointer to the perform object.  Currently not checked for
+ *      nullity.
+ */
+
+int jack_sync_callback
+(
+    jack_transport_state_t state,
+    jack_position_t * pos,
+    void * arg                          // unchecked!!
+)
 {
-    perform *p = (perform *) arg;
-
+    perform * p = (perform *) arg;
     p->m_jack_frame_current = jack_get_current_transport_frame(p->m_jack_client);
-
     p->m_jack_tick =
         p->m_jack_frame_current *
         p->m_jack_pos.ticks_per_beat *
         p->m_jack_pos.beats_per_minute / (p->m_jack_pos.frame_rate * 60.0);
 
     p->m_jack_frame_last = p->m_jack_frame_current;
-
-    p->m_jack_transport_state_last =
-        p->m_jack_transport_state =
-            state;
-
-
+    p->m_jack_transport_state_last = state;
+    p->m_jack_transport_state = state;
     switch (state)
     {
-
     case JackTransportStopped:
         //printf( "[JackTransportStopped]\n" );
         break;
@@ -1686,126 +1839,115 @@ int jack_sync_callback(jack_transport_state_t state,
     default:
         break;
     }
-
-    //printf( "starting frame[%d] tick[%8.2f]\n", p->m_jack_frame_current, p->m_jack_tick );
-
     print_jack_pos(pos);
     return 1;
 }
 
 #ifdef JACK_SESSION
 
-bool perform::jack_session_event()
+/**
+ *  Writes the MIDI file named "<jack session dir>-file.mid" using a
+ *  mididfile object, quits if told to by JACK, and can free the JACK
+ *  session event.
+ *
+ *  ca 2015-07-24
+ *  Just a note:  The OMA (OpenMandrivaAssociation) patch was already
+ *  applied to seq24 v.0.9.2.  It put quotes around the --file argument.
+ *
+ *  Why are we using a Glib::ustring here?  Convenience.  But with
+ *  C++11, we could use a lexical_cast<>.
+ *
+ *  It doesn't really matter; this function can call Gtk::Main::quit().
+ *
+ */
+
+bool perform::jack_session_event ()
 {
     Glib::ustring fname(m_jsession_ev->session_dir);
     fname += "file.mid";
-
-    /*
-     * ca 2015-07-24
-     * Just a note:  The OMA (OpenMandrivaAssociation) patch was already
-     * applied to seq24 v.0.9.2.  It put quotes around the --file argument.
-     */
-
-    Glib::ustring cmd("seq24 --file \"${SESSION_DIR}file.mid\" --jack_session_uuid ");
+    Glib::ustring cmd
+    (
+        "seq24 --file \"${SESSION_DIR}file.mid\" --jack_session_uuid "
+    );
     cmd += m_jsession_ev->client_uuid;
-
     midifile f(fname);
     f.write(this);
-
     m_jsession_ev->command_line = strdup(cmd.c_str());
-
     jack_session_reply(m_jack_client, m_jsession_ev);
-
     if (m_jsession_ev->type == JackSessionSaveAndQuit)
         Gtk::Main::quit();
 
     jack_session_event_free(m_jsession_ev);
-
     return false;
 }
 
+/**
+ *  Set the m_jsession_ev (event) value of the perform object.
+ *
+ *  Glib is then used to connect in perform::jack_session_event().
+ *
+ * \param arg
+ *      The pointer to the perform object.  Currently not checked for
+ *      nullity.
+ */
+
 void
-jack_session_callback(jack_session_event_t *event, void *arg)
+jack_session_callback (jack_session_event_t * event, void * arg)
 {
-    perform *p = (perform *) arg;
+    perform * p = (perform *) arg;
     p->m_jsession_ev = event;
     Glib::signal_idle().connect(sigc::mem_fun(*p, &perform::jack_session_event));
 }
 
-#endif
-#endif
+#endif  // JACK_SESSION
+#endif  // JACK_SUPPORT
 
+/**
+ *  Performance output function.
+ */
 
 void
-perform::output_func(void)
+perform::output_func (void)
 {
     while (m_outputing)
     {
-
-        //printf ("waiting for signal\n");
-
-        m_condition_var.lock();
-
+        m_condition_var.lock();        // printf ("waiting for signal\n");
         while (!m_running)
         {
-
             m_condition_var.wait();
-
-            /* if stopping, then kill thread */
-            if (!m_outputing)
+            if (!m_outputing)          // if stopping, then kill thread
                 break;
         }
-
         m_condition_var.unlock();
 
-        //printf( "signaled [%d]\n", m_playback_mode );
-
-#ifndef __WIN32__
-        /* begning time */
-        struct timespec last;
-        /* current time */
-        struct timespec current;
-
+#ifndef PLATFORM_WINDOWS
+        struct timespec last;               // beginning time
+        struct timespec current;            // current time
         struct timespec stats_loop_start;
         struct timespec stats_loop_finish;
-
-
-        /* difference between last and current */
-        struct timespec delta;
+        struct timespec delta;              // difference between last & current
 #else
-        /* begning time */
-        long last;
-        /* current time */
-        long current;
-
+        long last;                          // beginning time
+        long current;                       // current time
         long stats_loop_start = 0;
         long stats_loop_finish = 0;
-
-
-        /* difference between last and current */
-        long delta;
+        long delta;                         // difference between last & current
 #endif
 
-        /* tick and tick fraction */
-        double current_tick   = 0.0;
-        double total_tick   = 0.0;
+        double current_tick = 0.0;          // tick and tick fraction
+        double total_tick = 0.0;
         double clock_tick = 0.0;
-
         long stats_total_tick = 0;
-
         long stats_loop_index = 0;
         long stats_min = 0x7FFFFFFF;
         long stats_max = 0;
         long stats_avg = 0;
         long stats_last_clock_us = 0;
         long stats_clock_width_us = 0;
-
         long stats_all[100];
         long stats_clock[100];
-
         bool jack_stopped = false;
         bool dumping = false;
-
         bool init_clock = true;
 
 #ifdef JACK_SUPPORT
@@ -1819,76 +1961,70 @@ perform::output_func(void)
             stats_clock[i] = 0;
         }
 
-        /* if we are in the performance view, we care
-           about starting from the offset */
-        if (m_playback_mode && !m_jack_running)
-        {
+        /*
+         * If we are in the performance view (song editor?), we care about
+         * starting from the offset.
+         */
 
+        if (m_playback_mode && ! m_jack_running)
+        {
             current_tick = m_starting_tick;
             clock_tick = m_starting_tick;
             set_orig_ticks(m_starting_tick);
         }
 
-
         int ppqn = m_master_bus.get_ppqn();
-#ifndef __WIN32__
-        /* get start time position */
-        clock_gettime(CLOCK_REALTIME, &last);
-
+#ifndef PLATFORM_WINDOWS
+        clock_gettime(CLOCK_REALTIME, &last);   // get start time position
         if (global_stats)
-            stats_last_clock_us = (last.tv_sec * 1000000) + (last.tv_nsec / 1000);
+            stats_last_clock_us = (last.tv_sec*1000000) + (last.tv_nsec/1000);
 #else
-        /* get start time position */
-        last = timeGetTime();
-
+        last = timeGetTime();                   // get start time position
         if (global_stats)
             stats_last_clock_us = last * 1000;
 #endif
 
         while (m_running)
         {
-
-            /************************************
-
-              Get delta time ( current - last )
-              Get delta ticks from time
-              Add to current_ticks
-              Compute prebuffer ticks
-              play from current tick to prebuffer
-
-             **************************************/
+            /**
+             * -# Get delta time (current - last).
+             * -# Get delta ticks from time.
+             * -# Add to current_ticks.
+             * -# Compute prebuffer ticks.
+             * -# Play from current tick to prebuffer.
+             */
 
             if (global_stats)
             {
-#ifndef __WIN32__
+#ifndef PLATFORM_WINDOWS
                 clock_gettime(CLOCK_REALTIME, &stats_loop_start);
 #else
                 stats_loop_start = timeGetTime();
 #endif
             }
 
+            /*
+             * Get the delta time.
+             */
 
-            /* delta time */
-#ifndef __WIN32__
+#ifndef PLATFORM_WINDOWS
             clock_gettime(CLOCK_REALTIME, &current);
             delta.tv_sec  = (current.tv_sec  - last.tv_sec);
             delta.tv_nsec = (current.tv_nsec - last.tv_nsec);
             long delta_us = (delta.tv_sec * 1000000) + (delta.tv_nsec / 1000);
 #else
             current = timeGetTime();
-            //printf( "current [0x%x]\n", current );
             delta = current - last;
             long delta_us = delta * 1000;
-            //printf( "  delta [0x%x]\n", delta );
 #endif
-
-            /* delta time to ticks */
-            /* bpm */
             int bpm  = m_master_bus.get_bpm();
 
-            /* get delta ticks, delta_ticks_f is in 1000th of a tick */
-            double delta_tick = (double)(bpm * ppqn * (delta_us / 60000000.0f));
+            /*
+             * Delta time to ticks; get delta ticks, delta_ticks_f is in
+             * 1000th of a tick.
+             */
 
+            double delta_tick = (double)(bpm * ppqn * (delta_us / 60000000.0f));
             if (m_usemidiclock)
             {
                 delta_tick = m_midiclocktick;
@@ -1905,42 +2041,37 @@ perform::output_func(void)
             }
 
 #ifdef JACK_SUPPORT
-
-            // no init until we get a good lock
-
-            if (m_jack_running)
+            if (m_jack_running)             // no init until we get a good lock
             {
-
                 init_clock = false;
+                m_jack_transport_state =
+                    jack_transport_query(m_jack_client, &m_jack_pos);
 
-                m_jack_transport_state = jack_transport_query(m_jack_client, &m_jack_pos);
-                m_jack_frame_current =  jack_get_current_transport_frame(m_jack_client);
+                m_jack_frame_current =
+                    jack_get_current_transport_frame(m_jack_client);
 
-                if (m_jack_transport_state_last  ==  JackTransportStarting &&
-                        m_jack_transport_state       == JackTransportRolling)
+                if (m_jack_transport_state_last == JackTransportStarting &&
+                        m_jack_transport_state == JackTransportRolling)
                 {
 
                     m_jack_frame_last = m_jack_frame_current;
-
-
-                    //printf ("[Start Playback]\n" );
                     dumping = true;
                     m_jack_tick =
                         m_jack_pos.frame *
                         m_jack_pos.ticks_per_beat *
-                        m_jack_pos.beats_per_minute / (m_jack_pos.frame_rate * 60.0);
+                        m_jack_pos.beats_per_minute/(m_jack_pos.frame_rate*60.0);
 
-
-                    /* convert ticks */
-                    jack_ticks_converted =
-                        m_jack_tick * ((double) c_ppqn /
-                                       (m_jack_pos.ticks_per_beat *
-                                        m_jack_pos.beat_type / 4.0));
+                    jack_ticks_converted =  // convert ticks
+                        m_jack_tick *
+                        (
+                            (double) c_ppqn / (m_jack_pos.ticks_per_beat *
+                            m_jack_pos.beat_type / 4.0)
+                        );
 
                     set_orig_ticks((long) jack_ticks_converted);
-                    current_tick = clock_tick = total_tick = jack_ticks_converted_last = jack_ticks_converted;
+                    current_tick = clock_tick = total_tick =
+                        jack_ticks_converted_last = jack_ticks_converted;
                     init_clock = true;
-
                     if (m_looping && m_playback_mode)
                     {
                         if (current_tick >= get_right_tick())
@@ -1955,18 +2086,18 @@ perform::output_func(void)
                         }
                     }
                 }
-
                 if (m_jack_transport_state_last  ==  JackTransportRolling &&
                         m_jack_transport_state  == JackTransportStopped)
                 {
-
                     m_jack_transport_state_last = JackTransportStopped;
                     jack_stopped = true;
                 }
 
-                //-----  Jack transport is Rolling Now ---------
+                /*
+                 * Jack Transport is Rolling Now !!!
+                 * Transport is in a sane state if dumping == true.
+                 */
 
-                /* transport is in a sane state if dumping == true */
                 if (dumping)
                 {
                     m_jack_frame_current =
@@ -1984,14 +2115,11 @@ perform::output_func(void)
 
                         m_jack_frame_last = m_jack_frame_current;
                     }
-
-                    // convert ticks
-
-                    jack_ticks_converted =
+                    jack_ticks_converted =      // convert ticks
                         m_jack_tick *
                         (
                             (double) c_ppqn /
-                            (m_jack_pos.ticks_per_beat * m_jack_pos.beat_type / 4.0)
+                            (m_jack_pos.ticks_per_beat*m_jack_pos.beat_type/4.0)
                         );
 
                     jack_ticks_delta =
@@ -2000,34 +2128,35 @@ perform::output_func(void)
                     clock_tick     += jack_ticks_delta;
                     current_tick   += jack_ticks_delta;
                     total_tick     += jack_ticks_delta;
-
                     m_jack_transport_state_last = m_jack_transport_state;
                     jack_ticks_converted_last = jack_ticks_converted;
 
 #if USE_DEBUGGING_OUTPUT
                     long ptick, pbeat, pbar;
                     pbar  = (long)
-                            (
-                                (long) m_jack_tick /
-                                (m_jack_pos.ticks_per_beat * m_jack_pos.beats_per_bar)
-                            );
+                    (
+                        (long) m_jack_tick /
+                        (m_jack_pos.ticks_per_beat * m_jack_pos.beats_per_bar)
+                    );
                     pbeat = (long)
-                            (
-                                (long) m_jack_tick %
-                                (long)(m_jack_pos.ticks_per_beat * m_jack_pos.beats_per_bar)
-                            );
+                    (
+                        (long) m_jack_tick %
+                        (m_jack_pos.ticks_per_beat * m_jack_pos.beats_per_bar)
+                    );
                     pbeat = pbeat / (long) m_jack_pos.ticks_per_beat;
                     ptick = (long) m_jack_tick % (long) m_jack_pos.ticks_per_beat;
 #endif
 
-                } /* end if dumping / sane state */
-
-            } /* if jack running */
+                } // end if dumping / sane state
+            }     // if jack running
             else
             {
 #endif
-                /* default if jack is not compiled in, or not running */
-                /* add delta to current ticks */
+                /*
+                 * The default if JACK is not compiled in, or is not running.
+                 * Add the delta to the current ticks.
+                 */
+
                 clock_tick     += delta_tick;
                 current_tick   += delta_tick;
                 total_tick     += delta_tick;
@@ -2036,144 +2165,118 @@ perform::output_func(void)
 #ifdef JACK_SUPPORT
             }
 #endif
-
-            /* init_clock will be true when we run for the first time, or
-             * as soon as jack gets a good lock on playback */
+            /*
+             * init_clock will be true when we run for the first time, or
+             * as soon as jack gets a good lock on playback.
+             */
 
             if (init_clock)
             {
-                m_master_bus.init_clock((long)clock_tick);
+                m_master_bus.init_clock((long) clock_tick);
                 init_clock = false;
             }
-
             if (dumping)
             {
                 if (m_looping && m_playback_mode)
                 {
                     if (current_tick >= get_right_tick())
                     {
-                        double leftover_tick = current_tick - (get_right_tick());
-
-                        play(get_right_tick() - 1);
-                        reset_sequences();
-
+                        double leftover_tick = current_tick-(get_right_tick());
+                        play(get_right_tick() - 1);     // play!
+                        reset_sequences();              // reset!
                         set_orig_ticks(get_left_tick());
-                        current_tick = (double) get_left_tick() + leftover_tick;
+                        current_tick = (double) get_left_tick()+leftover_tick;
                     }
                 }
 
-                /* play */
-                play((long) current_tick);
-                //printf( "play[%d]\n", current_tick );
-
-                /* midi clock */
-                m_master_bus.clock((long) clock_tick);
-
-
+                play((long) current_tick);              // play!
+                m_master_bus.clock((long) clock_tick);  // MIDI clock
                 if (global_stats)
                 {
-
                     while (stats_total_tick <= total_tick)
                     {
-
                         /* was there a tick ? */
+
                         if (stats_total_tick % (c_ppqn / 24) == 0)
                         {
 
-#ifndef __WIN32__
-                            long current_us = (current.tv_sec * 1000000) + (current.tv_nsec / 1000);
+#ifndef PLATFORM_WINDOWS
+                            long current_us =
+                                (current.tv_sec * 1000000) + (current.tv_nsec / 1000);
 #else
                             long current_us = current * 1000;
 #endif
-                            stats_clock_width_us = current_us - stats_last_clock_us;
+                            stats_clock_width_us = current_us-stats_last_clock_us;
                             stats_last_clock_us = current_us;
 
                             int index = stats_clock_width_us / 300;
                             if (index >= 100) index = 99;
                             stats_clock[index]++;
-
                         }
                         stats_total_tick++;
                     }
                 }
             }
 
-            /***********************************
+            /**
+             *  Figure out how much time we need to sleep, and do it.
+             */
 
-              Figure out how much time
-              we need to sleep, and do it
-
-             ************************************/
-
-            /* set last */
             last = current;
 
-#ifndef __WIN32__
+#ifndef PLATFORM_WINDOWS
             clock_gettime(CLOCK_REALTIME, &current);
             delta.tv_sec  = (current.tv_sec  - last.tv_sec);
             delta.tv_nsec = (current.tv_nsec - last.tv_nsec);
             long elapsed_us = (delta.tv_sec * 1000000) + (delta.tv_nsec / 1000);
-            //printf( "elapsed_us[%ld]\n", elapsed_us );
 #else
             current = timeGetTime();
             delta = current - last;
             long elapsed_us = delta * 1000;
-            //printf( "        elapsed_us[%ld]\n", elapsed_us );
 #endif
 
-            /* now, we want to trigger every c_thread_trigger_width_ms,
-               and it took us delta_us to play() */
+            /*
+             * Now we want to trigger every c_thread_trigger_width_ms,
+               and it took us delta_us to play().
+             */
 
             delta_us = (c_thread_trigger_width_ms * 1000) - elapsed_us;
-            //printf( "sleeping_us[%ld]\n", delta_us );
-
 
             /* check midi clock adjustment */
 
             double next_total_tick = (total_tick + (c_ppqn / 24.0));
-            double next_clock_delta   = (next_total_tick - total_tick - 1);
+            double next_clock_delta = (next_total_tick - total_tick - 1);
+            double next_clock_delta_us =
+                ((next_clock_delta) * 60000000.0f / c_ppqn  / bpm);
 
-
-            double next_clock_delta_us = ((next_clock_delta) * 60000000.0f / c_ppqn  / bpm);
-
-            if (next_clock_delta_us < (c_thread_trigger_width_ms * 1000.0f * 2.0f))
+            if (next_clock_delta_us < (c_thread_trigger_width_ms*1000.0f*2.0f))
             {
                 delta_us = (long)next_clock_delta_us;
             }
 
-#ifndef __WIN32__
+#ifndef PLATFORM_WINDOWS                    // nanosleep() is actually Linux
             if (delta_us > 0.0)
             {
-
                 delta.tv_sec = (delta_us / 1000000);
                 delta.tv_nsec = (delta_us % 1000000) * 1000;
-
-                //printf("sleeping() ");
-                nanosleep(&delta, NULL);
-
+                nanosleep(&delta, NULL);    // printf("sleeping() ");
             }
 #else
             if (delta_us > 0)
             {
-
                 delta = (delta_us / 1000);
-
-                //printf("           sleeping() [0x%x]\n", delta);
                 Sleep(delta);
-
             }
 #endif
-
             else
             {
-
                 if (global_stats)
                     printf("underrun\n");
             }
 
             if (global_stats)
             {
-#ifndef __WIN32__
+#ifndef PLATFORM_WINDOWS
                 clock_gettime(CLOCK_REALTIME, &stats_loop_finish);
 #else
                 stats_loop_finish = timeGetTime();
@@ -2183,52 +2286,47 @@ perform::output_func(void)
             if (global_stats)
             {
 
-#ifndef __WIN32__
-                delta.tv_sec  = (stats_loop_finish.tv_sec  - stats_loop_start.tv_sec);
-                delta.tv_nsec = (stats_loop_finish.tv_nsec - stats_loop_start.tv_nsec);
-                long delta_us = (delta.tv_sec * 1000000) + (delta.tv_nsec / 1000);
+#ifndef PLATFORM_WINDOWS
+                delta.tv_sec  = stats_loop_finish.tv_sec-stats_loop_start.tv_sec;
+                delta.tv_nsec = stats_loop_finish.tv_nsec-stats_loop_start.tv_nsec;
+                long delta_us = (delta.tv_sec*1000000) + (delta.tv_nsec/1000);
 #else
                 delta = stats_loop_finish - stats_loop_start;
                 long delta_us = delta * 1000;
 #endif
-
                 int index = delta_us / 100;
-                if (index >= 100) index = 99;
+                if (index >= 100)
+                    index = 99;
 
                 stats_all[index]++;
-
                 if (delta_us > stats_max)
                     stats_max = delta_us;
+
                 if (delta_us < stats_min)
                     stats_min = delta_us;
 
                 stats_avg += delta_us;
                 stats_loop_index++;
-
                 if (stats_loop_index > 200)
                 {
-
                     stats_loop_index = 0;
                     stats_avg /= 200;
-
-                    printf("stats_avg[%ld]us stats_min[%ld]us"
-                           " stats_max[%ld]us\n", stats_avg,
-                           stats_min, stats_max);
-
+                    printf
+                    (
+                        "stats_avg[%ld]us stats_min[%ld]us stats_max[%ld]us\n",
+                        stats_avg, stats_min, stats_max
+                    );
                     stats_min = 0x7FFFFFFF;
                     stats_max = 0;
                     stats_avg = 0;
                 }
             }
-
             if (jack_stopped)
                 inner_stop();
         }
 
-
         if (global_stats)
         {
-
             printf("\n\n-- trigger width --\n");
             for (int i = 0; i < 100; i++)
             {
@@ -2236,120 +2334,103 @@ perform::output_func(void)
             }
             printf("\n\n-- clock width --\n");
             int bpm  = m_master_bus.get_bpm();
-
             printf("optimal: [%d]us\n", ((c_ppqn / 24) * 60000000 / c_ppqn / bpm));
-
             for (int i = 0; i < 100; i++)
             {
                 printf("[%3d][%8ld]\n", i * 300, stats_clock[i]);
             }
         }
-
         m_tick = 0;
         m_master_bus.flush();
         m_master_bus.stop();
     }
-
     pthread_exit(0);
 }
 
+/**
+ *  Set up the performance, and set the process to realtime privileges.
+ */
 
-void* input_thread_func(void *a_pef)
+void *
+input_thread_func (void * a_pef)
 {
-
-    /* set our performance */
-    perform *p = (perform *) a_pef;
-    assert(p);
-
-
-    struct sched_param schp;
-    /*
-     * set the process to realtime privs
-     */
-
-    if (global_priority)
+    perform * p = (perform *) a_pef;
+    // assert(p);
+    if (not_nullptr_assert(p, "input_thread_func"))
     {
-
-        memset(&schp, 0, sizeof(sched_param));
-        schp.sched_priority = 1;
-
-#ifndef __WIN32__
-        // MinGW RCB
-        if (sched_setscheduler(0, SCHED_FIFO, &schp) != 0)
+        if (global_priority)
         {
+            struct sched_param schp;
+            memset(&schp, 0, sizeof(sched_param));
+            schp.sched_priority = 1;
 
-            printf("input_thread_func: couldnt sched_setscheduler"
-                   " (FIFO), you need to be root.\n");
-            pthread_exit(0);
+#ifndef PLATFORM_WINDOWS                // MinGW RCB
+            if (sched_setscheduler(0, SCHED_FIFO, &schp) != 0)
+            {
+                printf("input_thread_func: couldnt sched_setscheduler"
+                       " (FIFO), you need to be root.\n");
+                pthread_exit(0);
+            }
+#endif
         }
+#ifdef PLATFORM_WINDOWS
+        timeBeginPeriod(1);
+        p->input_func();
+        timeEndPeriod(1);
+#else
+        p->input_func();
 #endif
     }
-#ifdef __WIN32__
-    timeBeginPeriod(1);
-#endif
-
-    p->input_func();
-
-#ifdef __WIN32__
-    timeEndPeriod(1);
-#endif
-
     return 0;
 }
 
+/**
+ *  Handle the MIDI Control values that provide some automation for the
+ *  application.
+ */
 
 void
-perform::handle_midi_control(int a_control, bool a_state)
+perform::handle_midi_control (int a_control, bool a_state)
 {
-
     switch (a_control)
     {
-
-    case c_midi_control_bpm_up:
-        //printf ( "bpm up\n" );
+    case c_midi_control_bpm_up:                 // printf("bpm up\n");
         set_bpm(get_bpm() + 1);
         break;
 
-    case c_midi_control_bpm_dn:
-        //printf ( "bpm dn\n" );
+    case c_midi_control_bpm_dn:                 // printf("bpm dn\n");
         set_bpm(get_bpm() - 1);
         break;
 
-    case c_midi_control_ss_up:
-        //printf ( "ss up\n" );
+    case c_midi_control_ss_up:                  // printf("ss up\n");
         set_screenset(get_screenset() + 1);
         break;
 
-    case c_midi_control_ss_dn:
-        //printf ( "ss dn\n" );
+    case c_midi_control_ss_dn:                  // printf("ss dn\n");
         set_screenset(get_screenset() - 1);
         break;
 
-    case c_midi_control_mod_replace:
-        //printf ( "replace\n" );
+    case c_midi_control_mod_replace:            // printf("replace\n");
         if (a_state)
             set_sequence_control_status(c_status_replace);
         else
             unset_sequence_control_status(c_status_replace);
         break;
 
-    case c_midi_control_mod_snapshot:
-        //printf ( "snapshot\n" );
+    case c_midi_control_mod_snapshot:           // printf("snapshot\n");
         if (a_state)
             set_sequence_control_status(c_status_snapshot);
         else
             unset_sequence_control_status(c_status_snapshot);
         break;
 
-    case c_midi_control_mod_queue:
-        //printf ( "queue\n" );
+    case c_midi_control_mod_queue:              // printf("queue\n");
         if (a_state)
             set_sequence_control_status(c_status_queue);
         else
             unset_sequence_control_status(c_status_queue);
 
-    //andy cases
-    case c_midi_control_mod_gmute:
+    case c_midi_control_mod_gmute:              // Andy case
         printf("gmute\n");
         if (a_state)
             set_mode_group_mute();
@@ -2357,50 +2438,48 @@ perform::handle_midi_control(int a_control, bool a_state)
             unset_mode_group_mute();
         break;
 
-    case c_midi_control_mod_glearn:
-        //printf ( "glearn\n" );
+    case c_midi_control_mod_glearn:             // Andy case; printf("glearn\n");
         if (a_state)
             set_mode_group_learn();
         else
             unset_mode_group_learn();
         break;
 
-    case c_midi_control_play_ss:
-        //printf ( "play_ss\n" );
+    case c_midi_control_play_ss:                // Andy case; printf("play_ss\n");
         set_playing_screenset();
         break;
 
     default:
         if ((a_control >= c_seqs_in_set) && (a_control < c_midi_track_ctrl))
         {
-            //printf ( "group mute\n" );
+            // printf("group mute\n");
             select_and_mute_group(a_control - c_seqs_in_set);
         }
         break;
     }
 }
 
+/**
+ *
+ *  This function is called by input_thread_func().
+ */
 
 void
 perform::input_func(void)
 {
     event ev;
-
     while (m_inputing)
     {
-
         if (m_master_bus.poll_for_midi() > 0)
         {
-
             do
             {
-
                 if (m_master_bus.get_midi_event(&ev))
                 {
-
-                    // Obey MidiTimeClock:
                     if (ev.get_status() == EVENT_MIDI_START)
                     {
+                        // Obey MidiTimeClock.
+
                         stop();
                         start(false);
                         m_midiclockrunning = true;
@@ -2408,19 +2487,23 @@ perform::input_func(void)
                         m_midiclocktick = 0;
                         m_midiclockpos = 0;
                     }
-                    // midi continue: start from current pos.
                     else if (ev.get_status() == EVENT_MIDI_CONTINUE)
                     {
+                        // MIDI continue: start from current position.
+
                         m_midiclockrunning = true;
                         start(false);
-                        //m_usemidiclock = true;
                     }
                     else if (ev.get_status() == EVENT_MIDI_STOP)
                     {
-                        // do nothing, just let the system pause
-                        // since we're not getting ticks after the stop, the song wont advance
-                        // when start is recieved, we'll reset the position, or
-                        // when continue is recieved, we wont
+                        /*
+                         * Do nothing, just let the system pause.  Since
+                         * we're not getting ticks after the stop, the
+                         * song won't advance when start is received,
+                         * we'll reset the position, or. when continue is
+                         * received, we won't reset the position.
+                         */
+
                         m_midiclockrunning = false;
                         all_notes_off();
                     }
@@ -2429,120 +2512,116 @@ perform::input_func(void)
                         if (m_midiclockrunning)
                             m_midiclocktick += 8;
                     }
-                    // not tested (todo: test it!)
                     else if (ev.get_status() == EVENT_MIDI_SONG_POS)
                     {
+                        // not tested (todo: test it!)
+
                         unsigned char a, b;
                         ev.get_data(&a, &b);
                         m_midiclockpos = ((int)a << 7) && (int)b;
                     }
 
-                    /* filter system wide messages */
+                    /*
+                     * Filter system-wide messages.
+                     */
+
                     if (ev.get_status() <= EVENT_SYSEX)
                     {
-
                         if (global_showmidi)
                             ev.print();
 
-                        /* is there a sequence set ? */
                         if (m_master_bus.is_dumping())
                         {
+                            // If a sequence is set, dump to it
 
                             ev.set_timestamp(m_tick);
-
-
-                            /* dump to it */
-                            (m_master_bus.get_sequence())->stream_event(&ev);
-
+                            m_master_bus.get_sequence()->stream_event(&ev);
                         }
-
-                        /* use it to control our sequencer */
                         else
                         {
+                            // use it to control our sequencer
 
                             for (int i = 0; i < c_midi_controls; i++)
                             {
-
                                 unsigned char data[2] = {0, 0};
                                 unsigned char status = ev.get_status();
-
                                 ev.get_data(&data[0], &data[1]);
-
-                                if (get_midi_control_toggle(i)->m_active &&
-                                        status  == get_midi_control_toggle(i)->m_status &&
-                                        data[0] == get_midi_control_toggle(i)->m_data)
+                                if
+                                (
+                            get_midi_control_toggle(i)->m_active &&
+                            status  == get_midi_control_toggle(i)->m_status &&
+                            data[0] == get_midi_control_toggle(i)->m_data
+                                )
                                 {
-
-                                    if (data[1] >= get_midi_control_toggle(i)->m_min_value &&
-                                            data[1] <= get_midi_control_toggle(i)->m_max_value)
+                                    if
+                                    (
+                            data[1] >= get_midi_control_toggle(i)->m_min_value &&
+                            data[1] <= get_midi_control_toggle(i)->m_max_value
+                                    )
                                     {
-
                                         if (i <  c_seqs_in_set)
-                                            sequence_playing_toggle(i + m_offset);
+                                            sequence_playing_toggle(i+m_offset);
                                     }
                                 }
-
-                                if (get_midi_control_on(i)->m_active &&
-                                        status  == get_midi_control_on(i)->m_status &&
-                                        data[0] == get_midi_control_on(i)->m_data)
+                                if
+                                (
+                            get_midi_control_on(i)->m_active &&
+                            status  == get_midi_control_on(i)->m_status &&
+                            data[0] == get_midi_control_on(i)->m_data
+                                )
                                 {
-
-                                    if (data[1] >= get_midi_control_on(i)->m_min_value &&
-                                            data[1] <= get_midi_control_on(i)->m_max_value)
+                                    if
+                                    (
+                            data[1] >= get_midi_control_on(i)->m_min_value &&
+                            data[1] <= get_midi_control_on(i)->m_max_value
+                                    )
                                     {
-
-                                        if (i <  c_seqs_in_set)
-                                            sequence_playing_on(i  + m_offset);
-                                        else
-                                            handle_midi_control(i, true);
-
-                                    }
-                                    else if (get_midi_control_on(i)->m_inverse_active)
-                                    {
-
-                                        if (i <  c_seqs_in_set)
-                                            sequence_playing_off(i + m_offset);
-                                        else
-                                            handle_midi_control(i, false);
-                                    }
-
-                                }
-
-                                if (get_midi_control_off(i)->m_active &&
-                                        status  == get_midi_control_off(i)->m_status &&
-                                        data[0] == get_midi_control_off(i)->m_data)
-                                {
-
-                                    if (data[1] >= get_midi_control_off(i)->m_min_value &&
-                                            data[1] <= get_midi_control_off(i)->m_max_value)
-                                    {
-
-                                        if (i <  c_seqs_in_set)
-                                            sequence_playing_off(i + m_offset);
-                                        else
-                                            handle_midi_control(i, false);
-
-                                    }
-                                    else if (get_midi_control_off(i)->m_inverse_active)
-                                    {
-
                                         if (i <  c_seqs_in_set)
                                             sequence_playing_on(i + m_offset);
                                         else
                                             handle_midi_control(i, true);
-
                                     }
-
+                                    else if (get_midi_control_on(i)->m_inverse_active)
+                                    {
+                                        if (i <  c_seqs_in_set)
+                                            sequence_playing_off(i + m_offset);
+                                        else
+                                            handle_midi_control(i, false);
+                                    }
                                 }
 
+                                if
+                                (
+                            get_midi_control_off(i)->m_active &&
+                            status  == get_midi_control_off(i)->m_status &&
+                            data[0] == get_midi_control_off(i)->m_data
+                                )
+                                {
+                                    if
+                                    (
+                            data[1] >= get_midi_control_off(i)->m_min_value &&
+                            data[1] <= get_midi_control_off(i)->m_max_value
+                                    )
+                                    {
+                                        if (i <  c_seqs_in_set)
+                                            sequence_playing_off(i + m_offset);
+                                        else
+                                            handle_midi_control(i, false);
+                                    }
+                                    else if (get_midi_control_off(i)->m_inverse_active)
+                                    {
+                                        if (i <  c_seqs_in_set)
+                                            sequence_playing_on(i + m_offset);
+                                        else
+                                            handle_midi_control(i, true);
+                                    }
+                                }
                             }
                         }
-
                     }
 
                     if (ev.get_status() == EVENT_SYSEX)
                     {
-
                         if (global_showmidi)
                             ev.print();
 
@@ -2550,7 +2629,6 @@ perform::input_func(void)
                             m_master_bus.sysex(&ev);
                     }
                 }
-
             }
             while (m_master_bus.is_more_input());
         }
@@ -2558,143 +2636,197 @@ perform::input_func(void)
     pthread_exit(0);
 }
 
+/**
+ *  For all active patterns/sequences, this function gets the playing
+ *  status and saves it in m_sequence_state[i].
+ */
 
 void
-perform::save_playing_state(void)
+perform::save_playing_state (void)
 {
     for (int i = 0; i < c_total_seqs; i++)
     {
-
         if (is_active(i) == true)
         {
-            assert(m_seqs[i]);
-            m_sequence_state[i] = m_seqs[i]->get_playing();
+            // assert(m_seqs[i]);
+            if (not_nullptr_assert(m_seqs[i], "save_playing_state"))
+                m_sequence_state[i] = m_seqs[i]->get_playing();
         }
         else
             m_sequence_state[i] = false;
     }
 }
 
+/**
+ *  For all active patterns/sequences, this function gets the playing
+ *  status from m_sequence_state[i] and sets it for the sequence.
+ */
 
 void
-perform::restore_playing_state(void)
+perform::restore_playing_state (void)
 {
     for (int i = 0; i < c_total_seqs; i++)
     {
-
         if (is_active(i) == true)
         {
-            assert(m_seqs[i]);
-            m_seqs[i]->set_playing(m_sequence_state[i]);
+            // assert(m_seqs[i]);
+            if (not_nullptr_assert(m_seqs[i], "restore_playing_state"))
+                m_seqs[i]->set_playing(m_sequence_state[i]);
         }
     }
 }
 
+/**
+ *  If the given status is present in the c_status_snapshot, the playing
+ *  state is saved.  Then the given status is OR'd into the
+ *  m_control_status.
+ */
 
 void
-perform::set_sequence_control_status(int a_status)
+perform::set_sequence_control_status (int a_status)
 {
     if (a_status & c_status_snapshot)
     {
         save_playing_state();
     }
-
     m_control_status |= a_status;
 }
 
+/**
+ *  If the given status is present in the c_status_snapshot, the playing
+ *  state is restored.  Then the given status is reversed in
+ *  m_control_status.
+ */
 
 void
-perform::unset_sequence_control_status(int a_status)
+perform::unset_sequence_control_status (int a_status)
 {
     if (a_status & c_status_snapshot)
     {
         restore_playing_state();
     }
-
     m_control_status &= (~a_status);
 }
 
+/**
+ *
+ */
 
 void
-perform::sequence_playing_toggle(int a_sequence)
+perform::sequence_playing_toggle (int a_sequence)
 {
     if (is_active(a_sequence) == true)
     {
-        assert(m_seqs[a_sequence]);
-
-        if (m_control_status & c_status_queue)
+        // assert(m_seqs[a_sequence]);
+        if (not_nullptr_assert(m_seqs[a_sequence], "sequence_playing_toggle"))
         {
-            m_seqs[a_sequence]->toggle_queued();
-        }
-        else
-        {
-
-            if (m_control_status & c_status_replace)
+            if (m_control_status & c_status_queue)
             {
-                unset_sequence_control_status(c_status_replace);
-                off_sequences();
+                m_seqs[a_sequence]->toggle_queued();
             }
-
-            m_seqs[a_sequence]->toggle_playing();
-
+            else
+            {
+                if (m_control_status & c_status_replace)
+                {
+                    unset_sequence_control_status(c_status_replace);
+                    off_sequences();
+                }
+                m_seqs[a_sequence]->toggle_playing();
+            }
         }
     }
 }
 
+/**
+ *
+ */
 
 void
-perform::sequence_playing_on(int a_sequence)
+perform::sequence_playing_on (int a_sequence)
 {
     if (is_active(a_sequence) == true)
     {
-        if (m_mode_group && (m_playing_screen == m_screen_set)
-                && (a_sequence >= (m_playing_screen * c_seqs_in_set))
-                && (a_sequence < ((m_playing_screen + 1) * c_seqs_in_set)))
-            m_tracks_mute_state[a_sequence - m_playing_screen * c_seqs_in_set] = true;
-        assert(m_seqs[a_sequence]);
-        if (!(m_seqs[a_sequence]->get_playing()))
+        if
+        (
+            m_mode_group &&
+            (m_playing_screen == m_screen_set) &&
+            (a_sequence >= (m_playing_screen * c_seqs_in_set)) &&
+            (a_sequence < ((m_playing_screen + 1) * c_seqs_in_set))
+        )
         {
-            if (m_control_status & c_status_queue)
+            m_tracks_mute_state[a_sequence-m_playing_screen*c_seqs_in_set] =
+                true;
+        }
+        // assert(m_seqs[a_sequence]);
+        if (not_nullptr_assert(m_seqs[a_sequence], "sequence_playing_on"))
+        {
+            if (! m_seqs[a_sequence]->get_playing())
             {
-                if (!(m_seqs[a_sequence]->get_queued()))
-                    m_seqs[a_sequence]->toggle_queued();
+                if (m_control_status & c_status_queue)
+                {
+                    if (! m_seqs[a_sequence]->get_queued())
+                        m_seqs[a_sequence]->toggle_queued();
+                }
+                else
+                    m_seqs[a_sequence]->set_playing(true);
             }
             else
-                m_seqs[a_sequence]->set_playing(true);
-        }
-        else
-        {
-            if ((m_seqs[a_sequence]->get_queued()) && (m_control_status & c_status_queue))
-                m_seqs[a_sequence]->toggle_queued();
+            {
+                if
+                (   m_seqs[a_sequence]->get_queued() &&
+                    (m_control_status & c_status_queue)
+                )
+                {
+                    m_seqs[a_sequence]->toggle_queued();
+                }
+            }
         }
     }
 }
 
+/**
+ *
+ */
 
 void
-perform::sequence_playing_off(int a_sequence)
+perform::sequence_playing_off (int a_sequence)
 {
     if (is_active(a_sequence) == true)
     {
-        if (m_mode_group && (m_playing_screen == m_screen_set)
-                && (a_sequence >= (m_playing_screen * c_seqs_in_set))
-                && (a_sequence < ((m_playing_screen + 1) * c_seqs_in_set)))
-            m_tracks_mute_state[a_sequence - m_playing_screen * c_seqs_in_set] = false;
-        assert(m_seqs[a_sequence]);
-        if (m_seqs[a_sequence]->get_playing())
+        if
+        (
+            m_mode_group &&
+            (m_playing_screen == m_screen_set) &&
+            (a_sequence >= (m_playing_screen * c_seqs_in_set)) &&
+            (a_sequence < ((m_playing_screen + 1) * c_seqs_in_set))
+        )
         {
-            if (m_control_status & c_status_queue)
+            m_tracks_mute_state[a_sequence-m_playing_screen*c_seqs_in_set] =
+               false;
+        }
+
+        // assert(m_seqs[a_sequence]);
+        if (not_nullptr_assert(m_seqs[a_sequence], "sequence_playing_off"))
+        {
+            if (m_seqs[a_sequence]->get_playing())
             {
-                if (!(m_seqs[a_sequence]->get_queued()))
-                    m_seqs[a_sequence]->toggle_queued();
+                if (m_control_status & c_status_queue)
+                {
+                    if (! m_seqs[a_sequence]->get_queued())
+                        m_seqs[a_sequence]->toggle_queued();
+                }
+                else
+                    m_seqs[a_sequence]->set_playing(false);
             }
             else
-                m_seqs[a_sequence]->set_playing(false);
-        }
-        else
-        {
-            if ((m_seqs[a_sequence]->get_queued()) && (m_control_status & c_status_queue))
-                m_seqs[a_sequence]->toggle_queued();
+            {
+                if
+                (
+                    m_seqs[a_sequence]->get_queued() &&
+                    (m_control_status & c_status_queue)
+                )
+                    m_seqs[a_sequence]->toggle_queued();
+            }
         }
     }
 }
@@ -2836,13 +2968,13 @@ jack_timebase_callback
 
         long ptick = 0, pbeat = 0, pbar = 0;
         pbar  = (long)
-                (
-                    (long) jack_tick / (pos->ticks_per_beat * pos->beats_per_bar)
-                );
+        (
+            (long) jack_tick / (pos->ticks_per_beat * pos->beats_per_bar)
+        );
         pbeat = (long)
-                (
-                    (long) jack_tick % (long)(pos->ticks_per_beat * pos->beats_per_bar)
-                );
+        (
+            (long) jack_tick % (long)(pos->ticks_per_beat * pos->beats_per_bar)
+        );
         pbeat /= (long) pos->ticks_per_beat;
         ptick = (long) jack_tick % (long) pos->ticks_per_beat;
         pos->bar = pbar + 1;
@@ -2853,16 +2985,21 @@ jack_timebase_callback
     state_last = state_current;
 }
 
+/**
+ *
+ */
 
 void
 jack_shutdown(void *arg)
 {
     perform *p = (perform *) arg;
     p->m_jack_running = false;
-
     printf("JACK shut down.\nJACK sync Disabled.\n");
 }
 
+/**
+ *
+ */
 
 void
 print_jack_pos(jack_position_t* jack_pos)
@@ -2880,7 +3017,6 @@ print_jack_pos(jack_position_t* jack_pos)
     printf("    frame_time       [%f]\n", jack_pos->frame_time);
     printf("    next_time        [%f]\n", jack_pos->next_time);
 }
-
 
 #if USE_MAIN_ROUTINE_FOR_JACK_TEST
 

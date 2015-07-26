@@ -11,7 +11,7 @@
  * \library       sequencer24 application
  * \author        Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-24
+ * \updates       2015-07-26
  * \license       GNU GPLv2 or above
  *
  *  We need a uniform way to specify OS and compiler features without
@@ -218,6 +218,7 @@
 
 #if defined _MSC_VER
 #define PLATFORM_MSVC
+#define PLATFORM_WINDOWS
 #define PLATFORM_WINDOWS_API
 #endif
 
@@ -227,6 +228,7 @@
 
 #if defined __MINGW32__
 #define PLATFORM_MINGW
+#define PLATFORM_WINDOWS
 #define PLATFORM_WINDOWS_API
 #endif
 

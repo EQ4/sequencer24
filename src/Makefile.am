@@ -6,7 +6,7 @@
 # \library    	sequencer24 application
 # \author     	Chris Ahlstrom
 # \date       	2015-07-24
-# \update      2015-07-24
+# \update      2015-07-26
 # \version    	$Revision$
 # \license    	$XPC_SUITE_GPL_LICENSE$
 #
@@ -113,6 +113,7 @@ bin_PROGRAMS = sequencer24
 sequencer24_SOURCES = \
 	configfile.cpp configfile.h \
 	controllers.h \
+	easy_macros.cpp easy_macros.h \
 	event.cpp event.h \
 	font.cpp font.h \
 	globals.h \
@@ -133,6 +134,7 @@ sequencer24_SOURCES = \
 	perfroll.cpp perfroll.h \
 	perfroll_input.cpp perfroll_input.h \
 	perftime.cpp perftime.h \
+	platform_macros.h \
 	seq24.cpp \
 	seqdata.cpp seqdata.h \
 	seqedit.cpp seqedit.h \
