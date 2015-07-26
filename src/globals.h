@@ -1,5 +1,7 @@
+#ifndef SEQ24_GLOBALS_H
+#define SEQ24_GLOBALS_H
+
 /*
- *
  *  This file is part of seq24/sequencer24.
  *
  *  seq24 is free software; you can redistribute it and/or modify
@@ -15,47 +17,137 @@
  *  You should have received a copy of the GNU General Public License
  *  along with seq24; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/**
+ * \file          globals.h
+ *
+ *  This module declares/defines just some of the global (gasp!) variables
+ *  in this application.
+ *
+ * \library       sequencer24 application
+ * \author        Seq24 team; modifications by Chris Ahlstrom
+ * \date          2015-07-25
+ * \updates       2015-07-25
+ * \license       GNU GPLv2 or above
  *
  */
 
-#ifndef SEQ24_GLOBALS
-#define SEQ24_GLOBALS
+#include "platform_macros.h"
 
-#ifdef __WIN32__
-#    include "configwin32.h"
+#ifdef PLATFORM_WINDOWS
+#include "configwin32.h"
 #else
-#    include "config.h"
+#include "config.h"
 #endif
 
 #include <string>
 #include <gtkmm/main.h>
 #include <gtkmm/drawingarea.h>
-//For keys
 #include <gtkmm/accelkey.h>
 
+using namespace std;                   // will eventually remove this
 
+/**
+ *  This collection of global variables describes some facets of the
+ *  "Patterns Panel" or "Sequences Window", which is visually presented by
+ *  the Gtk::Window-derived class called mainwnd.
+ *
+ *  The Patterns Panel contains an 8-by-4 grid of "pattern boxes" or
+ *  "sequence boxes".  All of the patterns in this grid comprise what is
+ *  called a "set" (in the musical sense) or a "screen set".
+ *
+ * \note
+ *    This set of variables might be better off placed in a object that the
+ *    mainwnd class and its clients can access a little more safely and with
+ *    a lot more clarity for the human reader.
+ */
 
-using namespace std;
+/**
+ *  Number of rows in the Patterns Panel.  The current value is 4, and
+ *  probably won't change, since other values depend on it.
+ */
 
-/* 16 per screen */
 const int c_mainwnd_rows = 4;
+
+/**
+ *  Number of columns in the Patterns Panel.  The current value is 4, and
+ *  probably won't change, since other values depend on it.
+ */
+
 const int c_mainwnd_cols = 8;
+
+/**
+ *  Number of patterns/sequences in the Patterns Panel, also known as a
+ *  "set" or "screen set".  This value is 4 x 8 = 32.
+ */
+
 const int c_seqs_in_set = c_mainwnd_rows * c_mainwnd_cols;
+
+/**
+ *  Number of group-mute tracks that can be support, which is
+ *  c_seqs_in_set squared, or 1024.
+ */
+
 const int c_gmute_tracks = c_seqs_in_set * c_seqs_in_set;
+
+/**
+ *  Maximum number of screen sets that can be supported.  Basically, that
+ *  the number of times the Patterns Panel can be filled.  32 sets can be
+ *  created.
+ */
+
 const int c_max_sets = 32;
+
+/**
+ *  The maximum number of patterns supported is given by the number of
+ *  patterns supported in the panel (32) times the maximum number of sets
+ *  (32), or 1024 patterns.
+ *
+ *  It is basically defined in the same manner as c_max_sequence..
+ */
+
 const int c_total_seqs = c_seqs_in_set * c_max_sets;
 
-/* number of sequences */
-/* 32 screen sets */
-const int c_max_sequence =  c_mainwnd_rows *  c_mainwnd_cols * c_max_sets;
+/**
+ *  Another variable representing the maximum number of patterns/sequences.
+ *  It is basically defined in the same manner as c_total_seqs.
+ */
 
+const int c_max_sequence = c_mainwnd_rows * c_mainwnd_cols * c_max_sets;
 
-const int c_ppqn         = 192;  /* default - dosnt change */
-const int c_bpm          = 120;  /* default */
+/**
+ *  Provides the timing resolution of a MIDI sequencer, known as "pulses
+ *  per quarter note.  For this application, 192 is the default, and it
+ *  doesn't change.
+ */
+
+const int c_ppqn = 192;
+
+/**
+ *  Provides the default number BPM (beats per minute), which describes
+ *  the overall speed at which the sequencer will play a tune.  The
+ *  default value is 120.
+ */
+
+const int c_bpm = 120;
+
+/**
+ *  Provides the maximum number of MIDI busses supported.
+ */
+
 const int c_maxBuses = 32;
 
-/* trigger width in milliseconds */
+/**
+ *  The trigger width in milliseconds.  This value is 4 ms.
+ */
+
 const int c_thread_trigger_width_ms = 4;
+
+/**
+ *  The trigger lookahead in milliseconds.  This value is 2 ms.
+ */
+
 const int c_thread_trigger_lookahead_ms = 2;
 
 /* for the seqarea class */
@@ -335,3 +427,9 @@ const char* const c_interaction_method_descs[] =
 extern interaction_method_e global_interactionmethod;
 
 #endif
+
+/*
+ * globals.h
+ *
+ * vim: sw=4 ts=4 wm=8 et ft=cpp
+ */

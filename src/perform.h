@@ -75,8 +75,20 @@ public:
 const int c_status_replace  = 0x01;
 const int c_status_snapshot = 0x02;
 const int c_status_queue    = 0x04;
+
+/*
+ *  Pseudo control value for associating MIDI events (I think)
+ *  with automation of some of the controls in seq24.  The lowest value is
+ *  c_seqs_in_set * 2 = 64.
+ *
+ *  I think the reason for that value is to perhaps handle two set or
+ *  something like that.  Will figure it out later.
+ *
+ *  These values would be better off in an enumeration.
+ */
+
 const int c_midi_track_ctrl           = c_seqs_in_set * 2;
-const int c_midi_control_bpm_up       = c_midi_track_ctrl ;
+const int c_midi_control_bpm_up       = c_midi_track_ctrl;
 const int c_midi_control_bpm_dn       = c_midi_track_ctrl + 1;
 const int c_midi_control_ss_up        = c_midi_track_ctrl + 2;
 const int c_midi_control_ss_dn        = c_midi_track_ctrl + 3;

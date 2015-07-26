@@ -1013,77 +1013,144 @@ perform::new_sequence(int a_sequence)
 }
 
 /**
- *  HERE HERE HERE HERE
+ *  Retrieves a value from m_midi_cc_toggle[].
+ *
+ * \param a_seq
+ *      Provides a control value (such as c_midi_control_bpm_up) to use to
+ *      retrieve the desired midi_control object.  Note that this value is
+ *      unsigned simply to make the legality check of the parameter
+ *      easier.
  */
 
 midi_control *
-perform::get_midi_control_toggle(unsigned int a_seq)
+perform::get_midi_control_toggle (unsigned int a_seq)
 {
-    if (a_seq >= (unsigned int) c_midi_controls)
-        return NULL;
-    return &m_midi_cc_toggle[a_seq];
+    /*
+     * Common code.  c_midi_controls looks like a maximum value
+     * (exclusive).
+     */
 
+    if (a_seq >= (unsigned int) c_midi_controls)
+        return nullptr;
+
+    return &m_midi_cc_toggle[a_seq];
 }
 
+/**
+ *  Retrieves a value from m_midi_cc_on[].
+ *
+ * \param a_seq
+ *      Provides a control value (such as c_midi_control_bpm_up) to use to
+ *      retrieve the desired midi_control object.
+ */
 
 midi_control *
-perform::get_midi_control_on(unsigned int a_seq)
+perform::get_midi_control_on (unsigned int a_seq)
 {
+    /*
+     * Common code
+     */
+
     if (a_seq >= (unsigned int) c_midi_controls)
-        return NULL;
+        return nullptr;
+
     return &m_midi_cc_on[a_seq];
 }
 
+/**
+ *  Retrieves a value from m_midi_cc_off[].
+ *
+ * \param a_seq
+ *      Provides a control value (such as c_midi_control_bpm_up) to use to
+ *      retrieve the desired midi_control object.
+ */
 
 midi_control *
-perform::get_midi_control_off(unsigned int a_seq)
+perform::get_midi_control_off (unsigned int a_seq)
 {
+    /*
+     * Common code
+     */
+
     if (a_seq >= (unsigned int) c_midi_controls)
-        return NULL;
+        return nullptr;
+
     return &m_midi_cc_off[a_seq];
 }
 
+/**
+ *  An information printing function with its body commented out.
+ */
 
 void
 perform::print()
 {
-    //   for( int i=0; i<m_numSeq; i++ ){
-
-    //printf("Sequence %d\n", i);
-    //m_seqs[i]->print();
+    // for( int i=0; i<m_numSeq; i++ )
+    // {
+    //  printf("Sequence %d\n", i);
+    //  m_seqs[i]->print();
     // }
-
     //  m_master_bus.print();
 }
 
+/**
+ *  Copies the given string into m_screen_set_notepad[].
+ *
+ * \param a_screen_set
+ *      The ID number of the string set, an index into the
+ *      m_screen_set_xxx[] arrays.
+ *
+ * \param a_notepad
+ *      Provides the string date to copy into the notepad.
+ *      Not sure why a pointer is used, instead of nice "const std::string
+ *      &" parameter.  And this pointer isn't checked.
+ */
 
 void
-perform::set_screen_set_notepad(int a_screen_set, string *a_notepad)
+perform::set_screen_set_notepad (int a_screen_set, std::string * a_notepad)
 {
     if (a_screen_set < c_max_sets)
         m_screen_set_notepad[a_screen_set] = *a_notepad;
 }
 
+/**
+ *  Retrieves the given string from m_screen_set_notepad[].
+ *
+ * \param a_screen_set
+ *      The ID number of the string set, an index into the
+ *      m_screen_set_xxx[] arrays.
+ */
 
 std::string *
-perform::get_screen_set_notepad(int a_screen_set)
+perform::get_screen_set_notepad (int a_screen_set)
 {
     return &m_screen_set_notepad[a_screen_set];
 }
 
+/**
+ *  Sets the m_screen_set value (the index or ID of the current screen
+ *  set).
+ *
+ * \param a_ss
+ *      The index of the desired string set.  It is forced to range from
+ *      0 to c_max_sets - 1.
+ */
 
 void
-perform::set_screenset(int a_ss)
+perform::set_screenset (int a_ss)
 {
+    if (a_ss < 0)
+        a_ss = c_max_sets - 1;
+
+    if (a_ss >= c_max_sets)
+        a_ss = 0;
+
     m_screen_set = a_ss;
-
-    if (m_screen_set < 0)
-        m_screen_set = c_max_sets - 1;
-
-    if (m_screen_set >= c_max_sets)
-        m_screen_set = 0;
 }
 
+/**
+ * \getter m_screen_set
+ */
 
 int
 perform::get_screenset(void)
@@ -1091,9 +1158,17 @@ perform::get_screenset(void)
     return m_screen_set;
 }
 
+/**
+ *  Sets the screen set that is active, based on the value of
+ *  m_playing_screen.
+ *
+ *  Modifies m_playing_screen, and mutes the group tracks.
+ *
+ *  HERE HERE HERE
+ */
 
 void
-perform::set_playing_screenset(void)
+perform::set_playing_screenset (void)
 {
     for (int j, i = 0; i < c_seqs_in_set; i++)
     {
@@ -1107,6 +1182,10 @@ perform::set_playing_screenset(void)
     m_playing_screen = m_screen_set;
     mute_group_tracks();
 }
+
+/**
+ * \getter m_playing_screen
+ */
 
 int
 perform::get_playing_screenset(void)
