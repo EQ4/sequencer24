@@ -19,6 +19,20 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/**
+ * \file          controllers.h
+ *
+ *  This module declares/defines the base class for configuration and
+ *  options files.
+ *
+ * \library       sequencer24 application
+ * \author        Seq24 team; modifications by Chris Ahlstrom
+ * \date          2015-07-24
+ * \updates       2015-07-26
+ * \license       GNU GPLv2 or above
+ *
+ */
+
 string c_controller_names[128] =
 {
     "0 Bank Select",
@@ -152,3 +166,9 @@ string c_controller_names[128] =
 };
 
 #endif    // SEQ24_CONTROLLERS_H
+
+/*
+ * controllers.h
+ *
+ * vim: sw=4 ts=4 wm=8 et ft=cpp
+ */

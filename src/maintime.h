@@ -1,3 +1,6 @@
+#ifndef SEQ24_SEQTIME_H
+#define SEQ24_SEQTIME_H
+
 /*
  *
  *  This file is part of seq24/sequencer24.
@@ -18,9 +21,18 @@
  *
  */
 
-
-#ifndef SEQ24_SEQTIME
-#define SEQ24_SEQTIME
+/**
+ * \file          maintime.h
+ *
+ *  This module declares/defines the base class for ...
+ *
+ * \library       sequencer24 application
+ * \author        Seq24 team; modifications by Chris Ahlstrom
+ * \date          2015-07-24
+ * \updates       2015-07-26
+ * \license       GNU GPLv2 or above
+ *
+ */
 
 #include "globals.h"
 
@@ -28,20 +40,26 @@ const int c_maintime_x = 300;
 const int c_maintime_y = 10;
 const int c_pill_width = 8;
 
-/* main time*/
+/**
+ *  Thsi class provides ...
+ */
+
 class maintime: public Gtk::DrawingArea
 {
 
 private:
 
-    Glib::RefPtr<Gdk::GC>       m_gc;
-    Glib::RefPtr<Gdk::Window>   m_window;
-    Gdk::Color    m_black, m_white, m_grey;
+    Glib::RefPtr<Gdk::GC> m_gc;
+    Glib::RefPtr<Gdk::Window> m_window;
+    Gdk::Color m_black;
+    Gdk::Color m_white;
+    Gdk::Color m_grey;
+    long m_tick;
+
+private:
 
     void on_realize();
     bool on_expose_event(GdkEventExpose* a_ev);
-
-    long m_tick;
 
 public:
 
@@ -50,4 +68,10 @@ public:
 
 };
 
-#endif
+#endif   // SEQ24_SEQTIME_H
+
+/*
+ * maintime.h
+ *
+ * vim: sw=4 ts=4 wm=8 et ft=cpp
+ */

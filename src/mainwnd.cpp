@@ -36,6 +36,7 @@
 #include "pixmaps/perfedit.xpm"
 #include "pixmaps/seq24.xpm"
 #include "pixmaps/seq24_32.xpm"
+#include "pixmaps/sequencer24.xpm"
 
 bool is_pattern_playing = false;
 
@@ -110,8 +111,9 @@ mainwnd::mainwnd(perform *a_p):
     /* top line items */
     HBox *tophbox = manage(new HBox(false, 0));
     tophbox->pack_start(*manage(new Image(
-                                    Gdk::Pixbuf::create_from_xpm_data(seq24_xpm))),
+                        Gdk::Pixbuf::create_from_xpm_data(sequencer24_xpm))),
                         false, false);
+                     // Gdk::Pixbuf::create_from_xpm_data(seq24_xpm))),
 
     // adjust placement...
     VBox *vbox_b = manage(new VBox());

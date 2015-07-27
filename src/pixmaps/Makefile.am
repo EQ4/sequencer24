@@ -6,7 +6,7 @@
 # \library    	sequencer24 application
 # \author     	Chris Ahlstrom
 # \date       	2015-07-24
-# \update      2015-07-24
+# \update      2015-07-26
 # \version    	$Revision$
 # \license    	$XPC_SUITE_GPL_LICENSE$
 #
@@ -42,6 +42,7 @@ EXTRA_DIST = \
 	scale.xpm \
 	seq24_32.xpm \
 	seq24.xpm \
+	sequencer24.xpm \
 	seq-editor.xpm \
 	sequences.xpm \
 	snap.xpm \

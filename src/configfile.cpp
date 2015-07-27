@@ -1,5 +1,5 @@
 /*
- *  This file is part of seq24.
+ *  This file is part of seq24/sequencer24.
  *
  *  seq24 is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-24
+ * \updates       2015-07-26
  * \license       GNU GPLv2 or above
  *
  */
