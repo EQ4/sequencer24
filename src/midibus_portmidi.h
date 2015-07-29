@@ -128,7 +128,7 @@ public:
 #endif
 
     static void set_clock_mod(int a_clock_mod);
-    static int get_clock_mod(void);
+    static int get_clock_mod ();
 
 };
 

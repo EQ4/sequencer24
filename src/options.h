@@ -1,5 +1,7 @@
+#ifndef SEQ24_OPTIONS_H
+#define SEQ24_OPTIONS_H
+
 /*
- *
  *  This file is part of seq24/sequencer24.
  *
  *  seq24 is free software; you can redistribute it and/or modify
@@ -15,11 +17,21 @@
  *  You should have received a copy of the GNU General Public License
  *  along with seq24; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 
-#ifndef SEQ24_OPTIONS
-#define SEQ24_OPTIONS
+/**
+ * \file          options.h
+ *
+ *  This module declares/defines the base class for the File / Options
+ *  dialog.
+ *
+ * \library       sequencer24 application
+ * \author        Seq24 team; modifications by Chris Ahlstrom
+ * \date          2015-07-24
+ * \updates       2015-07-28
+ * \license       GNU GPLv2 or above
+ *
+ */
 
 #include <gtkmm/button.h>
 #include <gtkmm/window.h>
@@ -111,4 +123,10 @@ public:
     options(Gtk::Window &parent, perform *a_p);
 };
 
-#endif
+#endif   // SEQ24_OPTIONS_H
+
+/*
+ * options.h
+ *
+ * vim: sw=4 ts=4 wm=8 et ft=cpp
+ */

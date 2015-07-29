@@ -38,7 +38,7 @@ seqmenu::seqmenu(perform *a_p) :
 
 
 void
-seqmenu::popup_menu(void)
+seqmenu::popup_menu ()
 {
 
     using namespace Menu_Helpers;
@@ -138,7 +138,7 @@ seqmenu::set_bus_and_midi_channel(int a_bus, int a_ch)
 }
 
 void
-seqmenu::mute_all_tracks(void)
+seqmenu::mute_all_tracks ()
 {
     m_mainperf->mute_all_tracks();
 }

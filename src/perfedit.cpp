@@ -293,14 +293,14 @@ perfedit::on_key_press_event(GdkEventKey* a_ev)
 }
 
 void
-perfedit::undo(void)
+perfedit::undo ()
 {
     m_mainperf->pop_trigger_undo();
     m_perfroll->queue_draw();
 }
 
 void
-perfedit::start_playing(void)
+perfedit::start_playing ()
 {
     m_mainperf->position_jack(true);
     m_mainperf->start_jack();
@@ -308,7 +308,7 @@ perfedit::start_playing(void)
 }
 
 void
-perfedit::stop_playing(void)
+perfedit::stop_playing ()
 {
 
     m_mainperf->stop_jack();
@@ -316,7 +316,7 @@ perfedit::stop_playing(void)
 }
 
 void
-perfedit::collapse(void)
+perfedit::collapse ()
 {
     m_mainperf->push_trigger_undo();
     m_mainperf->move_triggers(false);
@@ -324,7 +324,7 @@ perfedit::collapse(void)
 }
 
 void
-perfedit::copy(void)
+perfedit::copy ()
 {
     m_mainperf->push_trigger_undo();
     m_mainperf->copy_triggers();
@@ -332,7 +332,7 @@ perfedit::copy(void)
 }
 
 void
-perfedit::expand(void)
+perfedit::expand ()
 {
     m_mainperf->push_trigger_undo();
     m_mainperf->move_triggers(true);
@@ -340,7 +340,7 @@ perfedit::expand(void)
 }
 
 void
-perfedit::set_looped(void)
+perfedit::set_looped ()
 {
     m_mainperf->set_looping(m_button_loop->get_active());
 }
@@ -353,7 +353,7 @@ perfedit::popup_menu(Menu *a_menu)
 }
 
 void
-perfedit::set_guides(void)
+perfedit::set_guides ()
 {
     long measure_ticks = (c_ppqn * 4) * m_bpm / m_bw;
     long snap_ticks =  measure_ticks / m_snap;
@@ -421,7 +421,7 @@ perfedit::init_before_show()
 }
 
 bool
-perfedit::timeout(void)
+perfedit::timeout ()
 {
 
     m_perfroll->redraw_dirty_sequences();

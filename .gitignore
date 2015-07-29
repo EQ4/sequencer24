@@ -1,8 +1,8 @@
 # .gitignore for sequencer24
 #
-# Updates: 2015-07-24 to 2015-07-24
+# Updates: 2015-07-24 to 2015-07-27
 #
 # Compiled application
 
-seq24
+sequencer24
 

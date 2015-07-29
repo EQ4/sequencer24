@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-26
- * \updates       2015-07-26
+ * \updates       2015-07-27
  * \license       GNU GPLv2 or above
  *
  */
@@ -59,26 +59,23 @@ bool
 not_nullptr_assert (void * ptr, const std::string & context)
 {
     bool result = true;
-
-#if DEBUG
-
     int flag = int(not_nullptr(ptr));
-
-#ifdef PLATFORM_GNU
-    assert_perror(flag);
-#else
-    assert(flag);
-#endif
-
-    fprintf(stderr, "* context %s\n", context.c_str());
-
-#else
-    if (is_nullptr(ptr))
+    if (! flag)
     {
         result = false;
         fprintf(stderr, "? null pointer in context %s\n", context.c_str());
     }
+
+#if DEBUG
+
+#ifdef PLATFORM_GNU
+    int errornumber = flag ? 0 : 1 ;
+    assert_perror(errornumber);
+#else
+    assert(flag);
 #endif
+
+#endif  // DEBUG
 
     return result;
 }

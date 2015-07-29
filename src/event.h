@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-26
+ * \updates       2015-07-28
  * \license       GNU GPLv2 or above
  *
  */
@@ -183,19 +183,19 @@ public:
     void set_data (char D1);
     void set_data (char D1, char D2);
     void get_data (unsigned char * D0, unsigned char * D1);
-    void increment_data1 (void);
-    void decrement_data1 (void);
-    void increment_data2 (void);
-    void decrement_data2 (void);
+    void increment_data1 ();
+    void decrement_data1 ();
+    void increment_data2 ();
+    void decrement_data2 ();
 
-    void start_sysex (void);
+    void start_sysex ();
     bool append_sysex (unsigned char *a_data, long size);
-    unsigned char * get_sysex (void);
+    unsigned char * get_sysex ();
 
     void set_note (char a_note);
 
     void set_size (long a_size);
-    long get_size (void);
+    long get_size ();
 
     void link (event * event);
     event * get_linked ();

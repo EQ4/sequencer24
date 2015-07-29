@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-25
- * \updates       2015-07-25
+ * \updates       2015-07-27
  * \license       GNU GPLv2 or above
  *
  */
@@ -152,13 +152,20 @@ const int c_thread_trigger_width_ms = 4;
 const int c_thread_trigger_lookahead_ms = 2;
 
 /**
- *  Constants for the mainwid class.
+ *  Constants for the mainwid class.  The c_text_x and c_text_y constants
+ *  help define the "seqarea" size.
  */
 
 const int c_text_x = 6;
 const int c_text_y = 12;
+
+/*
+ *  Compare these two constants to c_seqarea_seq_x(y) in mainwid.h.
+ */
+
 const int c_seqarea_x = c_text_x * 15;
-const int c_seqarea_y =  c_text_y * 5;
+const int c_seqarea_y = c_text_y * 5;
+
 const int c_mainwid_border = 0;
 const int c_mainwid_spacing = 2;
 const int c_control_height = 0;

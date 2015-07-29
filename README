@@ -1,22 +1,39 @@
 README for Sequencer24 0.9.3
 Chris Ahlstrom
-2015-07-24 to 2015-07-24
+2015-07-24 to 2015-07-28
 
 The sequencer24 project is a gradual refactoring of seq24 0.9.2
 to bring it up to date, fix bugs, consolidate patches, convert
 to GTKmm 3, and more.
 
-It is done as a series of Git branches:
+It is done as a series of Git branches (x means it is done):
 
-   Legacy:     The original Seq24 0.9.2 with some notes.
-   Debian:     Incorporated Debian's packaging support.
-   Catchup:    Incorporating a few patches found around the Internet.
-   Packaging:  Getting the build system up-to-date; bootstrapping; packing.
-   Gtkmm-3:    Porting from gtkmm-2.4 to gtkmm-3.0.
+x  Legacy:     The original Seq24 0.9.2 with some notes.
+x  Debian:     Incorporating Debian's packaging support into the project.
+x  Catchup:    Incorporating a few patches found around the Internet.
+x  Packaging:  Getting the build system up-to-date; bootstrapping; packing.
+x  Gtkmm-3:    Porting from gtkmm-2.4 to gtkmm-3.0.  Turned out to be trivial.
    Document:   Adding thorough in-code documentation and upgraded formatting.
    Library:    Refactor the code to separate and unit-test functionality.
 
-Eventually, there will be a few features to add.
+The Document branch, first pass, is in progress.  Light documentation, code
+prettifying, warning elimination.  Trying to get a handle on all the global
+variables and how things work.
+
+Eventually, there will be a few features to try to add:
+
+   -  A MIDI event text pane to display (and later edit) all MIDI events.
+   -  Ignore updating patterns/sequences that are empty during playback.
+   -  Add more scales.
+   -  Even more friendliness for two-button mice.
+
+There's actually not a lot to improve in Seq24, except to keep the project
+active and living.
+
+Note that the original seq24 is pretty well documented by the following
+project, which provides a 50-page PDF file and its LaTeX source code:
+
+   https://github.com/ahlstromcj/seq24-doc.git
 
 --------------------------------------
 The original seq24 v0.9.2 README

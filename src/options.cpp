@@ -1,5 +1,4 @@
 /*
- *
  *  This file is part of seq24/sequencer24.
  *
  *  seq24 is free software; you can redistribute it and/or modify
@@ -15,6 +14,19 @@
  *  You should have received a copy of the GNU General Public License
  *  along with seq24; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/**
+ * \file          options.cpp
+ *
+ *  This module declares/defines the base class for the File / Options
+ *  dialog.
+ *
+ * \library       sequencer24 application
+ * \author        Seq24 team; modifications by Chris Ahlstrom
+ * \date          2015-07-24
+ * \updates       2015-07-28
+ * \license       GNU GPLv2 or above
  *
  */
 
@@ -593,3 +605,9 @@ options::transport_callback(button a_type, Button *a_check)
         break;
     }
 }
+
+/*
+ * options.cpp
+ *
+ * vim: sw=4 ts=4 wm=8 et ft=cpp
+ */

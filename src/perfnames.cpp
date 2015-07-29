@@ -331,7 +331,7 @@ perfnames::on_size_allocate(Gtk::Allocation &a_r)
 
 
 void
-perfnames::redraw_dirty_sequences(void)
+perfnames::redraw_dirty_sequences ()
 {
 //  bool draw = false;
     int y_s = 0;

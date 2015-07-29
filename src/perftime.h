@@ -79,7 +79,7 @@ private:
 
     int idle_progress();
 
-    void change_horz(void);
+    void change_horz ();
 
 public:
 
