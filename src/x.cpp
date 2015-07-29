@@ -7,7 +7,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-28
+ * \updates       2015-07-29
  * \license       GNU GPLv2 or above
  *
  */

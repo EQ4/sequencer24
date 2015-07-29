@@ -1,5 +1,7 @@
+#ifndef SEQ24_MIDIBUS_PORTMIDI_H
+#define SEQ24_MIDIBUS_PORTMIDI_H
+
 /*
- *
  *  This file is part of seq24/sequencer24.
  *
  *  seq24 is free software; you can redistribute it and/or modify
@@ -15,38 +17,30 @@
  *  You should have received a copy of the GNU General Public License
  *  along with seq24; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 
-#ifndef SEQ24_MIDIBUS_PORTMIDI
-#define SEQ24_MIDIBUS_PORTMIDI
+/**
+ * \file          midibus_portmidi.h
+ *
+ *  This module declares/defines the base class for MIDI I/O for Windows.
+ *
+ * \library       sequencer24 application
+ * \author        Seq24 team; modifications by Chris Ahlstrom
+ * \date          2015-07-24
+ * \updates       2015-07-29
+ * \license       GNU GPLv2 or above
+ *
+ *  This is the Windows version of the midibus module.
+ */
 
-class midibus;
-class mastermidibus;
+#include "midibus_common.h"
 
-#ifdef __WIN32__
+#ifdef PLATFORM_WINDOWS
 
-#include <string>
-
-#include "portmidi.h"
-#include "event.h"
+#include "configwin32.h"
 #include "sequence.h"
-#include "mutex.h"
-#include "globals.h"
 
-const int c_midibus_output_size = 0x100000;
-const int c_midibus_input_size =  0x100000;
-const int c_midibus_sysex_chunk = 0x100;
-
-enum clock_e
-{
-    e_clock_off,
-    e_clock_pos,
-    e_clock_mod
-
-};
-
-class midibus
+class midibus                       // Windows version
 {
 
 private:
@@ -241,5 +235,12 @@ public:
 
 };
 
-#endif
-#endif
+#endif  // PLATFORM_WINDOWS
+
+#endif  // SEQ24_MIDIBUS_PORTMIDI_H
+
+/*
+ * midibus_portmidi.h
+ *
+ * vim: sw=4 ts=4 wm=8 et ft=cpp
+ */

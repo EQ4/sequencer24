@@ -1,5 +1,4 @@
 /*
- *
  *  This file is part of seq24/sequencer24.
  *
  *  seq24 is free software; you can redistribute it and/or modify
@@ -15,12 +14,25 @@
  *  You should have received a copy of the GNU General Public License
  *  along with seq24; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/**
+ * \file          midibus_portmidi.cpp
  *
+ *  This module declares/defines the base class for MIDI I/O under Windos.
+ *
+ * \library       sequencer24 application
+ * \author        Seq24 team; modifications by Chris Ahlstrom
+ * \date          2015-07-24
+ * \updates       2015-07-29
+ * \license       GNU GPLv2 or above
+ *
+ *  This file provides a Windows-only implementation of the midibus class.
  */
 
 #include "midibus_portmidi.h"
 
-#ifdef __WIN32__
+#ifdef PLATFORM_WINDOWS
 
 midibus::midibus(char a_id, char a_pm_num, const char *a_client_name)
 {
@@ -821,4 +833,10 @@ mastermidibus::set_sequence_input(bool a_state, sequence *a_seq)
     unlock();
 }
 
-#endif
+#endif   // PLATFORM_WINDOWS
+
+/*
+ * midibus_portmidi.cpp
+ *
+ * vim: sw=4 ts=4 wm=8 et ft=cpp
+ */

@@ -1,5 +1,7 @@
+#ifndef SEQ24_MIDIBUS_H
+#define SEQ24_MIDIBUS_H
+
 /*
- *
  *  This file is part of seq24/sequencer24.
  *
  *  seq24 is free software; you can redistribute it and/or modify
@@ -15,46 +17,30 @@
  *  You should have received a copy of the GNU General Public License
  *  along with seq24; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/**
+ * \file          midibus.h
+ *
+ *  This module declares/defines the base class for MIDI I/O under Linux.
+ *
+ * \library       sequencer24 application
+ * \author        Seq24 team; modifications by Chris Ahlstrom
+ * \date          2015-07-24
+ * \updates       2015-07-29
+ * \license       GNU GPLv2 or above
  *
  */
 
-#ifndef SEQ24_MIDIBUS
-#define SEQ24_MIDIBUS
-
-/* forward declarations*/
-class mastermidibus;
-class midibus;
-
-#ifdef __WIN32__
-#   include "configwin32.h"
-#   include "midibus_portmidi.h"
-#else
 #include "config.h"
 
 #if HAVE_LIBASOUND
-#    include <alsa/asoundlib.h>
-#    include <alsa/seq_midi_event.h>
-#endif
 
-#include <string>
+#include <alsa/asoundlib.h>
+#include <alsa/seq_midi_event.h>
 
-#include "event.h"
+#include "midibus_common.h"
 #include "sequence.h"
-#include "mutex.h"
-#include "globals.h"
-
-const int c_midibus_output_size = 0x100000;
-const int c_midibus_input_size =  0x100000;
-const int c_midibus_sysex_chunk = 0x100;
-
-enum clock_e
-{
-    e_clock_off,
-    e_clock_pos,
-    e_clock_mod
-
-};
-
 
 class midibus
 {
@@ -69,16 +55,15 @@ private:
     static int m_clock_mod;
 
     /* sequencer client handle */
-#if HAVE_LIBASOUND
+
     snd_seq_t * const m_seq;
 
     /* address of client */
+
     const int m_dest_addr_client;
     const int m_dest_addr_port;
-
     const int m_local_addr_client;
     int m_local_addr_port;
-#endif
 
     /* id of queue */
     int m_queue;
@@ -97,11 +82,8 @@ private:
     void lock();
     void unlock();
 
-
-
 public:
 
-#if HAVE_LIBASOUND
     /* constructor, client#, port#, sequencer,
        name of client, name of port */
     midibus(int a_localclient,
@@ -117,9 +99,8 @@ public:
             snd_seq_t  *a_seq,
             int a_id,
             int a_queue);
-#endif
 
-#ifdef __WIN32__
+#ifdef PLATFORM_WINDOWS
     midibus(char a_id, int a_queue);
 #endif
 
@@ -160,7 +141,6 @@ public:
     friend class mastermidibus;
 
     /* address of client */
-#if HAVE_LIBASOUND
     int get_client(void)
     {
         return m_dest_addr_client;
@@ -169,7 +149,6 @@ public:
     {
         return m_dest_addr_port;
     };
-#endif
 
     static void set_clock_mod(int a_clock_mod);
     static int get_clock_mod ();
@@ -181,9 +160,8 @@ class mastermidibus
 private:
 
     /* sequencer client handle */
-#if HAVE_LIBASOUND
+
     snd_seq_t *m_alsa_seq;
-#endif
 
     int m_num_out_buses;
     int m_num_in_buses;
@@ -231,12 +209,10 @@ public:
 
     void init();
 
-#if HAVE_LIBASOUND
     snd_seq_t* get_alsa_seq()
     {
         return m_alsa_seq;
     };
-#endif
 
     int get_num_out_buses();
     int get_num_in_buses();
@@ -274,13 +250,13 @@ public:
     {
         return m_dumping_input;
     }
-    sequence* get_sequence()
+    sequence * get_sequence ()
     {
         return m_seq;
     }
-    void sysex(event *a_event);
+    void sysex (event * a_event);
 
-    void port_start(int a_client, int a_port);
+    void port_start (int a_client, int a_port);
     void port_exit(int a_client, int a_port);
 
     void play(unsigned char a_bus, event *a_e24, unsigned char a_channel);
@@ -294,5 +270,12 @@ public:
 
 };
 
-#endif
-#endif
+#endif  // HAVE_LIBASOUND
+
+#endif  // SEQ24_MIDIBUS_H
+
+/*
+ * midibus.h
+ *
+ * vim: sw=4 ts=4 wm=8 et ft=cpp
+ */

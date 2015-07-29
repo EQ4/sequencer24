@@ -6,7 +6,7 @@
 # \library    	sequencer24 application
 # \author     	Chris Ahlstrom
 # \date       	2015-07-24
-# \update      2015-07-26
+# \update      2015-07-29
 # \version    	$Revision$
 # \license    	$XPC_SUITE_GPL_LICENSE$
 #
@@ -122,6 +122,7 @@ sequencer24_SOURCES = \
 	maintime.cpp maintime.h \
 	mainwid.cpp mainwid.h \
 	mainwnd.cpp mainwnd.h \
+	midibus_common.h \
 	midibus.cpp midibus.h \
 	midibus_portmidi.cpp midibus_portmidi.h \
 	midifile.cpp midifile.h \
