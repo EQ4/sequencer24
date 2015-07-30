@@ -6,7 +6,7 @@ dnl \file          configure.ac
 dnl \library       sequencer24
 dnl \author        Chris Ahlstrom
 dnl \date          2015-07-24
-dnl \update        2015-07-24
+dnl \update        2015-07-30
 dnl \version       $Revision$
 dnl \license       $XPC_SUITE_GPL_LICENSE$
 dnl
@@ -410,7 +410,7 @@ dnl      --enable-debug
 dnl      --enable-coverage
 dnl      --enable-profiling
 
-dnl AC_XPC_DEBUGGING
+AC_XPC_DEBUGGING
 
 dnl 8.  Set up other options in the compiler macros.
 
