@@ -29,6 +29,7 @@
  * \license       GNU GPLv2 or above
  *
  *  This file provides a Linux-only implementation of MIDI support.
+ *  There is a lot of common code between these two versions!
  */
 
 #include "easy_macros.h"
@@ -46,10 +47,29 @@
  */
 
 mastermidibus::mastermidibus ()
+ :
+    m_alsa_seq          (nullptr),  // one pointer
+    m_num_out_buses     (0),        // or c_maxBuses, or what?
+    m_num_in_buses      (0),        // or c_maxBuses, or 1, or what?
+    m_buses_out         (),         // array of c_maxBuses midibus pointers
+    m_buses_in          (),         // array of c_maxBuses midibus pointers
+    m_bus_announce      (nullptr),  // one pointer
+    m_buses_out_active  (),         // array of c_maxBuses booleans
+    m_buses_in_active   (),         // array of c_maxBuses booleans
+    m_buses_out_init    (),         // array of c_maxBuses booleans
+    m_buses_in_init     (),         // array of c_maxBuses booleans
+    m_init_clock        (),         // array of c_maxBuses clock_e values
+    m_init_input        (),         // array of c_maxBuses booleans
+    m_queue             (0),
+    m_ppqn              (0),
+    m_bpm               (0),
+    m_num_poll_descriptors (0),
+    m_poll_descriptors  (nullptr),
+    m_dumping_input     (false),
+    m_seq               (nullptr),
+    m_mutex             ()
 {
-    m_num_out_buses = 0; /* set initial number buses */
-    m_num_in_buses = 0;
-    for (int i = 0; i < c_maxBuses; ++i)
+    for (int i = 0; i < c_maxBuses; ++i)        // why the global?
     {
         m_buses_in_active[i] = false;
         m_buses_out_active[i] = false;
@@ -92,7 +112,13 @@ mastermidibus::mastermidibus ()
 mastermidibus::~mastermidibus ()
 {
     for (int i = 0; i < m_num_out_buses; i++)
-        delete m_buses_out[i];
+    {
+        if (not_nullptr(m_buses_out[i]))
+        {
+            delete m_buses_out[i];
+            m_buses_out[i] = nullptr;
+        }
+    }
 
 #ifdef HAVE_LIBASOUND
 
@@ -107,183 +133,7 @@ mastermidibus::~mastermidibus ()
 }
 
 /**
- *  Mutex lock.
- */
-
-void
-mastermidibus::lock ()
-{
-    m_mutex.lock();
-}
-
-/**
- *  Mutex unlock.
- */
-
-void
-mastermidibus::unlock ()
-{
-    m_mutex.unlock();
-}
-
-/**
- *  Starts all of the configured output busses up to m_num_out_buses.
- */
-
-void
-mastermidibus::start ()
-{
-#ifdef HAVE_LIBASOUND
-
-    lock();
-    snd_seq_start_queue(m_alsa_seq, m_queue, NULL); /* start timer */
-    for (int i = 0; i < m_num_out_buses; i++)
-        m_buses_out[i]->start();
-
-    unlock();
-
-#endif
-}
-
-/**
- *  Gets the output busses running again.
- */
-
-void
-mastermidibus::continue_from (long a_tick)
-{
-#ifdef HAVE_LIBASOUND
-
-    lock();
-    snd_seq_start_queue(m_alsa_seq, m_queue, NULL); /* start timer */
-    for (int i = 0; i < m_num_out_buses; i++)
-        m_buses_out[i]->continue_from(a_tick);
-
-    unlock();
-
-#endif
-}
-
-/**
- *  Initializes the clock of each of the output busses.
- */
-
-void
-mastermidibus::init_clock (long a_tick)
-{
-    lock();
-    for (int i = 0; i < m_num_out_buses; i++)
-        m_buses_out[i]->init_clock(a_tick);
-
-    unlock();
-}
-
-/**
- *  Stops each of the output busses.
- */
-
-void
-mastermidibus::stop()
-{
-    lock();
-    for (int i = 0; i < m_num_out_buses; i++)
-        m_buses_out[i]->stop();
-
-#ifdef HAVE_LIBASOUND
-    snd_seq_drain_output(m_alsa_seq);
-    snd_seq_sync_output_queue(m_alsa_seq);
-    snd_seq_stop_queue(m_alsa_seq, m_queue, NULL); /* start timer */
-#endif
-
-    unlock();
-}
-
-/**
- *  Generates the MIDI clock for each of the output busses.
- */
-
-void
-mastermidibus::clock (long a_tick)
-{
-    lock();
-    for (int i = 0; i < m_num_out_buses; i++)
-        m_buses_out[i]->clock(a_tick);
-
-    unlock();
-}
-
-/**
- *  Set the PPQN value (parts per quarter note).  This is done by creating
- *  an ALSA tempo structure, adding tempo information to it, and then
- *  setting the ALSA sequencer object with this information.
- */
-
-void
-mastermidibus::set_ppqn (int a_ppqn)
-{
-#ifdef HAVE_LIBASOUND
-    lock();
-    snd_seq_queue_tempo_t * tempo;
-    snd_seq_queue_tempo_alloca(&tempo);         /* allocate tempo struct */
-
-    /*
-     * Fill the tempo structure with the current tempo information.  Then
-     * set the ppqn value.  Finally, give the tempo structure to the ALSA
-     * queue.
-     */
-
-    m_ppqn = a_ppqn;
-    snd_seq_get_queue_tempo(m_alsa_seq, m_queue, tempo);
-    snd_seq_queue_tempo_set_ppq(tempo, m_ppqn);
-    snd_seq_set_queue_tempo(m_alsa_seq, m_queue, tempo);
-    unlock();
-#endif
-}
-
-/**
- *  Set the BPM value (beats per minute).  This is done by creating
- *  an ALSA tempo structure, adding tempo information to it, and then
- *  setting the ALSA sequencer object with this information.
- */
-
-void
-mastermidibus::set_bpm (int a_bpm)
-{
-#ifdef HAVE_LIBASOUND
-    lock();
-    snd_seq_queue_tempo_t *tempo;
-    snd_seq_queue_tempo_alloca(&tempo);          /* allocate tempo struct */
-
-    /*
-     * Fill the tempo structure with the current tempo information, set
-     * the BPM value, put it in the tempo structure, and give the tempo
-     * structure to the ALSA queue.
-     */
-
-    snd_seq_get_queue_tempo(m_alsa_seq, m_queue, tempo);
-    m_bpm = a_bpm;
-    snd_seq_queue_tempo_set_tempo(tempo, 60000000 / m_bpm);
-    snd_seq_set_queue_tempo(m_alsa_seq, m_queue, tempo);
-    unlock();
-#endif
-}
-
-/**
- *  Flushes our local queue events out into ALSA.
- */
-
-void
-mastermidibus::flush ()
-{
-#ifdef HAVE_LIBASOUND
-    lock();
-    snd_seq_drain_output(m_alsa_seq);
-    unlock();
-#endif
-}
-
-/**
- *  Initialize the mastermidibus.  it initializes 16 MIDI output busses, a
+ *  Initialize the mastermidibus.  It initializes 16 MIDI output busses, a
  *  hardwired constant, 16.  Only one MIDI input buss is initialized.
  */
 
@@ -453,6 +303,198 @@ mastermidibus::init()
 }
 
 /**
+ *  Mutex lock.
+ */
+
+void
+mastermidibus::lock ()
+{
+    m_mutex.lock();
+}
+
+/**
+ *  Mutex unlock.
+ */
+
+void
+mastermidibus::unlock ()
+{
+    m_mutex.unlock();
+}
+
+/**
+ *  Starts all of the configured output busses up to m_num_out_buses.
+ *
+ * \threadsafe
+ */
+
+void
+mastermidibus::start ()
+{
+#ifdef HAVE_LIBASOUND
+
+    lock();
+    snd_seq_start_queue(m_alsa_seq, m_queue, NULL); /* start timer */
+    for (int i = 0; i < m_num_out_buses; i++)
+        m_buses_out[i]->start();
+
+    unlock();
+
+#endif
+}
+
+/**
+ *  Gets the output busses running again.
+ *
+ * \threadsafe
+ */
+
+void
+mastermidibus::continue_from (long a_tick)
+{
+#ifdef HAVE_LIBASOUND
+
+    lock();
+    snd_seq_start_queue(m_alsa_seq, m_queue, NULL); /* start timer */
+    for (int i = 0; i < m_num_out_buses; i++)
+        m_buses_out[i]->continue_from(a_tick);
+
+    unlock();
+
+#endif
+}
+
+/**
+ *  Initializes the clock of each of the output busses.
+ *
+ * \threadsafe
+ */
+
+void
+mastermidibus::init_clock (long a_tick)
+{
+    lock();
+    for (int i = 0; i < m_num_out_buses; i++)
+        m_buses_out[i]->init_clock(a_tick);
+
+    unlock();
+}
+
+/**
+ *  Stops each of the output busses.
+ *
+ * \threadsafe
+ */
+
+void
+mastermidibus::stop()
+{
+    lock();
+    for (int i = 0; i < m_num_out_buses; i++)
+        m_buses_out[i]->stop();
+
+#ifdef HAVE_LIBASOUND
+    snd_seq_drain_output(m_alsa_seq);
+    snd_seq_sync_output_queue(m_alsa_seq);
+    snd_seq_stop_queue(m_alsa_seq, m_queue, NULL); /* start timer */
+#endif
+
+    unlock();
+}
+
+/**
+ *  Generates the MIDI clock for each of the output busses.
+ *
+ * \threadsafe
+ */
+
+void
+mastermidibus::clock (long a_tick)
+{
+    lock();
+    for (int i = 0; i < m_num_out_buses; i++)
+        m_buses_out[i]->clock(a_tick);
+
+    unlock();
+}
+
+/**
+ *  Set the PPQN value (parts per quarter note).  This is done by creating
+ *  an ALSA tempo structure, adding tempo information to it, and then
+ *  setting the ALSA sequencer object with this information.
+ *
+ * \threadsafe
+ */
+
+void
+mastermidibus::set_ppqn (int a_ppqn)
+{
+#ifdef HAVE_LIBASOUND
+    lock();
+    snd_seq_queue_tempo_t * tempo;
+    snd_seq_queue_tempo_alloca(&tempo);         /* allocate tempo struct */
+
+    /*
+     * Fill the tempo structure with the current tempo information.  Then
+     * set the ppqn value.  Finally, give the tempo structure to the ALSA
+     * queue.
+     */
+
+    m_ppqn = a_ppqn;
+    snd_seq_get_queue_tempo(m_alsa_seq, m_queue, tempo);
+    snd_seq_queue_tempo_set_ppq(tempo, m_ppqn);
+    snd_seq_set_queue_tempo(m_alsa_seq, m_queue, tempo);
+    unlock();
+#endif
+}
+
+/**
+ *  Set the BPM value (beats per minute).  This is done by creating
+ *  an ALSA tempo structure, adding tempo information to it, and then
+ *  setting the ALSA sequencer object with this information.
+ *
+ * \threadsafe
+ */
+
+void
+mastermidibus::set_bpm (int a_bpm)
+{
+#ifdef HAVE_LIBASOUND
+    lock();
+    snd_seq_queue_tempo_t *tempo;
+    snd_seq_queue_tempo_alloca(&tempo);          /* allocate tempo struct */
+
+    /*
+     * Fill the tempo structure with the current tempo information, set
+     * the BPM value, put it in the tempo structure, and give the tempo
+     * structure to the ALSA queue.
+     */
+
+    snd_seq_get_queue_tempo(m_alsa_seq, m_queue, tempo);
+    m_bpm = a_bpm;
+    snd_seq_queue_tempo_set_tempo(tempo, 60000000 / m_bpm);
+    snd_seq_set_queue_tempo(m_alsa_seq, m_queue, tempo);
+    unlock();
+#endif
+}
+
+/**
+ *  Flushes our local queue events out into ALSA.
+ *
+ * \threadsafe
+ */
+
+void
+mastermidibus::flush ()
+{
+#ifdef HAVE_LIBASOUND
+    lock();
+    snd_seq_drain_output(m_alsa_seq);
+    unlock();
+#endif
+}
+
+/**
  *  Handle the sending of SYSEX events.
  *
  * \threadsafe
@@ -472,6 +514,8 @@ mastermidibus::sysex (event * a_ev)
 /**
  *  Handle the playing of MIDI events on the MIDI buss given by the
  *  parameter, as long as it is a legal buss number.
+ *
+ * \threadsafe
  */
 
 void
@@ -487,6 +531,8 @@ mastermidibus::play (unsigned char a_bus, event * a_e24, unsigned char a_channel
 
 /**
  *  Set the clock for the given (legal) buss number.
+ *
+ * \threadsafe
  */
 
 void
@@ -581,7 +627,7 @@ mastermidibus::get_input (unsigned char a_bus)
  *  Get the MIDI output buss name for the given (legal) buss number.
  */
 
-    std::string
+std::string
 mastermidibus::get_midi_out_bus_name (int a_bus)
 {
     if (m_buses_out_active[a_bus] && a_bus < m_num_out_buses)

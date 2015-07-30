@@ -29,6 +29,7 @@
  * \license       GNU GPLv2 or above
  *
  *  This file provides a Windows-only implementation of the mastermidibus class.
+ *  There is a lot of common code between these two versions!
  */
 
 #include "easy_macros.h"
@@ -36,239 +37,309 @@
 
 #ifdef PLATFORM_WINDOWS                // covers this whole module
 
-/* fills the array with our buses */
-mastermidibus::mastermidibus()
+/**
+ *  This constructor fills the array for our busses.  The only member
+ *  "missing" from this windows version is the "m_alsa_seq" member of the
+ *  Linux version.
+ */
+
+mastermidibus::mastermidibus ()
+ :
+    m_num_out_buses     (0),        // or c_maxBuses, or what?
+    m_num_in_buses      (0),        // or c_maxBuses, or 1, or what?
+    m_buses_out         (),         // array of c_maxBuses midibus pointers
+    m_buses_in          (),         // array of c_maxBuses midibus pointers
+    m_bus_announce      (nullptr),  // one pointer
+    m_buses_out_active  (),         // array of c_maxBuses booleans
+    m_buses_in_active   (),         // array of c_maxBuses booleans
+    m_buses_out_init    (),         // array of c_maxBuses booleans
+    m_buses_in_init     (),         // array of c_maxBuses booleans
+    m_init_clock        (),         // array of c_maxBuses clock_e values
+    m_init_input        (),         // array of c_maxBuses booleans
+    m_queue             (0),
+    m_ppqn              (0),
+    m_bpm               (0),
+    m_num_poll_descriptors (0),
+    m_poll_descriptors  (nullptr),
+    m_dumping_input     (false),
+    m_seq               (nullptr),
+    m_mutex             ()
 {
-    /* temp return */
-    //int ret;
-
-    /* set initial number buses */
-    m_num_out_buses = 0;
-    m_num_in_buses = 0;
-
-    for (int i = 0; i < c_maxBuses; ++i)
+    for (int i = 0; i < c_maxBuses; ++i)        // why the global?
     {
         m_buses_in_active[i] = false;
         m_buses_out_active[i] = false;
         m_buses_in_init[i] = false;
         m_buses_out_init[i] = false;
-
         m_init_clock[i] = e_clock_off;
         m_init_input[i] = false;
     }
-
     Pm_Initialize();
+}
 
+/**
+ *  The destructor deletes all of the output busses, and terminates the
+ *  Windows MIDI manager.
+ */
+
+mastermidibus::~mastermidibus ()
+{
+    for (int i = 0; i < m_num_out_buses; i++)
+    {
+        if (not_nullptr(m_buses_out[i]))
+        {
+            delete m_buses_out[i];
+            m_buses_out[i] = nullptr;
+        }
+    }
+    for (int i = 0; i < m_num_in_buses; i++)
+    {
+        if (not_nullptr(m_buses_in[i]))
+        {
+            delete m_buses_in[i];
+            m_buses_in[i] = nullptr;
+        }
+    }
+    Pm_Terminate();
 }
 
 
 void
-mastermidibus::lock()
+mastermidibus::init ()
 {
-    // printf( "mastermidibus::lock()\n" );
+
+    int num_devices = Pm_CountDevices();
+    const PmDeviceInfo * dev_info = nullptr;
+    for (int i = 0; i < num_devices; ++i)
+    {
+        dev_info = Pm_GetDeviceInfo(i);
+
+#ifdef PLATFORM_DEBUG
+        fprintf
+        (
+            stderr,
+            "[0x%x] [%s] [%s] input[%d] output[%d]\n",
+            i, dev_info->interf, dev_info->name,
+               dev_info->input, dev_info->output
+        );
+#endif
+
+        if (dev_info->output)
+        {
+            m_buses_out[m_num_out_buses] = new midibus
+            (
+                m_num_out_buses, i, dev_info->name
+            );
+            if (m_buses_out[m_num_out_buses]->init_out())
+            {
+                m_buses_out_active[m_num_out_buses] = true;
+                m_buses_out_init[m_num_out_buses] = true;
+                m_num_out_buses++;
+            }
+            else
+            {
+                delete m_buses_out[m_num_out_buses];
+                m_buses_out[m_num_out_buses] = nullptr;
+            }
+        }
+        if (dev_info->input)
+        {
+            m_buses_in[m_num_in_buses] = new midibus
+            (
+                m_num_in_buses, i, dev_info->name
+            );
+            if (m_buses_in[m_num_in_buses]->init_in())
+            {
+                m_buses_in_active[m_num_in_buses] = true;
+                m_buses_in_init[m_num_in_buses] = true;
+                m_num_in_buses++;
+            }
+            else
+            {
+                delete m_buses_in[m_num_in_buses];
+                m_buses_in[m_num_in_buses] = nullptr;
+            }
+        }
+    }
+
+    set_bpm(c_bpm);
+    set_ppqn(c_ppqn);
+
+    /* MIDI input poll descriptors */
+
+    set_sequence_input(false, NULL);
+    for (int i = 0; i < m_num_out_buses; i++)
+        set_clock(i, m_init_clock[i]);
+
+    for (int i = 0; i < m_num_in_buses; i++)
+        set_input(i, m_init_input[i]);
+}
+
+/**
+ *  Mutex lock.
+ */
+
+void
+mastermidibus::lock ()
+{
     m_mutex.lock();
 }
 
+/**
+ *  Mutex unlock.
+ */
 
 void
-mastermidibus::unlock()
+mastermidibus::unlock ()
 {
-    // printf( "mastermidibus::unlock()\n" );
     m_mutex.unlock();
 }
 
+/**
+ *  Starts all of the configured output busses up to m_num_out_buses.
+ *
+ * \threadsafe
+ */
 
-
-/* gets it a runnin */
 void
-mastermidibus::start()
+mastermidibus::start ()
 {
     lock();
-
-
     for (int i = 0; i < m_num_out_buses; i++)
         m_buses_out[i]->start();
 
     unlock();
 }
 
+/**
+ *  Gets the output busses running again.
+ *
+ * \threadsafe
+ */
 
-/* gets it a runnin */
 void
-mastermidibus::continue_from(long a_tick)
+mastermidibus::continue_from (long a_tick)
 {
     lock();
-
     for (int i = 0; i < m_num_out_buses; i++)
         m_buses_out[i]->continue_from(a_tick);
 
     unlock();
 }
 
+/**
+ *  Initializes the clock of each of the output busses.
+ *
+ * \threadsafe
+ */
+
 void
-mastermidibus::init_clock(long a_tick)
+mastermidibus::init_clock (long a_tick)
 {
     lock();
-
     for (int i = 0; i < m_num_out_buses; i++)
         m_buses_out[i]->init_clock(a_tick);
 
     unlock();
 }
 
+/**
+ *  Stops each of the output busses.
+ *
+ * \threadsafe
+ */
+
 void
-mastermidibus::stop()
+mastermidibus::stop ()
 {
     lock();
-
     for (int i = 0; i < m_num_out_buses; i++)
         m_buses_out[i]->stop();
 
     unlock();
 }
 
+/**
+ *  Generates the MIDI clock for each of the output busses.
+ *
+ * \threadsafe
+ */
 
-// generates midi clock
 void
-mastermidibus::clock(long a_tick)
+mastermidibus::clock (long a_tick)
 {
     lock();
-
     for (int i = 0; i < m_num_out_buses; i++)
         m_buses_out[i]->clock(a_tick);
 
     unlock();
 }
 
+/**
+ *  Set the PPQN value (parts per quarter note) member.
+ *
+ * \threadsafe
+ */
+
 void
-mastermidibus::set_ppqn(int a_ppqn)
+mastermidibus::set_ppqn (int a_ppqn)
 {
     lock();
-
     m_ppqn = a_ppqn;
-
     unlock();
 }
 
+/**
+ *  Set the BPM value (beats per minute) member.
+ *
+ * \threadsafe
+ */
 
 void
-mastermidibus::set_bpm(int a_bpm)
+mastermidibus::set_bpm (int a_bpm)
 {
     lock();
-
     m_bpm = a_bpm;
-
     unlock();
 }
 
-// flushes our local queue events out into ALSA
-void
-mastermidibus::flush()
-{
-
-}
-
+/**
+ *  Flushes our local queue events out; but the Windows version does
+ *  nothing.
+ */
 
 void
-mastermidibus::init()
+mastermidibus::flush ()
 {
-
-    int num_devices = Pm_CountDevices();
-
-    const PmDeviceInfo* dev_info = NULL;
-
-    for (int i = 0; i < num_devices; ++i)
-    {
-        dev_info = Pm_GetDeviceInfo(i);
-
-        printf("[0x%x] [%s] [%s] input[%d] output[%d]\n",
-               i, dev_info->interf, dev_info->name,
-               dev_info->input, dev_info->output);
-
-        if (dev_info->output)
-        {
-            m_buses_out[m_num_out_buses] =
-                new midibus(m_num_out_buses, i, dev_info->name);
-
-            if (m_buses_out[m_num_out_buses]->init_out())
-            {
-                m_buses_out_active[m_num_out_buses] = true;
-                m_buses_out_init[m_num_out_buses] = true;
-
-                m_num_out_buses++;
-            }
-            else
-            {
-                delete m_buses_out[m_num_out_buses];
-            }
-        }
-
-        if (dev_info->input)
-        {
-            m_buses_in[m_num_in_buses] =
-                new midibus(m_num_in_buses, i, dev_info->name);
-
-            if (m_buses_in[m_num_in_buses]->init_in())
-            {
-
-                m_buses_in_active[m_num_in_buses] = true;
-                m_buses_in_init[m_num_in_buses] = true;
-
-                m_num_in_buses++;
-            }
-            else
-            {
-                delete  m_buses_in[m_num_in_buses];
-            }
-        }
-    }
-
-
-    set_bpm(c_bpm);
-    set_ppqn(c_ppqn);
-
-    /* midi input */
-    /* poll descriptors */
-
-    set_sequence_input(false, NULL);
-
-    for (int i = 0; i < m_num_out_buses; i++)
-        set_clock(i, m_init_clock[i]);
-
-    for (int i = 0; i < m_num_in_buses; i++)
-        set_input(i, m_init_input[i]);
-
+    // empty body
 }
 
-mastermidibus::~mastermidibus()
-{
-    for (int i = 0; i < m_num_out_buses; i++)
-        delete m_buses_out[i];
-    for (int i = 0; i < m_num_in_buses; i++)
-        delete m_buses_in[i];
-
-    Pm_Terminate();
-
-}
-
-
+/**
+ *  Handle the sending of SYSEX events.
+ *
+ * \threadsafe
+ */
 
 void
-mastermidibus::sysex(event *a_ev)
+mastermidibus::sysex (event * a_ev)
 {
     lock();
-
     for (int i = 0; i < m_num_out_buses; i++)
         m_buses_out[i]->sysex(a_ev);
 
     flush();
-
     unlock();
 }
 
+/**
+ *  Handle the playing of MIDI events on the MIDI buss given by the
+ *  parameter, as long as it is a legal buss number.
+ *
+ * \threadsafe
+ */
 
 void
-mastermidibus::play(unsigned char a_bus, event *a_e24, unsigned char a_channel)
+mastermidibus::play (unsigned char a_bus, event * a_e24, unsigned char a_channel)
 {
     lock();
     if (m_buses_out_active[a_bus] && a_bus < m_num_out_buses)
@@ -278,9 +349,14 @@ mastermidibus::play(unsigned char a_bus, event *a_e24, unsigned char a_channel)
     unlock();
 }
 
+/**
+ *  Set the clock for the given (legal) buss number.
+ *
+ * \threadsafe
+ */
 
 void
-mastermidibus::set_clock(unsigned char a_bus, clock_e a_clock_type)
+mastermidibus::set_clock (unsigned char a_bus, clock_e a_clock_type)
 {
     lock();
     if (a_bus < c_maxBuses)
@@ -294,8 +370,12 @@ mastermidibus::set_clock(unsigned char a_bus, clock_e a_clock_type)
     unlock();
 }
 
+/**
+ *  Get the clock for the given (legal) buss number.
+ */
+
 clock_e
-mastermidibus::get_clock(unsigned char a_bus)
+mastermidibus::get_clock (unsigned char a_bus)
 {
     if (m_buses_out_active[a_bus] && a_bus < m_num_out_buses)
     {
@@ -304,12 +384,20 @@ mastermidibus::get_clock(unsigned char a_bus)
     return e_clock_off;
 }
 
+/**
+ *  Set the clock mod to the given value, if legal.
+ */
+
 void
-midibus::set_clock_mod(int a_clock_mod)
+midibus::set_clock_mod (int a_clock_mod)
 {
     if (a_clock_mod != 0)
         m_clock_mod = a_clock_mod;
 }
+
+/**
+ *  Get the clock mod.
+ */
 
 int
 midibus::get_clock_mod ()
@@ -317,16 +405,23 @@ midibus::get_clock_mod ()
     return m_clock_mod;
 }
 
+/**
+ *  Set the status of the given input buss, if a legal buss number.
+ *
+ *  Why is another buss-count constant, and a global one at that, being
+ *  used?  And I thought there was only one input buss anyway!
+ *
+ * \threadsafe
+ */
 
 void
-mastermidibus::set_input(unsigned char a_bus, bool a_inputing)
+mastermidibus::set_input (unsigned char a_bus, bool a_inputing)
 {
     lock();
-    if (a_bus < c_maxBuses)
+    if (a_bus < c_maxBuses)         // should be m_num_in_buses I believe!!!
     {
         m_init_input[a_bus] = a_inputing;
     }
-
     if (m_buses_in_active[a_bus] && a_bus < m_num_in_buses)
     {
         m_buses_in[a_bus]->set_input(a_inputing);
@@ -334,8 +429,12 @@ mastermidibus::set_input(unsigned char a_bus, bool a_inputing)
     unlock();
 }
 
+/**
+ *  Get the input for the given (legal) buss number.
+ */
+
 bool
-mastermidibus::get_input(unsigned char a_bus)
+mastermidibus::get_input (unsigned char a_bus)
 {
     if (m_buses_in_active[a_bus] && a_bus < m_num_in_buses)
     {
@@ -344,31 +443,40 @@ mastermidibus::get_input(unsigned char a_bus)
     return false;
 }
 
+/**
+ *  Get the MIDI output buss name for the given (legal) buss number.
+ */
 
-string
-mastermidibus::get_midi_out_bus_name(int a_bus)
+std::string
+mastermidibus::get_midi_out_bus_name (int a_bus)
 {
     if (m_buses_out_active[a_bus] && a_bus < m_num_out_buses)
     {
         return m_buses_out[a_bus]->get_name();
     }
-    return "error...";
+    return "error in get_midi_out_bus_name()";
 }
 
+/**
+ *  Get the MIDI input buss name for the given (legal) buss number.
+ */
 
-string
-mastermidibus::get_midi_in_bus_name(int a_bus)
+std::string
+mastermidibus::get_midi_in_bus_name (int a_bus)
 {
     if (m_buses_in_active[a_bus] && a_bus < m_num_in_buses)
     {
         return m_buses_in[a_bus]->get_name();
     }
-    return "error...";
+    return "error in get_midi_in_bus_name()";
 }
 
+/**
+ *  Print some information about the available MIDI output busses.
+ */
 
 void
-mastermidibus::print()
+mastermidibus::print ()
 {
     printf("Available Buses\n");
     for (int i = 0; i < m_num_out_buses; i++)
@@ -377,118 +485,130 @@ mastermidibus::print()
     }
 }
 
+/**
+ * \getter m_num_out_buses
+ */
 
 int
-mastermidibus::get_num_out_buses()
+mastermidibus::get_num_out_buses ()
 {
     return m_num_out_buses;
 }
 
+/**
+ * \getter m_num_in_buses
+ */
 
 int
-mastermidibus::get_num_in_buses()
+mastermidibus::get_num_in_buses ()
 {
     return m_num_in_buses;
 }
 
-int
-mastermidibus::poll_for_midi()
-{
-    //int ret = 0;
+/**
+ *  Initiate a poll() on the existing poll descriptors.  This is a
+ *  primitive poll, which exits when some data is obtained.
+ */
 
-    while (1)
+int
+mastermidibus::poll_for_midi ()
+{
+    for (;;)
     {
         for (int i = 0; i < m_num_in_buses; i++)
         {
             if (m_buses_in[i]->poll_for_midi())
-            {
                 return 1;
-            }
         }
-
-        Sleep(1);
-
+        Sleep(1);                      // yield processor for 1 millisecond
         return 0;
     }
 }
 
+/**
+ *  Test the ALSA sequencer to see if any more input is pending.
+ *
+ * \threadsafe
+ */
+
 bool
-mastermidibus::is_more_input()
+mastermidibus::is_more_input ()
 {
-
     lock();
-
     int size = 0;
-
     for (int i = 0; i < m_num_in_buses; i++)
     {
         if (m_buses_in[i]->poll_for_midi())
-        {
             size = 1;
-        }
     }
-
     unlock();
-
-    return (size > 0);
+    return size > 0;
 }
 
+// No mastermidibus::port_start(),                      //
+// No mastermidibus::port_exit() in Windows version     //
+
+/**
+ *  Grab a MIDI event.
+ *
+ * \threadsafe
+ */
 
 bool
-mastermidibus::get_midi_event(event *a_in)
+mastermidibus::get_midi_event (event *a_in)
 {
     lock();
-
-    bool ret = false;
+    bool result = false;
     PmEvent event;
     PmError err;
-
     for (int i = 0; i < m_num_in_buses; i++)
     {
         if (m_buses_in[i]->poll_for_midi())
         {
             err = Pm_Read(m_buses_in[i]->m_pms, &event, 1);
             if (err < 0)
-            {
                 printf("Pm_Read: %s\n", Pm_GetErrorText(err));
-            }
 
             if (m_buses_in[i]->m_inputing)
-                ret = true;
+                result = true;
         }
     }
-
-    if (!ret)
+    if (! result)
     {
         unlock();
         return false;
     }
-
-
     a_in->set_status(Pm_MessageStatus(event.message));
     a_in->set_size(3);
     a_in->set_data(Pm_MessageData1(event.message), Pm_MessageData2(event.message));
 
-    // some keyboards send on's with vel 0 for off
+    /* some keyboards send Note On with velocity 0 for Note Off */
+
     if (a_in->get_status() == EVENT_NOTE_ON &&
             a_in->get_note_velocity() == 0x00)
     {
         a_in->set_status(EVENT_NOTE_OFF);
     }
 
-    unlock();
+    // Why no "sysex = false" here, like in Linux version?
 
+    unlock();
     return true;
 }
 
+/**
+ *  Set the input sequence object, and set the m_dumping_input value to
+ *  the given state.
+ *
+ * \threadsafe
+ */
+
 void
-mastermidibus::set_sequence_input(bool a_state, sequence *a_seq)
+mastermidibus::set_sequence_input (bool a_state, sequence * a_seq)
 {
     lock();
-
     m_seq = a_seq;
     m_dumping_input = a_state;
-
     unlock();
 }
 

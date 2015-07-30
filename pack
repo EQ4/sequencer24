@@ -8,7 +8,7 @@
 # \library    	sequencer24
 # \author     	Chris Ahlstrom
 # \date       	2015-07-24
-# \update     	2015-07-25
+# \update     	2015-07-30
 # \version    	$Revision$
 # \license    	$XPC_SUITE_GPL_LICENSE$
 #
@@ -27,7 +27,7 @@ WORKINGDIR=${CURRENTDIR##/*/}       # strip all but last part of path
 
 TAGSTRING="pack"
 DODRYRUN="no"
-DOCLEAN="no"
+DOCLEAN="yes"
 
 BRANCH=`git symbolic-ref -q HEAD 2> /dev/null`
 
@@ -46,9 +46,9 @@ fi
 if [ "$1" == "--help" ] || [ "$1" == "help" ] ; then
 
    echo
-   echo "pack 0.1 edited on 2015-07-24"
+   echo "pack 0.1 edited on 2015-07-30"
    echo
-   echo "Usage:  ./pack [--dry-run] [--clean] [tag]"
+   echo "Usage:  ./pack [--dry-run] [--no-clean] [tag]"
    echo
    echo "where tag is alternate information you want to include in the"
    echo "name of the tarball; it replaces the current date."
@@ -96,6 +96,10 @@ else
             DOCLEAN="yes"
             ;;
 
+        --no-clean)
+            DOCLEAN="no"
+            ;;
+
         *)
             TAGSTRING="$1"
             ;;
@@ -122,7 +126,7 @@ else
    fi
 
    if [ "$DOCLEAN" == "yes" ] ; then
-      bootstrap --clean
+      ./bootstrap --full-clean
    fi
 
    pushd ..
@@ -137,52 +141,57 @@ else
 # --exclude="aux-files"
 
    tar cJf $TARBALLNAME $WORKINGDIR/ \
-  --exclude-vcs         \
-  --exclude="Debug"     \
-  --exclude="Release"   \
-  --exclude="debug"     \
-  --exclude="release"   \
-  --exclude="autom4te.cache" \
-  --exclude="core"      \
-  --exclude="moc"       \
-  --exclude="obj"       \
-  --exclude="html"      \
-  --exclude="ipch"      \
-  --exclude="latex"     \
-  --exclude="out.*"     \
-  --exclude=".deps"     \
-  --exclude=".exes"     \
-  --exclude=".libs"     \
-  --exclude="*.a"       \
-  --exclude="*.bak"     \
-  --exclude="*.BAK"     \
-  --exclude="*.bpi"     \
-  --exclude="*.bz2"     \
-  --exclude="*.deps"    \
-  --exclude="*.bz"      \
-  --exclude="*.idb"     \
-  --exclude="*.ilc"     \
-  --exclude="*.ild"     \
-  --exclude="*.ilf"     \
-  --exclude="*.o"       \
-  --exclude="*.lo"      \
-  --exclude="*.la"      \
-  --exclude="*.lib"     \
-  --exclude="*.log"     \
-  --exclude="*.obj"     \
-  --exclude="*.pch"     \
-  --exclude="*.pdb"     \
-  --exclude="*.Po"      \
-  --exclude="*.sdf"     \
-  --exclude="*.so"      \
-  --exclude="*.swp"     \
-  --exclude=".*.swp"    \
-  --exclude="*.t"       \
-  --exclude="*.tds"     \
-  --exclude="*.tmp"     \
-  --exclude="*.user"    \
-  --exclude="*.xz"      \
-  --exclude="*.testsettings"
+ --exclude-vcs         \
+ --exclude="seq24"     \
+ --exclude="sequence24"\
+ --exclude="config.status"  \
+ --exclude="libtool"   \
+ --exclude="Makefile"  \
+ --exclude="Debug"     \
+ --exclude="Release"   \
+ --exclude="debug"     \
+ --exclude="release"   \
+ --exclude="autom4te.cache" \
+ --exclude="core"      \
+ --exclude="moc"       \
+ --exclude="obj"       \
+ --exclude="html"      \
+ --exclude="ipch"      \
+ --exclude="latex"     \
+ --exclude="out.*"     \
+ --exclude=".deps"     \
+ --exclude=".exes"     \
+ --exclude=".libs"     \
+ --exclude="*.a"       \
+ --exclude="*.bak"     \
+ --exclude="*.BAK"     \
+ --exclude="*.bpi"     \
+ --exclude="*.bz2"     \
+ --exclude="*.deps"    \
+ --exclude="*.bz"      \
+ --exclude="*.idb"     \
+ --exclude="*.ilc"     \
+ --exclude="*.ild"     \
+ --exclude="*.ilf"     \
+ --exclude="*.o"       \
+ --exclude="*.lo"      \
+ --exclude="*.la"      \
+ --exclude="*.lib"     \
+ --exclude="*.log"     \
+ --exclude="*.obj"     \
+ --exclude="*.pch"     \
+ --exclude="*.pdb"     \
+ --exclude="*.Po"      \
+ --exclude="*.sdf"     \
+ --exclude="*.so"      \
+ --exclude="*.swp"     \
+ --exclude=".*.swp"    \
+ --exclude="*.t"       \
+ --exclude="*.tds"     \
+ --exclude="*.tmp"     \
+ --exclude="*.user"    \
+ --exclude="*.xz"      \
+ --exclude="*.testsettings"
 
       echo
 

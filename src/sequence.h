@@ -55,16 +55,17 @@ enum draw_type
     DRAW_NOTE_OFF
 };
 
-/* used in playback */
+/**
+ *  This class is used in playback.
+ */
+
 class trigger
 {
 public:
 
     long m_tick_start;
     long m_tick_end;
-
     bool m_selected;
-
     long m_offset;
 
     trigger()
@@ -83,6 +84,11 @@ public:
         return false;
     }
 };
+
+/**
+ *  The sequence class is firstly a receptable for a single track of MIDI
+ *  data read from a MIDI file or edited into a pattern.
+ */
 
 class sequence
 {
