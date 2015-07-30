@@ -90,23 +90,24 @@ class sequence
 private:
 
     /* holds the events */
-    list < event > m_list_event;
-    static list < event > m_list_clipboard;
+    std::list < event > m_list_event;
 
-    list < trigger > m_list_trigger;
+    static std::list < event > m_list_clipboard;
+
+    std::list < trigger > m_list_trigger;
     trigger m_trigger_clipboard;
 
-    stack < list < event > >m_list_undo;
-    stack < list < event > >m_list_redo;
-    stack < list < trigger > >m_list_trigger_undo;
-    stack < list < trigger > >m_list_trigger_redo;
+    stack < std::list < event > >m_list_undo;
+    stack < std::list < event > >m_list_redo;
+    stack < std::list < trigger > >m_list_trigger_undo;
+    stack < std::list < trigger > >m_list_trigger_redo;
 
     /* markers */
-    list < event >::iterator m_iterator_play;
-    list < event >::iterator m_iterator_draw;
+    std::list < event >::iterator m_iterator_play;
+    std::list < event >::iterator m_iterator_draw;
 
-    list < trigger >::iterator m_iterator_play_trigger;
-    list < trigger >::iterator m_iterator_draw_trigger;
+    std::list < trigger >::iterator m_iterator_play_trigger;
+    std::list < trigger >::iterator m_iterator_draw_trigger;
 
     /* contains the proper midi channel */
     char m_midi_channel;

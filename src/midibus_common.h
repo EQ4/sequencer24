@@ -34,30 +34,48 @@
  */
 
 #include <string>
-
 #include "platform_macros.h"
+
+#ifdef PLATFORM_WINDOWS
+#include "configwin32.h"
+#else
+#include "config.h"
+#endif
+
 #include "event.h"
 #include "mutex.h"
 #include "globals.h"
 
-class mastermidibus;
-class midibus;
-
-/**
- *  Manifest global constants for this module only.  Should be members of
- *  midibus.
- *
- *  Was also defined in midibus_portmidi.h, but we made them common to
- *  both implementations here.
+/*
+ * Multiple forward references
  */
 
-const int c_midibus_output_size = 0x100000;
-const int c_midibus_input_size =  0x100000;
-const int c_midibus_sysex_chunk = 0x100;
+class mastermidibus;
+class midibus;
+class sequence;
 
 /**
- *  Was also defined in midibus_portmidi.h, but we put it into this common
- *  module.
+ *  Manifest global constants.
+ *
+ *  These constants were also defined in midibus_portmidi.h, but we made
+ *  them common to both implementations here.
+ */
+
+const int c_midibus_output_size = 0x100000;     // 1048576
+const int c_midibus_input_size =  0x100000;     // 1048576
+const int c_midibus_sysex_chunk = 0x100;        //     256
+
+/**
+ *  A clock enumeration.  Not sure yet what these mean.
+ *
+ *  This enumeration Was also defined in midibus_portmidi.h, but we put it
+ *  into this common module to avoid duplication.
+ *
+ * \var e_clock_off
+ *
+ * \var e_clock_pos
+ *
+ * \var e_clock_mod
  */
 
 enum clock_e
