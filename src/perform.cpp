@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-26
+ * \updates       2015-07-30
  * \license       GNU GPLv2 or above
  *
  */
@@ -458,7 +458,6 @@ perform::select_group_mute (int a_g_mute)
         {
             if (is_active(i+k))
             {
-                // assert(m_seqs[i + k]);
                 if (not_nullptr_assert(m_seqs[i+k], "select_group_mute"))
                     m_mute_group[i+j] = m_seqs[i+k]->get_playing();
                 else
@@ -531,7 +530,6 @@ perform::select_mute_group (int a_group)
     {
         if ((m_mode_group_learn) && (is_active(i + k)))
         {
-            // assert(m_seqs[i + k]);
             if (not_nullptr_assert(m_seqs[i+k], "select_mute_group"))
                 m_mute_group[i+j] = m_seqs[i+k]->get_playing();
             else
@@ -1209,7 +1207,9 @@ perform::set_playing_screenset ()
              * Not a big fan of asserts in production code, since they do
              * nothing; we still want to have a way to report null
              * pointers in production code, and keep going.  So we wrote
-             * a function in the easy_macros module to do it.
+             * a function in the easy_macros module to do it.  Please note
+             * that enabling debug mode with these asserts really slows
+             * down the loading of a MIDI file.
              */
 
             if (not_nullptr_assert(m_seqs[j], "set_playing_screenset"))
@@ -1276,7 +1276,6 @@ perform::play (long a_tick)
     {
         if (is_active(i))
         {
-            // assert(m_seqs[i]);
             if (not_nullptr_assert(m_seqs[i], "play"))
             {
                 if (m_seqs[i]->get_queued() &&
@@ -1309,7 +1308,6 @@ perform::set_orig_ticks (long a_tick)
     {
         if (is_active(i) == true)
         {
-            // assert(m_seqs[i]);
             if (not_nullptr_assert(m_seqs[i], "set_orig_ticks"))
                 m_seqs[i]->set_orig_tick(a_tick);
         }
@@ -1329,7 +1327,6 @@ perform::clear_sequence_triggers (int a_seq)
 {
     if (is_active(a_seq) == true)
     {
-        // assert(m_seqs[a_seq]);
         if (not_nullptr_assert(m_seqs[a_seq], "clear_sequence_triggers"))
             m_seqs[a_seq]->clear_triggers();
     }
@@ -1354,7 +1351,6 @@ perform::move_triggers (bool a_direction)
         {
             if (is_active(i) == true)
             {
-                // assert(m_seqs[i]);
                 if (not_nullptr_assert(m_seqs[i], "move_triggers"))
                     m_seqs[i]->move_triggers(m_left_tick, distance, a_direction);
             }
@@ -1374,7 +1370,6 @@ perform::push_trigger_undo ()
     {
         if (is_active(i))
         {
-            // assert(m_seqs[i]);
             if (not_nullptr_assert(m_seqs[i], "push_trigger_undo"))
                 m_seqs[i]->push_trigger_undo();
         }
@@ -1393,7 +1388,6 @@ perform::pop_trigger_undo ()
     {
         if (is_active(i) == true)
         {
-            // assert(m_seqs[i]);
             if (not_nullptr_assert(m_seqs[i], "pop_trigger_undo"))
                 m_seqs[i]->pop_trigger_undo();
         }
@@ -1419,7 +1413,6 @@ perform::copy_triggers ()
         {
             if (is_active(i) == true)
             {
-                // assert(m_seqs[i]);
                 if (not_nullptr_assert(m_seqs[i], "copy_triggers"))
                     m_seqs[i]->copy_triggers(m_left_tick, distance);
             }
@@ -1599,7 +1592,6 @@ perform::off_sequences ()
     {
         if (is_active(i))
         {
-            // assert(m_seqs[i]);
             if (not_nullptr_assert(m_seqs[i], "off_sequences"))
                 m_seqs[i]->set_playing(false);
         }
@@ -1618,7 +1610,6 @@ perform::all_notes_off ()
     {
         if (is_active(i))
         {
-            // assert(m_seqs[i]);
             if (not_nullptr_assert(m_seqs[i], "all_notes_off"))
                 m_seqs[i]->off_playing_notes();
         }
@@ -1641,7 +1632,6 @@ perform::reset_sequences ()
     {
         if (is_active(i))
         {
-            // assert(m_seqs[i]);
             if (not_nullptr_assert(m_seqs[i], "reset_sequences"))
             {
                 bool state = m_seqs[i]->get_playing();
@@ -1718,7 +1708,6 @@ perform::get_max_trigger ()
     {
         if (is_active(i) == true)
         {
-            // assert(m_seqs[i]);
             if (not_nullptr_assert(m_seqs[i], "get_max_trigger"))
             {
                 long t = m_seqs[i]->get_max_trigger();
@@ -1738,7 +1727,6 @@ void *
 output_thread_func (void * a_pef)
 {
     perform * p = (perform *) a_pef;
-    // assert(p);
     if (not_nullptr_assert(p, "output_thread_func"))
     {
         if (global_priority)
@@ -1753,7 +1741,7 @@ output_thread_func (void * a_pef)
                 errprint
                 (
                     "output_thread_func: couldn't sched_setscheduler"
-                    " (FIFO), need to be root.\n"
+                    " (FIFO), need to be root."
                 );
                 pthread_exit(0);
             }
@@ -1912,10 +1900,10 @@ perform::output_func ()
     while (m_outputing)
     {
         m_condition_var.lock();        // printf ("waiting for signal\n");
-        while (!m_running)
+        while (! m_running)
         {
             m_condition_var.wait();
-            if (!m_outputing)          // if stopping, then kill thread
+            if (! m_outputing)          // if stopping, then kill thread
                 break;
         }
         m_condition_var.unlock();
@@ -2132,6 +2120,10 @@ perform::output_func ()
                     jack_ticks_converted_last = jack_ticks_converted;
 
 #if USE_DEBUGGING_OUTPUT
+                    double jack_tick = (m_jack_pos.bar-1) *
+                        (m_jack_pos.ticks_per_beat * m_jack_pos.beats_per_bar ) +
+                        (m_jack_pos.beat-1) * m_jack_pos.ticks_per_beat +
+                        m_jack_pos.tick;
                     long ptick, pbeat, pbar;
                     pbar  = (long)
                     (
@@ -2145,6 +2137,18 @@ perform::output_func ()
                     );
                     pbeat = pbeat / (long) m_jack_pos.ticks_per_beat;
                     ptick = (long) m_jack_tick % (long) m_jack_pos.ticks_per_beat;
+                    printf
+                    (
+                        "* current_tick[%lf] delta[%lf]"
+                        "* bbb [%2d:%2d:%4d] "
+                        "* jjj [%2d:%2d:%4d] "
+                        "* jtick[%8.3f] mtick[%8.3f] delta[%8.3f]\n"
+                        ,
+                        current_tick, jack_ticks_delta,
+                        pbar+1, pbeat+1, ptick,
+                        m_jack_pos.bar, m_jack_pos.beat, m_jack_pos.tick,
+                        m_jack_tick, jack_tick, m_jack_tick-jack_tick
+                    );
 #endif
 
                 } // end if dumping / sane state
@@ -2355,7 +2359,6 @@ void *
 input_thread_func (void * a_pef)
 {
     perform * p = (perform *) a_pef;
-    // assert(p);
     if (not_nullptr_assert(p, "input_thread_func"))
     {
         if (global_priority)
@@ -2648,7 +2651,6 @@ perform::save_playing_state ()
     {
         if (is_active(i) == true)
         {
-            // assert(m_seqs[i]);
             if (not_nullptr_assert(m_seqs[i], "save_playing_state"))
                 m_sequence_state[i] = m_seqs[i]->get_playing();
         }
@@ -2669,7 +2671,6 @@ perform::restore_playing_state ()
     {
         if (is_active(i) == true)
         {
-            // assert(m_seqs[i]);
             if (not_nullptr_assert(m_seqs[i], "restore_playing_state"))
                 m_seqs[i]->set_playing(m_sequence_state[i]);
         }
@@ -2717,7 +2718,6 @@ perform::sequence_playing_toggle (int a_sequence)
 {
     if (is_active(a_sequence) == true)
     {
-        // assert(m_seqs[a_sequence]);
         if (not_nullptr_assert(m_seqs[a_sequence], "sequence_playing_toggle"))
         {
             if (m_control_status & c_status_queue)
@@ -2757,7 +2757,6 @@ perform::sequence_playing_on (int a_sequence)
             m_tracks_mute_state[a_sequence-m_playing_screen*c_seqs_in_set] =
                 true;
         }
-        // assert(m_seqs[a_sequence]);
         if (not_nullptr_assert(m_seqs[a_sequence], "sequence_playing_on"))
         {
             if (! m_seqs[a_sequence]->get_playing())
@@ -2804,8 +2803,6 @@ perform::sequence_playing_off (int a_sequence)
             m_tracks_mute_state[a_sequence-m_playing_screen*c_seqs_in_set] =
                false;
         }
-
-        // assert(m_seqs[a_sequence]);
         if (not_nullptr_assert(m_seqs[a_sequence], "sequence_playing_off"))
         {
             if (m_seqs[a_sequence]->get_playing())

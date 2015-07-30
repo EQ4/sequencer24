@@ -265,7 +265,7 @@
  */
 
 #if ! defined PLATFORM_DEBUG
-#if defined DEBUG || _DEBUG || _DEBUG_ || __DEBUG || __DEBUG__ || VDEBUG
+#if defined DEBUG || _DEBUG || _DEBUG_ || __DEBUG || __DEBUG__
 #define PLATFORM_DEBUG
 #if ! defined DEBUG
 #define DEBUG

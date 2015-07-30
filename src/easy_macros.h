@@ -10,7 +10,7 @@
  * \library       sequencer24
  * \author        Chris Ahlstrom and other authors; see documentation
  * \date          2013-11-17
- * \updates       2015-07-26
+ * \updates       2015-07-30
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -24,8 +24,18 @@
  * Copyright (C) 2013-2015 Chris Ahlstrom <ahlstromcj@gmail.com>
  */
 
-#include <string>
+#include <stdio.h>
 #include "platform_macros.h"
+
+#ifdef PLATFORM_DEBUG
+#include <string>
+#endif
+
+#ifdef PLATFORM_WINDOWS
+#include "configwin32.h"
+#else
+#include "config.h"
+#endif
 
 /**
  * Language macros:
@@ -188,10 +198,16 @@ typedef bool cbool_t;
 #define infoprintf(fmt, x)    fprintf(stderr, fmt, x)
 
 /*
- * Global functions
+ * Global functions.  The not_nullptr_assert() function is a macro in
+ * release mode, to speed up release mode.  It cannot do anything at
+ * all, since it is used in the conditional part of if-statements.
  */
 
+#ifdef PLATFORM_DEBUG
 extern bool not_nullptr_assert (void * ptr, const std::string & context);
+#else
+#define not_nullptr_assert(ptr, context) (not_nullptr(ptr))
+#endif
 
 #endif         /* SEQ24_EASY_MACROS_H */
 

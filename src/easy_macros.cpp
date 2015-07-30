@@ -31,7 +31,6 @@
  */
 
 #include <assert.h>
-#include <stdio.h>
 #include "easy_macros.h"
 
 /**
@@ -55,6 +54,8 @@
  *      the application anyway.
  */
 
+#ifdef PLATFORM_DEBUG
+
 bool
 not_nullptr_assert (void * ptr, const std::string & context)
 {
@@ -66,8 +67,6 @@ not_nullptr_assert (void * ptr, const std::string & context)
         fprintf(stderr, "? null pointer in context %s\n", context.c_str());
     }
 
-#if DEBUG
-
 #ifdef PLATFORM_GNU
     int errornumber = flag ? 0 : 1 ;
     assert_perror(errornumber);
@@ -75,10 +74,10 @@ not_nullptr_assert (void * ptr, const std::string & context)
     assert(flag);
 #endif
 
-#endif  // DEBUG
-
     return result;
 }
+
+#endif  // PLATFORM_DEBUG
 
 /*
  * easy_macros.cpp

@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-26
+ * \updates       2015-07-30
  * \license       GNU GPLv2 or above
  *
  */
@@ -36,7 +36,7 @@
 #include "easy_macros.h"               // nullptr and much more
 #include "globals.h"
 #include "event.h"
-// #include "platform_macros.h"
+#include "mastermidibus.h"
 #include "midibus.h"
 #include "midifile.h"
 #include "sequence.h"

@@ -1,5 +1,4 @@
 /*
- *
  *  This file is part of seq24/sequencer24.
  *
  *  seq24 is free software; you can redistribute it and/or modify
@@ -15,8 +14,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with seq24; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
+
 #include "event.h"
 #include "seqroll.h"
 
@@ -610,42 +609,29 @@ void seqroll::draw_events_on(Glib::RefPtr<Gdk::Drawable> a_draw)
 
         while ((dt = seq->get_next_note_event(&tick_s, &tick_f, &note, &selected, &velocity)) != DRAW_FIN)
         {
-
             if ((tick_s >= start_tick && tick_s <= end_tick) ||
                     ((dt == DRAW_NORMAL_LINKED) && (tick_f >= start_tick && tick_f <= end_tick))
                )
             {
-
                 /* turn into screen corrids */
                 note_x = tick_s / m_zoom;
                 note_y = c_rollarea_y - (note * c_key_y) - c_key_y - 1 + 2;
                 note_height = c_key_y - 3;
-
-                //              printf( "DEBUG: drawing note[%d] tick_s[%d] tick_f[%d] start_tick[%d] end_tick[%d]\n",
-                //              note, tick_s, tick_f, start_tick, end_tick );
-                //              printf( "DEBUG: seq.get_lenght() = %d\n",  m_seq->get_length());
-
                 int in_shift = 0;
                 int length_add = 0;
 
                 if (dt == DRAW_NORMAL_LINKED)
                 {
-
                     if (tick_f >= tick_s)
                     {
                         note_width = (tick_f - tick_s) / m_zoom;
                         if (note_width < 1) note_width = 1;
                     }
                     else
-                    {
                         note_width = (m_seq->get_length() - tick_s) / m_zoom;
-                    }
-
                 }
                 else
-                {
                     note_width = 16 / m_zoom;
-                }
 
                 if (dt == DRAW_NOTE_ON)
                 {
