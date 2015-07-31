@@ -59,28 +59,25 @@ const char mainwid::m_seq_to_char[c_seqs_in_set] =
  *  changes.
  */
 
-mainwid::mainwid (perform *a_p)
+mainwid::mainwid (perform * a_p)
  :
-    seqmenu         (a_p),
-    m_gc            (),
-    m_window        (),
-    m_black         (Gdk::Color("black")),
-    m_white         (Gdk::Color("white")),
-    m_grey          (Gdk::Color("grey")),
-//  m_dk_grey       (),                // not used
-    m_background    (),
-    m_foreground    (),
-    m_pixmap        (),
-//  m_old           (),                // not used
-//  m_selected      (),                // not used
-    m_screenset     (0),
-    m_mainperf      (a_p),
-//  m_clipboard     (),                // not used
-    m_moving_seq    (),
-    m_window_x      (c_mainwid_x),
-    m_window_y      (c_mainwid_y),
-    m_button_down   (false),
-    m_moving        (false)
+    Gtk::DrawingArea    (),
+    seqmenu             (a_p),
+    m_gc                (),
+    m_window            (),
+    m_black             (Gdk::Color("black")),
+    m_white             (Gdk::Color("white")),
+    m_grey              (Gdk::Color("grey")),
+    m_background        (),
+    m_foreground        (),
+    m_pixmap            (),
+    m_screenset         (0),
+    m_mainperf          (a_p),
+    m_moving_seq        (),
+    m_window_x          (c_mainwid_x),
+    m_window_y          (c_mainwid_y),
+    m_button_down       (false),
+    m_moving            (false)
 {
     using namespace Menu_Helpers;
 
@@ -96,6 +93,10 @@ mainwid::mainwid (perform *a_p)
     );
     set_double_buffered(false);
 }
+
+/**
+ *  A rote destructor.
+ */
 
 mainwid::~mainwid ()
 {

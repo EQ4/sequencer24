@@ -41,12 +41,13 @@
 
 maintime::maintime()
  :
-    m_gc        (),
-    m_window    (),
-    m_black     (Gdk::Color("black")),
-    m_white     (Gdk::Color("white")),
-    m_grey      (Gdk::Color("grey")),
-    m_tick      (0)
+    Gtk::DrawingArea    (),
+    m_gc                (),
+    m_window            (),
+    m_black             (Gdk::Color("black")),
+    m_white             (Gdk::Color("white")),
+    m_grey              (Gdk::Color("grey")),
+    m_tick              (0)
 {
     Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
     colormap->alloc_color(m_black);

@@ -49,7 +49,7 @@ KeyBindEntry::KeyBindEntry
     perform * p,
     long s
 ) :
-    Entry       (),
+    Gtk::Entry  (),
     m_key       (location_to_write),
     m_type      (t),
     m_perf      (p),

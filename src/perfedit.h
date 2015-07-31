@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-30
+ * \updates       2015-07-31
  * \license       GNU GPLv2 or above
  *
  */
@@ -36,36 +36,9 @@
 #include "sequence.h"
 #include "perform.h"
 
-#include <gtkmm/adjustment.h>
-#include <gtkmm/button.h>
-#include <gtkmm/window.h>
-#include <gtkmm/accelgroup.h>
-#include <gtkmm/box.h>
-#include <gtkmm/main.h>
-#include <gtkmm/menu.h>
-#include <gtkmm/menubar.h>
-#include <gtkmm/eventbox.h>
-#include <gtkmm/window.h>
-#include <gtkmm/table.h>
-#include <gtkmm/drawingarea.h>
-#include <gtkmm/widget.h>
-#include <gtkmm/scrollbar.h>
-#include <gtkmm/viewport.h>
-#include <gtkmm/combo.h>
-#include <gtkmm/label.h>
-#include <gtkmm/toolbar.h>
-#include <gtkmm/optionmenu.h>
-#include <gtkmm/togglebutton.h>
-#include <gtkmm/invisible.h>
-#include <gtkmm/separator.h>
-#include <gtkmm/tooltips.h>
-#include <gtkmm/invisible.h>
-#include <gtkmm/arrow.h>
-#include <gtkmm/image.h>
-
-#include <sigc++/bind.h>
 #include <list>
 #include <string>
+#include <gtkmm/widget.h>       // somehow, can't forward-declare GdkEventAny
 
 #include "globals.h"
 #include "mainwid.h"
@@ -74,6 +47,35 @@
 #include "perftime.h"
 
 using namespace Gtk;
+
+/*
+ *  Since these items are pointers, we were able to move (most) of the
+ *  included header files to the cpp file.   Except for the items that
+ *  come from widget.h, perhaps because GdkEventAny was a typedef.
+ */
+
+namespace Gtk
+{
+    /*
+     * class GdkEventAny;
+     * class GdkEventkey;
+     */
+
+    class Adjustment;
+    class Button;
+    class Entry;
+    class HBox;
+    class HScrollbar;
+    class Menu;
+    class Table;
+    class ToggleButton;
+    class Tooltips;
+    class VScrollbar;
+}
+
+class perfnames;
+class perfroll;
+class perftime;
 
 /*
  * ca 2015-07-24
@@ -99,10 +101,10 @@ private:
     perform * m_mainperf;
 
     Table * m_table;
-    VScrollbar * m_vscroll;
-    HScrollbar * m_hscroll;
     Adjustment * m_vadjust;
     Adjustment * m_hadjust;
+    VScrollbar * m_vscroll;
+    HScrollbar * m_hscroll;
 
     perfnames * m_perfnames;
     perfroll * m_perfroll;

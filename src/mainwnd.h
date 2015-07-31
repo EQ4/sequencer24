@@ -60,6 +60,12 @@ class mainwnd : public Gtk::Window, public performcallback
 private:
 
     /**
+     *  Interesting; what is this used for.
+     */
+
+    static int m_sigpipe[2];
+
+    /**
      *  Management object (?) for the performance mode.
      */
 
@@ -70,12 +76,6 @@ private:
      */
 
     bool m_modified;
-
-    /**
-     *  Interesting; what is this used for.
-     */
-
-    static int m_sigpipe[2];
 
 #if GTK_MINOR_VERSION < 12
     Tooltips * m_tooltips;

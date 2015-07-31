@@ -1,5 +1,4 @@
 /*
- *
  *  This file is part of seq24/sequencer24.
  *
  *  seq24 is free software; you can redistribute it and/or modify
@@ -15,33 +14,46 @@
  *  You should have received a copy of the GNU General Public License
  *  along with seq24; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/**
+ * \file          perfroll.cpp
+ *
+ *  This module declares/defines the base class for the Performance window
+ *  piano roll.
+ *
+ * \library       sequencer24 application
+ * \author        Seq24 team; modifications by Chris Ahlstrom
+ * \date          2015-07-24
+ * \updates       2015-07-31
+ * \license       GNU GPLv2 or above
  *
  */
+
 #include "event.h"
 #include "perfroll.h"
 
-perfroll::perfroll(perform *a_perf,
-                   Adjustment * a_hadjust,
-                   Adjustment * a_vadjust) :
-    m_black(Gdk::Color("black")),
-    m_white(Gdk::Color("white")),
-    m_grey(Gdk::Color("grey")),
-    m_lt_grey(Gdk::Color("light grey")),
-
-    m_mainperf(a_perf),
-
-    m_old_progress_ticks(0),
-
-    m_4bar_offset(0),
-    m_sequence_offset(0),
-    m_roll_length_ticks(0),
-    m_drop_sequence(0),
-
-    m_vadjust(a_vadjust),
-    m_hadjust(a_hadjust),
-
-    m_moving(false),
-    m_growing(false)
+perfroll::perfroll
+(
+    perform * a_perf,
+    Adjustment * a_hadjust,
+    Adjustment * a_vadjust
+) :
+    Gtk::DrawingArea       (),
+    m_black                (Gdk::Color("black")),
+    m_white                (Gdk::Color("white")),
+    m_grey                 (Gdk::Color("grey")),
+    m_lt_grey              (Gdk::Color("light grey")),
+    m_mainperf             (a_perf),
+    m_old_progress_ticks   (0),
+    m_4bar_offset          (0),
+    m_sequence_offset      (0),
+    m_roll_length_ticks    (0),
+    m_drop_sequence        (0),
+    m_vadjust              (a_vadjust),
+    m_hadjust              (a_hadjust),
+    m_moving               (false),
+    m_growing              (false)
 {
     Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
     colormap->alloc_color(m_black);
@@ -49,21 +61,16 @@ perfroll::perfroll(perform *a_perf,
     colormap->alloc_color(m_grey);
     colormap->alloc_color(m_lt_grey);
 
-    //m_text_font_6_12 = Gdk_Font( c_font_6_12 );
+    // m_text_font_6_12 = Gdk_Font(c_font_6_12);
 
-    add_events(Gdk::BUTTON_PRESS_MASK |
-               Gdk::BUTTON_RELEASE_MASK |
-               Gdk::POINTER_MOTION_MASK |
-               Gdk::KEY_PRESS_MASK |
-               Gdk::KEY_RELEASE_MASK |
-               Gdk::FOCUS_CHANGE_MASK |
-               Gdk::SCROLL_MASK);
-
-
+    add_events
+    (
+        Gdk::BUTTON_PRESS_MASK | Gdk::BUTTON_RELEASE_MASK |
+        Gdk::POINTER_MOTION_MASK | Gdk::KEY_PRESS_MASK |
+        Gdk::KEY_RELEASE_MASK | Gdk::FOCUS_CHANGE_MASK | Gdk::SCROLL_MASK
+    );
     set_size_request(10, 10);
-
     set_double_buffered(false);
-
     for (int i = 0; i < c_total_seqs; ++i)
         m_sequence_active[i] = false;
 
@@ -72,6 +79,7 @@ perfroll::perfroll(perform *a_perf,
     case e_fruity_interaction:
         m_interaction = new FruityPerfInput;
         break;
+
     default:
     case e_seq24_interaction:
         m_interaction = new Seq24PerfInput;
@@ -79,91 +87,77 @@ perfroll::perfroll(perform *a_perf,
     }
 }
 
-perfroll::~perfroll()
+/**
+ *  This destructor deletes the interaction object.
+ */
+
+perfroll::~perfroll ()
 {
-    delete m_interaction;
+    if (not_nullptr(m_interaction))
+        delete m_interaction;
 }
 
+/**
+ *  Changes the 4-bar horizontal offset member and queues up a draw
+ *  operation.
+ */
 
 void
-perfroll::change_horz()
+perfroll::change_horz ()
 {
     if (m_4bar_offset != (int) m_hadjust->get_value())
     {
-
         m_4bar_offset = (int) m_hadjust->get_value();
         queue_draw();
     }
 }
+
+/**
+ *  Changes the 4-bar vertical offset member and queues up a draw
+ *  operation.
+ */
 
 void
 perfroll::change_vert()
 {
     if (m_sequence_offset != (int) m_vadjust->get_value())
     {
-
         m_sequence_offset = (int) m_vadjust->get_value();
         queue_draw();
     }
 }
 
-void
-perfroll::on_realize()
-{
-    // we need to do the default realize
-    Gtk::DrawingArea::on_realize();
-
-    set_flags(Gtk::CAN_FOCUS);
-
-    // Now we can allocate any additional resources we need
-    m_window = get_window();
-    m_gc = Gdk::GC::create(m_window);
-    m_window->clear();
-
-    update_sizes();
-
-    m_hadjust->signal_value_changed().connect(mem_fun(*this, &perfroll::change_horz));
-    m_vadjust->signal_value_changed().connect(mem_fun(*this, &perfroll::change_vert));
-
-    m_background = Gdk::Pixmap::create(m_window,
-                                       c_perfroll_background_x,
-                                       c_names_y, -1);
-
-    /* and fill the background ( dotted lines n' such ) */
-    fill_background_pixmap();
-
-
-}
+/**
+ *  Sets the roll-lengths ticks member.
+ */
 
 void
 perfroll::init_before_show()
 {
-
     m_roll_length_ticks = m_mainperf->get_max_trigger();
-    m_roll_length_ticks = m_roll_length_ticks -
-                          (m_roll_length_ticks % (c_ppqn * 16));
-    m_roll_length_ticks +=  c_ppqn * 4096;
+    m_roll_length_ticks -= (m_roll_length_ticks % (c_ppqn * 16));
+    m_roll_length_ticks += c_ppqn * 4096;
 }
+
+/**
+ *  Updates the sizes of various items.
+ */
 
 void
 perfroll::update_sizes()
 {
-    int h_bars         = m_roll_length_ticks / (c_ppqn * 16);
+    int h_bars = m_roll_length_ticks / (c_ppqn * 16);
     int h_bars_visable = (m_window_x * c_perf_scale_x) / (c_ppqn * 16);
-
+    int h_max_value = h_bars - h_bars_visable;
     m_hadjust->set_lower(0);
     m_hadjust->set_upper(h_bars);
     m_hadjust->set_page_size(h_bars_visable);
     m_hadjust->set_step_increment(1);
     m_hadjust->set_page_increment(1);
-
-    int h_max_value = h_bars - h_bars_visable;
-
     if (m_hadjust->get_value() > h_max_value)
     {
         m_hadjust->set_value(h_max_value);
     }
-
 
     m_vadjust->set_lower(0);
     m_vadjust->set_upper(c_total_seqs);
@@ -533,6 +527,34 @@ void perfroll::draw_background_on(Glib::RefPtr<Gdk::Drawable> a_draw, int a_sequ
 }
 
 
+void
+perfroll::on_realize()
+{
+    // we need to do the default realize
+    Gtk::DrawingArea::on_realize();
+
+    set_flags(Gtk::CAN_FOCUS);
+
+    // Now we can allocate any additional resources we need
+    m_window = get_window();
+    m_gc = Gdk::GC::create(m_window);
+    m_window->clear();
+
+    update_sizes();
+
+    m_hadjust->signal_value_changed().connect(mem_fun(*this, &perfroll::change_horz));
+    m_vadjust->signal_value_changed().connect(mem_fun(*this, &perfroll::change_vert));
+
+    m_background = Gdk::Pixmap::create(m_window,
+                                       c_perfroll_background_x,
+                                       c_names_y, -1);
+
+    /* and fill the background ( dotted lines n' such ) */
+    fill_background_pixmap();
+
+
+}
+
 
 bool
 perfroll::on_expose_event(GdkEventExpose* e)
@@ -856,4 +878,10 @@ perfroll::split_trigger(int a_sequence, long a_tick)
     draw_sequence_on(m_pixmap, a_sequence);
     draw_drawable_row(m_window, m_pixmap, m_drop_y);
 }
+
+/*
+ * perfroll.cpp
+ *
+ * vim: sw=4 ts=4 wm=8 et ft=cpp
+ */
 

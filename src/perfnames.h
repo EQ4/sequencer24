@@ -1,5 +1,7 @@
+#ifndef SEQ24_PERFNAME_H
+#define SEQ24_PERFNAME_H
+
 /*
- *
  *  This file is part of seq24/sequencer24.
  *
  *  seq24 is free software; you can redistribute it and/or modify
@@ -15,16 +17,20 @@
  *  You should have received a copy of the GNU General Public License
  *  along with seq24; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 
-
-#ifndef SEQ24_PERFNAME
-#define SEQ24_PERFNAME
-
-#include "perform.h"
-#include "sequence.h"
-#include "seqmenu.h"
+/**
+ * \file          perfnames.h
+ *
+ *  This module declares/defines the base class for performance names.
+ *
+ * \library       sequencer24 application
+ * \author        Seq24 team; modifications by Chris Ahlstrom
+ * \date          2015-07-24
+ * \updates       2015-07-31
+ * \license       GNU GPLv2 or above
+ *
+ */
 
 #include <gtkmm/button.h>
 #include <gtkmm/window.h>
@@ -40,57 +46,64 @@
 #include <gtkmm/widget.h>
 #include <gtkmm/adjustment.h>
 
+#include "globals.h"
+#include "perform.h"
+#include "seqmenu.h"
+#include "sequence.h"
+
 using namespace Gtk;
 
-#include "globals.h"
+/**
+ *  This class implements the left-side keyboard in the patterns window.
+ */
 
-/* holds the left side piano */
 class perfnames : public virtual Gtk::DrawingArea, public virtual seqmenu
 {
 private:
 
-    Glib::RefPtr<Gdk::GC>       m_gc;
-    Glib::RefPtr<Gdk::Window>   m_window;
-    Gdk::Color    m_black, m_white, m_grey;
-
-    Glib::RefPtr<Gdk::Pixmap>   m_pixmap;
-
-    perform      *m_mainperf;
-
-    Adjustment   *m_vadjust;
-
-    int m_window_x, m_window_y;
-
-    int          m_sequence_offset;
-
-    bool         m_sequence_active[c_total_seqs];
-
-    void on_realize();
-    bool on_expose_event(GdkEventExpose* a_ev);
-    bool on_button_press_event(GdkEventButton* a_ev);
-    bool on_button_release_event(GdkEventButton* a_ev);
-    void on_size_allocate(Gtk::Allocation&);
-    bool on_scroll_event(GdkEventScroll* a_ev) ;
-
-    void draw_area();
-    void update_pixmap();
-
-    void convert_y(int a_y, int *a_note);
-
-    void draw_sequence(int a_sequence);
-
-    void change_vert ();
-
-    void redraw(int a_sequence);
+    Glib::RefPtr<Gdk::GC> m_gc;
+    Glib::RefPtr<Gdk::Window> m_window;
+    Gdk::Color m_black;
+    Gdk::Color m_white;
+    Gdk::Color m_grey;
+    Glib::RefPtr<Gdk::Pixmap> m_pixmap;
+    perform * m_mainperf;
+    Adjustment * m_vadjust;
+    int m_window_x;
+    int m_window_y;
+    int m_sequence_offset;
+    bool m_sequence_active[c_total_seqs];
 
 public:
 
+    perfnames (perform * a_perf, Adjustment * a_vadjust);
+
     void redraw_dirty_sequences ();
 
-    perfnames(perform *a_perf,
-              Adjustment *a_vadjust);
+private:
 
+    void draw_area ();
+    void update_pixmap ();
+    void convert_y (int a_y, int * a_note);
+    void draw_sequence (int a_sequence);
+    void change_vert ();
+    void redraw (int a_sequence);
+
+private:    // Gtk callbacks
+
+    void on_realize ();
+    bool on_expose_event (GdkEventExpose * a_ev);
+    bool on_button_press_event (GdkEventButton * a_ev);
+    bool on_button_release_event (GdkEventButton * a_ev);
+    void on_size_allocate (Gtk::Allocation &);
+    bool on_scroll_event (GdkEventScroll * a_ev) ;
 
 };
 
-#endif
+#endif   // SEQ24_PERFNAME_H
+
+/*
+ * perfnames.h
+ *
+ * vim: sw=4 ts=4 wm=8 et ft=cpp
+ */

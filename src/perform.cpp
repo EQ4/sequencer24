@@ -2983,23 +2983,24 @@ jack_timebase_callback
 }
 
 /**
- *
+ *  Shutdown JACK by clearing the perform::m_jack_running flag.
  */
 
 void
-jack_shutdown(void *arg)
+jack_shutdown (void * arg)
 {
-    perform *p = (perform *) arg;
+    perform * p = (perform *) arg;
     p->m_jack_running = false;
     printf("JACK shut down.\nJACK sync Disabled.\n");
 }
 
 /**
- *
+ *      Set the JACK position.  This function's body is currently
+ *      effectively disabled.
  */
 
 void
-print_jack_pos(jack_position_t* jack_pos)
+print_jack_pos (jack_position_t * jack_pos)
 {
     return;                                              /* tricky! */
     printf("print_jack_pos()\n");

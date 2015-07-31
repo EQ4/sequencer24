@@ -76,15 +76,11 @@ private:
     Gdk::Color m_black;
     Gdk::Color m_white;
     Gdk::Color m_grey;
-//  Gdk::Color m_dk_grey;              // not used
     Gdk::Color m_background;
     Gdk::Color m_foreground;
     Glib::RefPtr<Gdk::Pixmap> m_pixmap;
-//  GdkRectangle m_old;                // not used
-//  GdkRectangle m_selected;           // not used
     int m_screenset;
     perform * const m_mainperf;
-//  sequence m_clipboard;              // not used
     sequence m_moving_seq;
     int m_window_x;
     int m_window_y;

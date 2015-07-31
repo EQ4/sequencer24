@@ -31,6 +31,7 @@
  * \updates       2015-07-30
  * \license       GNU GPLv2 or above
  *
+ *  This class has way too many members.
  */
 
 #include "easy_macros.h"               // nullptr and much more

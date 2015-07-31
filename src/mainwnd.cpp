@@ -63,30 +63,31 @@ bool is_pattern_playing = false;
 
 mainwnd::mainwnd (perform * a_p)
  :
-    m_mainperf  (a_p),
-    m_modified  (false),
-    m_options   (NULL)
+    Gtk::Window     (),
+    performcallback (),
+    m_mainperf      (a_p),
+    m_modified      (false),
+#if GTK_MINOR_VERSION < 12
+    m_tooltips      (manage(new Tooltips())),
+#endif
+    m_menubar       (manage(new MenuBar())),
+    m_menu_file     (manage(new Menu())),
+    m_menu_view     (manage(new Menu())),
+    m_menu_help     (manage(new Menu())),
+    m_main_wid      (manage(new mainwid(m_mainperf))),
+    m_main_time     (manage(new maintime())),
+    m_options       (NULL)
 
     /*
      * A lot more members should be listed here.
      */
 {
     set_icon(Gdk::Pixbuf::create_from_xpm_data(seq24_32_xpm));
-    m_mainperf->m_notify.push_back(this);   // register for notification
-    update_window_title();                  // main window
+    m_mainperf->m_notify.push_back(this);           // register for notification
+    update_window_title();                          // main window
 
-#if GTK_MINOR_VERSION < 12
-    m_tooltips = manage(new Tooltips());
-#endif
-
-    m_main_wid = manage(new mainwid(m_mainperf));
-    m_main_time = manage(new maintime());
-    m_menubar = manage(new MenuBar());
-    m_menu_file = manage(new Menu());
     m_menubar->items().push_front(MenuElem("_File", *m_menu_file));
-    m_menu_view = manage(new Menu());
     m_menubar->items().push_back(MenuElem("_View", *m_menu_view));
-    m_menu_help = manage(new Menu());
     m_menubar->items().push_back(MenuElem("_Help", *m_menu_help));
 
     /**

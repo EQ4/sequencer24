@@ -1,5 +1,7 @@
+#ifndef SEQ24_PERFROLL_H
+#define SEQ24_PERFROLL_H
+
 /*
- *
  *  This file is part of seq24/sequencer24.
  *
  *  seq24 is free software; you can redistribute it and/or modify
@@ -15,12 +17,21 @@
  *  You should have received a copy of the GNU General Public License
  *  along with seq24; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 
-
-#ifndef SEQ24_PERFROLL
-#define SEQ24_PERFROLL
+/**
+ * \file          perfroll.h
+ *
+ *  This module declares/defines the base class for the Performance window
+ *  piano roll.
+ *
+ * \library       sequencer24 application
+ * \author        Seq24 team; modifications by Chris Ahlstrom
+ * \date          2015-07-24
+ * \updates       2015-07-31
+ * \license       GNU GPLv2 or above
+ *
+ */
 
 #include <gtkmm/button.h>
 #include <gtkmm/window.h>
@@ -158,4 +169,10 @@ public:
     ~perfroll();
 };
 
-#endif
+#endif   // SEQ24_PERFROLL_H
+
+/*
+ * perfroll.h
+ *
+ * vim: sw=4 ts=4 wm=8 et ft=cpp
+ */
