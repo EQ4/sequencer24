@@ -117,6 +117,7 @@ sequencer24_SOURCES = \
 	event.cpp event.h \
 	font.cpp font.h \
 	globals.h \
+   gtk_helpers.h \
 	keybindentry.cpp keybindentry.h \
 	lash.cpp lash.h \
 	maintime.cpp maintime.h \

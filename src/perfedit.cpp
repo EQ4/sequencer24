@@ -1,5 +1,4 @@
 /*
- *
  *  This file is part of seq24/sequencer24.
  *
  *  seq24 is free software; you can redistribute it and/or modify
@@ -15,9 +14,24 @@
  *  You should have received a copy of the GNU General Public License
  *  along with seq24; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/**
+ * \file          perfedit.cpp
+ *
+ *  This module declares/defines the base class for the Performance Editor,
+ *  also known as the Song Editor.
+ *
+ * \library       sequencer24 application
+ * \author        Seq24 team; modifications by Chris Ahlstrom
+ * \date          2015-07-24
+ * \updates       2015-07-30
+ * \license       GNU GPLv2 or above
  *
  */
 
+#include "easy_macros.h"
+#include "gtk_helpers.h"
 #include "perfedit.h"
 #include "sequence.h"
 
@@ -34,44 +48,61 @@
 
 using namespace sigc;
 
-// tooltip helper, for old vs new gtk...
-#if GTK_MINOR_VERSION >= 12
-#   define add_tooltip( obj, text ) obj->set_tooltip_text( text);
-#else
-#   define add_tooltip( obj, text ) m_tooltips->set_tip( *obj, text );
-#endif
+/**
+ *  Principal constructor, has a pointer to a perform object.
+ */
 
-perfedit::perfedit(perform *a_perf)
+perfedit::perfedit (perform * a_perf)
+ :
+    m_mainperf          (a_perf),
+    m_table             (nullptr),
+    m_vscroll           (nullptr),
+    m_hscroll           (nullptr),
+    m_vadjust           (nullptr),
+    m_hadjust           (nullptr),
+    m_perfnames         (nullptr),
+    m_perfroll          (nullptr),
+    m_perftime          (nullptr),
+    m_menu_snap         (nullptr),
+    m_button_snap       (nullptr),
+    m_entry_snap        (nullptr),
+    m_button_stop       (nullptr),
+    m_button_play       (nullptr),
+    m_button_loop       (nullptr),
+    m_button_expand     (nullptr),
+    m_button_collapse   (nullptr),
+    m_button_copy       (nullptr),
+    m_button_grow       (nullptr),
+    m_button_undo       (nullptr),
+    m_button_bpm        (nullptr),
+    m_entry_bpm         (nullptr),
+    m_button_bw         (nullptr),
+    m_entry_bw          (nullptr),
+    m_hbox              (nullptr),
+    m_hlbox             (nullptr),
+    m_tooltips          (manage(new Tooltips())),
+    m_menu_bpm          (nullptr),
+    m_menu_bw           (nullptr),
+    m_snap              (c_ppqn / 4),
+    m_bpm               (0),
+    m_bw                (0)
 {
     using namespace Menu_Helpers;
 
     set_icon(Gdk::Pixbuf::create_from_xpm_data(perfedit_xpm));
 
-    /* set the performance */
-    m_snap = c_ppqn / 4;
-
-    m_mainperf = a_perf;
-
     /* main window */
+
     set_title("seq24 - Song Editor");
     set_size_request(700, 400);
 
-    /* tooltips */
-    m_tooltips = manage(new Tooltips());
-
-
+//  m_tooltips = manage(new Tooltips());  //
     m_vadjust = manage(new Adjustment(0, 0, 1, 1, 1, 1));
     m_hadjust = manage(new Adjustment(0, 0, 1, 1, 1, 1));
-
-    m_vscroll   =  manage(new VScrollbar(*m_vadjust));
-    m_hscroll   =  manage(new HScrollbar(*m_hadjust));
-
+    m_vscroll = manage(new VScrollbar(*m_vadjust));
+    m_hscroll = manage(new HScrollbar(*m_hadjust));
     m_perfnames = manage(new perfnames(m_mainperf, m_vadjust));
-
-    m_perfroll = manage(new perfroll(m_mainperf,
-                                     m_hadjust,
-                                     m_vadjust));
-
+    m_perfroll = manage(new perfroll(m_mainperf, m_hadjust, m_vadjust));
     m_perftime = manage(new perftime(m_mainperf, m_hadjust));
 
     /* init table, viewports and scroll bars */
@@ -443,3 +474,8 @@ perfedit::on_delete_event(GdkEventAny *a_event)
     return false;
 }
 
+/*
+ * perfedit.cpp
+ *
+ * vim: sw=4 ts=4 wm=8 et ft=cpp
+ */

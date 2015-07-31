@@ -18,6 +18,7 @@
  *
  */
 
+#include "gtk_helpers.h"
 #include "seqedit.h"
 #include "sequence.h"
 #include "midibus.h"
@@ -47,20 +48,12 @@
 #include "pixmaps/tools.xpm"
 #include "pixmaps/seq-editor.xpm"
 
-// tooltip helper, for old vs new gtk...
-#if GTK_MINOR_VERSION >= 12
-#   define add_tooltip( obj, text ) obj->set_tooltip_text( text);
-#else
-#   define add_tooltip( obj, text ) m_tooltips->set_tip( *obj, text );
-#endif
-
 int seqedit::m_initial_zoom = 2;
 int seqedit::m_initial_snap = c_ppqn / 4;
 int seqedit::m_initial_note_length = c_ppqn / 4;
 int seqedit::m_initial_scale = 0;
 int seqedit::m_initial_key = 0;
 int seqedit::m_initial_sequence = -1;
-
 
 // Actions
 const int select_all_notes      = 1;

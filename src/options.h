@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-28
+ * \updates       2015-07-30
  * \license       GNU GPLv2 or above
  *
  */
@@ -64,27 +64,18 @@
 
 using namespace Gtk;
 
-
+/**
+ *  This class supports a full tabbed options dialog.
+ */
 
 class options : public Gtk::Dialog
 {
 
 private:
 
-#if GTK_MINOR_VERSION < 12
-    Tooltips *m_tooltips;
-#endif
-
-    perform *m_perf;
-
-    Button  *m_button_ok;
-    Label* interaction_method_label;
-    Label* interaction_method_desc_label;
-
-
-    Table   *m_table;
-
-    Notebook *m_notebook;
+    /**
+     *  Defines buttons indices or IDs for some controls related to JACK.
+     */
 
     enum button
     {
@@ -93,34 +84,69 @@ private:
         e_jack_master_cond,
         e_jack_start_mode_live,
         e_jack_start_mode_song,
-
         e_jack_connect,
         e_jack_disconnect
     };
 
-    void clock_callback_off(int a_bus, RadioButton *a_button);
-    void clock_callback_on(int a_bus, RadioButton *a_button);
-    void clock_callback_mod(int a_bus, RadioButton *a_button);
+private:
 
-    void clock_mod_callback(Adjustment *adj);
+#if GTK_MINOR_VERSION < 12
+    Tooltips * m_tooltips;
+#endif
 
-    void input_callback(int a_bus, Button *a_button);
+    /**
+     *  The performance object to which some of these options apply.
+     */
 
-    void transport_callback(button a_type, Button *a_button);
+    perform * m_perf;
 
-    void mouse_seq24_callback(Gtk::RadioButton*);
-    void mouse_fruity_callback(Gtk::RadioButton*);
+    /**
+     *  The famous "OK" button's pointer.
+     */
 
-    /*notebook pages*/
-    void add_midi_clock_page();
-    void add_midi_input_page();
-    void add_keyboard_page();
-    void add_mouse_page();
-    void add_jack_sync_page();
+    Button * m_button_ok;
+
+    /**
+     *  Labels for mouse interaction settings.
+     */
+
+    Label * interaction_method_label;
+    Label * interaction_method_desc_label;
+
+    /**
+     *  Not sure yet what this table is for.  Must be a GTK thang.
+     */
+
+    Table * m_table;
+
+    /**
+     *  Not sure yet what this notebook is for.  Must be a GTK thang.
+     */
+
+    Notebook * m_notebook;
 
 public:
 
-    options(Gtk::Window &parent, perform *a_p);
+    options (Gtk::Window & parent, perform * a_p);
+
+private:
+
+    void clock_callback_off (int a_bus, RadioButton * a_button);
+    void clock_callback_on (int a_bus, RadioButton * a_button);
+    void clock_callback_mod (int a_bus, RadioButton * a_button);
+    void clock_mod_callback (Adjustment * adj);
+    void input_callback (int a_bus, Button * a_button);
+    void transport_callback (button a_type, Button * a_button);
+    void mouse_seq24_callback (Gtk::RadioButton *);
+    void mouse_fruity_callback (Gtk::RadioButton *);
+
+    /* notebook pages */
+
+    void add_midi_clock_page ();
+    void add_midi_input_page ();
+    void add_keyboard_page ();
+    void add_mouse_page ();
+    void add_jack_sync_page ();
 };
 
 #endif   // SEQ24_OPTIONS_H

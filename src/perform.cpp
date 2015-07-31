@@ -1553,7 +1553,7 @@ perform::stop ()
  */
 
 void
-perform::inner_start(bool a_state)
+perform::inner_start (bool a_state)
 {
     m_condition_var.lock();
     if (! is_running())
@@ -2837,25 +2837,25 @@ perform::sequence_playing_off (int a_sequence)
  */
 
 void
-perform::set_key_event(unsigned int keycode, long sequence_slot)
+perform::set_key_event (unsigned int keycode, long sequence_slot)
 {
     /*
      * Unhook the previous binding.
      */
 
-    ItemMap::iterator it1 = key_events.find(keycode);
+    SlotMap::iterator it1 = key_events.find(keycode);
     if (it1 != key_events.end())
     {
-        ReverseItemMap::iterator i = key_events_rev.find(it1->second);
+        RevSlotMap::iterator i = key_events_rev.find(it1->second);
         if (i != key_events_rev.end())
             key_events_rev.erase(i);
 
         key_events.erase(it1);
     }
-    ReverseItemMap::iterator it2 = key_events_rev.find(sequence_slot);
+    RevSlotMap::iterator it2 = key_events_rev.find(sequence_slot);
     if (it2 != key_events_rev.end())
     {
-        ItemMap::iterator i = key_events.find(it2->second);
+        SlotMap::iterator i = key_events.find(it2->second);
         if (i != key_events.end())
             key_events.erase(i);
 
@@ -2879,25 +2879,25 @@ perform::set_key_event(unsigned int keycode, long sequence_slot)
  */
 
 void
-perform::set_key_group(unsigned int keycode, long group_slot)
+perform::set_key_group (unsigned int keycode, long group_slot)
 {
     /*
      * Unhook previous binding.
      */
 
-    ItemMap::iterator it1 = key_groups.find(keycode);
+    SlotMap::iterator it1 = key_groups.find(keycode);
     if (it1 != key_groups.end())
     {
-        ReverseItemMap::iterator i = key_groups_rev.find(it1->second);
+        RevSlotMap::iterator i = key_groups_rev.find(it1->second);
         if (i != key_groups_rev.end())
             key_groups_rev.erase(i);
 
         key_groups.erase(it1);
     }
-    ReverseItemMap::iterator it2 = key_groups_rev.find(group_slot);
+    RevSlotMap::iterator it2 = key_groups_rev.find(group_slot);
     if (it2 != key_groups_rev.end())
     {
-        ItemMap::iterator i = key_groups.find(it2->second);
+        SlotMap::iterator i = key_groups.find(it2->second);
         if (i != key_groups.end())
             key_groups.erase(i);
 

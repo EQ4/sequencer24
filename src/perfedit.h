@@ -1,5 +1,7 @@
+#ifndef SEQ24_PERFEDIT_H
+#define SEQ24_PERFEDIT_H
+
 /*
- *
  *  This file is part of seq24/sequencer24.
  *
  *  seq24 is free software; you can redistribute it and/or modify
@@ -15,12 +17,21 @@
  *  You should have received a copy of the GNU General Public License
  *  along with seq24; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 
-
-#ifndef SEQ24_PERFEDIT
-#define SEQ24_PERFEDIT
+/**
+ * \file          perfedit.h
+ *
+ *  This module declares/defines the base class for the Performance Editor,
+ *  also known as the Song Editor.
+ *
+ * \library       sequencer24 application
+ * \author        Seq24 team; modifications by Chris Ahlstrom
+ * \date          2015-07-24
+ * \updates       2015-07-30
+ * \license       GNU GPLv2 or above
+ *
+ */
 
 #include "sequence.h"
 #include "perform.h"
@@ -53,7 +64,6 @@
 #include <gtkmm/image.h>
 
 #include <sigc++/bind.h>
-
 #include <list>
 #include <string>
 
@@ -73,7 +83,14 @@ using namespace Gtk;
  * seq24 v 0.9.2.
  */
 
-/* has a seqroll and piano roll */
+/**
+ *  This class supports a Performance Editor that is used to arrange the
+ *  patterns/sequences defined in the patterns panel, I think.
+ *
+ *  It has a seqroll and piano roll?  No, it has a perform, a perfnames, a
+ *  perfroll, and a perftime.
+ */
+
 class perfedit: public Gtk::Window
 {
 
@@ -81,89 +98,90 @@ private:
 
     perform * m_mainperf;
 
-    Table *m_table;
+    Table * m_table;
+    VScrollbar * m_vscroll;
+    HScrollbar * m_hscroll;
+    Adjustment * m_vadjust;
+    Adjustment * m_hadjust;
 
-    VScrollbar *m_vscroll;
-    HScrollbar *m_hscroll;
+    perfnames * m_perfnames;
+    perfroll * m_perfroll;
+    perftime * m_perftime;
 
-    Adjustment *m_vadjust;
-    Adjustment *m_hadjust;
+    Menu * m_menu_snap;
+    Button * m_button_snap;
+    Entry * m_entry_snap;
 
+    Button * m_button_stop;
+    Button * m_button_play;
+    ToggleButton * m_button_loop;
 
-    perfnames *m_perfnames;
-    perfroll *m_perfroll;
-    perftime *m_perftime;
+    Button * m_button_expand;
+    Button * m_button_collapse;
+    Button * m_button_copy;
 
-    Menu *m_menu_snap;
-    Button *m_button_snap;
-    Entry *m_entry_snap;
+    Button * m_button_grow;
+    Button * m_button_undo;
 
-    Button *m_button_stop;
-    Button *m_button_play;
-    ToggleButton *m_button_loop;
+    Button * m_button_bpm;
+    Entry * m_entry_bpm;
 
-    Button *m_button_expand;
-    Button *m_button_collapse;
-    Button *m_button_copy;
+    Button * m_button_bw;
+    Entry * m_entry_bw;
 
-    Button *m_button_grow;
-    Button *m_button_undo;
+    HBox * m_hbox;
+    HBox * m_hlbox;
 
-    Button      *m_button_bpm;
-    Entry       *m_entry_bpm;
+    Tooltips * m_tooltips;
 
-    Button      *m_button_bw;
-    Entry       *m_entry_bw;
+    /**
+     * Menus for time signature, beats per measure, beat width.
+     */
 
-    HBox *m_hbox;
-    HBox *m_hlbox;
+    Menu * m_menu_bpm;
+    Menu * m_menu_bw;
 
-    Tooltips *m_tooltips;
+    /**
+     * Set snap-to in "pulses".
+     */
 
-    /* time signature, beats per measure, beat width */
-    Menu       *m_menu_bpm;
-    Menu       *m_menu_bw;
-
-
-    /* set snap to in pulses */
     int m_snap;
     int m_bpm;
     int m_bw;
 
-    void set_bpm(int a_beats_per_measure);
-    void set_bw(int a_beat_width);
-    void set_snap(int a_snap);
+public:
 
+    perfedit (perform * a_perf);
+    ~perfedit ();
+
+    void init_before_show ();
+
+private:
+
+    void set_bpm (int a_beats_per_measure);
+    void set_bw (int a_beat_width);
+    void set_snap (int a_snap);
     void set_guides ();
-
     void grow ();
-
-    void on_realize();
-
     void start_playing ();
     void stop_playing ();
-
     void set_looped ();
-
     void expand ();
     void collapse ();
     void copy ();
     void undo ();
-
-    void popup_menu(Menu * a_menu);
-
+    void popup_menu (Menu * a_menu);
     bool timeout ();
 
-    bool on_delete_event(GdkEventAny * a_event);
-    bool on_key_press_event(GdkEventKey* a_ev);
-
-public:
-
-    void init_before_show();
-
-    perfedit(perform * a_perf);
-    ~perfedit();
+    void on_realize ();
+    bool on_delete_event (GdkEventAny * a_event);
+    bool on_key_press_event (GdkEventKey * a_ev);
 };
 
+#endif   // SEQ24_PERFEDIT_H
 
-#endif
+/*
+ * perfedit.h
+ *
+ * vim: sw=4 ts=4 wm=8 et ft=cpp
+ */

@@ -35,6 +35,7 @@
 #include <cstring>
 #include <gtk/gtkversion.h>
 
+#include "gtk_helpers.h"
 #include "mainwnd.h"
 #include "perform.h"
 #include "midifile.h"
@@ -53,16 +54,6 @@
  */
 
 bool is_pattern_playing = false;
-
-/**
- *  Provides the tooltip helper, for old vs new GTK.
- */
-
-#if GTK_MINOR_VERSION >= 12
-#define add_tooltip(obj, text) obj->set_tooltip_text(text);
-#else
-#define add_tooltip(obj, text) m_tooltips->set_tip(* obj, text);
-#endif
 
 /**
  *  The constructor the main window of the application.

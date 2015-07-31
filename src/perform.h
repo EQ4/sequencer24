@@ -22,8 +22,8 @@
 /**
  * \file          perform.h
  *
- *  This module declares/defines the base class for configuration and
- *  options files.
+ *  This module declares/defines the base class for handling many facets
+ *  of performing (playing) a full MIDI song.
  *
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
@@ -114,7 +114,10 @@ struct performcallback
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
-    virtual void on_grouplearnchange(bool state) {}
+    virtual void on_grouplearnchange (bool state)
+    {
+        // Empty body
+    }
 };
 
 /**
@@ -139,7 +142,7 @@ class perform
         jack_position_t * pos,
         void * arg
     );
-    friend void jack_shutdown(void * arg);
+    friend void jack_shutdown (void * arg);
     friend void jack_timebase_callback
     (
         jack_transport_state_t state,
@@ -150,6 +153,21 @@ class perform
     );
 
 #endif  // JACK_SUPPORT
+
+    /**
+     *  This typedef defines a map in which the key is the keycode,
+     *  that is, the integer value of a keystroke, and the value is the
+     *  pattern/sequence number or slot.
+     */
+
+    typedef std::map<unsigned int, long> SlotMap;           // lookup
+
+    /**
+     *  This typedef is like SlotMap, but used for lookup in the other
+     *  direction.
+     */
+
+    typedef std::map<long, unsigned int> RevSlotMap;    // reverse lookup
 
 private:
 
@@ -240,18 +258,15 @@ private:
 
     condition_var m_condition_var;
 
-    typedef std::map<unsigned int, long> ItemMap;           // lookup
-    typedef std::map<long, unsigned int> ReverseItemMap;    // reverse lookup
-
     /*
      *  Do not access these directly, use set/lookup functions declared
      *  below.
      */
 
-    ItemMap key_events;
-    ItemMap key_groups;
-    ReverseItemMap key_events_rev; // reverse lookup, keep in sync!!
-    ReverseItemMap key_groups_rev; // reverse lookup, keep in sync!!
+    SlotMap key_events;
+    SlotMap key_groups;
+    RevSlotMap key_events_rev; // reverse lookup, keep in sync!!
+    RevSlotMap key_groups_rev; // reverse lookup, keep in sync!!
 
 #ifdef JACK_SUPPORT
 
@@ -314,11 +329,11 @@ public:
 
 public:
 
-    perform();
-    ~perform();
+    perform ();
+    ~perform ();
 
-    bool is_running();
-    bool is_learn_mode() const
+    bool is_running ();
+    bool is_learn_mode () const
     {
         return m_mode_group_learn;
     }
@@ -331,135 +346,135 @@ public:
     void init_jack ();
     void deinit_jack ();
 
-    void add_sequence(sequence * a_seq, int a_perf);
-    void delete_sequence(int a_num);
-    bool is_sequence_in_edit(int a_num);
-    void clear_sequence_triggers(int a_seq);
+    void add_sequence (sequence * a_seq, int a_perf);
+    void delete_sequence (int a_num);
+    bool is_sequence_in_edit (int a_num);
+    void clear_sequence_triggers (int a_seq);
 
-    long get_tick()
+    long get_tick ()
     {
         return m_tick;
     }
 
-    void set_left_tick(long a_tick);
+    void set_left_tick (long a_tick);
     long get_left_tick ();
-    void set_starting_tick(long a_tick);
+    void set_starting_tick (long a_tick);
     long get_starting_tick ();
-    void set_right_tick(long a_tick);
+    void set_right_tick (long a_tick);
     long get_right_tick ();
 
-    void move_triggers(bool a_direction);
-    void copy_triggers();
+    void move_triggers (bool a_direction);
+    void copy_triggers ();
     void push_trigger_undo ();
     void pop_trigger_undo ();
 
-    void print();
+    void print ();
 
-    midi_control * get_midi_control_toggle(unsigned int a_seq);
-    midi_control * get_midi_control_on(unsigned int a_seq);
-    midi_control * get_midi_control_off(unsigned int a_seq);
+    midi_control * get_midi_control_toggle (unsigned int a_seq);
+    midi_control * get_midi_control_on (unsigned int a_seq);
+    midi_control * get_midi_control_off (unsigned int a_seq);
 
-    void handle_midi_control(int a_control, bool a_state);
+    void handle_midi_control (int a_control, bool a_state);
 
-    void set_screen_set_notepad(int a_screen_set, std::string * a_note);
-    std::string * get_screen_set_notepad(int a_screen_set);
+    void set_screen_set_notepad (int a_screen_set, std::string * a_note);
+    std::string * get_screen_set_notepad (int a_screen_set);
 
-    void set_screenset(int a_ss);
+    void set_screenset (int a_ss);
     int get_screenset ();
     void set_playing_screenset ();
     int get_playing_screenset ();
     void mute_group_tracks ();
-    void select_and_mute_group(int a_g_group);
-    void set_mode_group_mute();
-    void select_group_mute(int a_g_mute);
+    void select_and_mute_group (int a_g_group);
+    void set_mode_group_mute ();
+    void select_group_mute (int a_g_mute);
     void set_mode_group_learn ();
     void unset_mode_group_learn ();
-    bool is_group_learning(void)
+    bool is_group_learning (void)
     {
         return m_mode_group_learn;
     }
-    void select_mute_group(int a_group);
-    void unset_mode_group_mute();
-    void start(bool a_state);
-    void stop();
+    void select_mute_group (int a_group);
+    void unset_mode_group_mute ();
+    void start (bool a_state);
+    void stop ();
 
 #ifdef JACK_SUPPORT
 #ifdef JACK_SESSION
 
-    bool jack_session_event();
+    bool jack_session_event ();
 
 #endif  // JACK_SESSION
 #endif  // JACK_SUPPORT
 
-    void start_jack();
-    void stop_jack();
-    void position_jack(bool a_state);
+    void start_jack ();
+    void stop_jack ();
+    void position_jack (bool a_state);
 
     void off_sequences ();
     void all_notes_off ();
 
-    void set_active(int a_sequence, bool a_active);
-    void set_was_active(int a_sequence);
-    bool is_active(int a_sequence);
-    bool is_dirty_main(int a_sequence);
-    bool is_dirty_edit(int a_sequence);
-    bool is_dirty_perf(int a_sequence);
-    bool is_dirty_names(int a_sequence);
+    void set_active (int a_sequence, bool a_active);
+    void set_was_active (int a_sequence);
+    bool is_active (int a_sequence);
+    bool is_dirty_main (int a_sequence);
+    bool is_dirty_edit (int a_sequence);
+    bool is_dirty_perf (int a_sequence);
+    bool is_dirty_names (int a_sequence);
 
-    void new_sequence(int a_sequence);
-    sequence * get_sequence(int a_sequence);
+    void new_sequence (int a_sequence);
+    sequence * get_sequence (int a_sequence);
     void reset_sequences ();
 
     /**
      *  Plays all notes to the current tick.
      */
 
-    void play(long a_tick);
-    void set_orig_ticks(long a_tick);
-    void set_bpm(int a_bpm);
-    int  get_bpm();
+    void play (long a_tick);
+    void set_orig_ticks (long a_tick);
+    void set_bpm (int a_bpm);
+    int  get_bpm ();
 
     /**
      * \setter m_looping
      */
 
-    void set_looping(bool a_looping)
+    void set_looping (bool a_looping)
     {
         m_looping = a_looping;
     }
 
-    void set_sequence_control_status(int a_status);
-    void unset_sequence_control_status(int a_status);
-    void sequence_playing_toggle(int a_sequence);
-    void sequence_playing_on(int a_sequence);
-    void sequence_playing_off(int a_sequence);
-    void set_group_mute_state(int a_g_track, bool a_mute_state);
-    bool get_group_mute_state(int a_g_track);
+    void set_sequence_control_status (int a_status);
+    void unset_sequence_control_status (int a_status);
+    void sequence_playing_toggle (int a_sequence);
+    void sequence_playing_on (int a_sequence);
+    void sequence_playing_off (int a_sequence);
+    void set_group_mute_state (int a_g_track, bool a_mute_state);
+    bool get_group_mute_state (int a_g_track);
     void mute_all_tracks ();
 
-    mastermidibus * get_master_midi_bus();
+    mastermidibus * get_master_midi_bus ();
 
-    void output_func();
-    void input_func();
+    void output_func ();
+    void input_func ();
 
     long get_max_trigger ();
 
-    void set_offset(int a_offset);
+    void set_offset (int a_offset);
 
     void save_playing_state ();
     void restore_playing_state ();
 
-    const ItemMap * get_key_events(void) const
+    const SlotMap * get_key_events (void) const
     {
         return &key_events;
     }
-    const ItemMap * get_key_groups(void) const
+    const SlotMap * get_key_groups (void) const
     {
         return &key_groups;
     }
 
-    void set_key_event(unsigned int keycode, long sequence_slot);
-    void set_key_group(unsigned int keycode, long group_slot);
+    void set_key_event (unsigned int keycode, long sequence_slot);
+    void set_key_group (unsigned int keycode, long group_slot);
 
     /**
      * \accessor m_show_ui_sequency_key
@@ -467,7 +482,7 @@ public:
      *  Used in mainwid, options, optionsfile, userfile, and perform.
      */
 
-    bool show_ui_sequence_key() const
+    bool show_ui_sequence_key () const
     {
         return m_show_ui_sequence_key;
     }
@@ -478,28 +493,28 @@ public:
      * to see if it's there first]
      */
 
-    unsigned int lookup_keyevent_key(long seqnum)
+    unsigned int lookup_keyevent_key (long seqnum)
     {
         if (key_events_rev.count(seqnum))
             return key_events_rev[seqnum];
         else
             return '?';
     }
-    long lookup_keyevent_seq(unsigned int keycode)
+    long lookup_keyevent_seq (unsigned int keycode)
     {
         if (key_events.count(keycode))
             return key_events[keycode];
         else
             return 0;
     }
-    unsigned int lookup_keygroup_key(long groupnum)
+    unsigned int lookup_keygroup_key (long groupnum)
     {
         if (key_groups_rev.count(groupnum))
             return key_groups_rev[groupnum];
         else
             return '?';
     }
-    long lookup_keygroup_group(unsigned int keycode)
+    long lookup_keygroup_group (unsigned int keycode)
     {
         if (key_groups.count(keycode))
             return key_groups[keycode];
@@ -509,11 +524,11 @@ public:
 
 private:
 
-    void set_running(bool a_running);
-    void set_playback_mode(bool a_playback_mode);
+    void set_running (bool a_running);
+    void set_playback_mode (bool a_playback_mode);
 
-    void inner_start(bool a_state);
-    void inner_stop();
+    void inner_start (bool a_state);
+    void inner_stop ();
 
 };
 
@@ -521,8 +536,8 @@ private:
  * Global functions defined in perform.cpp.
  */
 
-extern void * output_thread_func(void * a_p);
-extern void * input_thread_func(void * a_p);
+extern void * output_thread_func (void * a_p);
+extern void * input_thread_func (void * a_p);
 
 /**
  *  Global functions for JACK support and JACK sessions.
@@ -536,8 +551,8 @@ int jack_sync_callback
     jack_position_t * pos,
     void * arg
 );
-void print_jack_pos(jack_position_t * jack_pos);
-void jack_shutdown(void * arg);
+void print_jack_pos (jack_position_t * jack_pos);
+void jack_shutdown (void * arg);
 void jack_timebase_callback
 (
     jack_transport_state_t state,
@@ -553,10 +568,10 @@ void jack_timebase_callback
  * GitHub project.  Added the following function.
  */
 
-int jack_process_callback(jack_nframes_t nframes, void * arg);
+int jack_process_callback (jack_nframes_t nframes, void * arg);
 
 #ifdef JACK_SESSION
-void jack_session_callback(jack_session_event_t * ev, void * arg);
+void jack_session_callback (jack_session_event_t * ev, void * arg);
 #endif
 
 #endif   // JACK_SUPPORT

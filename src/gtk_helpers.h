@@ -1,5 +1,5 @@
-#ifndef SEQ24_OPTIONSFILE_H
-#define SEQ24_OPTIONSFILE_H
+#ifndef SEQ24_GTK_HELPERS_H
+#define SEQ24_GTK_HELPERS_H
 
 /*
  *  This file is part of seq24/sequencer24.
@@ -20,10 +20,9 @@
  */
 
 /**
- * \file          optionsfile.h
+ * \file          gtk_helpers.h
  *
- *  This module declares/defines the base class for managind the ~/.seq24rc
- *  configuration file.
+ *  This module declares/defines some helpful macros or functions.
  *
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
@@ -31,29 +30,23 @@
  * \updates       2015-07-30
  * \license       GNU GPLv2 or above
  *
+ *  Currently, the only thing defined is the add_tooltip() macro.
  */
 
-#include "perform.h"
-#include "configfile.h"
+/**
+ *  This macro defines a tooltip helper, for old versus new GTK handling.
+ */
 
-class optionsfile : public configfile
-{
+#if GTK_MINOR_VERSION >= 12
+#define add_tooltip(obj, text) obj->set_tooltip_text(text);
+#else
+#define add_tooltip(obj, text) m_tooltips->set_tip(*obj, text);
+#endif
 
-public:
-
-    optionsfile (const Glib::ustring & a_name);
-    ~optionsfile ();
-
-    bool parse (perform * a_perf);
-    bool write (perform * a_perf);
-
-};
-
-
-#endif   // SEQ24_OPTIONSFILE_H
+#endif   // SEQ24_GTK_HELPERS_H
 
 /*
- * optionsfile.h
+ * gtk_helpers.h
  *
  * vim: sw=4 ts=4 wm=8 et ft=cpp
  */
