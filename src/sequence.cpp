@@ -46,7 +46,7 @@ sequence::sequence() :
     m_was_playing(false),
     m_playing(false),
     m_recording(false),
-    m_quanized_rec(false),
+    m_quantized_rec(false),
     m_thru(false),
     m_queued(false),
 
@@ -1870,13 +1870,13 @@ sequence::stream_event(event *a_ev)
 
     link_new();
 
-    if (m_quanized_rec && is_pattern_playing)
+    if (m_quantized_rec && is_pattern_playing)
     {
         if (a_ev->is_note_off())
         {
             select_note_events(a_ev->get_timestamp(), a_ev->get_note(),
                                a_ev->get_timestamp(), a_ev->get_note(), e_select);
-            quanize_events(EVENT_NOTE_ON, 0, m_snap_tick, 1 , true);
+            quantize_events(EVENT_NOTE_ON, 0, m_snap_tick, 1 , true);
         }
     }
     /* update view */
@@ -3306,10 +3306,10 @@ sequence::set_snap_tick(int a_st)
 }
 
 void
-sequence::set_quanized_rec(bool a_qr)
+sequence::set_quantized_rec(bool a_qr)
 {
     lock();
-    m_quanized_rec = a_qr;
+    m_quantized_rec = a_qr;
     unlock();
 }
 
@@ -3317,7 +3317,7 @@ sequence::set_quanized_rec(bool a_qr)
 bool
 sequence::get_quanidez_rec()
 {
-    return m_quanized_rec;
+    return m_quantized_rec;
 }
 
 
@@ -3595,7 +3595,7 @@ sequence::transpose_notes(int a_steps, int a_scale)
 
 // NOT DELETING THE ENDS, NOT SELECTED.
 void
-sequence::quanize_events(unsigned char a_status, unsigned char a_cc,
+sequence::quantize_events(unsigned char a_status, unsigned char a_cc,
                          long a_snap_tick,  int a_divide, bool a_linked)
 {
     event e, f;

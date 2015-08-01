@@ -10,7 +10,7 @@
  * \library       sequencer24
  * \author        Chris Ahlstrom and other authors; see documentation
  * \date          2013-11-17
- * \updates       2015-07-30
+ * \updates       2015-08-01
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -156,46 +156,82 @@ typedef bool cbool_t;
 #endif  // PLATFORM_GNU
 
 /**
+ *  Usage:      errprint(cstring);
+ *
  *    Provides an error reporting macro (which happens to match Chris's XPC
  *    error function.
  */
 
+#ifdef PLATFORM_DEBUG
 #define errprint(x)           fprintf(stderr, "? %s\n", x)
+#else
+#define errprint(x)
+#endif
 
 /**
+ *  Usage:      errprintf(format, cstring);
+ *
  *    Provides an error reporting macro that requires a sprintf() format
  *    specifier as well.
  */
 
+#ifdef PLATFORM_DEBUG
 #define errprintf(fmt, x)     fprintf(stderr, fmt, x)
+#else
+#define errprintf(fmt, x)
+#endif
 
 /**
+ *  Usage:      warnprint(cstring);
+ *
  *    Provides a warning reporting macro (which happens to match Chris's
  *    XPC error function.
  */
 
+#ifdef PLATFORM_DEBUG
 #define warnprint(x)          fprintf(stderr, "! %s\n", x)
+#else
+#define warnprint(x)
+#endif
 
 /**
+ *  Usage:      warnprint(format, cstring);
+ *
  *    Provides an error reporting macro that requires a sprintf() format
  *    specifier as well.
  */
 
+#ifdef PLATFORM_DEBUG
 #define warnprintf(fmt, x)    fprintf(stderr, fmt, x)
+#else
+#define warnprintf(fmt, x)
+#endif
 
 /**
+ *  Usage:      infoprint(cstring);
+ *
  *    Provides an information reporting macro (which happens to match
  *    Chris's XPC information function.
  */
 
+#ifdef PLATFORM_DEBUG
 #define infoprint(x)          fprintf(stderr, "* %s\n", x)
+#else
+#define infoprint(x)
+#endif
 
 /**
+ *  Usage:      infoprint(format, cstrin);
+ *
  *    Provides an error reporting macro that requires a sprintf() format
  *    specifier as well.
  */
 
+#ifdef PLATFORM_DEBUG
 #define infoprintf(fmt, x)    fprintf(stderr, fmt, x)
+#else
+#define infoprintf(fmt, x)
+#endif
 
 /*
  * Global functions.  The not_nullptr_assert() function is a macro in

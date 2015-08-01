@@ -137,7 +137,7 @@ private:
     bool m_was_playing;
     bool m_playing;
     bool m_recording;
-    bool m_quanized_rec;
+    bool m_quantized_rec;
     bool m_thru;
     bool m_queued;
 
@@ -280,7 +280,7 @@ public:
     void set_recording(bool);
     bool get_recording();
     void set_snap_tick(int a_st);
-    void set_quanized_rec(bool a_qr);
+    void set_quantized_rec(bool a_qr);
     bool get_quanidez_rec();
 
     void set_thru(bool);
@@ -481,7 +481,7 @@ public:
 
     void select_events(unsigned char a_status, unsigned char a_cc,
                        bool a_inverse = false);
-    void quanize_events(unsigned char a_status, unsigned char a_cc,
+    void quantize_events(unsigned char a_status, unsigned char a_cc,
                         long a_snap_tick, int a_divide, bool a_linked =
                             false);
     void transpose_notes(int a_steps, int a_scale);

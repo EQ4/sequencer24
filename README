@@ -32,6 +32,8 @@ Eventually, there will be a few features to try to add:
    -  Fix issue where doing nothing causes a save prompt upon exit.
    -  Make it possible to use Alt or Ctrl plus a sequence-toggling
       key to bring up an edit dialog for that sequence.
+   -  Get the Song editor's "Increase size of grid" button working.
+      Also document it.
 
 There's actually not a lot to improve though, in Seq24, except to keep the
 project active and living.

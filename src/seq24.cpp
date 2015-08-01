@@ -108,7 +108,7 @@ Glib::ustring global_jack_session_uuid = "";
 user_midi_bus_definition   global_user_midi_bus_definitions[c_maxBuses];
 user_instrument_definition global_user_instrument_definitions[c_max_instruments];
 
-font *p_font_renderer;
+font * p_font_renderer;
 
 #ifdef LASH_SUPPORT
 lash * lash_driver = NULL;
@@ -154,7 +154,7 @@ const char * const g_help_2 =
  */
 
 int
-main(int argc, char * argv[])
+main (int argc, char * argv[])
 {
     /*
      *  Scan the argument vector and strip off all parameters known to
