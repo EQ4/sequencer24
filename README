@@ -30,9 +30,11 @@ Eventually, there will be a few features to try to add:
       grey, and it resizes horizontally very slowly).
    -  Speed up the horizontal resize on the Song/Performance Editor.
    -  Fix issue where doing nothing causes a save prompt upon exit.
+   -  Make it possible to use Alt or Ctrl plus a sequence-toggling
+      key to bring up an edit dialog for that sequence.
 
-There's actually not a lot to improve in Seq24, except to keep the project
-active and living.
+There's actually not a lot to improve though, in Seq24, except to keep the
+project active and living.
 
 Note that the original seq24 is pretty well documented by the following
 project, which provides a 50-page PDF file and its LaTeX source code:

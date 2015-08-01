@@ -1,537 +1,634 @@
+/*
+ *  This file is part of seq24/sequencer24.
+ *
+ *  seq24 is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General)mm Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  seq24 is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with seq24; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/**
+ * \file          perfroll_input.cpp
+ *
+ *  This module declares/defines the base class for the Performance window
+ *  mouse input.
+ *
+ * \library       sequencer24 application
+ * \author        Seq24 team; modifications by Chris Ahlstrom
+ * \date          2015-07-24
+ * \updates       2015-07-31
+ * \license       GNU GPLv2 or above
+ *
+ */
+
 #include "perform.h"
 #include "perfroll_input.h"
 #include "perfroll.h"
 
-void FruityPerfInput::updateMousePtr(perfroll& ths)
+/**
+ *  Updates the mouse pointer, implementing a context-sensitive mouse.
+ */
+
+void
+FruityPerfInput::updateMousePtr (perfroll & roll)
 {
-    // context sensitive mouse
     long drop_tick;
     int drop_sequence;
-    ths.convert_xy(m_current_x, m_current_y, &drop_tick, &drop_sequence);
-    if (ths.m_mainperf->is_active(drop_sequence))
+    roll.convert_xy(m_current_x, m_current_y, &drop_tick, &drop_sequence);
+    if (roll.m_mainperf->is_active(drop_sequence))
     {
         long start, end;
-        if (ths.m_mainperf->get_sequence(drop_sequence)->intersectTriggers(drop_tick, start, end))
+        if
+        (
+            roll.m_mainperf->get_sequence(drop_sequence)->
+                intersectTriggers(drop_tick, start, end)
+        )
         {
-            if (start <= drop_tick && drop_tick <= start + (c_perfroll_size_box_click_w * c_perf_scale_x) &&
-                    (m_current_y % c_names_y) <= c_perfroll_size_box_click_w + 1)
+            int wscalex = c_perfroll_size_box_click_w * c_perf_scale_x;
+            int ymod = m_current_y % c_names_y;
+            if
+            (
+                start <= drop_tick &&
+                drop_tick <= start + wscalex &&
+                ymod <= c_perfroll_size_box_click_w + 1
+            )
             {
-                ths.get_window()->set_cursor(Gdk::Cursor(Gdk::RIGHT_PTR));
+                roll.get_window()->set_cursor(Gdk::Cursor(Gdk::RIGHT_PTR));
             }
-            else if (end - (c_perfroll_size_box_click_w * c_perf_scale_x) <= drop_tick && drop_tick <= end &&
-                     (m_current_y % c_names_y) >= c_names_y - c_perfroll_size_box_click_w - 1)
+            else if
+            (
+                drop_tick <= end &&
+                end - wscalex <= drop_tick &&
+                ymod >= c_names_y - c_perfroll_size_box_click_w - 1
+            )
             {
-                ths.get_window()->set_cursor(Gdk::Cursor(Gdk::LEFT_PTR));
+                roll.get_window()->set_cursor(Gdk::Cursor(Gdk::LEFT_PTR));
             }
             else
             {
-                ths.get_window()->set_cursor(Gdk::Cursor(Gdk::CENTER_PTR));
+                roll.get_window()->set_cursor(Gdk::Cursor(Gdk::CENTER_PTR));
             }
         }
         else
         {
-            ths.get_window()->set_cursor(Gdk::Cursor(Gdk::PENCIL));
+            roll.get_window()->set_cursor(Gdk::Cursor(Gdk::PENCIL));
         }
     }
     else
     {
-        ths.get_window()->set_cursor(Gdk::Cursor(Gdk::CROSSHAIR));
+        roll.get_window()->set_cursor(Gdk::Cursor(Gdk::CROSSHAIR));
     }
 }
 
-bool FruityPerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
+/**
+ *  Handles a button-press event in the Fruity manner.
+ */
+
+bool
+FruityPerfInput::on_button_press_event (GdkEventButton * a_ev, perfroll & roll)
 {
-    ths.grab_focus();
-
-    if (ths.m_mainperf->is_active(ths.m_drop_sequence))
+    roll.grab_focus();
+    if (roll.m_mainperf->is_active(roll.m_drop_sequence))
     {
-        ths.m_mainperf->get_sequence(ths.m_drop_sequence)->unselect_triggers();
-        ths.draw_background_on(ths.m_pixmap, ths.m_drop_sequence);
-        ths.draw_sequence_on(ths.m_pixmap, ths.m_drop_sequence);
-        ths.draw_drawable_row(ths.m_window, ths.m_pixmap, ths.m_drop_y);
+        roll.m_mainperf->get_sequence(roll.m_drop_sequence)->unselect_triggers();
+        roll.draw_background_on(roll.m_pixmap, roll.m_drop_sequence);
+        roll.draw_sequence_on(roll.m_pixmap, roll.m_drop_sequence);
+        roll.draw_drawable_row(roll.m_window, roll.m_pixmap, roll.m_drop_y);
     }
-
-    ths.m_drop_x = (int) a_ev->x;
-    ths.m_drop_y = (int) a_ev->y;
+    roll.m_drop_x = (int) a_ev->x;
+    roll.m_drop_y = (int) a_ev->y;
     m_current_x = (int) a_ev->x;
     m_current_y = (int) a_ev->y;
+    roll.convert_xy
+    (
+        roll.m_drop_x, roll.m_drop_y, &roll.m_drop_tick, &roll.m_drop_sequence
+    );
 
-
-    ths.convert_xy(ths.m_drop_x, ths.m_drop_y, &ths.m_drop_tick, &ths.m_drop_sequence);
-
-    /*      left mouse button     */
-    if (a_ev->button == 1)
+    if (a_ev->button == 1)                          /* left mouse button     */
     {
-        on_left_button_pressed(a_ev, ths);
+        on_left_button_pressed(a_ev, roll);
     }
-
-    /*     right mouse button      */
-    if (a_ev->button == 3)
+    else if (a_ev->button == 3)                     /* right mouse button    */
     {
-        on_right_button_pressed(a_ev, ths);
+        on_right_button_pressed(a_ev, roll);
     }
-
-    /* left-ctrl, or middle: split */
-    if (a_ev->button == 2)
+    else if (a_ev->button == 2)               /* left-ctrl, or middle: split */
     {
-        if (ths.m_mainperf->is_active(ths.m_drop_sequence))
+        if (roll.m_mainperf->is_active(roll.m_drop_sequence))
         {
-
-            bool state = ths.m_mainperf->get_sequence(ths.m_drop_sequence)->get_trigger_state(ths.m_drop_tick);
+            bool state = roll.m_mainperf->get_sequence(roll.m_drop_sequence)->
+                get_trigger_state(roll.m_drop_tick);
 
             if (state)
-            {
-                ths.split_trigger(ths.m_drop_sequence, ths.m_drop_tick);
-            }
+                roll.split_trigger(roll.m_drop_sequence, roll.m_drop_tick);
         }
     }
-
-    updateMousePtr(ths);
+    updateMousePtr(roll);
     return true;
 }
 
-void FruityPerfInput::on_left_button_pressed(GdkEventButton* a_ev, perfroll& ths)
+/**
+ *  Handles the left button of the mouse.
+ *
+ *  It can handle splitting triggers (?), adding notes, and the following
+ *  clicks to resize the event, or move it, depending on where clicked:
+ *
+ *      -   clicked left side: begin a grow/shrink for the left side
+ *      -   clicked right side: grow/shrink the right side
+ *      -   clicked in the middle - move it
+ *
+ *  I don't get it, though... all three buttons are handled in the generic
+ *  button-press callback.
+ */
+
+void
+FruityPerfInput::on_left_button_pressed (GdkEventButton * a_ev, perfroll & roll)
 {
     if (a_ev->state & GDK_CONTROL_MASK)
     {
-        if (ths.m_mainperf->is_active(ths.m_drop_sequence))
+        if (roll.m_mainperf->is_active(roll.m_drop_sequence))
         {
-            bool state = ths.m_mainperf->get_sequence(ths.m_drop_sequence)->get_trigger_state(ths.m_drop_tick);
+            bool state = roll.m_mainperf->get_sequence(roll.m_drop_sequence)->
+                get_trigger_state(roll.m_drop_tick);
+
+            if (state)
+                roll.split_trigger(roll.m_drop_sequence, roll.m_drop_tick);
+        }
+    }
+    else    /* add a new note */
+    {
+        long tick = roll.m_drop_tick;
+        m_adding_pressed = true;
+        if (roll.m_mainperf->is_active(roll.m_drop_sequence))
+        {
+            long seq_length = roll.m_mainperf->
+                get_sequence(roll.m_drop_sequence)->get_length();
+
+            bool state = roll.m_mainperf->
+                get_sequence(roll.m_drop_sequence)->get_trigger_state(tick);
+
+            /* resize the event, or move it, depending on where clicked */
 
             if (state)
             {
-                ths.split_trigger(ths.m_drop_sequence, ths.m_drop_tick);
-            }
-        }
-    }
-    else
-    {
-        long tick = ths.m_drop_tick;
+                m_adding_pressed = false;
+                roll.m_mainperf->push_trigger_undo();
+                roll.m_mainperf->
+                    get_sequence(roll.m_drop_sequence)->select_trigger(tick);
 
-        /* add a new note if we didnt select anything */
-        //if (m_adding)
-        {
-            m_adding_pressed = true;
+                long start_tick = roll.m_mainperf->
+                    get_sequence(roll.m_drop_sequence)->
+                    get_selected_trigger_start_tick()
+                    ;
 
-            if (ths.m_mainperf->is_active(ths.m_drop_sequence))
-            {
-                long seq_length = ths.m_mainperf->get_sequence(ths.m_drop_sequence)->get_length();
+                long end_tick = roll.m_mainperf->
+                    get_sequence(roll.m_drop_sequence)->
+                    get_selected_trigger_end_tick()
+                    ;
 
-                bool state = ths.m_mainperf->get_sequence(ths.m_drop_sequence)->get_trigger_state(tick);
+                int wscalex = c_perfroll_size_box_click_w * c_perf_scale_x;
+                int ydrop = roll.m_drop_y % c_names_y;
 
-                // resize the event, or move it, depending on where clicked.
-                if (state)
+                if
+                (
+                    tick >= start_tick &&
+                    tick <= start_tick + wscalex &&
+                    ydrop <= c_perfroll_size_box_click_w + 1
+                )
                 {
-                    //m_adding = false;
-                    m_adding_pressed = false;
-                    ths.m_mainperf->push_trigger_undo();
-                    ths.m_mainperf->get_sequence(ths.m_drop_sequence)->select_trigger(tick);
+                    // clicked left side: begin a grow/shrink for the left side
 
-                    long start_tick = ths.m_mainperf->get_sequence(ths.m_drop_sequence)->get_selected_trigger_start_tick();
-                    long end_tick = ths.m_mainperf->get_sequence(ths.m_drop_sequence)->get_selected_trigger_end_tick();
-
-                    if (tick >= start_tick &&
-                            tick <= start_tick + (c_perfroll_size_box_click_w * c_perf_scale_x) &&
-                            (ths.m_drop_y % c_names_y) <= c_perfroll_size_box_click_w + 1)
-                    {
-                        // clicked left side: begin a grow/shrink for the left side
-                        ths.m_growing = true;
-                        ths.m_grow_direction = true;
-                        ths.m_drop_tick_trigger_offset = ths.m_drop_tick -
-                                                         ths.m_mainperf->get_sequence(ths.m_drop_sequence)->
-                                                         get_selected_trigger_start_tick();
-                    }
-                    else if (tick >= end_tick - (c_perfroll_size_box_click_w * c_perf_scale_x) &&
-                             tick <= end_tick &&
-                             (ths.m_drop_y % c_names_y) >= c_names_y - c_perfroll_size_box_click_w - 1)
-                    {
-                        // clicked right side: grow/shrink the right side
-                        ths.m_growing = true;
-                        ths.m_grow_direction = false;
-                        ths.m_drop_tick_trigger_offset =
-                            ths.m_drop_tick -
-                            ths.m_mainperf->get_sequence(ths.m_drop_sequence)->get_selected_trigger_end_tick();
-                    }
-                    else
-                    {
-                        // clicked in the middle - move it
-                        ths.m_moving = true;
-                        ths.m_drop_tick_trigger_offset = ths.m_drop_tick -
-                                                         ths.m_mainperf->get_sequence(ths.m_drop_sequence)->
-                                                         get_selected_trigger_start_tick();
-
-                    }
-
-                    ths.draw_background_on(ths.m_pixmap, ths.m_drop_sequence);
-                    ths.draw_sequence_on(ths.m_pixmap, ths.m_drop_sequence);
-                    ths.draw_drawable_row(ths.m_window, ths.m_pixmap, ths.m_drop_y);
+                    roll.m_growing = true;
+                    roll.m_grow_direction = true;
+                    roll.m_drop_tick_trigger_offset =
+                        roll.m_drop_tick -
+                            roll.m_mainperf->get_sequence(roll.m_drop_sequence)->
+                                get_selected_trigger_start_tick() ;
                 }
+                else if (tick >= end_tick - wscalex &&
+                         tick <= end_tick &&
+                         ydrop >= c_names_y - c_perfroll_size_box_click_w - 1)
+                {
+                    // clicked right side: grow/shrink the right side
 
-                // add an event:
+                    roll.m_growing = true;
+                    roll.m_grow_direction = false;
+                    roll.m_drop_tick_trigger_offset =
+                        roll.m_drop_tick -
+                            roll.m_mainperf->get_sequence(roll.m_drop_sequence)->
+                                get_selected_trigger_end_tick() ;
+                }
                 else
                 {
-                    // snap to length of sequence
-                    tick = tick - (tick % seq_length);
+                    // clicked in the middle - move it
 
-                    ths.m_mainperf->push_trigger_undo();
-                    ths.m_mainperf->get_sequence(ths.m_drop_sequence)->add_trigger(tick, seq_length);
-                    ths.draw_background_on(ths.m_pixmap, ths.m_drop_sequence);
-                    ths.draw_sequence_on(ths.m_pixmap, ths.m_drop_sequence);
-                    ths.draw_drawable_row(ths.m_window, ths.m_pixmap, ths.m_drop_y);
-
-                    //m_drop_tick_last = (m_drop_tick + seq_length - 1);
+                    roll.m_moving = true;
+                    roll.m_drop_tick_trigger_offset = roll.m_drop_tick -
+                         roll.m_mainperf->get_sequence(roll.m_drop_sequence)->
+                             get_selected_trigger_start_tick() ;
                 }
+                roll.draw_background_on(roll.m_pixmap, roll.m_drop_sequence);
+                roll.draw_sequence_on(roll.m_pixmap, roll.m_drop_sequence);
+                roll.draw_drawable_row
+                (
+                    roll.m_window, roll.m_pixmap, roll.m_drop_y
+                );
+            }
+            else                                    // add an event
+            {
+                tick = tick - (tick % seq_length);  // snap to sequence length
+                roll.m_mainperf->push_trigger_undo();
+                roll.m_mainperf->get_sequence(roll.m_drop_sequence)->
+                    add_trigger(tick, seq_length);
+
+                roll.draw_background_on(roll.m_pixmap, roll.m_drop_sequence);
+                roll.draw_sequence_on(roll.m_pixmap, roll.m_drop_sequence);
+                roll.draw_drawable_row
+                (
+                    roll.m_window, roll.m_pixmap, roll.m_drop_y
+                );
             }
         }
     }
 }
 
-void FruityPerfInput::on_right_button_pressed(GdkEventButton* a_ev, perfroll& ths)
+/**
+ *  Handles the right button of the mouse.
+ *
+ *  I don't get it, though... all three buttons are handled in the generic
+ *  button-press callback.
+ */
+
+void
+FruityPerfInput::on_right_button_pressed (GdkEventButton * a_ev, perfroll & roll)
 {
-    //set_adding( false );
-
-    long tick = ths.m_drop_tick;
-
-    if (ths.m_mainperf->is_active(ths.m_drop_sequence))
+    long tick = roll.m_drop_tick;
+    if (roll.m_mainperf->is_active(roll.m_drop_sequence))
     {
-
-        //long seq_length = ths.m_mainperf->get_sequence( ths.m_drop_sequence )->get_length();
-
-        bool state = ths.m_mainperf->get_sequence(ths.m_drop_sequence)->get_trigger_state(tick);
+        bool state = roll.m_mainperf->get_sequence(roll.m_drop_sequence)->
+            get_trigger_state(tick);
 
         if (state)
         {
-            ths.m_mainperf->push_trigger_undo();
-            ths.m_mainperf->get_sequence(ths.m_drop_sequence)->del_trigger(tick);
+            roll.m_mainperf->push_trigger_undo();
+            roll.m_mainperf->get_sequence(roll.m_drop_sequence)->
+                del_trigger(tick);
         }
     }
 }
 
-bool FruityPerfInput::on_button_release_event(GdkEventButton* a_ev, perfroll& ths)
+/**
+ *  Handles a button-release event.
+ */
+
+bool
+FruityPerfInput::on_button_release_event (GdkEventButton * a_ev, perfroll & roll)
 {
     m_current_x = (int) a_ev->x;
     m_current_y = (int) a_ev->y;
-
     if (a_ev->button == 1 || a_ev->button == 3)
+        m_adding_pressed = false;                   // done here...
+
+    roll.m_moving = false;
+    roll.m_growing = false;
+    m_adding_pressed = false;                       // and here...???
+
+    if (roll.m_mainperf->is_active(roll.m_drop_sequence))
     {
-        m_adding_pressed = false;
+        roll.draw_background_on(roll.m_pixmap, roll.m_drop_sequence);
+        roll.draw_sequence_on(roll.m_pixmap, roll.m_drop_sequence);
+        roll.draw_drawable_row(roll.m_window, roll.m_pixmap, roll.m_drop_y);
     }
-
-    ths.m_moving = false;
-    ths.m_growing = false;
-    m_adding_pressed = false;
-
-    if (ths.m_mainperf->is_active(ths.m_drop_sequence))
-    {
-
-        ths.draw_background_on(ths.m_pixmap, ths.m_drop_sequence);
-        ths.draw_sequence_on(ths.m_pixmap, ths.m_drop_sequence);
-        ths.draw_drawable_row(ths.m_window, ths.m_pixmap, ths.m_drop_y);
-    }
-
-    updateMousePtr(ths);
+    updateMousePtr(roll);
     return true;
 }
 
-bool FruityPerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths)
+/**
+ *  Handles a Fruity motion-notify event.
+ */
+
+bool
+FruityPerfInput::on_motion_notify_event (GdkEventMotion * a_ev, perfroll & roll)
 {
     long tick;
     int x = (int) a_ev->x;
     m_current_x = (int) a_ev->x;
     m_current_y = (int) a_ev->y;
-
     if (m_adding_pressed)
     {
-
-        ths.convert_x(x, &tick);
-
-        if (ths.m_mainperf->is_active(ths.m_drop_sequence))
+        roll.convert_x(x, &tick);
+        if (roll.m_mainperf->is_active(roll.m_drop_sequence))
         {
+            long seq_length = roll.m_mainperf->
+                get_sequence(roll.m_drop_sequence)->get_length();
 
-            long seq_length = ths.m_mainperf->get_sequence(ths.m_drop_sequence)->get_length();
             tick = tick - (tick % seq_length);
 
-            /*long min_tick = (tick < m_drop_tick) ? tick : m_drop_tick;*/
             long length = seq_length;
+            roll.m_mainperf->get_sequence(roll.m_drop_sequence)->
+                    grow_trigger(roll.m_drop_tick, tick, length);
 
-            ths.m_mainperf->get_sequence(ths.m_drop_sequence)
-            ->grow_trigger(ths.m_drop_tick, tick, length);
-            ths.draw_background_on(ths.m_pixmap, ths.m_drop_sequence);
-            ths.draw_sequence_on(ths.m_pixmap, ths.m_drop_sequence);
-            ths.draw_drawable_row(ths.m_window, ths.m_pixmap, ths.m_drop_y);
+            roll.draw_background_on(roll.m_pixmap, roll.m_drop_sequence);
+            roll.draw_sequence_on(roll.m_pixmap, roll.m_drop_sequence);
+            roll.draw_drawable_row(roll.m_window, roll.m_pixmap, roll.m_drop_y);
         }
     }
-    else if (ths.m_moving || ths.m_growing)
+    else if (roll.m_moving || roll.m_growing)
     {
-        if (ths.m_mainperf->is_active(ths.m_drop_sequence))
+        if (roll.m_mainperf->is_active(roll.m_drop_sequence))
         {
-            ths.convert_x(x, &tick);
-            tick -= ths.m_drop_tick_trigger_offset;
+            roll.convert_x(x, &tick);
+            tick -= roll.m_drop_tick_trigger_offset;
+            tick -= tick % roll.m_snap;
 
-            tick = tick - tick % ths.m_snap;
-
-            if (ths.m_moving)
+            if (roll.m_moving)
             {
-                ths.m_mainperf->get_sequence(ths.m_drop_sequence)
-                ->move_selected_triggers_to(tick, true);
+                roll.m_mainperf->get_sequence(roll.m_drop_sequence)->
+                    move_selected_triggers_to(tick, true);
             }
-            if (ths.m_growing)
+            if (roll.m_growing)
             {
-                if (ths.m_grow_direction)
-                    ths.m_mainperf->get_sequence(ths.m_drop_sequence)
-                    ->move_selected_triggers_to(tick, false, 0);
+                if (roll.m_grow_direction)
+                    roll.m_mainperf->get_sequence(roll.m_drop_sequence)->
+                        move_selected_triggers_to(tick, false, 0);
                 else
-                    ths.m_mainperf->get_sequence(ths.m_drop_sequence)
-                    ->move_selected_triggers_to(tick - 1, false, 1);
+                    roll.m_mainperf->get_sequence(roll.m_drop_sequence)->
+                        move_selected_triggers_to(tick - 1, false, 1);
             }
-
-
-            ths.draw_background_on(ths.m_pixmap, ths.m_drop_sequence);
-            ths.draw_sequence_on(ths.m_pixmap, ths.m_drop_sequence);
-            ths.draw_drawable_row(ths.m_window, ths.m_pixmap, ths.m_drop_y);
+            roll.draw_background_on(roll.m_pixmap, roll.m_drop_sequence);
+            roll.draw_sequence_on(roll.m_pixmap, roll.m_drop_sequence);
+            roll.draw_drawable_row(roll.m_window, roll.m_pixmap, roll.m_drop_y);
         }
     }
-
-    updateMousePtr(ths);
+    updateMousePtr(roll);
     return true;
 }
 
+/*
+ * The normal Seq24 section, at last!
+ */
 
-/* popup menu calls this */
-void Seq24PerfInput::set_adding(bool a_adding, perfroll& ths)
+/**
+ *  A popup menu (which one?) calls this.  What does it mean?
+ */
+
+void
+Seq24PerfInput::set_adding (bool a_adding, perfroll & roll)
 {
     if (a_adding)
     {
-        ths.get_window()->set_cursor(Gdk::Cursor(Gdk::PENCIL));
+        roll.get_window()->set_cursor(Gdk::Cursor(Gdk::PENCIL));
         m_adding = true;
     }
     else
     {
-        ths.get_window()->set_cursor(Gdk::Cursor(Gdk::LEFT_PTR));
+        roll.get_window()->set_cursor(Gdk::Cursor(Gdk::LEFT_PTR));
         m_adding = false;
     }
 }
 
-bool Seq24PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
+/**
+ *  Handles the normal variety of button-press event.
+ *
+ *  Is there any easy way to use ctrl-left-click as the middle button
+ *  here?
+ */
+
+bool
+Seq24PerfInput::on_button_press_event (GdkEventButton * a_ev, perfroll & roll)
 {
-    ths.grab_focus();
-
-
-    if (ths.m_mainperf->is_active(ths.m_drop_sequence))
+    roll.grab_focus();
+    if (roll.m_mainperf->is_active(roll.m_drop_sequence))
     {
-        ths.m_mainperf->get_sequence(ths.m_drop_sequence)->unselect_triggers();
-        ths.draw_background_on(ths.m_pixmap, ths.m_drop_sequence);
-        ths.draw_sequence_on(ths.m_pixmap, ths.m_drop_sequence);
-        ths.draw_drawable_row(ths.m_window, ths.m_pixmap, ths.m_drop_y);
+        roll.m_mainperf->get_sequence(roll.m_drop_sequence)->unselect_triggers();
+        roll.draw_background_on(roll.m_pixmap, roll.m_drop_sequence);
+        roll.draw_sequence_on(roll.m_pixmap, roll.m_drop_sequence);
+        roll.draw_drawable_row(roll.m_window, roll.m_pixmap, roll.m_drop_y);
     }
 
-    ths.m_drop_x = (int) a_ev->x;
-    ths.m_drop_y = (int) a_ev->y;
+    roll.m_drop_x = (int) a_ev->x;
+    roll.m_drop_y = (int) a_ev->y;
+    roll.convert_xy
+    (
+        roll.m_drop_x, roll.m_drop_y, &roll.m_drop_tick, &roll.m_drop_sequence
+    );
 
-    ths.convert_xy(ths.m_drop_x, ths.m_drop_y, &ths.m_drop_tick, &ths.m_drop_sequence);
-
-    /*      left mouse button     */
-    if (a_ev->button == 1)
+    if (a_ev->button == 1)                          /* left mouse button     */
     {
-
-        long tick = ths.m_drop_tick;
-
-        /* add a new note if we didnt select anything */
-        if (m_adding)
+        long tick = roll.m_drop_tick;
+        if (m_adding)         /* add a new note if we didn't select anything */
         {
-
             m_adding_pressed = true;
-
-            if (ths.m_mainperf->is_active(ths.m_drop_sequence))
+            if (roll.m_mainperf->is_active(roll.m_drop_sequence))
             {
+                long seq_length = roll.m_mainperf->
+                    get_sequence(roll.m_drop_sequence)->get_length();
 
-                long seq_length = ths.m_mainperf->get_sequence(ths.m_drop_sequence)->get_length();
-
-                bool state = ths.m_mainperf->get_sequence(ths.m_drop_sequence)->get_trigger_state(tick);
+                bool state = roll.m_mainperf->
+                    get_sequence(roll.m_drop_sequence)->get_trigger_state(tick);
 
                 if (state)
                 {
-                    ths.m_mainperf->push_trigger_undo();
-                    ths.m_mainperf->get_sequence(ths.m_drop_sequence)->del_trigger(tick);
+                    roll.m_mainperf->push_trigger_undo();
+                    roll.m_mainperf->
+                        get_sequence(roll.m_drop_sequence)->del_trigger(tick);
                 }
                 else
                 {
+                    tick = tick - (tick % seq_length); // snap to sequence length
+                    roll.m_mainperf->push_trigger_undo();
+                    roll.m_mainperf->get_sequence(roll.m_drop_sequence)->
+                        add_trigger(tick, seq_length);
 
-                    // snap to length of sequence
-                    tick = tick - (tick % seq_length);
-                    //m_adding_pressed_state = true;
-
-                    ths.m_mainperf->push_trigger_undo();
-                    ths.m_mainperf->get_sequence(ths.m_drop_sequence)->add_trigger(tick, seq_length);
-                    ths.draw_background_on(ths.m_pixmap, ths.m_drop_sequence);
-                    ths.draw_sequence_on(ths.m_pixmap, ths.m_drop_sequence);
-                    ths.draw_drawable_row(ths.m_window, ths.m_pixmap, ths.m_drop_y);
-
-                    //m_drop_tick_last = (m_drop_tick + seq_length - 1);
+                    roll.draw_background_on(roll.m_pixmap, roll.m_drop_sequence);
+                    roll.draw_sequence_on(roll.m_pixmap, roll.m_drop_sequence);
+                    roll.draw_drawable_row
+                    (
+                        roll.m_window, roll.m_pixmap, roll.m_drop_y
+                    );
                 }
             }
         }
         else
         {
-
-            if (ths.m_mainperf->is_active(ths.m_drop_sequence))
+            if (roll.m_mainperf->is_active(roll.m_drop_sequence))
             {
+                roll.m_mainperf->push_trigger_undo();
+                roll.m_mainperf->
+                    get_sequence(roll.m_drop_sequence)->select_trigger(tick);
 
-                ths.m_mainperf->push_trigger_undo();
-                ths.m_mainperf->get_sequence(ths.m_drop_sequence)->select_trigger(tick);
+                long start_tick = roll.m_mainperf->
+                    get_sequence(roll.m_drop_sequence)->
+                        get_selected_trigger_start_tick()
+                        ;
+                long end_tick = roll.m_mainperf->
+                    get_sequence(roll.m_drop_sequence)->
+                        get_selected_trigger_end_tick()
+                        ;
 
-                long start_tick = ths.m_mainperf->get_sequence(ths.m_drop_sequence)->get_selected_trigger_start_tick();
-                long end_tick = ths.m_mainperf->get_sequence(ths.m_drop_sequence)->get_selected_trigger_end_tick();
+                int wscalex = c_perfroll_size_box_click_w * c_perf_scale_x;
+                int ydrop = roll.m_drop_y % c_names_y;
 
-                if (tick >= start_tick &&
-                        tick <= start_tick + (c_perfroll_size_box_click_w * c_perf_scale_x) &&
-                        (ths.m_drop_y % c_names_y) <= c_perfroll_size_box_click_w + 1)
+                if
+                (
+                    tick >= start_tick &&
+                    tick <= start_tick + wscalex &&
+                    ydrop <= c_perfroll_size_box_click_w + 1
+                )
                 {
-                    ths.m_growing = true;
-                    ths.m_grow_direction = true;
-                    ths.m_drop_tick_trigger_offset = ths.m_drop_tick -
-                                                     ths.m_mainperf->get_sequence(ths.m_drop_sequence)->
-                                                     get_selected_trigger_start_tick();
+                    roll.m_growing = true;
+                    roll.m_grow_direction = true;
+                    roll.m_drop_tick_trigger_offset = roll.m_drop_tick -
+                         roll.m_mainperf->get_sequence(roll.m_drop_sequence)->
+                             get_selected_trigger_start_tick() ;
                 }
-                else if (tick >= end_tick - (c_perfroll_size_box_click_w * c_perf_scale_x) &&
-                         tick <= end_tick &&
-                         (ths.m_drop_y % c_names_y) >= c_names_y - c_perfroll_size_box_click_w - 1)
+                else if
+                (
+                    tick >= end_tick - wscalex &&
+                     tick <= end_tick &&
+                     ydrop >= c_names_y - c_perfroll_size_box_click_w - 1
+                )
                 {
-                    ths.m_growing = true;
-                    ths.m_grow_direction = false;
-                    ths.m_drop_tick_trigger_offset =
-                        ths.m_drop_tick -
-                        ths.m_mainperf->get_sequence(ths.m_drop_sequence)->get_selected_trigger_end_tick();
+                    roll.m_growing = true;
+                    roll.m_grow_direction = false;
+                    roll.m_drop_tick_trigger_offset = roll.m_drop_tick -
+                        roll.m_mainperf->get_sequence(roll.m_drop_sequence)->
+                            get_selected_trigger_end_tick() ;
                 }
                 else
                 {
-                    ths.m_moving = true;
-                    ths.m_drop_tick_trigger_offset = ths.m_drop_tick -
-                                                     ths.m_mainperf->get_sequence(ths.m_drop_sequence)->
-                                                     get_selected_trigger_start_tick();
-
+                    roll.m_moving = true;
+                    roll.m_drop_tick_trigger_offset = roll.m_drop_tick -
+                         roll.m_mainperf->get_sequence(roll.m_drop_sequence)->
+                             get_selected_trigger_start_tick() ;
                 }
-
-                ths.draw_background_on(ths.m_pixmap, ths.m_drop_sequence);
-                ths.draw_sequence_on(ths.m_pixmap, ths.m_drop_sequence);
-                ths.draw_drawable_row(ths.m_window, ths.m_pixmap, ths.m_drop_y);
+                roll.draw_background_on(roll.m_pixmap, roll.m_drop_sequence);
+                roll.draw_sequence_on(roll.m_pixmap, roll.m_drop_sequence);
+                roll.draw_drawable_row
+                (
+                    roll.m_window, roll.m_pixmap, roll.m_drop_y
+                );
             }
         }
     }
-
-    /*     right mouse button      */
-    if (a_ev->button == 3)
+    else if (a_ev->button == 3)                 /* right mouse button     */
     {
-        set_adding(true, ths);
+        set_adding(true, roll);
     }
-
-    /* middle, split */
-    if (a_ev->button == 2)
+    else if (a_ev->button == 2)                /* middle, split    */
     {
-        if (ths.m_mainperf->is_active(ths.m_drop_sequence))
+        if (roll.m_mainperf->is_active(roll.m_drop_sequence))
         {
-
-            bool state = ths.m_mainperf->get_sequence(ths.m_drop_sequence)->get_trigger_state(ths.m_drop_tick);
+            bool state = roll.m_mainperf->get_sequence(roll.m_drop_sequence)->
+                get_trigger_state(roll.m_drop_tick);
 
             if (state)
-            {
-                ths.split_trigger(ths.m_drop_sequence, ths.m_drop_tick);
-            }
+                roll.split_trigger(roll.m_drop_sequence, roll.m_drop_tick);
         }
     }
     return true;
 }
 
-bool Seq24PerfInput::on_button_release_event(GdkEventButton* a_ev, perfroll& ths)
+/**
+ *  Handles various button-release events.
+ *
+ *  Any use for the middle-button or ctrl-left-click we can add?
+ */
+
+bool
+Seq24PerfInput::on_button_release_event (GdkEventButton * a_ev, perfroll & roll)
 {
-    if (a_ev->button == 1)
+    if (a_ev->button == 1)                 /* left mouse button      */
     {
-
         if (m_adding)
-        {
             m_adding_pressed = false;
-        }
     }
-
-    if (a_ev->button == 3)
+    else if (a_ev->button == 3)            /* right mouse button     */
     {
         m_adding_pressed = false;
-        set_adding(false, ths);
+        set_adding(false, roll);
     }
 
-    ths.m_moving = false;
-    ths.m_growing = false;
+    roll.m_moving = false;
+    roll.m_growing = false;
     m_adding_pressed = false;
-
-    if (ths.m_mainperf->is_active(ths.m_drop_sequence))
+    if (roll.m_mainperf->is_active(roll.m_drop_sequence))
     {
-
-        ths.draw_background_on(ths.m_pixmap, ths.m_drop_sequence);
-        ths.draw_sequence_on(ths.m_pixmap, ths.m_drop_sequence);
-        ths.draw_drawable_row(ths.m_window, ths.m_pixmap, ths.m_drop_y);
+        roll.draw_background_on(roll.m_pixmap, roll.m_drop_sequence);
+        roll.draw_sequence_on(roll.m_pixmap, roll.m_drop_sequence);
+        roll.draw_drawable_row(roll.m_window, roll.m_pixmap, roll.m_drop_y);
     }
-
     return true;
 }
 
-bool Seq24PerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths)
+/**
+ *  Handles the normal motion-notify event.
+ */
+
+bool
+Seq24PerfInput::on_motion_notify_event (GdkEventMotion * a_ev, perfroll & roll)
 {
     long tick;
     int x = (int) a_ev->x;
-
     if (m_adding && m_adding_pressed)
     {
-
-        ths.convert_x(x, &tick);
-
-        if (ths.m_mainperf->is_active(ths.m_drop_sequence))
+        roll.convert_x(x, &tick);
+        if (roll.m_mainperf->is_active(roll.m_drop_sequence))
         {
+            long seq_length = roll.m_mainperf->
+                get_sequence(roll.m_drop_sequence)->get_length();
 
-            long seq_length = ths.m_mainperf->get_sequence(ths.m_drop_sequence)->get_length();
             tick = tick - (tick % seq_length);
 
-            /*long min_tick = (tick < m_drop_tick) ? tick : m_drop_tick;*/
             long length = seq_length;
+            roll.m_mainperf->get_sequence(roll.m_drop_sequence)->
+                grow_trigger(roll.m_drop_tick, tick, length);
 
-            ths.m_mainperf->get_sequence(ths.m_drop_sequence)
-            ->grow_trigger(ths.m_drop_tick, tick, length);
-            ths.draw_background_on(ths.m_pixmap, ths.m_drop_sequence);
-            ths.draw_sequence_on(ths.m_pixmap, ths.m_drop_sequence);
-            ths.draw_drawable_row(ths.m_window, ths.m_pixmap, ths.m_drop_y);
+            roll.draw_background_on(roll.m_pixmap, roll.m_drop_sequence);
+            roll.draw_sequence_on(roll.m_pixmap, roll.m_drop_sequence);
+            roll.draw_drawable_row(roll.m_window, roll.m_pixmap, roll.m_drop_y);
         }
     }
-    else if (ths.m_moving || ths.m_growing)
+    else if (roll.m_moving || roll.m_growing)
     {
-
-        if (ths.m_mainperf->is_active(ths.m_drop_sequence))
+        if (roll.m_mainperf->is_active(roll.m_drop_sequence))
         {
-
-            ths.convert_x(x, &tick);
-            tick -= ths.m_drop_tick_trigger_offset;
-
-            tick = tick - tick % ths.m_snap;
-
-            if (ths.m_moving)
+            roll.convert_x(x, &tick);
+            tick -= roll.m_drop_tick_trigger_offset;
+            tick -= tick % roll.m_snap;
+            if (roll.m_moving)
             {
-                ths.m_mainperf->get_sequence(ths.m_drop_sequence)
-                ->move_selected_triggers_to(tick, true);
+                roll.m_mainperf->get_sequence(roll.m_drop_sequence)->
+                    move_selected_triggers_to(tick, true);
             }
-            if (ths.m_growing)
+            if (roll.m_growing)
             {
-                if (ths.m_grow_direction)
-                    ths.m_mainperf->get_sequence(ths.m_drop_sequence)
-                    ->move_selected_triggers_to(tick, false, 0);
+                if (roll.m_grow_direction)
+                    roll.m_mainperf->get_sequence(roll.m_drop_sequence)->
+                        move_selected_triggers_to(tick, false, 0);
                 else
-                    ths.m_mainperf->get_sequence(ths.m_drop_sequence)
-                    ->move_selected_triggers_to(tick - 1, false, 1);
+                    roll.m_mainperf->get_sequence(roll.m_drop_sequence)->
+                        move_selected_triggers_to(tick - 1, false, 1);
             }
-
-
-            ths.draw_background_on(ths.m_pixmap, ths.m_drop_sequence);
-            ths.draw_sequence_on(ths.m_pixmap, ths.m_drop_sequence);
-            ths.draw_drawable_row(ths.m_window, ths.m_pixmap, ths.m_drop_y);
+            roll.draw_background_on(roll.m_pixmap, roll.m_drop_sequence);
+            roll.draw_sequence_on(roll.m_pixmap, roll.m_drop_sequence);
+            roll.draw_drawable_row(roll.m_window, roll.m_pixmap, roll.m_drop_y);
         }
     }
-
     return true;
 }
+
+/*
+ * perfroll_input.cpp
+ *
+ * vim: sw=4 ts=4 wm=8 et ft=cpp
+ */
