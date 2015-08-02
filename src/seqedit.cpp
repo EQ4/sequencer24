@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-01
+ * \updates       2015-08-02
  * \license       GNU GPLv2 or above
  *
  */
@@ -1413,7 +1413,7 @@ seqedit::popup_event_menu ()
     int midi_ch = m_seq->get_midi_channel();
     memset(ccs, false, sizeof(bool) * 128);
     m_seq->reset_draw_marker();
-    while (m_seq->get_next_event(&status, &cc) == true)
+    while (m_seq->get_next_event(&status, &cc))
     {
         switch (status)
         {

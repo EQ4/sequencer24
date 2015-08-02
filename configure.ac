@@ -6,7 +6,7 @@ dnl \file          configure.ac
 dnl \library       sequencer24
 dnl \author        Chris Ahlstrom
 dnl \date          2015-07-24
-dnl \update        2015-07-25
+dnl \update        2015-08-02
 dnl \version       $Revision$
 dnl \license       $XPC_SUITE_GPL_LICENSE$
 dnl
@@ -233,12 +233,11 @@ dnl Check for deprecated GTK constructs as per
 dnl http://www.murrayc.com/permalink/2011/01/18/avoiding-use-of-deprecated-api/
 dnl
 dnl Looks too difficult, errors in gtk headers. Try gtkmm-3 directly instead.
+dnl That is unworkable at this time, though.
 dnl
 dnl MM_ARG_ENABLE_WARNINGS([MM_WFLAGS],
 dnl  [-Wall],
 dnl  [-Wall -Wextra -Wno-missing-field-initializers -DGSEAL_ENABLE],
-dnl  [G GDK GDK_PIXBUF PANGO GTK])
-
 dnl  [G GDK GDK_PIXBUF PANGO GTK])
 
 dnl 4. Get external flags, if any.
@@ -251,12 +250,15 @@ AC_CHECK_LIB(rt, main, ,
     AC_MSG_ERROR([POSIX.1b RealTime Library Missing -lrt]))
 
 dnl Convert from gtkmm-2.4 to gtkmm-3.0.  It currently builds either way.
-dnl
-dnl AC_CHECK_LIB(gtkmm-2.4, _init,,
-dnl     AC_MSG_ERROR(Essential library libgtkmm-2.4 not found))
+dnl No! I was mistaken, because I had left some 2.4 paths in place below.
 
-AC_CHECK_LIB(gtkmm-3.0, _init,,
-    AC_MSG_ERROR(Essential library libgtkmm-3.0 not found))
+AC_CHECK_LIB(gtkmm-2.4, _init,,
+    AC_MSG_ERROR(Essential library libgtkmm-2.4 not found))
+
+dnl LATER:
+dnl
+dnl AC_CHECK_LIB(gtkmm-3.0, _init,,
+dnl     AC_MSG_ERROR(Essential library libgtkmm-3.0 not found))
 
 AC_CHECK_LIB(sigc-2.0, main,,
     AC_MSG_ERROR(Essential library libsigc++-2.0 not found))
@@ -310,8 +312,11 @@ AC_XPC_MINGW32
 AC_ARG_WITH(mingw32,[  --with-mingw32[=DIR]    MingW32 installation location])
 
 dnl gtkmm
+dnl
+dnl PKG_CHECK_MODULES(GTKMM, gtkmm-3.0 >= 3.0.0)
 
 PKG_CHECK_MODULES(GTKMM, gtkmm-2.4 >= 2.4.0)
+
 AC_SUBST(GTKMM_CFLAGS)
 AC_SUBST(GTKMM_LIBS)
 

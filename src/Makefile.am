@@ -6,7 +6,7 @@
 # \library    	sequencer24 application
 # \author     	Chris Ahlstrom
 # \date       	2015-07-24
-# \update      2015-07-30
+# \update      2015-08-02
 # \version    	$Revision$
 # \license    	$XPC_SUITE_GPL_LICENSE$
 #
@@ -116,6 +116,8 @@ sequencer24_SOURCES = \
 	easy_macros.cpp easy_macros.h \
 	event.cpp event.h \
 	font.cpp font.h \
+   fruityseq.cpp fruityseq.h \
+   fruityseqroll.cpp fruityseqroll.h \
 	globals.h \
    gtk_helpers.h \
 	keybindentry.cpp keybindentry.h \
@@ -140,6 +142,8 @@ sequencer24_SOURCES = \
 	perftime.cpp perftime.h \
 	platform_macros.h \
 	seq24.cpp \
+	seq24seq.cpp seq24seq.h \
+	seq24seqroll.cpp seq24seqroll.h \
 	seqdata.cpp seqdata.h \
 	seqedit.cpp seqedit.h \
 	seqevent.cpp seqevent.h \

@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-31
+ * \updates       2015-08-02
  * \license       GNU GPLv2 or above
  *
  */
@@ -52,7 +52,7 @@
 #include <gtkmm/togglebutton.h>
 #include <gtkmm/invisible.h>
 #include <gtkmm/separator.h>
-#include <gtkmm/tooltips.h>
+#include <gtkmm/tooltips.h>             // #include <gtkmm/tooltip.h>
 #include <gtkmm/invisible.h>
 #include <gtkmm/arrow.h>
 #include <gtkmm/image.h>

@@ -1,5 +1,7 @@
+#ifndef SEQ24_SEQROLL_H
+#define SEQ24_SEQROLL_H
+
 /*
- *
  *  This file is part of seq24/sequencer24.
  *
  *  seq24 is free software; you can redistribute it and/or modify
@@ -15,15 +17,20 @@
  *  You should have received a copy of the GNU General Public License
  *  along with seq24; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 
-
-#ifndef SEQ24_SEQROLL
-#define SEQ24_SEQROLL
-
-#include "sequence.h"
-#include "seqkeys.h"
+/**
+ * \file          seqroll.h
+ *
+ *  This module declares/defines the base class for ...
+ *
+ * \library       sequencer24 application
+ * \author        Seq24 team; modifications by Chris Ahlstrom
+ * \date          2015-07-24
+ * \updates       2015-08-02
+ * \license       GNU GPLv2 or above
+ *
+ */
 
 #include <gtkmm/button.h>
 #include <gtkmm/window.h>
@@ -40,10 +47,14 @@
 #include <gtkmm/adjustment.h>
 
 #include "globals.h"
-#include "seqdata.h"
-#include "seqevent.h"
-#include "perform.h"
+#include "fruityseqroll.h"
+#include "seq24seqroll.h"
 
+class sequence;
+class perform;
+class seqdata;
+class seqevent;
+class seqkeys;
 
 using namespace Gtk;
 
@@ -54,60 +65,31 @@ public:
 };
 
 class seqroll;
-struct FruitySeqRollInput
-{
-    FruitySeqRollInput() : m_adding(false), m_canadd(true), m_erase_painting(false)
-    {}
-    bool on_button_press_event(GdkEventButton* a_ev, seqroll& ths);
-    bool on_button_release_event(GdkEventButton* a_ev, seqroll& ths);
-    bool on_motion_notify_event(GdkEventMotion* a_ev, seqroll& ths);
-    void updateMousePtr(seqroll& ths);
-    bool m_adding;
-    bool m_canadd;
-    bool m_erase_painting;
-    long m_drag_paste_start_pos[2];
-};
-struct Seq24SeqRollInput
-{
-    Seq24SeqRollInput() : m_adding(false)
-    {}
-    bool on_button_press_event(GdkEventButton* a_ev, seqroll& ths);
-    bool on_button_release_event(GdkEventButton* a_ev, seqroll& ths);
-    bool on_motion_notify_event(GdkEventMotion* a_ev, seqroll& ths);
-    void set_adding(bool a_adding, seqroll& ths);
-    bool m_adding;
-};
-
 
 /* piano roll */
+
 class seqroll : public Gtk::DrawingArea
 {
+    friend struct FruitySeqRollInput;
+    friend struct Seq24SeqRollInput;
 
 private:
-    friend struct FruitySeqRollInput;
+
     FruitySeqRollInput m_fruity_interaction;
-
-    friend struct Seq24SeqRollInput;
     Seq24SeqRollInput m_seq24_interaction;
-
-
     Glib::RefPtr<Gdk::GC> m_gc;
     Glib::RefPtr<Gdk::Window>   m_window;
     Gdk::Color    m_black, m_white, m_grey, m_dk_grey, m_red;
-
     Glib::RefPtr<Gdk::Pixmap> m_pixmap;
     Glib::RefPtr<Gdk::Pixmap> m_background;
-
     rect         m_old;
     rect         m_selected;
-
     sequence     * const m_seq;
     sequence     * m_clipboard;
     perform      * const m_perform;
     seqdata      * const m_seqdata_wid;
     seqevent     * const m_seqevent_wid;
     seqkeys      * const m_seqkeys_wid;
-
     int m_pos;
 
     /* one pixel == m_zoom ticks */
@@ -147,8 +129,8 @@ private:
 
     int m_old_progress_x;
 
-    Adjustment   * const m_vadjust;
-    Adjustment   * const m_hadjust;
+    Adjustment * const m_vadjust;
+    Adjustment * const m_hadjust;
 
     int m_scroll_offset_ticks;
     int m_scroll_offset_key;
@@ -245,4 +227,10 @@ public:
     ~seqroll();
 };
 
-#endif
+#endif   // SEQ24_SEQROLL_H
+
+/*
+ * seqroll.h
+ *
+ * vim: sw=4 ts=4 wm=8 et ft=cpp
+ */

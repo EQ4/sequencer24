@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-30
+ * \updates       2015-08-02
  * \license       GNU GPLv2 or above
  *
  */
@@ -698,21 +698,19 @@ perform::add_sequence (sequence * a_seq, int a_perf)
      * Is there a usefulness in setting the sequence's tag?
      */
 
-    if (a_perf < c_max_sequence && is_active(a_perf) == false && a_perf >= 0)
+    if (a_perf < c_max_sequence && ! is_active(a_perf) && a_perf >= 0)
     {
         m_seqs[a_perf] = a_seq;
-        set_active(a_perf, true);
-        // a_seq->set_tag(a_perf);
+        set_active(a_perf, true); // a_seq->set_tag(a_perf);
     }
     else
     {
         for (int i = a_perf; i < c_max_sequence; i++)
         {
-            if (is_active(i) == false)
+            if (! is_active(i))
             {
                 m_seqs[i] = a_seq;
-                set_active(i, true);
-                // a_seq->set_tag(i);
+                set_active(i, true); // a_seq->set_tag(i);
                 break;
             }
         }
@@ -733,7 +731,7 @@ perform::set_active (int a_sequence, bool a_active)
     if (a_sequence < 0 || a_sequence >= c_max_sequence)
         return;
 
-    if (m_seqs_active[a_sequence] == true && a_active == false)
+    if (m_seqs_active[a_sequence] && ! a_active)
     {
         set_was_active(a_sequence);
     }
@@ -1306,7 +1304,7 @@ perform::set_orig_ticks (long a_tick)
 {
     for (int i = 0; i < c_max_sequence; i++)
     {
-        if (is_active(i) == true)
+        if (is_active(i))
         {
             if (not_nullptr_assert(m_seqs[i], "set_orig_ticks"))
                 m_seqs[i]->set_orig_tick(a_tick);
@@ -1325,7 +1323,7 @@ perform::set_orig_ticks (long a_tick)
 void
 perform::clear_sequence_triggers (int a_seq)
 {
-    if (is_active(a_seq) == true)
+    if (is_active(a_seq))
     {
         if (not_nullptr_assert(m_seqs[a_seq], "clear_sequence_triggers"))
             m_seqs[a_seq]->clear_triggers();
@@ -1349,7 +1347,7 @@ perform::move_triggers (bool a_direction)
         long distance = m_right_tick - m_left_tick;
         for (int i = 0; i < c_max_sequence; i++)
         {
-            if (is_active(i) == true)
+            if (is_active(i))
             {
                 if (not_nullptr_assert(m_seqs[i], "move_triggers"))
                     m_seqs[i]->move_triggers(m_left_tick, distance, a_direction);
@@ -1386,7 +1384,7 @@ perform::pop_trigger_undo ()
 {
     for (int i = 0; i < c_max_sequence; i++)
     {
-        if (is_active(i) == true)
+        if (is_active(i))
         {
             if (not_nullptr_assert(m_seqs[i], "pop_trigger_undo"))
                 m_seqs[i]->pop_trigger_undo();
@@ -1411,7 +1409,7 @@ perform::copy_triggers ()
         long distance = m_right_tick - m_left_tick;
         for (int i = 0; i < c_max_sequence; i++)
         {
-            if (is_active(i) == true)
+            if (is_active(i))
             {
                 if (not_nullptr_assert(m_seqs[i], "copy_triggers"))
                     m_seqs[i]->copy_triggers(m_left_tick, distance);
@@ -1706,7 +1704,7 @@ perform::get_max_trigger ()
     long result = 0;
     for (int i = 0; i < c_max_sequence; i++)
     {
-        if (is_active(i) == true)
+        if (is_active(i))
         {
             if (not_nullptr_assert(m_seqs[i], "get_max_trigger"))
             {
@@ -2649,7 +2647,7 @@ perform::save_playing_state ()
 {
     for (int i = 0; i < c_total_seqs; i++)
     {
-        if (is_active(i) == true)
+        if (is_active(i))
         {
             if (not_nullptr_assert(m_seqs[i], "save_playing_state"))
                 m_sequence_state[i] = m_seqs[i]->get_playing();
@@ -2669,7 +2667,7 @@ perform::restore_playing_state ()
 {
     for (int i = 0; i < c_total_seqs; i++)
     {
-        if (is_active(i) == true)
+        if (is_active(i))
         {
             if (not_nullptr_assert(m_seqs[i], "restore_playing_state"))
                 m_seqs[i]->set_playing(m_sequence_state[i]);
@@ -2716,7 +2714,7 @@ perform::unset_sequence_control_status (int a_status)
 void
 perform::sequence_playing_toggle (int a_sequence)
 {
-    if (is_active(a_sequence) == true)
+    if (is_active(a_sequence))
     {
         if (not_nullptr_assert(m_seqs[a_sequence], "sequence_playing_toggle"))
         {
@@ -2744,7 +2742,7 @@ perform::sequence_playing_toggle (int a_sequence)
 void
 perform::sequence_playing_on (int a_sequence)
 {
-    if (is_active(a_sequence) == true)
+    if (is_active(a_sequence))
     {
         if
         (
@@ -2790,7 +2788,7 @@ perform::sequence_playing_on (int a_sequence)
 void
 perform::sequence_playing_off (int a_sequence)
 {
-    if (is_active(a_sequence) == true)
+    if (is_active(a_sequence))
     {
         if
         (
