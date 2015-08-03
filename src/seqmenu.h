@@ -1,5 +1,4 @@
 /*
- *
  *  This file is part of seq24/sequencer24.
  *
  *  seq24 is free software; you can redistribute it and/or modify
@@ -15,73 +14,105 @@
  *  You should have received a copy of the GNU General Public License
  *  along with seq24; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#ifndef SEQ24_MENU_H
+#define SEQ24_MENU_H
+
+/**
+ * \file          seqmenu.h
+ *
+ *  This module declares/defines the class that handles the right-click
+ *  menu of the sequence slots in the pattern window.
+ *
+ * \library       sequencer24 application
+ * \author        Seq24 team; modifications by Chris Ahlstrom
+ * \date          2015-07-24
+ * \updates       2015-08-02
+ * \license       GNU GPLv2 or above
  *
  */
 
+#include "sequence.h"
 
-
-#include "globals.h"
-#include "perform.h"
-
+class perform;
 class seqedit;
-
-#ifndef SEQ24_MENU
-#define SEQ24_MENU
-
-
-#include <gtkmm/button.h>
-#include <gtkmm/window.h>
-#include <gtkmm/accelgroup.h>
-#include <gtkmm/box.h>
-#include <gtkmm/main.h>
-#include <gtkmm/menu.h>
-#include <gtkmm/menubar.h>
-#include <gtkmm/eventbox.h>
-#include <gtkmm/window.h>
-#include <gtkmm/table.h>
-#include <gtkmm/drawingarea.h>
-#include <gtkmm/widget.h>
-#include <gtkmm/style.h>
-
-
 
 using namespace Gtk;
 
+namespace Gtk
+{
+    class Menu;
+}
+
+/**
+ *  This class handles the right-click menu of the sequence slots in the
+ *  pattern window.
+ *
+ *  It is an abstract base class.
+ */
 
 class seqmenu : public virtual Glib::ObjectBase
 {
 
 private:
 
-    Menu         *m_menu;
-    perform      *m_mainperf;
-    sequence     m_clipboard;
+    Menu * m_menu;
+    perform * m_mainperf;
+    sequence m_clipboard;
 
-    void on_realize();
+    /**
+     * \change
+     *      Added by Chris on 2015-08-02 based on compiler warnings and a
+     *      comment warning in the seq_edit() function.  We'll save the
+     *      result of that function here, and will let valgrind tell us
+     *      later if Gtkmm takes care of it.
+     */
 
-    void seq_edit();
-    void seq_new();
-
-    void seq_copy();
-    void seq_cut();
-    void seq_paste();
-
-    void seq_clear_perf();
-
-    void set_bus_and_midi_channel(int a_bus, int a_ch);
-    void mute_all_tracks();
-
-    virtual void redraw(int a_sequence) = 0;
+    seqedit * m_seqedit;
 
 protected:
 
     int m_current_seq;
-    void popup_menu();
 
 public:
 
-    seqmenu(perform *a_p);
-    virtual ~seqmenu() { };
+    seqmenu (perform * a_p);
+
+    /**
+     *  Provides a rote base-class destructor.  This is necessary in an
+     *  abstraction base class.
+     */
+
+    virtual ~seqmenu ();
+
+protected:
+
+    void popup_menu ();
+
+private:
+
+    void seq_edit ();
+    void seq_new ();
+    void seq_copy ();
+    void seq_cut ();
+    void seq_paste ();
+    void seq_clear_perf ();
+    void set_bus_and_midi_channel (int a_bus, int a_ch);
+    void mute_all_tracks ();
+
+    virtual void redraw (int a_sequence) = 0;   // pure virtual function
+
+private:            // callback
+
+    void on_realize();
+
 };
 
-#endif
+#endif   // SEQ24_MENU_H
+
+/*
+ * seqmenu.h
+ *
+ * vim: sw=4 ts=4 wm=8 et ft=cpp
+ */

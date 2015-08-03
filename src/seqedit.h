@@ -75,7 +75,6 @@
 
 using namespace Gtk;
 
-
 /**
  *  Implements the Pattern Editor, which has references to:
  *

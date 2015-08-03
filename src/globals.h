@@ -28,18 +28,12 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-25
- * \updates       2015-07-27
+ * \updates       2015-08-02
  * \license       GNU GPLv2 or above
  *
  */
 
-#include "platform_macros.h"
-
-#ifdef PLATFORM_WINDOWS
-#include "configwin32.h"
-#else
-#include "config.h"
-#endif
+#include "easy_macros.h"                // with platform_macros.h, too
 
 #include <string>
 #include <gtkmm/main.h>

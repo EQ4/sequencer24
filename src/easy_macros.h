@@ -25,6 +25,7 @@
  */
 
 #include <stdio.h>
+
 #include "platform_macros.h"
 
 #ifdef PLATFORM_DEBUG

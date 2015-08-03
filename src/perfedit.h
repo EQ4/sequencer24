@@ -56,11 +56,6 @@ using namespace Gtk;
 
 namespace Gtk
 {
-    /*
-     * class GdkEventAny;
-     * class GdkEventkey;
-     */
-
     class Adjustment;
     class Button;
     class Entry;

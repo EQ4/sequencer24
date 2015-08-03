@@ -231,144 +231,147 @@ seqkeys::set_hint_key (int a_key)
         draw_key(a_key, true);
 }
 
-/* true == on, false == off */
+/**
+ *  Sets the hint state to the given value.
+ *
+ * \param a_state
+ *      Provides the value for hinting, where true == on, false == off.
+ */
+
 void
-seqkeys::set_hint_state(bool a_state)
+seqkeys::set_hint_state (bool a_state)
 {
     m_hint_state = a_state;
-
     if (!a_state)
         draw_key(m_hint_key, false);
 }
 
-/* a_state, false = normal, true = grayed */
+/**
+ *  Draws the given key according to the given state.
+ *
+ * \param a_key
+ *      The key to be drawn.
+ *
+ * \param a_state
+ *      How the key is to be drawn, where false == normal, true == grayed.
+ */
+
 void
-seqkeys::draw_key(int a_key, bool a_state)
+seqkeys::draw_key (int a_key, bool a_state)
 {
-
-    /* the the key in the octave */
-    int key = a_key % 12;
-
+    int key = a_key % 12;               /* the key in the octave */
     a_key = c_num_keys - a_key - 1;
-
-    if (key == 1 ||
-            key == 3 ||
-            key == 6 ||
-            key == 8 ||
-            key == 10)
-    {
-
+    if (key == 1 || key == 3 || key == 6 || key == 8 || key == 10)
         m_gc->set_foreground(m_black);
-    }
     else
         m_gc->set_foreground(m_white);
 
-
-    m_window->draw_rectangle(m_gc, true,
-                             c_keyoffset_x + 1,
-                             (c_key_y * a_key) + 2 -  m_scroll_offset_y,
-                             c_key_x - 3,
-                             c_key_y - 3);
-
+    m_window->draw_rectangle
+    (
+        m_gc, true, c_keyoffset_x + 1,
+        (c_key_y * a_key) + 2 -  m_scroll_offset_y,
+        c_key_x - 3, c_key_y - 3
+    );
     if (a_state)
     {
-
         m_gc->set_foreground(m_grey);
-
-        m_window->draw_rectangle(m_gc, true,
-                                 c_keyoffset_x + 1,
-                                 (c_key_y * a_key) + 2 - m_scroll_offset_y,
-                                 c_key_x - 3,
-                                 c_key_y - 3);
-
+        m_window->draw_rectangle
+        (
+            m_gc, true, c_keyoffset_x + 1,
+            (c_key_y * a_key) + 2 - m_scroll_offset_y,
+            c_key_x - 3, c_key_y - 3
+        );
     }
 }
 
-
+/**
+ *  Changes the y offset of the scrolling, and the forces a draw.
+ */
 
 void
-seqkeys::change_vert()
+seqkeys::change_vert ()
 {
-
     m_scroll_offset_key = (int) m_vadjust->get_value();
     m_scroll_offset_y = m_scroll_offset_key * c_key_y,
-
     force_draw();
-
 }
 
+/**
+ *  Implements the on-realize event.  Call the base-class version and then
+ *  allocates resources that could not be allocated in the constructor.
+ *  It connects the change_vert() function and then calls it.
+ */
 
 void
-seqkeys::on_realize()
+seqkeys::on_realize ()
 {
-    // we need to do the default realize
     Gtk::DrawingArea::on_realize();
-
-    // Now we can allocate any additional resources we need
     m_window = get_window();
     m_gc = Gdk::GC::create(m_window);
     m_window->clear();
-
-    m_pixmap = Gdk::Pixmap::create(m_window,
-                                   c_keyarea_x,
-                                   c_keyarea_y,
-                                   -1);
-
+    m_pixmap = Gdk::Pixmap::create(m_window, c_keyarea_x, c_keyarea_y, -1);
     update_pixmap();
-
-    m_vadjust->signal_value_changed().connect(mem_fun(*this, &seqkeys::change_vert));
-
+    m_vadjust->signal_value_changed().connect
+    (
+        mem_fun(*this, &seqkeys::change_vert)
+    );
     change_vert();
 }
 
+/**
+ *  Implements the on-expose event, by drawing on the window.
+ */
+
 bool
-seqkeys::on_expose_event(GdkEventExpose* a_e)
+seqkeys::on_expose_event (GdkEventExpose * a_e)
 {
-    m_window->draw_drawable(m_gc,
-                            m_pixmap,
-                            a_e->area.x,
-                            a_e->area.y + m_scroll_offset_y,
-                            a_e->area.x,
-                            a_e->area.y,
-                            a_e->area.width,
-                            a_e->area.height);
+    m_window->draw_drawable
+    (
+        m_gc, m_pixmap, a_e->area.x, a_e->area.y + m_scroll_offset_y,
+        a_e->area.x, a_e->area.y, a_e->area.width, a_e->area.height
+    );
     return true;
 }
 
-bool
-seqkeys::on_button_press_event(GdkEventButton *a_e)
-{
-    int y, note;
+/**
+ *  Implements the on-button-press event callback.  It currently handles
+ *  only the left button.  This button, pressed on the piano keyboard,
+ *  causes m_keying to be set to true, and the given note to play.
+ */
 
+bool
+seqkeys::on_button_press_event (GdkEventButton * a_e)
+{
     if (a_e->type == GDK_BUTTON_PRESS)
     {
-
-        y = (int) a_e->y + m_scroll_offset_y;
-
         if (a_e->button == 1)
         {
-
+            int y = int(a_e->y + m_scroll_offset_y);
+            int note;
             m_keying = true;
-
             convert_y(y, &note);
             m_seq->play_note_on(note);
-
             m_keying_note = note;
         }
     }
     return true;
 }
 
+/**
+ *  Implements the on-button-release event callback.  It currently handles
+ *  only the left button, and only if m_keying is true.
+ *
+ *  This function is used after pressing on one of the keys on the left-side
+ *  piano keyboard, to make it play, and turns off the playing of the note.
+ */
 
 bool
-seqkeys::on_button_release_event(GdkEventButton* a_e)
+seqkeys::on_button_release_event (GdkEventButton * a_e)
 {
     if (a_e->type == GDK_BUTTON_RELEASE)
     {
-
         if (a_e->button == 1 && m_keying)
         {
-
             m_keying = false;
             m_seq->play_note_off(m_keying_note);
         }
@@ -376,31 +379,26 @@ seqkeys::on_button_release_event(GdkEventButton* a_e)
     return true;
 }
 
+/**
+ *  Implements the on-motion-notify event handler.
+ */
 
 bool
-seqkeys::on_motion_notify_event(GdkEventMotion* a_p0)
+seqkeys::on_motion_notify_event (GdkEventMotion * a_p0)
 {
-
-    int y, note;
-
-    y = (int) a_p0->y + m_scroll_offset_y;
+    int note;
+    int y = (int) a_p0->y + m_scroll_offset_y;
     convert_y(y, &note);
-
     set_hint_key(note);
-
     if (m_keying)
     {
-
         if (note != m_keying_note)
         {
-
             m_seq->play_note_off(m_keying_note);
             m_seq->play_note_on(note);
             m_keying_note = note;
-
         }
     }
-
     return false;
 }
 
@@ -414,8 +412,12 @@ seqkeys::on_motion_notify_event(GdkEventMotion* a_p0)
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
+/**
+ *  Implements the on-enter notification event handler.
+ */
+
 bool
-seqkeys::on_enter_notify_event(GdkEventCrossing* a_p0)
+seqkeys::on_enter_notify_event (GdkEventCrossing * a_p0)
 {
     set_hint_state(true);
     return false;
@@ -425,59 +427,52 @@ seqkeys::on_enter_notify_event(GdkEventCrossing* a_p0)
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
+/**
+ *  Implements the on-leave notification event handler.
+ */
+
 bool
-seqkeys::on_leave_notify_event(GdkEventCrossing* p0)
+seqkeys::on_leave_notify_event (GdkEventCrossing * p0)
 {
     if (m_keying)
     {
-
         m_keying = false;
         m_seq->play_note_off(m_keying_note);
-
     }
     set_hint_state(false);
-
     return true;
 }
 
-
+/**
+ *  Implements the on-size-allocation notification event handler.
+ */
 
 void
-seqkeys::on_size_allocate(Gtk::Allocation& a_r)
+seqkeys::on_size_allocate (Gtk::Allocation & a_r)
 {
     Gtk::DrawingArea::on_size_allocate(a_r);
-
     m_window_x = a_r.get_width();
     m_window_y = a_r.get_height();
-
-
-
     queue_draw();
-
 }
 
+/**
+ *  Implements the on-scroll-event notification event handler.
+ */
 
 bool
-seqkeys::on_scroll_event(GdkEventScroll* a_ev)
+seqkeys::on_scroll_event (GdkEventScroll * a_ev)
 {
     double val = m_vadjust->get_value();
-
     if (a_ev->direction == GDK_SCROLL_UP)
-    {
         val -= m_vadjust->get_step_increment() / 6;
-    }
     else if (a_ev->direction == GDK_SCROLL_DOWN)
-    {
         val += m_vadjust->get_step_increment() / 6;
-    }
     else
-    {
         return true;
-    }
 
     m_vadjust->clamp_page(val, val + m_vadjust->get_page_size());
     return true;
-
 }
 
 /*

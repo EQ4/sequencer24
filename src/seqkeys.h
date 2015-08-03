@@ -73,6 +73,11 @@ private:
     int m_window_y;
     bool m_hint_state;
     int m_hint_key;
+
+    /**
+     *  What is this?
+     */
+
     bool m_keying;
     int m_keying_note;
     int m_scale;

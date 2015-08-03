@@ -28,14 +28,14 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-30
+ * \updates       2015-08-02
  * \license       GNU GPLv2 or above
  *
  *  This class has way too many members.
  */
 
-#include "easy_macros.h"               // nullptr and much more
-#include "globals.h"
+#include "easy_macros.h"
+#include "globals.h"               // globals, nullptr, and config headers
 #include "event.h"
 #include "mastermidibus.h"
 #include "midibus.h"
