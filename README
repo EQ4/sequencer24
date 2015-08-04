@@ -1,6 +1,6 @@
 README for Sequencer24 0.9.3
 Chris Ahlstrom
-2015-07-24 to 2015-07-31
+2015-07-24 to 2015-08-03
 
 The sequencer24 project is a gradual refactoring of seq24 0.9.2
 to bring it up to date, fix bugs, consolidate patches, convert
@@ -20,23 +20,7 @@ The Document branch, first pass, is in progress.  Light documentation, code
 prettifying, warning elimination.  Trying to get a handle on all the global
 variables and how things work.
 
-Eventually, there will be a few features to try to add:
-
-   -  A MIDI event text pane to display (and later edit) all MIDI events.
-   -  Ignore updating patterns/sequences that are empty during playback.
-   -  Add more scales.
-   -  Even more friendliness for two-button mice.
-   -  Lock the size of the Patterns Panel (expanding it just shows more
-      grey, and it resizes horizontally very slowly).
-   -  Speed up the horizontal resize on the Song/Performance Editor.
-   -  Fix issue where doing nothing causes a save prompt upon exit.
-   -  Make it possible to use Alt or Ctrl plus a sequence-toggling
-      key to bring up an edit dialog for that sequence.
-   -  Get the Song editor's "Increase size of grid" button working.
-      Also document it.
-
-There's actually not a lot to improve though, in Seq24, except to keep the
-project active and living.
+See the ROADMAP file for more information.
 
 Note that the original seq24 is pretty well documented by the following
 project, which provides a 50-page PDF file and its LaTeX source code:

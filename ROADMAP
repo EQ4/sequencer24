@@ -1,6 +1,6 @@
 Sequencer24/Seq24 Roadmap
 Chris Ahlstrom
-2015-07-23 to 2015-08-02
+2015-07-23 to 2015-08-03
 
 The starting point for the Sequencer24 project is version
 0.9.2 of seq24.  The following changes are planned:
@@ -55,6 +55,28 @@ x  -  Branch off to a "Gtkmm-3" branch.
       documentation to reflect the name changes and new project.
    -  Branch off to an "Enhancements" branch:
       -  TO BE DETERMINED.
+
+Eventually, there will be a few features and fixes to try to add:
+
+   -  A MIDI event text pane to display (and later edit) all MIDI events.
+   -  Ignore updating patterns/sequences that are empty during playback.
+   -  Add more scales.
+   -  Even more friendliness for two-button mice.
+   -  Lock the size of the Patterns Panel (expanding it just shows more
+      grey, and it resizes horizontally very slowly).
+   -  Speed up the horizontal resize on the Song/Performance Editor.
+   -  Fix issue where doing nothing causes a save prompt upon exit.
+   -  Make it possible to use Alt or Ctrl plus a sequence-toggling
+      key to bring up an edit dialog for that sequence.
+   -  Get the Song editor's "Increase size of grid" button working.
+      Also document it.
+   -  Ctrl-E in main window brings up Song Editor, but also toggles the
+      sequence controlled by key "e" (could be a bug I introduced).
+   -  Neither the Song Editor nor the Pattern Editor scroll to the next page
+      when the progress bar moves off the right.
+
+There's actually not a lot to improve though, in Seq24, except to keep the
+project active and living.
 
 Git Graph:
 

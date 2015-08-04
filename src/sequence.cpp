@@ -25,63 +25,78 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-29
+ * \updates       2015-08-03
  * \license       GNU GPLv2 or above
  *
  */
 
 #include <stdlib.h>
+
 #include "sequence.h"
 #include "seqedit.h"
 
+/**
+ *  A static clipboard for holding pattern/sequence events.
+ */
+
 std::list<event> sequence::m_list_clipboard;
 
-sequence::sequence() :
-    m_midi_channel(0),
-    m_bus(0),
+/**
+ *  Principal constructor.
+ */
 
-    m_song_mute(false),
-
-    m_masterbus(NULL),
-    m_was_playing(false),
-    m_playing(false),
-    m_recording(false),
-    m_quantized_rec(false),
-    m_thru(false),
-    m_queued(false),
-
-    m_trigger_copied(false),
-
-    m_dirty_main(true),
-    m_dirty_edit(true),
-    m_dirty_perf(true),
-    m_dirty_names(true),
-
-    m_editing(false),
-    m_raise(false),
-
-    m_name(c_dummy),
-
-    m_last_tick(0),
-    m_queued_tick(0),
-
-    m_trigger_offset(0),
-
-    m_length(4 * c_ppqn),
-    m_snap_tick(c_ppqn / 4),
-
-    m_time_beats_per_measure(4),
-    m_time_beat_width(4),
-    m_rec_vol(0)
-
-    //m_tag(0),
-
+sequence::sequence ()
+ :
+    m_list_event                (),
+    m_list_trigger              (),
+    m_trigger_clipboard         (),
+    m_list_undo                 (),
+    m_list_redo                 (),
+    m_list_trigger_undo         (),
+    m_list_trigger_redo         (),
+    m_iterator_play             (),
+    m_iterator_draw             (),
+    m_iterator_play_trigger     (),
+    m_iterator_draw_trigger     (),
+    m_midi_channel              (0),
+    m_bus                       (0),
+    m_song_mute                 (false),
+    m_notes_on                  (0),
+    m_masterbus                 (nullptr),
+    m_playing_notes             (),             // an array
+    m_was_playing               (false),
+    m_playing                   (false),
+    m_recording                 (false),
+    m_quantized_rec             (false),
+    m_thru                      (false),
+    m_queued                    (false),
+    m_trigger_copied            (false),
+    m_dirty_main                (true),
+    m_dirty_edit                (true),
+    m_dirty_perf                (true),
+    m_dirty_names               (true),
+    m_editing                   (false),
+    m_raise                     (false),
+    m_name                      (c_dummy),
+    m_last_tick                 (0),
+    m_queued_tick               (0),
+    m_trigger_offset            (0),
+    m_length                    (4*c_ppqn),
+    m_snap_tick                 (c_ppqn/4),
+    m_time_beats_per_measure    (4),
+    m_time_beat_width           (4),
+    m_rec_vol                   (0),
+    m_mutex                     ()
 {
-
-    /* no notes are playing */
-    for (int i = 0; i < c_midi_notes; i++)
+    for (int i = 0; i < c_midi_notes; i++)      /* no notes are playing */
         m_playing_notes[i] = 0;
 }
+
+/**
+ *  Pushes the list-event into the undo-list.
+ *
+ * \threadsafe
+ */
 
 void
 sequence::push_undo ()
@@ -91,12 +106,19 @@ sequence::push_undo ()
     unlock();
 }
 
+/**
+ *  If there are items on the undo list, this function pushes the
+ *  list-event into the redo-list, puts the top of the undo-list into the
+ *  list-event, pops from the undo-list, calls verify_and_link(), and then
+ *  calls unselect.
+ *
+ * \threadsafe
+ */
 
 void
 sequence::pop_undo ()
 {
     lock();
-
     if (m_list_undo.size() > 0)
     {
         m_list_redo.push(m_list_event);
@@ -105,15 +127,22 @@ sequence::pop_undo ()
         verify_and_link();
         unselect();
     }
-
     unlock();
 }
+
+/**
+ *  If there are items on the redo list, this function pushes the
+ *  list-event into the undo-list, puts the top of the redo-list into the
+ *  list-event, pops from the redo-list, calls verify_and_link(), and then
+ *  calls unselect.
+ *
+ * \threadsafe
+ */
 
 void
 sequence::pop_redo ()
 {
     lock();
-
     if (m_list_redo.size() > 0)
     {
         m_list_undo.push(m_list_event);
@@ -122,57 +151,69 @@ sequence::pop_redo ()
         verify_and_link();
         unselect();
     }
-
     unlock();
 }
+
+/**
+ *  Pushes the list-trigger into the trigger undo-list, then flags each
+ *  item in the undo-list as unselected.
+ *
+ * \threadsafe
+ */
 
 void
 sequence::push_trigger_undo ()
 {
     lock();
     m_list_trigger_undo.push(m_list_trigger);
-
     std::list<trigger>::iterator i;
-
-    for (i  = m_list_trigger_undo.top().begin();
-            i != m_list_trigger_undo.top().end(); i++)
+    for
+    (
+        i  = m_list_trigger_undo.top().begin();
+        i != m_list_trigger_undo.top().end(); i++
+    )
     {
         (*i).m_selected = false;
     }
-
-
     unlock();
 }
 
+/**
+ *  If the trigger undo-list has any items, the list-trigger is pushed
+ *  9nto the redo list, the top of the undo-list is coped into the
+ *  list-trigger, and then pops from the undo-list.
+ */
 
 void
 sequence::pop_trigger_undo ()
 {
     lock();
-
     if (m_list_trigger_undo.size() > 0)
     {
-
         m_list_trigger_redo.push(m_list_trigger);
         m_list_trigger = m_list_trigger_undo.top();
         m_list_trigger_undo.pop();
     }
-
     unlock();
 }
 
-
+/**
+ * \setter m_masterbux
+ *
+ * \threadsafe
+ */
 
 void
-sequence::set_master_midi_bus(mastermidibus *a_mmb)
+sequence::set_master_midi_bus (mastermidibus * a_mmb)
 {
     lock();
-
     m_masterbus = a_mmb;
-
     unlock();
 }
 
+/**
+ * \setter m_song_mute
+ */
 
 void
 sequence::set_song_mute(bool a_mute)
@@ -180,20 +221,34 @@ sequence::set_song_mute(bool a_mute)
     m_song_mute = a_mute;
 }
 
+/**
+ * \getter m_song_mute
+ */
+
 bool
 sequence::get_song_mute ()
 {
     return m_song_mute;
 }
 
+/**
+ * \setter m_time_beats_per_measure
+ *
+ * \threadsafe
+ */
+
 void
-sequence::set_bpm(long a_beats_per_measure)
+sequence::set_bpm (long a_beats_per_measure)
 {
     lock();
     m_time_beats_per_measure = a_beats_per_measure;
     set_dirty_mp();
     unlock();
 }
+
+/**
+ * \getter m_time_beats_per_measure
+ */
 
 long
 sequence::get_bpm ()
