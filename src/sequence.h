@@ -37,10 +37,6 @@
 #include <list>
 #include <stack>
 
-class sequence;
-
-#include "midibus_common.h"
-
 #ifdef PLATFORM_WINDOWS
 #include "midibus_portmidi.h"
 #else
@@ -166,10 +162,10 @@ private:
     std::list<trigger> m_list_trigger;
     trigger m_trigger_clipboard;
 
-    stack<std::list<event> > m_list_undo;
-    stack<std::list<event> > m_list_redo;
-    stack<std::list<trigger> > m_list_trigger_undo;
-    stack<std::list<trigger> > m_list_trigger_redo;
+    std::stack<std::list<event> > m_list_undo;
+    std::stack<std::list<event> > m_list_redo;
+    std::stack<std::list<trigger> > m_list_trigger_undo;
+    std::stack<std::list<trigger> > m_list_trigger_redo;
 
     /* markers */
 
@@ -318,55 +314,33 @@ public:
 
     void set_length (long a_len, bool a_adjust_triggers = true); /* in ticks */
     long get_length ();
-
-    /* returns last tick played..  used by
-       editors idle function */
     long get_last_tick ();
-
-    /* sets state.  when playing,
-       and sequencer is running, notes
-       get dumped to the alsa buffers */
     void set_playing (bool);
     bool get_playing ();
     void toggle_playing ();
-
     void toggle_queued ();
     void off_queued ();
     bool get_queued ();
     long get_queued_tick ();
-
     void set_recording (bool);
     bool get_recording ();
     void set_snap_tick (int a_st);
     void set_quantized_rec (bool a_qr);
-    bool get_quanidez_rec ();
-
+    bool get_quantized_rec ();
     void set_thru (bool);
     bool get_thru ();
-
-    /* Signals that a redraw is needed from recording.
-     * resets the flag upon call.
-     */
     bool is_dirty_main ();
     bool is_dirty_edit ();
     bool is_dirty_perf ();
     bool is_dirty_names ();
-
     void set_dirty_mp ();
     void set_dirty ();
-
     unsigned char get_midi_channel ();
     void set_midi_channel (unsigned char a_ch);
-
     void print ();
     void print_triggers ();
-
-    /* dumps notes from tick and prebuffers to
-       ahead.  Called by sequencer thread - performance */
     void play (long a_tick, bool a_playback_mode);
     void set_orig_tick (long a_tick);
-
-    /* adds event to internal list */
     void add_event (const event * a_e);
     void add_trigger
     (
@@ -379,7 +353,6 @@ public:
     bool get_trigger_state (long a_tick);
     bool select_trigger (long a_tick);
     bool unselect_triggers ();
-
     bool intersectTriggers (long position, long & start, long & end);
     bool intersectNotes
     (
@@ -402,134 +375,86 @@ public:
     void copy_triggers (long a_start_tick, long a_distance);
     void clear_triggers ();
     long get_trigger_offset ();
-
-    /* sets the midibus to dump to */
     void set_midi_bus (char a_mb);
     char get_midi_bus ();
-
     void set_master_midi_bus (mastermidibus * a_mmb);
-
-    /* select note events in range, returns number
-       selected */
-    int select_note_events (long a_tick_s, int a_note_h,
-                           long a_tick_f, int a_note_l, select_action_e a_action);
-
-    /* select events in range, returns number
-       selected */
-    int select_events (long a_tick_s, long a_tick_f,
-                      unsigned char a_status, unsigned char a_cc, select_action_e a_action);
-
+    int select_note_events
+    (
+        long a_tick_s, int a_note_h,
+        long a_tick_f, int a_note_l, select_action_e a_action
+    );
+    int select_events
+    (
+        long a_tick_s, long a_tick_f,
+        unsigned char a_status, unsigned char a_cc, select_action_e a_action
+    );
+    int select_events
+    (
+        unsigned char a_status, unsigned char a_cc, bool a_inverse = false
+    );
     int get_num_selected_notes ();
     int get_num_selected_events (unsigned char a_status, unsigned char a_cc);
-
     void select_all ();
-
     void copy_selected ();
     void paste_selected (long a_tick, int a_note);
-
-    /* returns the 'box' of selected items */
     void get_selected_box
     (
         long * a_tick_s, int * a_note_h, long * a_tick_f, int * a_note_l
     );
-
-    /* returns the 'box' of selected items */
     void get_clipboard_box
     (
         long * a_tick_s, int * a_note_h, long * a_tick_f, int * a_note_l
     );
-
-    /* removes and adds readds selected in position */
     void move_selected_notes (long a_delta_tick, int a_delta_note);
-
-    /* adds a single note on / note off pair */
     void add_note (long a_tick, long a_length, int a_note, bool a_paint = false);
     void add_event
     (
         long a_tick, unsigned char a_status,
         unsigned char a_d0, unsigned char a_d1, bool a_paint = false
     );
-
     void stream_event (event * a_ev);
-
-    /* changes velocities in a ramping way from vel_s to vel_f  */
     void change_event_data_range
     (
         long a_tick_s, long a_tick_f,
         unsigned char a_status, unsigned char a_cc,
         int a_d_s, int a_d_f
     );
-
-    /* moves note off event */
     void increment_selected (unsigned char a_status, unsigned char a_control);
     void decrement_selected (unsigned char a_status, unsigned char a_control);
-
-    /* moves note off event */
     void grow_selected (long a_delta_tick);
     void stretch_selected (long a_delta_tick);
-
-    /* deletes events */
     void remove_marked ();
     void mark_selected ();
     void unpaint_all ();
-
-    /* unselects every event */
     void unselect ();
-
-    /* verfies state, all noteons have an off,
-       links noteoffs with their ons */
     void verify_and_link ();
     void link_new ();
-
-    /* resets everything to zero, used when
-       sequencer stops */
     void zero_markers ();
-
-    /* flushes a note to the midibus to preview its
-       sound, used by the virtual paino */
     void play_note_on (int a_note);
     void play_note_off (int a_note);
-
-    /* send a note off for all active notes */
     void off_playing_notes ();
-
-    /* resets draw marker so calls to getNextnoteEvent
-       will start from the first */
     void reset_draw_marker ();
     void reset_draw_trigger_marker ();
-
-    /* each call seqdata( sequence *a_seq, int a_scale );fills the passed refrences with a
-       events elements, and returns true.  When it
-       has no more events, returns a false */
     draw_type get_next_note_event
     (
         long * a_tick_s, long * a_tick_f, int * a_note,
-        bool * a_selected, int * a_velocity);
-
+        bool * a_selected, int * a_velocity
+    );
     int get_lowest_note_event ();
     int get_highest_note_event ();
-
     bool get_next_event
     (
         unsigned char a_status, unsigned char a_cc,
         long * a_tick, unsigned char * a_D0, unsigned char * a_D1,
         bool * a_selected
     );
-
     bool get_next_event (unsigned char * a_status, unsigned char * a_cc);
-
     bool get_next_trigger
     (
         long * a_tick_on, long * a_tick_off,
         bool * a_selected, long * a_tick_offset
     );
-
     void fill_list (std::list<char> * a_list, int a_pos);
-
-    void select_events
-    (
-        unsigned char a_status, unsigned char a_cc, bool a_inverse = false
-    );
     void quantize_events
     (
         unsigned char a_status, unsigned char a_cc,
@@ -539,23 +464,13 @@ public:
 
 private:
 
-    /* takes an event this sequence is holding and places it on our midibus */
-
     void put_event_on_bus (event * a_e);
-
-    /* resets the location counters */
-
-    void reset_loop ();
     void remove_all ();
-
     void lock ();
     void unlock ();
-
-    /* sets m_trigger_offset and wraps it to length */
-
     void set_trigger_offset (long a_trigger_offset);
     void split_trigger (trigger & trig, long a_split_tick);
-    void adjust_trigger_offsets_to_legnth( long a_new_len);
+    void adjust_trigger_offsets_to_length( long a_new_len);
     long adjust_offset (long a_offset);
     void remove (std::list<event>::iterator i);
     void remove (event * e);
