@@ -55,6 +55,10 @@ struct FruitySeqRollInput
     bool m_erase_painting;
     long m_drag_paste_start_pos[2];
 
+    /**
+     * Default constructor.
+     */
+
     FruitySeqRollInput() :
         m_adding        (false),
         m_canadd        (true),

@@ -28,23 +28,16 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-31
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
-
-#include "sequence.h"
-#include "perform.h"
 
 #include <list>
 #include <string>
 #include <gtkmm/widget.h>       // somehow, can't forward-declare GdkEventAny
 
 #include "globals.h"
-#include "mainwid.h"
-#include "perfnames.h"
-#include "perfroll.h"
-#include "perftime.h"
 
 using namespace Gtk;
 
@@ -69,6 +62,7 @@ namespace Gtk
 }
 
 class perfnames;
+class perform;
 class perfroll;
 class perftime;
 
@@ -94,41 +88,31 @@ class perfedit: public Gtk::Window
 private:
 
     perform * m_mainperf;
-
     Table * m_table;
     Adjustment * m_vadjust;
     Adjustment * m_hadjust;
     VScrollbar * m_vscroll;
     HScrollbar * m_hscroll;
-
     perfnames * m_perfnames;
     perfroll * m_perfroll;
     perftime * m_perftime;
-
     Menu * m_menu_snap;
     Button * m_button_snap;
     Entry * m_entry_snap;
-
     Button * m_button_stop;
     Button * m_button_play;
     ToggleButton * m_button_loop;
-
     Button * m_button_expand;
     Button * m_button_collapse;
     Button * m_button_copy;
-
     Button * m_button_grow;
     Button * m_button_undo;
-
     Button * m_button_bpm;
     Entry * m_entry_bpm;
-
     Button * m_button_bw;
     Entry * m_entry_bw;
-
     HBox * m_hbox;
     HBox * m_hlbox;
-
     Tooltips * m_tooltips;
 
     /**

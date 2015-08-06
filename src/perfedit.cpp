@@ -62,7 +62,10 @@
 #include "easy_macros.h"
 #include "gtk_helpers.h"
 #include "perfedit.h"
-#include "sequence.h"
+#include "perform.h"
+#include "perfnames.h"
+#include "perfroll.h"
+#include "perftime.h"
 
 #include "pixmaps/snap.xpm"
 #include "pixmaps/play2.xpm"

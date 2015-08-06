@@ -28,20 +28,26 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-30
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
-#include "perform.h"
 #include "configfile.h"
+
+class perform;
+
+/**
+ *  Provides a file for reading and writing the application' main
+ *  configuration file.
+ */
 
 class optionsfile : public configfile
 {
 
 public:
 
-    optionsfile (const Glib::ustring & a_name);
+    optionsfile (const std::string & a_name);
     ~optionsfile ();
 
     bool parse (perform * a_perf);

@@ -27,24 +27,18 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-26
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
-#include "platform_macros.h"
-
-#ifdef PLATFORM_WINDOWS
-#include "configwin32.h"
-#else
-#include "config.h"
-#endif
-
-#include "perform.h"
+#include "easy_macros.h"               // platform and debugging macros
 
 #ifdef LASH_SUPPORT
 #include <lash/lash.h>
 #endif
+
+class perform;
 
 /**
  *  This class supports LASH operations, if compiled with LASH support
@@ -65,15 +59,17 @@ private:
     lash_client_t * m_client;
     lash_args_t * m_lash_args;
 
-    bool process_events();
-    void handle_event(lash_event_t* conf);
-    void handle_config(lash_config_t* conf);
+private:
+
+    bool process_events ();
+    void handle_event (lash_event_t * conf);
+    void handle_config (lash_config_t * conf);
 
 #endif // LASH_SUPPORT
 
 public:
 
-    lash (int argc, char **argv);
+    lash (int argc, char ** argv);
     void init (perform * perform);
     void set_alsa_client_id (int id);
     void start ();

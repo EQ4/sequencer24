@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-26
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
@@ -36,6 +36,7 @@
 #include "easy_macros.h"
 #include "lash.h"
 #include "midifile.h"
+#include "perform.h"
 
 /**
  *  This constructor calls lash_extract(), using the command-line
@@ -43,7 +44,13 @@
  *  argc and argv here and in the client code in the seq24 module.
  */
 
-lash::lash (int argc, char **argv)
+lash::lash (int argc, char ** argv)
+#ifdef LASH_SUPPORT
+ :
+    m_perform       (nullptr),
+    m_client        (nullptr),
+    m_lash_args     (nullptr)
+#endif // LASH_SUPPORT
 {
 #ifdef LASH_SUPPORT
     m_lash_args = lash_extract_args(&argc, &argv);

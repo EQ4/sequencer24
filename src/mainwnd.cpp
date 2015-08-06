@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-26
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
@@ -63,24 +63,34 @@ bool is_pattern_playing = false;
 
 mainwnd::mainwnd (perform * a_p)
  :
-    Gtk::Window     (),
-    performcallback (),
-    m_mainperf      (a_p),
-    m_modified      (false),
+    Gtk::Window             (),
+    performcallback         (),
+    m_mainperf              (a_p),
+    m_modified              (false),
 #if GTK_MINOR_VERSION < 12
-    m_tooltips      (manage(new Tooltips())),
+    m_tooltips              (manage(new Tooltips())),
 #endif
-    m_menubar       (manage(new MenuBar())),
-    m_menu_file     (manage(new Menu())),
-    m_menu_view     (manage(new Menu())),
-    m_menu_help     (manage(new Menu())),
-    m_main_wid      (manage(new mainwid(m_mainperf))),
-    m_main_time     (manage(new maintime())),
-    m_options       (NULL)
-
-    /*
-     * A lot more members should be listed here.
-     */
+    m_menubar               (manage(new MenuBar())),
+    m_menu_file             (manage(new Menu())),
+    m_menu_view             (manage(new Menu())),
+    m_menu_help             (manage(new Menu())),
+    m_main_wid              (manage(new mainwid(m_mainperf))),
+    m_main_time             (manage(new maintime())),
+    m_perf_edit             (new perfedit(m_mainperf)),     // copy construct
+    m_options               (nullptr),
+    m_main_cursor           (),
+    m_button_learn          (nullptr),
+    m_button_stop           (nullptr),
+    m_button_play           (nullptr),
+    m_button_perfedit       (nullptr),
+    m_spinbutton_bpm        (nullptr),
+    m_adjust_bpm            (nullptr),
+    m_spinbutton_ss         (nullptr),
+    m_adjust_ss             (nullptr),
+    m_spinbutton_load_offset(nullptr),
+    m_adjust_load_offset    (nullptr),
+    m_entry_notes           (nullptr),
+    m_timeout_connect       ()                              // handler?
 {
     set_icon(Gdk::Pixbuf::create_from_xpm_data(seq24_32_xpm));
     m_mainperf->m_notify.push_back(this);           // register for notification
@@ -354,8 +364,8 @@ mainwnd::mainwnd (perform * a_p)
     (
         mem_fun(*this, &mainwnd::timer_callback), 25
     );
-    m_perf_edit = new perfedit(m_mainperf);
-    m_sigpipe[0] = -1;
+    // m_perf_edit = new perfedit(m_mainperf);
+    m_sigpipe[0] = -1;                      // initialize static array
     m_sigpipe[1] = -1;
     install_signal_handlers();
 }
@@ -608,12 +618,11 @@ mainwnd::file_save_as ()
  */
 
 void
-mainwnd::open_file (const Glib::ustring & fn)
+mainwnd::open_file (const std::string & fn)
 {
     bool result;
-    m_mainperf->clear_all();
-
     midifile f(fn);                    // create object to represent file
+    m_mainperf->clear_all();
     result = f.parse(m_mainperf, 0);
     m_modified = ! result;
     if (! result)
@@ -721,7 +730,7 @@ bool mainwnd::save_file ()
 
 int mainwnd::query_save_changes ()
 {
-    Glib::ustring query_str;
+    std::string query_str;
     if (global_filename == "")
         query_str = "Unnamed file was changed.\nSave changes?";
     else
@@ -912,18 +921,18 @@ mainwnd::about_dialog ()
     dialog.set_comments("Interactive MIDI Sequencer\n");
     dialog.set_copyright
     (
-        "(C) 2002 - 2006 Rob C. Buse\n"
-        "(C) 2008 - 2010 Seq24team"
-        "(C) 2015 Chris Ahlstrom"
+        "(C) 2002 - 2006 Rob C. Buse (Seq24)\n"
+        "(C) 2008 - 2010 Seq24team (Seq24)\n"
+        "(C) 2015 Chris Ahlstrom (Sequencer24)"
     );
     dialog.set_website
     (
         "http://www.filter24.org/seq24\n"
-        "http://edge.launchpad.net/seq24"
+        "http://edge.launchpad.net/seq24\n"
         "https://github.com/ahlstromcj/sequencer24.git"
     );
 
-    std::list<Glib::ustring> list_authors;
+    std::list<std::string> list_authors;
     list_authors.push_back("Rob C. Buse <rcb@filter24.org>");
     list_authors.push_back("Ivan Hernandez <ihernandez@kiusys.com>");
     list_authors.push_back("Guido Scholz <guido.scholz@bayernline.de>");
@@ -937,12 +946,14 @@ mainwnd::about_dialog ()
     list_authors.push_back("Chris Ahlstrom<ahlstromcj@gmail.com>");
     dialog.set_authors(list_authors);
 
-    std::list<Glib::ustring> list_documenters;
+    std::list<std::string> list_documenters;
     list_documenters.push_back("Dana Olson <seq24@ubuntustudio.com>");
     list_documenters.push_back("Chris Ahlstrom<ahlstromcj@gmail.com>");
-    list_documenters.push_back("https://github.com/ahlstromcj/seq24-doc.git");
+    list_documenters.push_back
+    (
+        "See <https://github.com/ahlstromcj/seq24-doc.git>"
+    );
     dialog.set_documenters(list_documenters);
-
     dialog.show_all_children();
     dialog.run();
 }
@@ -1115,7 +1126,7 @@ mainwnd::on_key_press_event (GdkEventKey * a_ev)
             m_mainperf->set_mode_group_learn();
         }
 
-        if (m_mainperf->get_key_groups()->count(a_ev->keyval) != 0)
+        if (m_mainperf->get_key_groups().count(a_ev->keyval) != 0)
         {
             // activate mute group key
 
@@ -1133,7 +1144,7 @@ mainwnd::on_key_press_event (GdkEventKey * a_ev)
         {
             // mute group learn
 
-            if (m_mainperf->get_key_groups()->count(a_ev->keyval) != 0)
+            if (m_mainperf->get_key_groups().count(a_ev->keyval) != 0)
             {
                 std::ostringstream os;
                 os << "Key \""
@@ -1214,7 +1225,7 @@ mainwnd::on_key_press_event (GdkEventKey * a_ev)
          * Toggle the sequence mute/unmute setting using keyboard keys.
          */
 
-        if (m_mainperf->get_key_events()->count(a_ev->keyval) != 0)
+        if (m_mainperf->get_key_events().count(a_ev->keyval) != 0)
         {
             sequence_key(m_mainperf->lookup_keyevent_seq(a_ev->keyval));
         }
@@ -1283,9 +1294,7 @@ void
 mainwnd::handle_signal (int sig)
 {
     if (write(m_sigpipe[1], &sig, sizeof(sig)) == -1)
-    {
         printf("signal write() failed: %s\n", std::strerror(errno));
-    }
 }
 
 /**

@@ -24,15 +24,13 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-26
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
-#include <string>
 #include "easy_macros.h"
 #include "font.h"
-#include "string.h"
 #include "pixmaps/font_w.xpm"
 #include "pixmaps/font_b.xpm"
 
@@ -40,7 +38,12 @@
  *    Rote default constructor.
  */
 
-font::font()
+font::font ()
+ :
+    m_pixmap        (),
+    m_black_pixmap  (),
+    m_white_pixmap  (),
+    m_clip_mask     ()
 {
    // empty body
 }

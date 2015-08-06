@@ -27,12 +27,11 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-30
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
-#include <fstream>
 #include <string>
 #include <list>
 #include <vector>
@@ -71,7 +70,7 @@ private:
 
 public:
 
-    midifile (const Glib::ustring &);
+    midifile (const std::string &);
     ~midifile ();
 
     bool parse (perform * a_perf, int a_screen_set);

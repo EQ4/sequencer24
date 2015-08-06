@@ -29,12 +29,12 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-26
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
-#include "globals.h"
+#include "globals.h"                   // Gtk::DrawingArea, etc.
 
 const int c_maintime_x = 300;
 const int c_maintime_y = 10;
@@ -56,15 +56,15 @@ private:
     Gdk::Color m_grey;
     long m_tick;
 
-private:
-
-    void on_realize();
-    bool on_expose_event(GdkEventExpose* a_ev);
-
 public:
 
-    int idle_progress(long a_ticks);
-    maintime();
+    maintime ();
+    int idle_progress (long a_ticks);
+
+private:        // callbacks
+
+    void on_realize ();
+    bool on_expose_event (GdkEventExpose * a_ev);
 
 };
 

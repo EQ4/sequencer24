@@ -27,12 +27,11 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-28
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
-#include <stdio.h>
 #include "globals.h"
 
 /**
@@ -148,15 +147,21 @@ private:
     bool m_has_link;
 
     /**
-     *  Answers the question "is this event selected in editing */
+     *  Answers the question "is this event selected in editing.
+     */
+
     bool m_selected;
 
     /**
-     *  Answers the question "is this event marked in processing */
+     *  Answers the question "is this event marked in processing.
+     */
+
     bool m_marked;
 
     /**
-     *  Answers the question "is this event being painted */
+     *  Answers the question "is this event being painted.
+     */
+
     bool m_painted;
 
 public:

@@ -24,56 +24,120 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-02
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
 #include <sched.h>
 #include <stdio.h>
+
 #ifndef PLATFORM_WINDOWS
 #include <time.h>
 #endif
+
 #include <gtkmm/accelkey.h>            // For keys
+#include <gtkmm/main.h>                // Gtk::Main
 
 #include "perform.h"
 #include "midibus.h"
+#include "midifile.h"
 #include "event.h"
+#include "sequence.h"
 
 using namespace Gtk;
 
 /**
- *  This construction initializes a number of member variables.
- *
- *  MUST ADD MEMBER INIT-LIST HERE!!!!
+ *  This construction initializes a vast number of member variables, some
+ *  of them public!
  */
 
 perform::perform ()
+ :
+    m_mute_group                (),     // boolean array
+    m_tracks_mute_state         (),     // boolean array
+    m_mode_group                (true),
+    m_mode_group_learn          (false),
+    m_mute_group_selected       (0),
+    m_playing_screen            (0),
+    m_seqs                      (),     // pointer array
+    m_seqs_active               (),     // boolean array
+    m_was_active_main           (),     // boolean array
+    m_was_active_edit           (),     // boolean array
+    m_was_active_perf           (),     // boolean array
+    m_was_active_names          (),     // boolean array
+    m_sequence_state            (),     // boolean array
+    m_master_bus                (),
+    m_out_thread                (),
+    m_in_thread                 (),
+    m_out_thread_launched       (false),
+    m_in_thread_launched        (false),
+    m_running                   (false),
+    m_inputing                  (true),
+    m_outputing                 (true),
+    m_looping                   (false),
+    m_playback_mode             (false),
+//  m_thread_trigger_width_ms   (0),
+    m_left_tick                 (0),
+    m_right_tick                (c_ppqn * 16),
+    m_starting_tick             (0),
+    m_tick                      (0),
+    m_usemidiclock              (false),
+    m_midiclockrunning          (false),
+    m_midiclocktick             (0),
+    m_midiclockpos              (-1),
+    m_show_ui_sequence_key      (true),
+    m_screen_set_notepad        (),     // string array
+    m_midi_cc_toggle            (),     // midi_control array
+    m_midi_cc_on                (),     // midi_control array
+    m_midi_cc_off               (),     // midi_control array
+    m_offset                    (0),
+    m_control_status            (0),
+    m_screen_set                (0),
+    m_condition_var             (),
+    m_key_events                (),
+    m_key_groups                (),
+    m_key_events_rev            (),
+    m_key_groups_rev            (),
+#ifdef JACK_SUPPORT
+    m_jack_client               (nullptr),
+    m_jack_frame_current        (),
+    m_jack_frame_last           (),
+    m_jack_pos                  (),
+    m_jack_transport_state      (),
+    m_jack_transport_state_last (),
+    m_jack_tick                 (0.0),
+#ifdef JACK_SESSION
+    m_jsession_ev               (nullptr),
+#endif  // JACK_SESSION
+#endif  // JACK_SUPPORT
+    m_jack_running              (false),
+    m_jack_master               (false),
+
+// public members:
+
+    m_notify                    (), // vector of pointers
+    m_key_bpm_up                (GDK_apostrophe),
+    m_key_bpm_dn                (GDK_semicolon),
+    m_key_replace               (GDK_Control_L),
+    m_key_queue                 (GDK_Control_R),
+    m_key_keep_queue            (GDK_backslash),
+    m_key_snapshot_1            (GDK_Alt_L),
+    m_key_snapshot_2            (GDK_Alt_R),
+    m_key_screenset_up          (GDK_bracketright),
+    m_key_screenset_dn          (GDK_bracketleft),
+    m_key_set_playing_screenset (GDK_Home),
+    m_key_group_on              (GDK_igrave),
+    m_key_group_off             (GDK_apostrophe),       // a repeat
+    m_key_group_learn           (GDK_Insert),
+    m_key_start                 (GDK_space),
+    m_key_stop                  (GDK_Escape)
 {
     for (int i = 0; i < c_max_sequence; i++)
     {
         m_seqs[i] = nullptr;
         m_seqs_active[i] = false;
     }
-
-    m_mute_group_selected = 0;
-    m_mode_group = true;
-    m_running = false;
-    m_looping = false;
-    m_inputing = true;
-    m_outputing = true;
-    m_tick = 0;
-    m_midiclockrunning = false;
-    m_usemidiclock = false;
-    m_midiclocktick = 0;
-    m_midiclockpos = -1;
-
-    thread_trigger_width_ms = c_thread_trigger_width_ms;
-
-    m_left_tick = 0;
-    m_right_tick = c_ppqn * 16;
-    m_starting_tick = 0;
-
     midi_control zero =
     {
         false,          // m_active;
@@ -83,16 +147,12 @@ perform::perform ()
         0,              // m_min_value;
         0               // m_max_value;
     };
-
     for (int i = 0; i < c_midi_controls; i++)
     {
         m_midi_cc_toggle[i] = zero;
         m_midi_cc_on[i] = zero;
         m_midi_cc_off[i] = zero;
     }
-
-    m_show_ui_sequence_key = true;
-
     set_key_event(GDK_1, 0);
     set_key_event(GDK_q, 1);
     set_key_event(GDK_a, 2);
@@ -158,35 +218,6 @@ perform::perform ()
     set_key_group(GDK_X, 25);
     set_key_group(GDK_Y, 13);
     set_key_group(GDK_Z, 24);
-
-    m_key_bpm_up = GDK_apostrophe;
-    m_key_bpm_dn = GDK_semicolon;
-
-    m_key_replace = GDK_Control_L;
-    m_key_queue = GDK_Control_R;
-    m_key_snapshot_1 = GDK_Alt_L;
-    m_key_snapshot_2 = GDK_Alt_R;
-    m_key_keep_queue = GDK_backslash;
-
-    m_key_screenset_up = GDK_bracketright;
-    m_key_screenset_dn = GDK_bracketleft;
-    m_key_set_playing_screenset = GDK_Home;
-    m_key_group_on = GDK_igrave;
-    m_key_group_off = GDK_apostrophe;
-    m_key_group_learn = GDK_Insert;
-
-    m_key_start  = GDK_space;
-    m_key_stop   = GDK_Escape;
-
-    m_offset = 0;
-    m_control_status = 0;
-    m_screen_set = 0;
-
-    m_jack_running = false;
-    m_jack_master = false;
-
-    m_out_thread_launched = false;
-    m_in_thread_launched = false;
 }
 
 /**
@@ -200,8 +231,7 @@ perform::~perform ()
     m_inputing = false;
     m_outputing = false;
     m_running = false;
-    m_condition_var.signal();
-
+    m_condition_var.signal();                   // signal the end
     if (m_out_thread_launched)
         pthread_join(m_out_thread, NULL);
 
@@ -211,9 +241,7 @@ perform::~perform ()
     for (int i = 0; i < c_max_sequence; i++)
     {
         if (is_active(i))
-        {
             delete m_seqs[i];
-        }
     }
 }
 
@@ -1841,7 +1869,7 @@ int jack_sync_callback
  *  applied to seq24 v.0.9.2.  It put quotes around the --file argument.
  *
  *  Why are we using a Glib::ustring here?  Convenience.  But with
- *  C++11, we could use a lexical_cast<>.
+ *  C++11, we could use a lexical_cast<>.  No more ustring, baby!
  *
  *  It doesn't really matter; this function can call Gtk::Main::quit().
  *
@@ -1849,9 +1877,9 @@ int jack_sync_callback
 
 bool perform::jack_session_event ()
 {
-    Glib::ustring fname(m_jsession_ev->session_dir);
+    std::string fname(m_jsession_ev->session_dir);
     fname += "file.mid";
-    Glib::ustring cmd
+    std::string cmd
     (
         "seq24 --file \"${SESSION_DIR}file.mid\" --jack_session_uuid "
     );
@@ -2841,31 +2869,31 @@ perform::set_key_event (unsigned int keycode, long sequence_slot)
      * Unhook the previous binding.
      */
 
-    SlotMap::iterator it1 = key_events.find(keycode);
-    if (it1 != key_events.end())
+    SlotMap::iterator it1 = m_key_events.find(keycode);
+    if (it1 != m_key_events.end())
     {
-        RevSlotMap::iterator i = key_events_rev.find(it1->second);
-        if (i != key_events_rev.end())
-            key_events_rev.erase(i);
+        RevSlotMap::iterator i = m_key_events_rev.find(it1->second);
+        if (i != m_key_events_rev.end())
+            m_key_events_rev.erase(i);
 
-        key_events.erase(it1);
+        m_key_events.erase(it1);
     }
-    RevSlotMap::iterator it2 = key_events_rev.find(sequence_slot);
-    if (it2 != key_events_rev.end())
+    RevSlotMap::iterator it2 = m_key_events_rev.find(sequence_slot);
+    if (it2 != m_key_events_rev.end())
     {
-        SlotMap::iterator i = key_events.find(it2->second);
-        if (i != key_events.end())
-            key_events.erase(i);
+        SlotMap::iterator i = m_key_events.find(it2->second);
+        if (i != m_key_events.end())
+            m_key_events.erase(i);
 
-        key_events_rev.erase(it2);
+        m_key_events_rev.erase(it2);
     }
 
     /*
      * Set the new binding.
      */
 
-    key_events[keycode] = sequence_slot;
-    key_events_rev[sequence_slot] = keycode;
+    m_key_events[keycode] = sequence_slot;
+    m_key_events_rev[sequence_slot] = keycode;
 }
 
 /**
@@ -2883,31 +2911,31 @@ perform::set_key_group (unsigned int keycode, long group_slot)
      * Unhook previous binding.
      */
 
-    SlotMap::iterator it1 = key_groups.find(keycode);
-    if (it1 != key_groups.end())
+    SlotMap::iterator it1 = m_key_groups.find(keycode);
+    if (it1 != m_key_groups.end())
     {
-        RevSlotMap::iterator i = key_groups_rev.find(it1->second);
-        if (i != key_groups_rev.end())
-            key_groups_rev.erase(i);
+        RevSlotMap::iterator i = m_key_groups_rev.find(it1->second);
+        if (i != m_key_groups_rev.end())
+            m_key_groups_rev.erase(i);
 
-        key_groups.erase(it1);
+        m_key_groups.erase(it1);
     }
-    RevSlotMap::iterator it2 = key_groups_rev.find(group_slot);
-    if (it2 != key_groups_rev.end())
+    RevSlotMap::iterator it2 = m_key_groups_rev.find(group_slot);
+    if (it2 != m_key_groups_rev.end())
     {
-        SlotMap::iterator i = key_groups.find(it2->second);
-        if (i != key_groups.end())
-            key_groups.erase(i);
+        SlotMap::iterator i = m_key_groups.find(it2->second);
+        if (i != m_key_groups.end())
+            m_key_groups.erase(i);
 
-        key_groups_rev.erase(it2);
+        m_key_groups_rev.erase(it2);
     }
 
     /*
      * Set the new binding.
      */
 
-    key_groups[keycode] = group_slot;
-    key_groups_rev[group_slot] = keycode;
+    m_key_groups[keycode] = group_slot;
+    m_key_groups_rev[group_slot] = keycode;
 }
 
 

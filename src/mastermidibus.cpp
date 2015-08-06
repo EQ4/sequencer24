@@ -33,6 +33,7 @@
  */
 
 #include "easy_macros.h"
+#include "mastermidibus.h"
 #include "midibus.h"
 
 #ifdef HAVE_LIBASOUND

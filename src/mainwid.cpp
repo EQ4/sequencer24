@@ -25,16 +25,20 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-26
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
+
+#include <gtkmm/combo.h>               // Gtk::Entry
+#include <gtkmm/menubar.h>
 
 #include "mainwid.h"
 #include "seqedit.h"
 #include "font.h"
 
 /**
+ *  Static array of characters for use in toggling patterns.
  *  These look like the "Sequence toggle keys" in the Options / Keyboard
  *  dialog, except that they are upper-case here, and lower-case in that
  *  configuration dialog.
@@ -77,7 +81,14 @@ mainwid::mainwid (perform * a_p)
     m_window_x          (c_mainwid_x),
     m_window_y          (c_mainwid_y),
     m_button_down       (false),
-    m_moving            (false)
+    m_moving            (false),
+    m_drop_x            (0),
+    m_drop_y            (0),
+    m_current_x         (0),
+    m_current_y         (0),
+    m_old_seq           (0),
+    m_last_tick_x       (),     // an array of size c_max_sequence
+    m_last_playing      ()      // an array of size c_max_sequence
 {
     using namespace Menu_Helpers;
 

@@ -24,15 +24,17 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-03
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
+#include <gtkmm/adjustment.h>
+
 #include "event.h"
-#include "seqtime.h"
 #include "font.h"
-#include "platform_macros.h"
+#include "seqtime.h"
+#include "sequence.h"
 
 /**
  *  Principal constructor.  In the constructor you can only allocate

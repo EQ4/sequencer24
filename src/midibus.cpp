@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-29
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  *  This file provides a Linux-only implementation of MIDI support.
@@ -59,7 +59,7 @@ midibus::midibus
     int a_destclient,
     int a_destport,
     snd_seq_t * a_seq,
-    const char * a_client_name,
+    const char * /* a_client_name */ ,      // unused parameter
     const char * a_port_name,
     int a_id,
     int a_queue

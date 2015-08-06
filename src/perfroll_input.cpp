@@ -25,14 +25,18 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-31
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
+#include <gtkmm/button.h>
+#include <gdkmm/cursor.h>
+
 #include "perform.h"
 #include "perfroll_input.h"
 #include "perfroll.h"
+#include "sequence.h"
 
 /**
  *  Updates the mouse pointer, implementing a context-sensitive mouse.

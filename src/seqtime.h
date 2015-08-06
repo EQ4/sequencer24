@@ -27,28 +27,22 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-03
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
-#include <gtkmm/button.h>
 #include <gtkmm/window.h>
-#include <gtkmm/accelgroup.h>
-#include <gtkmm/box.h>
-#include <gtkmm/main.h>
-#include <gtkmm/menu.h>
-#include <gtkmm/menubar.h>
-#include <gtkmm/eventbox.h>
-#include <gtkmm/window.h>
-#include <gtkmm/table.h>
 #include <gtkmm/drawingarea.h>
-#include <gtkmm/widget.h>
-#include <gtkmm/adjustment.h>
 
 #include "globals.h"
-#include "sequence.h"
-// #include "seqtime.h"
+
+namespace Gtk
+{
+    class Adjustment;
+}
+
+class sequence;
 
 /**
  *    This class implements the piano time, whatever that is.
@@ -60,7 +54,7 @@ class seqtime: public Gtk::DrawingArea
 private:
 
     Glib::RefPtr<Gdk::GC> m_gc;
-    Glib::RefPtr<Gdk::Window>  m_window;
+    Glib::RefPtr<Gdk::Window> m_window;
     Gdk::Color m_black;
     Gdk::Color m_white;
     Gdk::Color m_grey;

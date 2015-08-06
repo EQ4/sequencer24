@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-02
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
@@ -36,16 +36,6 @@
  * Odd, we're getting sufficient Gtkmm header files from somewhere!
  *
  *  From one of these files:
- *
-#include "event.h"
-#include "seqroll.h"
-#include "seqdata.h"
-#include "seqevent.h"
-#include "sequence.h"
-#include "seqkeys.h"
-#include "perform.h"
- *
- *  Or from one of these:
  */
 
 #include "globals.h"

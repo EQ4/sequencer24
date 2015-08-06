@@ -27,20 +27,30 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-26
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
-#include <string>
 #include <gtkmm/image.h>
-#include <gtkmm/widget.h>
-#include <gtkmm/drawingarea.h>
 
 using namespace Gtk;
 
 class font
 {
+
+public:
+
+    /**
+     *  A simple enumeration to describe the basic colors used in writing
+     *  text.
+     */
+
+    enum Color
+    {
+        BLACK = 0,
+        WHITE = 1
+    };
 
 private:
 
@@ -51,13 +61,8 @@ private:
 
 public:
 
-    enum Color
-    {
-        BLACK = 0,
-        WHITE = 1
-    };
-
     font ();
+
     void init (Glib::RefPtr<Gdk::Window> a_window);
     void render_string_on_drawable
     (
@@ -70,6 +75,10 @@ public:
     );
 
 };
+
+/*
+ * Global symbols
+ */
 
 extern font * p_font_renderer;
 

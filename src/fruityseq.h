@@ -46,6 +46,10 @@ struct FruitySeqEventInput
     bool m_is_drag_pasting_start;
     bool m_is_drag_pasting;
 
+    /**
+     * Default constructor.
+     */
+
     FruitySeqEventInput () :
         m_justselected_one      (false),
         m_is_drag_pasting_start (false),

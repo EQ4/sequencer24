@@ -28,41 +28,32 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-30
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
-#include <gtkmm/button.h>
-#include <gtkmm/window.h>
-#include <gtkmm/accelgroup.h>
-#include <gtkmm/box.h>
-#include <gtkmm/main.h>
-#include <gtkmm/menu.h>
-#include <gtkmm/menubar.h>
-#include <gtkmm/eventbox.h>
-#include <gtkmm/window.h>
 #include <gtkmm/dialog.h>
-#include <gtkmm/table.h>
-#include <gtkmm/drawingarea.h>
-#include <gtkmm/label.h>
-#include <gtkmm/frame.h>
-#include <gtkmm/fileselection.h>
-#include <gtkmm/dialog.h>
-#include <gtkmm/arrow.h>
-#include <gtkmm/spinbutton.h>
-#include <gtkmm/progressbar.h>
-#include <gtkmm/checkbutton.h>
-#include <gtkmm/togglebutton.h>
-#include <gtkmm/notebook.h>
-#include <gtkmm/tooltips.h>
-
 #include <sigc++/bind.h>
 
 #include "globals.h"
-#include "perform.h"
 
 using namespace Gtk;
+
+namespace Gtk
+{
+    class Button;
+    class Label;
+    class Notebook;
+    class RadioButton;
+    class Table;
+}
+
+class perform;
+
+#if GTK_MINOR_VERSION < 12
+    class Tooltips;
+#endif
 
 /**
  *  This class supports a full tabbed options dialog.
@@ -105,19 +96,6 @@ private:
      */
 
     Button * m_button_ok;
-
-    /**
-     *  Labels for mouse interaction settings.
-     */
-
-    Label * interaction_method_label;
-    Label * interaction_method_desc_label;
-
-    /**
-     *  Not sure yet what this table is for.  Must be a GTK thang.
-     */
-
-    Table * m_table;
 
     /**
      *  Not sure yet what this notebook is for.  Must be a GTK thang.

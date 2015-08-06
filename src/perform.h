@@ -28,23 +28,18 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-02
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  *  This class has way too many members.
  */
 
-#include "easy_macros.h"
 #include "globals.h"               // globals, nullptr, and config headers
-#include "event.h"
-#include "mastermidibus.h"
-#include "midibus.h"
-#include "midifile.h"
-#include "sequence.h"
 
 #ifndef PLATFORM_WINDOWS
 #include <unistd.h>
 #endif
+
 #include <pthread.h>
 
 #ifdef JACK_SUPPORT
@@ -56,6 +51,10 @@
 #endif
 
 #endif   // JACK_SUPPORT
+
+#include "mastermidibus.h"
+
+class sequence;
 
 /*
  * This class (actually a struct) contains sequences that make up a live
@@ -132,7 +131,7 @@ class perform
 {
 
     friend class midifile;
-    friend class optionsfile;
+    friend class optionsfile;       // needs cleanup
     friend class options;
 
 #ifdef JACK_SUPPORT
@@ -155,13 +154,15 @@ class perform
 
 #endif  // JACK_SUPPORT
 
+public:
+
     /**
      *  This typedef defines a map in which the key is the keycode,
      *  that is, the integer value of a keystroke, and the value is the
      *  pattern/sequence number or slot.
      */
 
-    typedef std::map<unsigned int, long> SlotMap;           // lookup
+    typedef std::map<unsigned int, long> SlotMap;       // lookup
 
     /**
      *  This typedef is like SlotMap, but used for lookup in the other
@@ -227,7 +228,7 @@ private:
     bool m_looping;
     bool m_playback_mode;
 
-    int thread_trigger_width_ms;
+//  int m_thread_trigger_width_ms;      //
 
     long m_left_tick;
     long m_right_tick;
@@ -247,7 +248,7 @@ private:
 
     bool m_show_ui_sequence_key;
 
-    string m_screen_set_notepad[c_max_sets];
+    std::string m_screen_set_notepad[c_max_sets];
 
     midi_control m_midi_cc_toggle[c_midi_controls];
     midi_control m_midi_cc_on[c_midi_controls];
@@ -264,10 +265,10 @@ private:
      *  below.
      */
 
-    SlotMap key_events;
-    SlotMap key_groups;
-    RevSlotMap key_events_rev; // reverse lookup, keep in sync!!
-    RevSlotMap key_groups_rev; // reverse lookup, keep in sync!!
+    SlotMap m_key_events;
+    SlotMap m_key_groups;
+    RevSlotMap m_key_events_rev; // reverse lookup, keep in sync!!
+    RevSlotMap m_key_groups_rev; // reverse lookup, keep in sync!!
 
 #ifdef JACK_SUPPORT
 
@@ -452,26 +453,21 @@ public:
     void set_group_mute_state (int a_g_track, bool a_mute_state);
     bool get_group_mute_state (int a_g_track);
     void mute_all_tracks ();
-
     mastermidibus * get_master_midi_bus ();
-
     void output_func ();
     void input_func ();
-
     long get_max_trigger ();
-
     void set_offset (int a_offset);
-
     void save_playing_state ();
     void restore_playing_state ();
 
-    const SlotMap * get_key_events (void) const
+    SlotMap & get_key_events ()
     {
-        return &key_events;
+        return m_key_events;
     }
-    const SlotMap * get_key_groups (void) const
+    SlotMap & get_key_groups ()
     {
-        return &key_groups;
+        return m_key_groups;
     }
 
     void set_key_event (unsigned int keycode, long sequence_slot);
@@ -496,29 +492,29 @@ public:
 
     unsigned int lookup_keyevent_key (long seqnum)
     {
-        if (key_events_rev.count(seqnum))
-            return key_events_rev[seqnum];
+        if (m_key_events_rev.count(seqnum))
+            return m_key_events_rev[seqnum];
         else
             return '?';
     }
     long lookup_keyevent_seq (unsigned int keycode)
     {
-        if (key_events.count(keycode))
-            return key_events[keycode];
+        if (m_key_events.count(keycode))
+            return m_key_events[keycode];
         else
             return 0;
     }
     unsigned int lookup_keygroup_key (long groupnum)
     {
-        if (key_groups_rev.count(groupnum))
-            return key_groups_rev[groupnum];
+        if (m_key_groups_rev.count(groupnum))
+            return m_key_groups_rev[groupnum];
         else
             return '?';
     }
     long lookup_keygroup_group (unsigned int keycode)
     {
-        if (key_groups.count(keycode))
-            return key_groups[keycode];
+        if (m_key_groups.count(keycode))
+            return m_key_groups[keycode];
         else
             return 0;
     }
@@ -527,7 +523,6 @@ private:
 
     void set_running (bool a_running);
     void set_playback_mode (bool a_playback_mode);
-
     void inner_start (bool a_state);
     void inner_stop ();
 
@@ -546,15 +541,19 @@ extern void * input_thread_func (void * a_p);
 
 #ifdef JACK_SUPPORT
 
-int jack_sync_callback
+/*
+ * Global JACK functions
+ */
+
+extern int jack_sync_callback
 (
     jack_transport_state_t state,
     jack_position_t * pos,
     void * arg
 );
-void print_jack_pos (jack_position_t * jack_pos);
-void jack_shutdown (void * arg);
-void jack_timebase_callback
+extern void print_jack_pos (jack_position_t * jack_pos);
+extern void jack_shutdown (void * arg);
+extern void jack_timebase_callback
 (
     jack_transport_state_t state,
     jack_nframes_t nframes,
@@ -569,10 +568,10 @@ void jack_timebase_callback
  * GitHub project.  Added the following function.
  */
 
-int jack_process_callback (jack_nframes_t nframes, void * arg);
+extern int jack_process_callback (jack_nframes_t nframes, void * arg);
 
 #ifdef JACK_SESSION
-void jack_session_callback (jack_session_event_t * ev, void * arg);
+extern void jack_session_callback (jack_session_event_t * ev, void * arg);
 #endif
 
 #endif   // JACK_SUPPORT

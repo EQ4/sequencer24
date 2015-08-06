@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-25
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
@@ -36,6 +36,9 @@
 #include <fstream>
 #include <string>
 #include <list>
+
+#include <gtkmm/drawingarea.h>
+
 #include "easy_macros.h"
 #include "perform.h"
 
@@ -56,11 +59,9 @@ protected:
 
     /**
      *  Provides the name of the file.
-     *
-     *  Why not a normal std::string?
      */
 
-    Glib::ustring m_name;
+    std::string m_name;
 
     /**
      *   Points to an allocated buffer that holds the data for the
@@ -90,19 +91,24 @@ protected:
 
 protected:
 
-    void next_data_line (std::ifstream * a_file);
-    void line_after (std::ifstream * a_file, const std::string & a_tag);
+    void next_data_line (std::ifstream & a_file);
+    void line_after (std::ifstream & a_file, const std::string & a_tag);
 
 public:
 
-    configfile (const Glib::ustring & a_name);
+    configfile (const std::string & a_name);
+
+    /**
+     *  A rote constructor needed for a base class.
+     */
+
     virtual ~configfile()
     {
         // empty body
     }
 
-    virtual bool parse( perform * a_perf ) = 0;
-    virtual bool write( perform * a_perf ) = 0;
+    virtual bool parse (perform * a_perf) = 0;
+    virtual bool write (perform * a_perf) = 0;
 
 };
 

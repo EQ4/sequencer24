@@ -10,16 +10,18 @@
  * \library       sequencer24
  * \author        Chris Ahlstrom and other authors; see documentation
  * \date          2013-11-17
- * \updates       2015-08-01
+ * \updates       2015-08-05
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
- *    The macros in this file cover:
+ *  The macros in this file cover:
  *
  *       -  Compiler-support macros.
  *       -  Error and information output macros.
  *       -  One or more global debugging functions that are better suited
  *          than using a macro.
+ *
+ *  Generally, we'll try to hide this file in "globals.h".
  *
  * Copyright (C) 2013-2015 Chris Ahlstrom <ahlstromcj@gmail.com>
  */

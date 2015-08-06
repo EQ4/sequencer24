@@ -28,33 +28,21 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-31
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
-#include <gtkmm/button.h>
-#include <gtkmm/window.h>
-#include <gtkmm/accelgroup.h>
-#include <gtkmm/box.h>
-#include <gtkmm/main.h>
-#include <gtkmm/menu.h>
-#include <gtkmm/menubar.h>
-#include <gtkmm/eventbox.h>
-#include <gtkmm/window.h>
-#include <gtkmm/table.h>
 #include <gtkmm/drawingarea.h>
-#include <gtkmm/widget.h>
-#include <gtkmm/scrollbar.h>
 #include <gtkmm/adjustment.h>
-#include <gdkmm/cursor.h>
 
 #include "globals.h"
 #include "mutex.h"
-#include "perform.h"
-#include "perfroll_input.h"
 
 using namespace Gtk;
+
+class AbstractPerfInput;
+class perform;
 
 const int c_perfroll_background_x = (c_ppqn * 4 * 16) / c_perf_scale_x;
 const int c_perfroll_size_box_w = 3;
@@ -72,7 +60,6 @@ class perfroll : public Gtk::DrawingArea
 
 private:
 
-    AbstractPerfInput * m_interaction;
     Glib::RefPtr<Gdk::GC> m_gc;
     Glib::RefPtr<Gdk::Window> m_window;
     Gdk::Color m_black;
@@ -97,6 +84,7 @@ private:
     long m_drop_tick_trigger_offset;
     int m_drop_sequence;
     bool m_sequence_active[c_total_seqs];
+    AbstractPerfInput * m_interaction;
     Adjustment * m_vadjust;
     Adjustment * m_hadjust;
     bool m_moving;

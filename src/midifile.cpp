@@ -24,21 +24,23 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-30
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
-#include <iostream>
+#include <fstream>
+
 #include "easy_macros.h"                // errprint() macro
 #include "perform.h"                    // must precede midifile.h !
 #include "midifile.h"
+#include "sequence.h"
 
 /**
  *  Principal constructor.
  */
 
-midifile::midifile (const Glib::ustring & a_name)
+midifile::midifile (const std::string & a_name)
  :
     m_pos           (0),
     m_name          (a_name),

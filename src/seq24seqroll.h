@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-02
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
@@ -45,6 +45,10 @@ class seqroll;
 struct Seq24SeqRollInput
 {
     bool m_adding;
+
+    /**
+     * Default constructor.
+     */
 
     Seq24SeqRollInput() :
         m_adding    (false)

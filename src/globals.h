@@ -28,17 +28,15 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-25
- * \updates       2015-08-02
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
-#include "easy_macros.h"                // with platform_macros.h, too
-
 #include <string>
-#include <gtkmm/main.h>
-#include <gtkmm/drawingarea.h>
-#include <gtkmm/accelkey.h>
+#include <gtkmm/drawingarea.h>         // overkill just to get Glib name
+
+#include "easy_macros.h"               // with platform_macros.h, too
 
 using namespace std;                   // will eventually remove this
 
@@ -339,9 +337,9 @@ extern bool global_with_jack_master_cond;
 extern bool global_jack_start_mode;
 extern bool global_manual_alsa_ports;
 
-extern Glib::ustring global_filename;
-extern Glib::ustring global_jack_session_uuid;
-extern Glib::ustring last_used_dir;
+extern std::string global_filename;
+extern std::string global_jack_session_uuid;
+extern std::string last_used_dir;
 
 extern bool is_pattern_playing;
 extern bool global_print_keys;

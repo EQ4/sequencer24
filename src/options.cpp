@@ -25,18 +25,30 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-30
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
+#include <sstream>
+
+#include <gtkmm/checkbutton.h>
+#include <gtkmm/frame.h>
+#include <gtkmm/label.h>
+#include <gtkmm/notebook.h>
+#include <gtkmm/spinbutton.h>
 #include <gtkmm/stock.h>
 #include <gtkmm/table.h>
-#include <sstream>
+
+#if GTK_MINOR_VERSION < 12
+#include <gtkmm/tooltips.h>
+#endif
 
 #include "gtk_helpers.h"
 #include "keybindentry.h"
 #include "options.h"
+#include "perform.h"
+#include "sequence.h"
 
 /**
  *  These are some internal constants for the options module.
@@ -67,25 +79,21 @@ options::options
     Gtk::Window & parent,
     perform * a_p
 ) :
-    Gtk::Dialog ("Options", parent, true, true),
-    m_perf      (a_p)
-{
+    Gtk::Dialog                     ("Options", parent, true, true),
 #if GTK_MINOR_VERSION < 12
-    m_tooltips = manage(new Tooltips());
+    m_tooltips                      (manage(new Tooltips()),
 #endif
-
+    m_perf                          (a_p),
+    m_button_ok                     (manage(new Button(Gtk::Stock::OK))),
+    m_notebook                      (manage(new Notebook()))
+{
     HBox * hbox = manage(new HBox());
     get_vbox()->pack_start(*hbox, false, false);
     get_action_area()->set_border_width(2);
     hbox->set_border_width(6);
-
-    m_button_ok = manage(new Button(Gtk::Stock::OK));
     get_action_area()->pack_end(*m_button_ok, false, false);
     m_button_ok->signal_clicked().connect(mem_fun(*this, &options::hide));
-
-    m_notebook = manage(new Notebook());
     hbox->pack_start(*m_notebook);
-
     add_midi_clock_page();
     add_midi_input_page();
     add_keyboard_page();
@@ -107,7 +115,9 @@ options::add_midi_clock_page ()
     VBox * vbox = manage(new VBox());
     vbox->set_border_width(6);
     m_notebook->append_page(*vbox, "MIDI _Clock", true);
+#if GTK_MINOR_VERSION < 12
     manage(new Tooltips());
+#endif
     for (int i = 0; i < buses; i++)
     {
         HBox * hbox2 = manage(new HBox());

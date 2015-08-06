@@ -27,13 +27,13 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-30
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
 #include <pthread.h>
-#include "globals.h"
+// #include "globals.h"
 
 /**
  *  The mutex class provides a simple wrapper for the pthread_mutex_t type
@@ -66,6 +66,12 @@ public:
     void unlock ();
 
 };
+
+/**
+ *  A mutex works best in conjunction with a condition variable.
+ *  Therefore this class derives from the mutex class.  A "has-a"
+ *  relationship might be more logical than this "is-a" relationship.
+ */
 
 class condition_var : public mutex
 {

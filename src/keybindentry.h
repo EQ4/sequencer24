@@ -38,12 +38,13 @@
  */
 
 #include <gtkmm/entry.h>
+
 #include "easy_macros.h"
 
 class perform;      /* forward declaration */
 
 /**
- *  Class
+ *  Class for management of application key-bindings.
  */
 
 class KeyBindEntry : public Gtk::Entry
@@ -52,6 +53,10 @@ class KeyBindEntry : public Gtk::Entry
     friend class options;
 
 private:
+
+    /**
+     * Provides the type of keybindings that can be made.
+     */
 
     enum type
     {

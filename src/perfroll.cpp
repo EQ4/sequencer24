@@ -25,14 +25,19 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-31
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
+#include <gtkmm/accelkey.h>
+
 #include "easy_macros.h"
 #include "event.h"
+#include "perform.h"
 #include "perfroll.h"
+#include "perfroll_input.h"
+#include "sequence.h"
 
 /**
  *  Principal constructor.
@@ -45,7 +50,6 @@ perfroll::perfroll
     Adjustment * a_vadjust
 ) :
     Gtk::DrawingArea    (),
-    m_interaction       (nullptr),
     m_gc                (),
     m_window            (),
     m_black             (Gdk::Color("black")),
@@ -70,6 +74,7 @@ perfroll::perfroll
     m_drop_tick_trigger_offset (0),
     m_drop_sequence     (0),
     m_sequence_active   (),             // array
+    m_interaction       (nullptr),
     m_vadjust           (a_vadjust),
     m_hadjust           (a_hadjust),
     m_moving            (false),

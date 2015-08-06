@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-26
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
@@ -33,15 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "easy_macros.h"
-#include "platform_macros.h"
-
-#ifdef PLATFORM_WINDOWS
-#include "configwin32.h"
-#else
-#include "config.h"
-#endif
-
+#include "easy_macros.h"               // full platform configuration
 #include "font.h"
 
 #ifdef LASH_SUPPORT
@@ -92,8 +84,8 @@ bool global_device_ignore = false;
 int global_device_ignore_num = 0;
 bool global_stats = false;
 bool global_pass_sysex = false;
-Glib::ustring global_filename = "";
-Glib::ustring last_used_dir = "/";
+std::string global_filename = "";
+std::string last_used_dir = "/";
 std::string config_filename = ".seq24rc";
 std::string user_filename = ".seq24usr";
 bool global_print_keys = false;
@@ -103,15 +95,19 @@ bool global_with_jack_transport = false;
 bool global_with_jack_master = false;
 bool global_with_jack_master_cond = false;
 bool global_jack_start_mode = true;
-Glib::ustring global_jack_session_uuid = "";
+std::string global_jack_session_uuid = "";
 
 user_midi_bus_definition   global_user_midi_bus_definitions[c_maxBuses];
 user_instrument_definition global_user_instrument_definitions[c_max_instruments];
 
-font * p_font_renderer;
+/*
+ * Global pointer!  Declared in font.h.
+ */
+
+font * p_font_renderer = nullptr;
 
 #ifdef LASH_SUPPORT
-lash * lash_driver = NULL;
+lash * lash_driver = nullptr;
 #endif
 
 #ifdef PLATFORM_WINDOWS
@@ -154,7 +150,7 @@ const char * const g_help_2 =
  */
 
 int
-main (int argc, char * argv[])
+main (int argc, char * argv [])
 {
     /*
      *  Scan the argument vector and strip off all parameters known to
@@ -246,7 +242,7 @@ main (int argc, char * argv[])
             break;
 
         case 'U':
-            global_jack_session_uuid = Glib::ustring(optarg);
+            global_jack_session_uuid = std::string(optarg);
             break;
 
         case 'x':
@@ -278,8 +274,8 @@ main (int argc, char * argv[])
     p_font_renderer = new font();      /* set the font renderer       */
     if (getenv(HOME) != NULL)          /* is $HOME set?               */
     {
-        Glib::ustring home(getenv(HOME));
-        Glib::ustring total_file = home + SLASH + config_filename;
+        std::string home(getenv(HOME));
+        std::string total_file = home + SLASH + config_filename;
         last_used_dir = home;
         if (Glib::file_test(total_file, Glib::FILE_TEST_EXISTS))
         {
@@ -330,7 +326,7 @@ main (int argc, char * argv[])
     if (getenv(HOME) != NULL)
     {
         std::string home(getenv(HOME));
-        Glib::ustring total_file = home + SLASH + config_filename;
+        std::string total_file = home + SLASH + config_filename;
         printf("Writing [%s]\n", total_file.c_str());
         optionsfile options(total_file);
         if (!options.write(&p))

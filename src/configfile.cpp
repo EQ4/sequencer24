@@ -25,13 +25,13 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-26
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
-#include "configfile.h"
 #include <iostream>
+#include "configfile.h"
 
 /**
  *  Provides the string constructor for a configuration file.
@@ -40,9 +40,8 @@
  *  The name of the configuration file.
  */
 
-configfile::configfile (const Glib::ustring & a_name)
+configfile::configfile (const std::string & a_name)
  :
-//  m_pos   (0),                // never used anywhere
     m_name  (a_name),
     m_d     (nullptr),
     m_l     (),                 // list of characters
@@ -70,21 +69,20 @@ configfile::configfile (const Glib::ustring & a_name)
  */
 
 void
-configfile::next_data_line (std::ifstream * a_file)
+configfile::next_data_line (std::ifstream & a_file)
 {
-    a_file->getline(m_line, sizeof(m_line));
+    a_file.getline(m_line, sizeof(m_line));
     while
     (
-        (m_line[0] == '#' || m_line[0] == ' ' || m_line[0] == 0) &&
-           ! a_file->eof()
+        (m_line[0] == '#' || m_line[0] == ' ' || m_line[0] == 0) && ! a_file.eof()
     )
     {
-        a_file->getline(m_line, sizeof(m_line));
+        a_file.getline(m_line, sizeof(m_line));
     }
 }
 
 /**
- * This function
+ * This function gets a specific line of text, specified as a tag.
  *
  * @param a_file
  *  Points to the input file stream.
@@ -95,17 +93,17 @@ configfile::next_data_line (std::ifstream * a_file)
  */
 
 void
-configfile::line_after (std::ifstream * a_file, const std::string & a_tag)
+configfile::line_after (std::ifstream & a_file, const std::string & a_tag)
 {
-    a_file->clear();
-    a_file->seekg(0, ios::beg);
-    a_file->getline(m_line, sizeof(m_line));
+    a_file.clear();
+    a_file.seekg(0, ios::beg);
+    a_file.getline(m_line, sizeof(m_line));
     while
     (
-        strncmp(m_line, a_tag.c_str(), a_tag.length()) != 0  && ! a_file->eof()
+        strncmp(m_line, a_tag.c_str(), a_tag.length()) != 0  && ! a_file.eof()
     )
     {
-        a_file->getline(m_line, sizeof(m_line));
+        a_file.getline(m_line, sizeof(m_line));
     }
     next_data_line(a_file);
 }

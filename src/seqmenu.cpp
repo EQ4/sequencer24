@@ -25,15 +25,18 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-02
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
+#include <gtkmm/box.h>
 #include <gtkmm/menu.h>
+#include <gtkmm/menubar.h>
 
 #include "easy_macros.h"
 #include "font.h"
+#include "perform.h"
 #include "seqedit.h"
 #include "seqmenu.h"
 

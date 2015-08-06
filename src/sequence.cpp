@@ -25,13 +25,16 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-03
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
 #include <stdlib.h>
 
+#include <gtkmm/combo.h>               // Gtk::Entry, ToggleButton, RadioButton
+
+#include "mastermidibus.h"
 #include "sequence.h"
 #include "seqedit.h"
 
@@ -1404,7 +1407,7 @@ sequence::grow_selected (long a_delta_tick)
  */
 
 void
-sequence::increment_selected (unsigned char a_stat, unsigned char a_control)
+sequence::increment_selected (unsigned char a_stat, unsigned char /*a_control*/)
 {
     lock();
     std::list<event>::iterator i;
@@ -1450,7 +1453,7 @@ sequence::increment_selected (unsigned char a_stat, unsigned char a_control)
  */
 
 void
-sequence::decrement_selected(unsigned char a_stat, unsigned char a_control)
+sequence::decrement_selected (unsigned char a_stat, unsigned char /*a_control*/)
 {
     lock();
     std::list<event>::iterator i;

@@ -17,7 +17,7 @@
  */
 
 /**
- * \file          optionsfile.h
+ * \file          optionsfile.cpp
  *
  *  This module declares/defines the base class for managind the ~/.seq24rc
  *  configuration file.
@@ -25,20 +25,22 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-30
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
+#include "midibus.h"
 #include "optionsfile.h"
+#include "perform.h"
 
-extern Glib::ustring last_used_dir;
+extern std::string last_used_dir;
 
 /**
  *  Principal constructor.
  */
 
-optionsfile::optionsfile (const Glib::ustring & a_name)
+optionsfile::optionsfile (const std::string & a_name)
  :
     configfile  (a_name)               // base class constructor
 {
@@ -66,7 +68,7 @@ optionsfile::parse (perform * a_perf)
         return false;
 
     file.seekg(0, ios::beg);                                /* seek to start */
-    line_after(&file, "[midi-control]");                    /* find section  */
+    line_after(file, "[midi-control]");                     /* find section  */
 
     /*
      *  Get the number of sequence definitions provided in this section.
@@ -82,7 +84,7 @@ optionsfile::parse (perform * a_perf)
 
     unsigned int sequences = 0;
     sscanf(m_line, "%u", &sequences);
-    next_data_line(&file);
+    next_data_line(file);
     for (unsigned int i = 0; i < sequences; ++i)
     {
         int sequence = 0;
@@ -113,8 +115,8 @@ optionsfile::parse (perform * a_perf)
             &a_perf->get_midi_control_off(i)->m_data,
             &a_perf->get_midi_control_off(i)->m_min_value,
             &a_perf->get_midi_control_off(i)->m_max_value
-         );
-        next_data_line(&file);
+        );
+        next_data_line(file);
     }
 
     /*
@@ -124,10 +126,10 @@ optionsfile::parse (perform * a_perf)
      *  description of this section.
      */
 
-    line_after(&file, "[mute-group]");              /* Group MIDI control */
+    line_after(file, "[mute-group]");               /* Group MIDI control */
     int gtrack = 0;
     sscanf(m_line, "%d", &gtrack);
-    next_data_line(&file);
+    next_data_line(file);
     int mtx[c_seqs_in_set], j = 0;
     for (int i = 0; i < c_seqs_in_set; i++)
     {
@@ -153,11 +155,10 @@ optionsfile::parse (perform * a_perf)
             &mtx[28], &mtx[29], &mtx[30], &mtx[31]
         );
         for (int k = 0; k < c_seqs_in_set; k++)
-        {
             a_perf->set_group_mute_state(k, mtx[k]);
-        }
+
         j++;
-        next_data_line(&file);
+        next_data_line(file);
     }
 
     /*
@@ -166,16 +167,16 @@ optionsfile::parse (perform * a_perf)
      *  are specified.
      */
 
-    line_after(&file, "[midi-clock]");
+    line_after(file, "[midi-clock]");
     long buses = 0;
     sscanf(m_line, "%ld", &buses);
-    next_data_line(&file);
+    next_data_line(file);
     for (int i = 0; i < buses; ++i)
     {
         long bus_on, bus;
         sscanf(m_line, "%ld %ld", &bus, &bus_on);
         a_perf->get_master_midi_bus()->set_clock(bus, (clock_e) bus_on);
-        next_data_line(&file);
+        next_data_line(file);
     }
 
     /*
@@ -184,17 +185,17 @@ optionsfile::parse (perform * a_perf)
      *  keys are displayed in each box as a reminder.
      */
 
-    line_after(&file, "[keyboard-control]");
+    line_after(file, "[keyboard-control]");
     long keys = 0;
     sscanf(m_line, "%ld", &keys);
-    next_data_line(&file);
-    a_perf->key_events.clear();
+    next_data_line(file);
+    a_perf->get_key_events().clear();
     for (int i = 0; i < keys; ++i)
     {
         long key = 0, seq = 0;
         sscanf(m_line, "%ld %ld", &key, &seq);
         a_perf->set_key_event(key, seq);
-        next_data_line(&file);
+        next_data_line(file);
     }
 
     /*
@@ -203,22 +204,20 @@ optionsfile::parse (perform * a_perf)
      * GitHub.
      */
 
-    line_after(&file, "[keyboard-group]");
+    line_after(file, "[keyboard-group]");
     long groups = 0;
     sscanf(m_line, "%ld", &groups);
-    next_data_line(&file);
-    a_perf->key_groups.clear();
+    next_data_line(file);
+    a_perf->get_key_groups().clear();
     for (int i = 0; i < groups; ++i)
     {
         long key = 0, group = 0;
         sscanf(m_line, "%ld %ld", &key, &group);
         a_perf->set_key_group(key, group);
-        next_data_line(&file);
+        next_data_line(file);
     }
-
     sscanf(m_line, "%u %u", &a_perf->m_key_bpm_up, &a_perf->m_key_bpm_dn);
-
-    next_data_line(&file);
+    next_data_line(file);
     sscanf
     (
         m_line, "%u %u %u",
@@ -226,8 +225,7 @@ optionsfile::parse (perform * a_perf)
         &a_perf->m_key_screenset_dn,
         &a_perf->m_key_set_playing_screenset
     );
-
-    next_data_line(&file);
+    next_data_line(file);
     sscanf
     (
         m_line, "%u %u %u",
@@ -235,8 +233,7 @@ optionsfile::parse (perform * a_perf)
         &a_perf->m_key_group_off,
         &a_perf->m_key_group_learn
     );
-
-    next_data_line(&file);
+    next_data_line(file);
     sscanf
     (
         m_line, "%u %u %u %u %u",
@@ -248,40 +245,39 @@ optionsfile::parse (perform * a_perf)
     );
 
     int show_key = 0;
-    next_data_line(&file);
+    next_data_line(file);
     sscanf(m_line, "%d", &show_key);
     a_perf->m_show_ui_sequence_key = (bool) show_key;
-    next_data_line(&file);
+    next_data_line(file);
     sscanf(m_line, "%u", &a_perf->m_key_start);
-
-    next_data_line(&file);
+    next_data_line(file);
     sscanf(m_line, "%u", &a_perf->m_key_stop);
 
     /*
      * JACK transport section.
      */
 
-    line_after(&file, "[jack-transport]");
+    line_after(file, "[jack-transport]");
     long flag = 0;
 
     sscanf(m_line, "%ld", &flag);
     global_with_jack_transport = (bool) flag;
 
-    next_data_line(&file);
+    next_data_line(file);
     sscanf(m_line, "%ld", &flag);
     global_with_jack_master = (bool) flag;
 
-    next_data_line(&file);
+    next_data_line(file);
     sscanf(m_line, "%ld", &flag);
     global_with_jack_master_cond = (bool) flag;
 
-    next_data_line(&file);
+    next_data_line(file);
     sscanf(m_line, "%ld", &flag);
     global_jack_start_mode = (bool) flag;
-    line_after(&file, "[midi-input]");
+    line_after(file, "[midi-input]");
     buses = 0;
     sscanf(m_line, "%ld", &buses);
-    next_data_line(&file);
+    next_data_line(file);
 
     for (int i = 0; i < buses; ++i)
     {
@@ -289,7 +285,7 @@ optionsfile::parse (perform * a_perf)
         long bus_on, bus;
         sscanf(m_line, "%ld %ld", &bus, &bus_on);
         a_perf->get_master_midi_bus()->set_input(bus, (bool) bus_on);
-        next_data_line(&file);
+        next_data_line(file);
     }
 
     /*
@@ -297,7 +293,7 @@ optionsfile::parse (perform * a_perf)
      */
 
     long ticks = 64;
-    line_after(&file, "[midi-clock-mod-ticks]");
+    line_after(file, "[midi-clock-mod-ticks]");
     sscanf(m_line, "%ld", &ticks);
     midibus::set_clock_mod(ticks);
 
@@ -305,7 +301,7 @@ optionsfile::parse (perform * a_perf)
      *  Manual ALSA ports section.
      */
 
-    line_after(&file, "[manual-alsa-ports]");
+    line_after(file, "[manual-alsa-ports]");
     sscanf(m_line, "%ld", &flag);
     global_manual_alsa_ports = (bool) flag;
 
@@ -313,7 +309,7 @@ optionsfile::parse (perform * a_perf)
      *  Last-used directory preservation section.
      */
 
-    line_after(&file, "[last-used-dir]");
+    line_after(file, "[last-used-dir]");
 
     // FIXME: check for a valid path is missing
 
@@ -325,7 +321,7 @@ optionsfile::parse (perform * a_perf)
      */
 
     long method = 0;
-    line_after(&file, "[interaction-method]");
+    line_after(file, "[interaction-method]");
     sscanf(m_line, "%ld", &method);
     global_interactionmethod = (interaction_method_e)method;
 
@@ -565,8 +561,8 @@ optionsfile::write (perform * a_perf)
     }
     file << global_interactionmethod << "\n";
 
-    size_t kevsize = a_perf->key_events.size() < (size_t) c_seqs_in_set ?
-         a_perf->key_events.size() :
+    size_t kevsize = a_perf->get_key_events().size() < (size_t) c_seqs_in_set ?
+         a_perf->get_key_events().size() :
          (size_t) c_seqs_in_set
          ;
     file
@@ -577,8 +573,8 @@ optionsfile::write (perform * a_perf)
 
     for
     (
-        perform::SlotMap::const_iterator i = a_perf->key_events.begin();
-        i != a_perf->key_events.end(); ++i
+        perform::SlotMap::const_iterator i = a_perf->get_key_events().begin();
+        i != a_perf->get_key_events().end(); ++i
     )
     {
         snprintf
@@ -588,8 +584,8 @@ optionsfile::write (perform * a_perf)
         );
         file << string(outs) << "\n";
     }
-    size_t kegsize = a_perf->key_groups.size() < (size_t)c_seqs_in_set ?
-         a_perf->key_groups.size() :
+    size_t kegsize = a_perf->get_key_groups().size() < (size_t)c_seqs_in_set ?
+         a_perf->get_key_groups().size() :
          (size_t)c_seqs_in_set
          ;
     file
@@ -600,8 +596,9 @@ optionsfile::write (perform * a_perf)
 
     for
     (
-        perform::SlotMap::const_iterator i = a_perf->key_groups.begin();
-        i != a_perf->key_groups.end(); ++i)
+        perform::SlotMap::const_iterator i = a_perf->get_key_groups().begin();
+        i != a_perf->get_key_groups().end(); ++i
+    )
     {
         snprintf
         (
@@ -689,7 +686,7 @@ optionsfile::write (perform * a_perf)
 }
 
 /*
- * optionsfile.h
+ * optionsfile.cpp
  *
  * vim: sw=4 ts=4 wm=8 et ft=cpp
  */

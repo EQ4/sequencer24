@@ -28,52 +28,43 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-01
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
 #include <list>
 #include <string>
-#include <gtkmm/adjustment.h>
-#include <gtkmm/button.h>
 #include <gtkmm/window.h>
-#include <gtkmm/accelgroup.h>
-#include <gtkmm/box.h>
-#include <gtkmm/main.h>
-#include <gtkmm/menu.h>
-#include <gtkmm/menubar.h>
-#include <gtkmm/eventbox.h>
-#include <gtkmm/window.h>
-#include <gtkmm/table.h>
-#include <gtkmm/drawingarea.h>
-#include <gtkmm/widget.h>
-#include <gtkmm/scrollbar.h>
-#include <gtkmm/viewport.h>
-#include <gtkmm/combo.h>
-#include <gtkmm/label.h>
-#include <gtkmm/toolbar.h>
-#include <gtkmm/optionmenu.h>
-#include <gtkmm/togglebutton.h>
-#include <gtkmm/invisible.h>
-#include <gtkmm/separator.h>
-#include <gtkmm/image.h>
-#include <gtkmm/tooltips.h>
-#include <gtkmm/invisible.h>
-#include <gtkmm/image.h>
 #include <sigc++/bind.h>
 
 #include "globals.h"
-#include "mainwid.h"
-#include "sequence.h"
-#include "seqkeys.h"
-#include "seqroll.h"
-#include "seqdata.h"
-#include "seqtime.h"
-#include "seqevent.h"
-#include "perform.h"
 
 using namespace Gtk;
+
+namespace Gtk
+{
+    class Adjustment;
+    class Entry;
+    class HScrollbar;
+    class Image;
+    class Menu;
+    class MenuBar;
+    class Table;
+    class RadionButton;
+    class ToggleButton;
+    class Tooltips;
+    class VBox;
+    class VScrollbar;
+}
+
+class perform;
+class seqroll;
+class seqkeys;
+class seqdata;
+class seqtime;
+class seqevent;
+class sequence;
 
 /**
  *  Implements the Pattern Editor, which has references to:
@@ -84,6 +75,7 @@ using namespace Gtk;
  *      -   seqdata
  *      -   seqtime
  *      -   seqevent
+ *      -   sequence
  *
  *  This class has a metric ton of user-interface objects and other
  *  members.
@@ -190,7 +182,7 @@ private:
     Entry * m_entry_key;
     Button * m_button_scale;
     Entry * m_entry_scale;
-    Tooltips* m_tooltips;
+    Tooltips * m_tooltips;
     Button * m_button_data;
     Entry * m_entry_data;
     Button * m_button_bpm;

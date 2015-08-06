@@ -26,7 +26,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-26
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
@@ -43,7 +43,7 @@ event::event()
  :
     m_timestamp (0),
     m_status    (EVENT_NOTE_OFF),
-    m_data      (),
+    m_data      (),                 // small array
     m_sysex     (nullptr),
     m_size      (0),
     m_linked    (nullptr),

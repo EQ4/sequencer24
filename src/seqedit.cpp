@@ -25,19 +25,36 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-02
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
+#include <gtkmm/adjustment.h>
+#include <gtkmm/image.h>
+#include <gtkmm/menu.h>
+#include <gtkmm/menubar.h>
+#include <gtkmm/scrollbar.h>
+#include <gtkmm/combo.h>               // Gtk::Entry, ToggleButton, RadioButton
+#include <gtkmm/label.h>
+#include <gtkmm/separator.h>
+#include <gtkmm/table.h>
+#include <gtkmm/tooltips.h>
+
 #include "easy_macros.h"
-#include "gtk_helpers.h"
-#include "seqedit.h"
-#include "sequence.h"
-#include "midibus.h"
 #include "controllers.h"
 #include "event.h"
+#include "gtk_helpers.h"
+#include "midibus.h"
 #include "options.h"
+#include "perform.h"
+#include "seqdata.h"
+#include "seqedit.h"
+#include "seqevent.h"
+#include "seqkeys.h"
+#include "seqroll.h"
+#include "seqtime.h"
+#include "sequence.h"
 
 #include "pixmaps/play.xpm"
 #include "pixmaps/q_rec.xpm"

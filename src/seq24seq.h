@@ -28,41 +28,14 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-08-02
- * \updates       2015-08-02
+ * \updates       2015-08-05
  * \license       GNU GPLv2 or above
  *
  */
 
-/*
-#include <gtkmm/window.h>
-#include <gtkmm/accelgroup.h>
-#include <gtkmm/box.h>
-#include <gtkmm/main.h>
-#include <gtkmm/menu.h>
-#include <gtkmm/menubar.h>
-#include <gtkmm/eventbox.h>
-#include <gtkmm/window.h>
-#include <gtkmm/table.h>
-#include <gtkmm/drawingarea.h>
-#include <gtkmm/widget.h>
-#include <gtkmm/adjustment.h>
-*/
-
 #include <gdk/gdkevents.h>              // GdkEventButton & GdkEventMotion
 
-// #include "globals.h"
-// #include "sequence.h"
-// #include "seqkeys.h"
-// #include "seqdata.h"
-
 using namespace Gtk;
-
-//  class GdkEventButton;
-//  class GdkEventMotion;
-
-namespace Gtk
-{
-}
 
 class seqevent;
 
@@ -73,6 +46,10 @@ class seqevent;
 struct Seq24SeqEventInput
 {
     bool m_adding;
+
+    /**
+     * Default constructor.
+     */
 
     Seq24SeqEventInput () :
         m_adding    (false)
