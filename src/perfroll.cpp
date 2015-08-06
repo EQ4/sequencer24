@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -59,24 +59,24 @@ perfroll::perfroll
     m_pixmap            (),
     m_background        (),
     m_mainperf          (a_perf),
+    m_window_x          (0),
+    m_window_y          (0),
+    m_drop_x            (0),
+    m_drop_y            (0),
+    m_vadjust           (a_vadjust),
+    m_hadjust           (a_hadjust),
     m_snap              (0),
     m_measure_length    (0),
     m_beat_length       (0),
-    m_window_x          (0),
-    m_window_y          (0),
     m_old_progress_ticks(0),
     m_4bar_offset       (0),
     m_sequence_offset   (0),
     m_roll_length_ticks (0),
-    m_drop_x            (0),
-    m_drop_y            (0),
     m_drop_tick         (0),
     m_drop_tick_trigger_offset (0),
     m_drop_sequence     (0),
     m_sequence_active   (),             // array
     m_interaction       (nullptr),
-    m_vadjust           (a_vadjust),
-    m_hadjust           (a_hadjust),
     m_moving            (false),
     m_growing           (false),
     m_grow_direction    (false)

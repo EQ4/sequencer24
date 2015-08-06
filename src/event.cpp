@@ -26,7 +26,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -135,42 +135,6 @@ bool
 event::operator > (unsigned long a_rhslong)
 {
     return m_timestamp > a_rhslong;
-}
-
-/**
- * \getter m_timestamp
- */
-
-long
-event::get_timestamp()
-{
-    return m_timestamp;
-}
-
-/**
- * \setter m_timestamp
- */
-
-void
-event::set_timestamp (unsigned long a_time)
-{
-    m_timestamp = a_time;
-}
-
-/**
- *  Calculates the value of the timestamp modulo the given parameter.
- *
- * \param a_mod
- *      The value to mod the timestamp against.
- *
- * \return
- *      Returns a value ranging from 0 to a_mod-1.
- */
-
-void
-event::mod_timestamp (unsigned long a_mod)
-{
-    m_timestamp %= a_mod;
 }
 
 /**
@@ -285,16 +249,6 @@ event::get_data (unsigned char * D0, unsigned char * D1)
 }
 
 /**
- * \getter m_status
- */
-
-unsigned char
-event::get_status()
-{
-    return m_status;
-}
-
-/**
  *  Deletes and clears out the SYSEX buffer.
  */
 
@@ -349,99 +303,6 @@ event::append_sysex (unsigned char * a_data, long a_size)
         }
     }
     return result;
-}
-
-/**
- * \getter m_sysex
- */
-
-unsigned char *
-event::get_sysex ()
-{
-    return m_sysex;
-}
-
-/**
- * \setter m_size
- */
-
-void
-event::set_size (long a_size)
-{
-    m_size = a_size;
-}
-
-/**
- * \getter m_size
- */
-
-long
-event::get_size ()
-{
-    return m_size;
-}
-
-/**
- *  Sets the note velocity, with is held in the second data byte,
- *  m_data[1].
- */
-
-void
-event::set_note_velocity (int a_vel)
-{
-    m_data[1] = a_vel & 0x7F;
-}
-
-/**
- *  Returns true if m_status is EVENT_NOTE_ON.
- */
-
-bool
-event::is_note_on ()
-{
-    return m_status == EVENT_NOTE_ON;
-}
-
-/**
- *  Returns true if m_status is EVENT_NOTE_OFF.
- */
-
-bool
-event::is_note_off ()
-{
-    return m_status == EVENT_NOTE_OFF;
-}
-
-/**
- *  Assuming m_data[] holds a note, get the note number, which is in the
- *  first data byte, m_data[0].
- */
-
-unsigned char
-event::get_note ()
-{
-    return m_data[0];
-}
-
-/**
- *  Sets the note number, clearing off the most-significant-bit and
- *  assigning it to the first data byte, m_data[0].
- */
-
-void
-event::set_note (char a_note)
-{
-    m_data[0] = a_note & 0x7F;
-}
-
-/**
- * \getter m_data[1], the note velocity.
- */
-
-unsigned char
-event::get_note_velocity()
-{
-    return m_data[1];
 }
 
 /**
@@ -503,137 +364,6 @@ event::get_rank (void) const
     default:
         return 0;
     }
-}
-
-/**
- *  Sets m_has_link and sets m_link to the provided event pointer.
- */
-
-void
-event::link (event * a_event)
-{
-    m_has_link = true;
-    m_linked = a_event;
-}
-
-/**
- * \getter m_linked
- */
-
-event *
-event::get_linked ()
-{
-    return m_linked;
-}
-
-/**
- * \getter m_has_link
- */
-
-bool
-event::is_linked ()
-{
-    return m_has_link;
-}
-
-/**
- * \setter m_has_link
- */
-
-void
-event::clear_link ()
-{
-    m_has_link = false;
-}
-
-/**
- * \setter m_selected
- */
-
-void
-event::select ()
-{
-    m_selected = true;
-}
-
-/**
- * \setter m_selected
- */
-
-void
-event::unselect ()
-{
-    m_selected = false;
-}
-
-/**
- * \getter m_selected
- */
-
-bool
-event::is_selected ()
-{
-    return m_selected;
-}
-
-/**
- * \setter m_painted
- */
-
-void
-event::paint ()
-{
-    m_painted = true;
-}
-
-/**
- * \setter m_painted
- */
-
-void
-event::unpaint ()
-{
-    m_painted = false;
-}
-
-/**
- * \getter m_painted
- */
-
-bool
-event::is_painted ()
-{
-    return m_painted;
-}
-
-/**
- * \setter m_marked
- */
-
-void
-event::mark ()
-{
-    m_marked = true;
-}
-
-/**
- * \setter m_marked
- */
-
-void
-event::unmark ()
-{
-    m_marked = false;
-}
-
-/**
- * \getter m_marked
- */
-
-bool
-event::is_marked ()
-{
-    return m_marked;
 }
 
 /*

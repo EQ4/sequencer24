@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -60,12 +60,12 @@ private:
     Gdk::Color m_white;
     Gdk::Color m_grey;
     Glib::RefPtr<Gdk::Pixmap> m_pixmap;
-    sequence * m_seq;
-    Gtk::Adjustment * m_vadjust;
-    int m_scroll_offset_key;
-    int m_scroll_offset_y;
     int m_window_x;
     int m_window_y;
+    Gtk::Adjustment * m_vadjust;
+    sequence * m_seq;
+    int m_scroll_offset_key;
+    int m_scroll_offset_y;
     bool m_hint_state;
     int m_hint_key;
 
@@ -93,7 +93,6 @@ private:
     void update_pixmap ();
     void convert_y (int a_y, int * a_note);
     void draw_key (int a_key, bool a_state);
-    void on_size_allocate (Gtk::Allocation &);
     void change_vert ();
     void force_draw ();
     void update_sizes ();
@@ -106,9 +105,10 @@ private:        // callbacks
     bool on_button_press_event (GdkEventButton * a_ev);
     bool on_button_release_event (GdkEventButton * a_ev);
     bool on_motion_notify_event (GdkEventMotion * a_p0);
-    bool on_leave_notify_event (GdkEventCrossing * p0);
     bool on_enter_notify_event (GdkEventCrossing * p0);
+    bool on_leave_notify_event (GdkEventCrossing * p0);
     bool on_scroll_event (GdkEventScroll * a_ev);
+    void on_size_allocate (Gtk::Allocation &);
 
 };
 

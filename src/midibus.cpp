@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  *  This file provides a Linux-only implementation of MIDI support.
@@ -142,26 +142,6 @@ midibus::midibus
 midibus::~midibus()
 {
     // empty body
-}
-
-/**
- *  Lock the mutex.
- */
-
-void
-midibus::lock ()
-{
-    m_mutex.lock();
-}
-
-/**
- *  Unlock the mutex.
- */
-
-void
-midibus::unlock ()
-{
-    m_mutex.unlock();
 }
 
 /**
@@ -374,16 +354,6 @@ bool midibus::deinit_in()
 }
 
 /**
- * \getter m_id
- */
-
-int
-midibus::get_id ()
-{
-    return m_id;
-}
-
-/**
  *  Prints m_name.
  */
 
@@ -391,16 +361,6 @@ void
 midibus::print ()
 {
     printf("%s" , m_name.c_str());
-}
-
-/**
- * \getter n_name
- */
-
-std::string
-midibus::get_name ()
-{
-    return m_name;
 }
 
 
@@ -412,9 +372,7 @@ midibus::get_name ()
 void
 midibus::play (event * a_e24, unsigned char a_channel)
 {
-
 #ifdef HAVE_LIBASOUND
-
     lock();
     snd_seq_event_t ev;
     snd_midi_event_t *midi_ev;      /* ALSA MIDI parser   */
@@ -443,9 +401,7 @@ midibus::play (event * a_e24, unsigned char a_channel)
 
     snd_seq_event_output(m_seq, &ev);
     unlock();
-
 #endif  // HAVE_LIBASOUND
-
 }
 
 /**
@@ -453,12 +409,9 @@ midibus::play (event * a_e24, unsigned char a_channel)
  */
 
 inline long
-min(long a, long b)
+min (long a, long b)
 {
-    if (a < b)
-        return a;
-
-    return b;
+    return (a < b) ? a : b ;
 }
 
 /**
@@ -469,9 +422,7 @@ min(long a, long b)
 void
 midibus::sysex (event * a_e24)
 {
-
 #ifdef HAVE_LIBASOUND
-
     lock();
     snd_seq_event_t ev;
 
@@ -503,13 +454,11 @@ midibus::sysex (event * a_e24)
         flush();
     }
     unlock();
-
 #endif  // HAVE_LIBASOUND
-
 }
 
 /**
- *  flushes our local queue events out into ALSA.
+ *  Flushes our local queue events out into ALSA.
  */
 
 void
@@ -649,26 +598,6 @@ midibus::start ()
 }
 
 /**
- * \setter m_clock_type
- */
-
-void
-midibus::set_clock (clock_e a_clock_type)
-{
-    m_clock_type = a_clock_type;
-}
-
-/**
- * \getter m_clock_type
- */
-
-clock_e
-midibus::get_clock ()
-{
-    return m_clock_type;
-}
-
-/**
  *  Set status to of "inputting" to the given value.  If the parameter is
  *  true, then init_in() is called; otherwise, deinit_in() is called.
  */
@@ -687,25 +616,13 @@ midibus::set_input (bool a_inputing)
 }
 
 /**
- * \getter m_inputing
- */
-
-bool
-midibus::get_input ()
-{
-    return m_inputing;
-}
-
-/**
  *  Stop the MIDI buss.
  */
 
 void
 midibus::stop ()
 {
-
 #ifdef HAVE_LIBASOUND
-
     m_lasttick = -1;
     if (m_clock_type != e_clock_off)
     {
@@ -713,17 +630,12 @@ midibus::stop ()
         ev.type = SND_SEQ_EVENT_STOP;
         snd_seq_ev_set_fixed(&ev);
         snd_seq_ev_set_priority(&ev, 1);
-
         snd_seq_ev_set_source(&ev, m_local_addr_port);  /* set source */
         snd_seq_ev_set_subs(&ev);
-
         snd_seq_ev_set_direct(&ev);                     /* it's immediate */
-
         snd_seq_event_output(m_seq, &ev);               /* pump it into queue */
     }
-
 #endif  // HAVE_LIBASOUND
-
 }
 
 /**
@@ -733,14 +645,11 @@ midibus::stop ()
 void
 midibus::clock (long a_tick)
 {
-
 #ifdef HAVE_LIBASOUND
-
     lock();
     if (m_clock_type != e_clock_off)
     {
         bool done = false;
-//      long uptotick = a_tick;
         if (m_lasttick >= a_tick)
             done = true;
 
@@ -770,9 +679,7 @@ midibus::clock (long a_tick)
         flush();            /* and send out */
     }
     unlock();
-
 #endif  // HAVE_LIBASOUND
-
 }
 
 #if 0

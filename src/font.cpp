@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -96,11 +96,9 @@ font::render_string_on_drawable
 
         int pixbuf_index_x = c % 16;
         int pixbuf_index_y = c / 16;
-
         pixbuf_index_x *= 9;
-        pixbuf_index_y *= 13;
-
         pixbuf_index_x += 2;
+        pixbuf_index_y *= 13;
         pixbuf_index_y += 2;
 
         if (col == font::BLACK)
@@ -111,14 +109,8 @@ font::render_string_on_drawable
 
         a_draw->draw_drawable
         (
-            a_gc,
-            m_pixmap,
-            pixbuf_index_x,
-            pixbuf_index_y,
-            x + (i * font_w),
-            y,
-            font_w,
-            font_h
+            a_gc, m_pixmap, pixbuf_index_x, pixbuf_index_y,
+            x + (i * font_w), y, font_w, font_h
         );
     }
 }

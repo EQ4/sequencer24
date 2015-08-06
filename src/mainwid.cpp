@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -75,18 +75,18 @@ mainwid::mainwid (perform * a_p)
     m_background        (),
     m_foreground        (),
     m_pixmap            (),
-    m_screenset         (0),
     m_mainperf          (a_p),
-    m_moving_seq        (),
     m_window_x          (c_mainwid_x),
     m_window_y          (c_mainwid_y),
-    m_button_down       (false),
-    m_moving            (false),
-    m_drop_x            (0),
-    m_drop_y            (0),
     m_current_x         (0),
     m_current_y         (0),
+    m_drop_x            (0),
+    m_drop_y            (0),
+    m_moving_seq        (),
+    m_button_down       (false),
+    m_moving            (false),
     m_old_seq           (0),
+    m_screenset         (0),
     m_last_tick_x       (),     // an array of size c_max_sequence
     m_last_playing      ()      // an array of size c_max_sequence
 {

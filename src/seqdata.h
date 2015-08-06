@@ -29,7 +29,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -63,7 +63,13 @@ private:
     Gdk::Color m_white;
     Gdk::Color m_grey;
     Glib::RefPtr<Gdk::Pixmap> m_pixmap;
-    Glib::RefPtr<Gdk::Pixmap> m_numbers[c_dataarea_y];
+    int m_window_x;
+    int m_window_y;
+    int m_current_x;
+    int m_current_y;
+    int m_drop_x;
+    int m_drop_y;
+    Gtk::Adjustment * const m_hadjust;
     sequence * const m_seq;
 
     /**
@@ -72,13 +78,6 @@ private:
 
     int m_zoom;
 
-    int m_window_x;
-    int m_window_y;
-    int m_drop_x;
-    int m_drop_y;
-    int m_current_x;
-    int m_current_y;
-    Gtk::Adjustment * const m_hadjust;
     int m_scroll_offset_ticks;
     int m_scroll_offset_x;
     int m_background_tile_x;
@@ -90,6 +89,7 @@ private:
 
     unsigned char m_status;
     unsigned char m_cc;
+    Glib::RefPtr<Gdk::Pixmap> m_numbers[c_dataarea_y];
     GdkRectangle m_old;
     bool m_dragging;
 

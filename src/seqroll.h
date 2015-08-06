@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -55,14 +55,16 @@ namespace Gtk
     class Adjustment;
 }
 
+/**
+ *  A small helper class representing a rectangle.
+ */
+
 class rect
 {
 public:
 
     int x, y, height, width;
 };
-
-// class seqroll;
 
 /**
  *  Implement the piano roll section of the pattern editor.
@@ -75,8 +77,6 @@ class seqroll : public Gtk::DrawingArea
 
 private:
 
-    FruitySeqRollInput m_fruity_interaction;
-    Seq24SeqRollInput m_seq24_interaction;
     Glib::RefPtr<Gdk::GC> m_gc;
     Glib::RefPtr<Gdk::Window> m_window;
     Gdk::Color m_black;
@@ -85,15 +85,25 @@ private:
     Gdk::Color m_dk_grey;
     Gdk::Color m_red;
     Glib::RefPtr<Gdk::Pixmap> m_pixmap;
+    perform * const m_mainperf;
+    int m_window_x;
+    int m_window_y;
+    int m_current_x;
+    int m_current_y;
+    int m_drop_x;
+    int m_drop_y;
+    Adjustment * const m_vadjust;
+    Adjustment * const m_hadjust;
     Glib::RefPtr<Gdk::Pixmap> m_background;
     rect m_old;
     rect m_selected;
     sequence * const m_seq;
     sequence * m_clipboard;
-    perform * const m_perform;
     seqdata * const m_seqdata_wid;
     seqevent * const m_seqevent_wid;
     seqkeys * const m_seqkeys_wid;
+    FruitySeqRollInput m_fruity_interaction;
+    Seq24SeqRollInput m_seq24_interaction;
     int m_pos;
 
     /**
@@ -106,8 +116,6 @@ private:
     int m_note_length;
     int m_scale;
     int m_key;
-    int m_window_x;
-    int m_window_y;
 
     /**
      *  Indicates what is the data window currently editing.
@@ -134,16 +142,10 @@ private:
      *  Tells where the dragging started.
      */
 
-    int m_drop_x;
-    int m_drop_y;
     int m_move_delta_x;
     int m_move_delta_y;
-    int m_current_x;
-    int m_current_y;
     int m_move_snap_offset_x;
     int m_old_progress_x;
-    Adjustment * const m_vadjust;
-    Adjustment * const m_hadjust;
     int m_scroll_offset_ticks;
     int m_scroll_offset_key;
     int m_scroll_offset_x;
@@ -172,10 +174,37 @@ public:
     void redraw_events ();
     void set_key (int a_key);
     void set_scale (int a_scale);
-    void set_snap (int a_snap);
+
+    /**
+     *  Sets the snap to the given value, and then resets the view.
+     */
+
+    void set_snap (int a_snap)
+    {
+        m_snap = a_snap;
+        reset();
+    }
+
     void set_zoom (int a_zoom);
-    void set_note_length (int a_note_length);
-    void set_ignore_redraw (bool a_ignore);
+
+    /**
+     * \setter m_note_length
+     */
+
+    void set_note_length (int a_note_length)
+    {
+        m_note_length = a_note_length;
+    }
+
+    /**
+     * \setter m_ignore_redraw
+     */
+
+    void set_ignore_redraw (bool a_ignore)
+    {
+        m_ignore_redraw = a_ignore;
+    }
+
     void set_data_type (unsigned char a_status, unsigned char a_control);
     void set_background_sequence (bool a_state, int a_seq);
     void update_pixmap ();
@@ -213,15 +242,15 @@ private:
 private:            // callbacks
 
     void on_realize ();
-    void on_size_allocate (Gtk::Allocation &);
     bool on_expose_event (GdkEventExpose * a_ev);
     bool on_button_press_event (GdkEventButton * a_ev);
     bool on_button_release_event (GdkEventButton * a_ev);
     bool on_motion_notify_event (GdkEventMotion * a_ev);
-    bool on_key_press_event (GdkEventKey * a_p0);
     bool on_focus_in_event (GdkEventFocus *);
     bool on_focus_out_event (GdkEventFocus *);
+    bool on_key_press_event (GdkEventKey * a_p0);
     bool on_scroll_event (GdkEventScroll * a_ev);
+    void on_size_allocate (Gtk::Allocation &);
     bool on_leave_notify_event (GdkEventCrossing * a_p0);
     bool on_enter_notify_event (GdkEventCrossing * a_p0);
 };

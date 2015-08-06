@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -50,9 +50,9 @@ perfnames::perfnames (perform * a_perf, Adjustment * a_vadjust)
     m_grey              (Gdk::Color("grey")),
     m_pixmap            (),
     m_mainperf          (a_perf),
-    m_vadjust           (a_vadjust),
     m_window_x          (),
     m_window_y          (),
+    m_vadjust           (a_vadjust),
     m_sequence_offset   (0),
     m_sequence_active   ()              // an array
 {

@@ -26,7 +26,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -55,22 +55,22 @@ seqdata::seqdata
     m_white                 (Gdk::Color("white")),
     m_grey                  (Gdk::Color("grey")),
     m_pixmap                (),
-    m_numbers               (),             // an array
-    m_seq                   (a_seq),
-    m_zoom                  (a_zoom),
     m_window_x              (0),
     m_window_y              (0),
-    m_drop_x                (0),
-    m_drop_y                (0),
     m_current_x             (0),
     m_current_y             (0),
+    m_drop_x                (0),
+    m_drop_y                (0),
     m_hadjust               (a_hadjust),
+    m_seq                   (a_seq),
+    m_zoom                  (a_zoom),
     m_scroll_offset_ticks   (0),
     m_scroll_offset_x       (0),
     m_background_tile_x     (0),
     m_background_tile_y     (0),
     m_status                (0),
     m_cc                    (0),
+    m_numbers               (),             // an array
     m_old                   (),
     m_dragging              (false)
 {

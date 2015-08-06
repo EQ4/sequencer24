@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -206,7 +206,16 @@ private:
     void sequence_key (int a_seq);
     void update_window_title ();
     void toLower (std::string &);    // isn't this std::string?
-    bool is_modified ();
+
+    /**
+     * \getter m_modified
+     */
+
+    bool is_modified () const
+    {
+        return m_modified;
+    }
+
     void file_new ();
     void file_open ();
     void file_save ();

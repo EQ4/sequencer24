@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -61,9 +61,9 @@ private:
     Gdk::Color m_grey;
     Glib::RefPtr<Gdk::Pixmap> m_pixmap;
     perform * m_mainperf;
-    Adjustment * m_vadjust;
     int m_window_x;
     int m_window_y;
+    Adjustment * m_vadjust;
     int m_sequence_offset;
     bool m_sequence_active[c_total_seqs];
 

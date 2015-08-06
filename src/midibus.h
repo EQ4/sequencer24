@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-30
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  *  The midibus module is the Linux version of the midibus module.
@@ -165,8 +165,24 @@ public:
     bool init_out_sub ();
     bool init_in_sub ();
     void print ();
-    std::string get_name ();
-    int get_id ();
+
+    /**
+     * \getter n_name
+     */
+
+    const std::string & get_name () const
+    {
+        return m_name;
+    }
+
+    /**
+     * \getter m_id
+     */
+
+    int get_id () const
+    {
+        return m_id;
+    }
 
     void play (event * a_e24, unsigned char a_channel);
     void sysex (event * a_e24);
@@ -180,15 +196,39 @@ public:
     void clock (long a_tick);
     void continue_from (long a_tick);
     void init_clock (long a_tick);
-    void set_clock (clock_e a_clocking);
-    clock_e get_clock ();
+
+    /**
+     * \setter m_clock_type
+     */
+
+    void set_clock (clock_e a_clock_type)
+    {
+        m_clock_type = a_clock_type;
+    }
+
+    /**
+     * \getter m_clock_type
+     */
+
+    clock_e get_clock () const
+    {
+        return m_clock_type;
+    }
 
     /**
      *  Input functions
      */
 
-    void set_input (bool a_inputing);
-    bool get_input ();
+    void set_input (bool a_inputing);   // too much to inline
+
+    /**
+     * \getter m_inputing
+     */
+
+    bool get_input () const
+    {
+        return m_inputing;
+    }
     void flush ();
 
     /**
@@ -196,7 +236,7 @@ public:
      *      The address of client.
      */
 
-    int get_client ()
+    int get_client () const
     {
         return m_dest_addr_client;
     }
@@ -205,18 +245,49 @@ public:
      *  \getter m_dest_addr_port
      */
 
-    int get_port ()
+    int get_port () const
     {
         return m_dest_addr_port;
     };
 
-    static void set_clock_mod (int a_clock_mod);
-    static int get_clock_mod  ();
+    /**
+     *  Set the clock mod to the given value, if legal.
+     */
+
+    static void set_clock_mod (int a_clock_mod)
+    {
+        if (a_clock_mod != 0)
+            m_clock_mod = a_clock_mod;
+    }
+
+    /**
+     *  Get the clock mod.
+     */
+
+    static int get_clock_mod ()
+    {
+        return m_clock_mod;
+    }
 
 private:
 
-    void lock ();
-    void unlock ();
+    /**
+     *  Lock the mutex.
+     */
+
+    void lock ()
+    {
+        m_mutex.lock();
+    }
+
+    /**
+     *  Unlock the mutex.
+     */
+
+    void unlock ()
+    {
+        m_mutex.unlock();
+    }
 
 };
 

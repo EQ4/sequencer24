@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -51,12 +51,12 @@ seqkeys::seqkeys
     m_white                 (Gdk::Color("white")),
     m_grey                  (Gdk::Color("grey")),
     m_pixmap                (),
-    m_seq                   (a_seq),
-    m_vadjust               (a_vadjust),
-    m_scroll_offset_key     (0),
-    m_scroll_offset_y       (0),
     m_window_x              (0),
     m_window_y              (0),
+    m_vadjust               (a_vadjust),
+    m_seq                   (a_seq),
+    m_scroll_offset_key     (0),
+    m_scroll_offset_y       (0),
     m_hint_state            (false),
     m_hint_key              (0),
     m_keying                (false),

@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -179,12 +179,51 @@ public:
     bool operator <= (unsigned long rhslong);
     bool operator > (unsigned long rhslong);
 
-    void set_timestamp (unsigned long time);
-    long get_timestamp ();
-    void mod_timestamp (unsigned long a_mod);
+    /**
+     * \setter m_timestamp
+     */
 
-    void set_status (char status);
-    unsigned char get_status ();
+    void set_timestamp (unsigned long a_time)
+    {
+        m_timestamp = a_time;
+    }
+
+    /**
+     * \getter m_timestamp
+     */
+
+    long get_timestamp() const
+    {
+        return m_timestamp;
+    }
+
+    /**
+     *  Calculates the value of the current timestamp modulo the given
+     *  parameter.
+     *
+     * \param a_mod
+     *      The value to mod the timestamp against.
+     *
+     * \return
+     *      Returns a value ranging from 0 to a_mod-1.
+     */
+
+    void mod_timestamp (unsigned long a_mod)
+    {
+        m_timestamp %= a_mod;
+    }
+
+    void set_status (char status);      // a bit long to inline
+
+    /**
+     * \getter m_status
+     */
+
+    unsigned char get_status() const
+    {
+        return m_status;
+    }
+
     void set_data (char D1);
     void set_data (char D1, char D2);
     void get_data (unsigned char * D0, unsigned char * D1);
@@ -195,38 +234,210 @@ public:
 
     void start_sysex ();
     bool append_sysex (unsigned char *a_data, long size);
-    unsigned char * get_sysex ();
 
-    void set_note (char a_note);
+    /**
+     * \getter m_sysex
+     */
 
-    void set_size (long a_size);
-    long get_size ();
+    unsigned char * get_sysex () const
+    {
+        return m_sysex;
+    }
 
-    void link (event * event);
-    event * get_linked ();
-    bool is_linked ();
-    void clear_link ();
+    /**
+     * \setter m_size
+     */
 
-    void paint ();
-    void unpaint ();
-    bool is_painted ();
+    void set_size (long a_size)
+    {
+        m_size = a_size;
+    }
 
-    void mark ();
-    void unmark ();
-    bool is_marked ();
+    /**
+     * \getter m_size
+     */
 
-    void select ();
-    void unselect ();
-    bool is_selected ();
+    long get_size () const
+    {
+        return m_size;
+    }
+
+    /**
+     *  Sets m_has_link and sets m_link to the provided event pointer.
+     */
+
+    void link (event * a_event)
+    {
+        m_has_link = true;
+        m_linked = a_event;
+    }
+
+    /**
+     * \getter m_linked
+     */
+
+    event * get_linked () const
+    {
+        return m_linked;
+    }
+
+    /**
+     * \getter m_has_link
+     */
+
+    bool is_linked () const
+    {
+        return m_has_link;
+    }
+
+    /**
+     * \setter m_has_link
+     */
+
+    void clear_link ()
+    {
+        m_has_link = false;
+    }
+
+    /**
+     * \setter m_painted
+     */
+
+    void paint ()
+    {
+        m_painted = true;
+    }
+
+    /**
+     * \setter m_painted
+     */
+
+    void unpaint ()
+    {
+        m_painted = false;
+    }
+
+    /**
+     * \getter m_painted
+     */
+
+    bool is_painted () const
+    {
+        return m_painted;
+    }
+
+    /**
+     * \setter m_marked
+     */
+
+    void mark ()
+    {
+        m_marked = true;
+    }
+
+    /**
+     * \setter m_marked
+     */
+
+    void unmark ()
+    {
+        m_marked = false;
+    }
+
+    /**
+     * \getter m_marked
+     */
+
+    bool is_marked () const
+    {
+        return m_marked;
+    }
+
+    /**
+     * \setter m_selected
+     */
+
+    void select ()
+    {
+        m_selected = true;
+    }
+
+    /**
+     * \setter m_selected
+     */
+
+    void unselect ()
+    {
+        m_selected = false;
+    }
+
+    /**
+     * \getter m_selected
+     */
+
+    bool is_selected () const
+    {
+        return m_selected;
+    }
 
     void make_clock ();                // set status to MIDI clock
 
-    unsigned char get_note ();         // gets note if it is note on/off
-    unsigned char get_note_velocity ();
-    void set_note_velocity (int a_vel);
+    /**
+     *  Assuming m_data[] holds a note, get the note number, which is in the
+     *  first data byte, m_data[0].
+     */
 
-    bool is_note_on ();                // returns true if status is set
-    bool is_note_off ();
+    unsigned char get_note () const
+    {
+        return m_data[0];
+    }
+
+    /**
+     *  Sets the note number, clearing off the most-significant-bit and
+     *  assigning it to the first data byte, m_data[0].
+     */
+
+    void set_note (char a_note)
+    {
+        m_data[0] = a_note & 0x7F;
+    }
+
+    /**
+     * \getter m_data[1], the note velocity.
+     */
+
+    unsigned char get_note_velocity () const
+    {
+        return m_data[1];
+    }
+
+    /**
+     *  Sets the note velocity, with is held in the second data byte,
+     *  m_data[1].
+     */
+
+    void set_note_velocity (int a_vel)
+    {
+        m_data[1] = a_vel & 0x7F;
+    }
+
+    /**
+     *  Returns true if m_status is EVENT_NOTE_ON.
+     */
+
+    bool is_note_on () const
+    {
+        return m_status == EVENT_NOTE_ON;
+    }
+
+    /**
+     *  Returns true if m_status is EVENT_NOTE_OFF.
+     */
+
+    bool is_note_off () const
+    {
+        return m_status == EVENT_NOTE_OFF;
+    }
 
     void print ();
 
@@ -236,7 +447,7 @@ private:
      *  This function is used in sorting.  Sorting what?
      */
 
-    int get_rank() const;
+    int get_rank () const;
 };
 
 #endif   // SEQ24_EVENT_H

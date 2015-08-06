@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -254,26 +254,6 @@ sequence::set_master_midi_bus (mastermidibus * a_mmb)
 }
 
 /**
- * \setter m_song_mute
- */
-
-void
-sequence::set_song_mute(bool a_mute)
-{
-    m_song_mute = a_mute;
-}
-
-/**
- * \getter m_song_mute
- */
-
-bool
-sequence::get_song_mute ()
-{
-    return m_song_mute;
-}
-
-/**
  * \setter m_time_beats_per_measure
  *
  * \threadsafe
@@ -289,16 +269,6 @@ sequence::set_bpm (long a_beats_per_measure)
 }
 
 /**
- * \getter m_time_beats_per_measure
- */
-
-long
-sequence::get_bpm ()
-{
-    return m_time_beats_per_measure;
-}
-
-/**
  * \setter m_time_beat_width
  *
  * \threadsafe
@@ -311,18 +281,6 @@ sequence::set_bw (long a_beat_width)
     m_time_beat_width = a_beat_width;
     set_dirty_mp();
     unlock();
-}
-
-/**
- * \getter m_time_beat_width
- *
- * \threadsafe
- */
-
-long
-sequence::get_bw ()
-{
-    return m_time_beat_width;
 }
 
 /**
@@ -408,27 +366,6 @@ sequence::off_queued ()
 }
 
 /**
- * \getter m_queued
- */
-
-bool
-sequence::get_queued ()
-{
-    return m_queued;
-}
-
-/**
- * \getter m_queued_tick
- */
-
-long
-sequence::get_queued_tick ()
-{
-    return m_queued_tick;
-}
-
-
-/**
  *  The play() function dumps notes starting from thee given tick, and it
  *  prebuffers ahead.  This function is called by the sequencer thread,
  *  performance.  The tick comes in as global tick.
@@ -508,8 +445,7 @@ sequence::play (long a_tick, bool a_playback_mode)
 
     long start_tick_offset = (start_tick + m_length - m_trigger_offset);
     long end_tick_offset = (end_tick + m_length - m_trigger_offset);
-
-    if (m_playing)                          /* play the notes in the frame */
+    if (m_playing)                              /* play the notes in frame */
     {
         std::list<event>::iterator e = m_list_event.begin();
         while (e != m_list_event.end())
@@ -532,9 +468,8 @@ sequence::play (long a_tick, bool a_playback_mode)
         }
     }
     if (trigger_turning_off)         /* if triggers said we should turn off */
-    {
         set_playing(false);
-    }
+
     m_last_tick = end_tick + 1;                     /* update for next frame */
     m_was_playing = m_playing;
     unlock();
@@ -630,9 +565,7 @@ sequence::verify_and_link ()
         on++;
     }
     for (i = m_list_event.begin(); i != m_list_event.end(); i++)
-    {
         i->unmark();                                      /* unmark all */
-    }
 
     /* kill those events not in range */
 
@@ -660,13 +593,11 @@ sequence::verify_and_link ()
 void
 sequence::link_new ()
 {
-    std::list<event>::iterator on;
     std::list<event>::iterator off;
     bool end_found = false;
 
     lock();
-    on = m_list_event.begin();
-
+    std::list<event>::iterator on = m_list_event.begin();
     while (on != m_list_event.end())                /* pair ons and offs */
     {
         /* check for a note on, then look for its note off */
@@ -773,10 +704,9 @@ sequence::remove (event * e)
 void
 sequence::remove_marked ()
 {
-    std::list<event>::iterator i, t;
-
     lock();
-    i = m_list_event.begin();
+    std::list<event>::iterator t;
+    std::list<event>::iterator i = m_list_event.begin();
     while (i != m_list_event.end())
     {
         if (i->is_marked())
@@ -2320,16 +2250,6 @@ sequence::set_trigger_offset (long a_trigger_offset)
     m_trigger_offset += m_length;
     m_trigger_offset %= m_length;
     unlock();
-}
-
-/**
- * \getter m_trigger_offset
- */
-
-long
-sequence::get_trigger_offset ()
-{
-    return m_trigger_offset;
 }
 
 /**

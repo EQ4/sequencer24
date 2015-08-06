@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -59,18 +59,18 @@ private:
     Gdk::Color m_white;
     Gdk::Color m_grey;
     Glib::RefPtr<Gdk::Pixmap> m_pixmap;
+    int m_window_x;
+    int m_window_y;
     Gtk::Adjustment * m_hadjust;
+    sequence * m_seq;
     int m_scroll_offset_ticks;
     int m_scroll_offset_x;
-    sequence * m_seq;
 
     /**
      * one pixel == m_zoom ticks
      */
 
     int m_zoom;
-    int m_window_x;
-    int m_window_y;
 
 public:
 

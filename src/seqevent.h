@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-02
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -73,13 +73,19 @@ private:
     Gdk::Color m_dk_grey;
     Gdk::Color m_red;
     Glib::RefPtr<Gdk::Pixmap> m_pixmap;
-    GdkRectangle m_old;
-    GdkRectangle m_selected;
+    int m_window_x;
+    int m_window_y;
+
+    /**
+     *  Indicates where the dragging started.
+     */
+
+    int m_drop_x;
+    int m_drop_y;
+    int m_current_x;
+    int m_current_y;
     Gtk::Adjustment * const m_hadjust;
-    int m_scroll_offset_ticks;
-    int m_scroll_offset_x;
     sequence * const m_seq;
-    seqdata * const m_seqdata_wid;
 
     /**
      *  Zoom setting, means that one pixel == m_zoom ticks.
@@ -88,8 +94,11 @@ private:
     int m_zoom;
     int m_snap;
 
-    int m_window_x;
-    int m_window_y;
+    GdkRectangle m_old;
+    GdkRectangle m_selected;
+    int m_scroll_offset_ticks;
+    int m_scroll_offset_x;
+    seqdata * const m_seqdata_wid;
 
     /**
      *  Used when highlighting a bunch of events.
@@ -101,15 +110,6 @@ private:
     bool m_growing;
     bool m_painting;
     bool m_paste;
-
-    /**
-     *  Indicates where the dragging started.
-     */
-
-    int m_drop_x;
-    int m_drop_y;
-    int m_current_x;
-    int m_current_y;
     int m_move_snap_offset_x;
 
     /**
@@ -133,7 +133,18 @@ public:
     void reset ();
     void redraw ();
     void set_zoom (int a_zoom);
-    void set_snap (int a_snap);
+
+    /**
+     * \setter m_snap
+     *
+     *  Simply sets the snap member.
+     */
+
+    void set_snap (int a_snap)
+    {
+        m_snap = a_snap;
+    }
+
     void set_data_type (unsigned char a_status, unsigned char a_control);
     void update_sizes ();
     void draw_background ();
@@ -153,7 +164,6 @@ private:
     void drop_event (long a_tick);
     void draw_events_on (Glib::RefPtr<Gdk::Drawable> a_draw);
     void start_paste ();
-    void on_size_allocate (Gtk::Allocation &);
     void change_horz ();
     void force_draw ();
 
@@ -164,9 +174,11 @@ private:        // callbacks
     bool on_button_press_event (GdkEventButton * a_ev);
     bool on_button_release_event (GdkEventButton * a_ev);
     bool on_motion_notify_event (GdkEventMotion * a_ev);
-    bool on_key_press_event (GdkEventKey * a_p0);
     bool on_focus_in_event (GdkEventFocus *);
     bool on_focus_out_event (GdkEventFocus *);
+    bool on_key_press_event (GdkEventKey * a_p0);
+    void on_size_allocate (Gtk::Allocation &);
+
 };
 
 #endif   // SEQ24_SEQEVENT_H

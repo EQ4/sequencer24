@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -58,27 +58,27 @@ seqevent::seqevent
     m_grey                  (Gdk::Color("grey")),
     m_red                   (Gdk::Color("orange")),
     m_pixmap                (),
-    m_old                   (),
-    m_selected              (),
-    m_hadjust               (a_hadjust),
-    m_scroll_offset_ticks   (0),
-    m_scroll_offset_x       (0),
-    m_seq                   (a_seq),
-    m_seqdata_wid           (a_seqdata_wid),
-    m_zoom                  (a_zoom),
-    m_snap                  (a_snap),
     m_window_x              (0),
     m_window_y              (0),
+    m_drop_x                (0),
+    m_drop_y                (0),
+    m_current_x             (0),
+    m_current_y             (0),
+    m_hadjust               (a_hadjust),
+    m_seq                   (a_seq),
+    m_zoom                  (a_zoom),
+    m_snap                  (a_snap),
+    m_old                   (),
+    m_selected              (),
+    m_scroll_offset_ticks   (0),
+    m_scroll_offset_x       (0),
+    m_seqdata_wid           (a_seqdata_wid),
     m_selecting             (false),
     m_moving_init           (false),
     m_moving                (false),
     m_growing               (false),
     m_painting              (false),
     m_paste                 (false),
-    m_drop_x                (0),
-    m_drop_y                (0),
-    m_current_x             (0),
-    m_current_y             (0),
     m_move_snap_offset_x    (0),
     m_status                (EVENT_NOTE_ON),
     m_cc                    (0)
@@ -260,18 +260,6 @@ seqevent::set_zoom (int a_zoom)
 }
 
 /**
- * \setter m_snap
- *
- *  Simply sets the snap member.
- */
-
-void
-seqevent::set_snap (int a_snap)
-{
-    m_snap = a_snap;
-}
-
-/**
  *  Sets the status to the given parameter, and the CC value to the given
  *  optional control parameter, which defaults to 0.  Then redraws.
  */
@@ -320,34 +308,28 @@ seqevent::draw_events_on (Glib::RefPtr<Gdk::Drawable> a_draw)
     {
         if ((tick >= start_tick && tick <= end_tick))
         {
-
-
-            /* turn into screen corrids */
-            x = tick / m_zoom;
-
+            x = tick / m_zoom;              /* turn into screen coordinates */
             m_gc->set_foreground(m_black);
-
-            a_draw->draw_rectangle(m_gc, true,
-                                   x -  m_scroll_offset_x,
-                                   (c_eventarea_y - c_eventevent_y) / 2,
-                                   c_eventevent_x,
-                                   c_eventevent_y);
-
-
+            a_draw->draw_rectangle
+            (
+                m_gc, true, x -  m_scroll_offset_x,
+                (c_eventarea_y - c_eventevent_y) / 2,
+                c_eventevent_x, c_eventevent_y
+            );
 
             if (selected)
                 m_gc->set_foreground(m_red);
             else
                 m_gc->set_foreground(m_white);
 
-            a_draw->draw_rectangle(m_gc, true,
-                                   x -  m_scroll_offset_x + 1,
-                                   (c_eventarea_y - c_eventevent_y) / 2 + 1,
-                                   c_eventevent_x - 3,
-                                   c_eventevent_y - 3);
+            a_draw->draw_rectangle
+            (
+                m_gc, true, x -  m_scroll_offset_x + 1,
+                (c_eventarea_y - c_eventevent_y) / 2 + 1,
+                c_eventevent_x - 3, c_eventevent_y - 3
+            );
         }
     }
-
 }
 
 /**
@@ -361,7 +343,7 @@ seqevent::draw_events_on_pixmap ()
 }
 
 /**
- *  This function currently just queues up a draw operation for the 
+ *  This function currently just queues up a draw operation for the
  *  pixmap.
  *
  *  Old comments:

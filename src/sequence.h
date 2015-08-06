@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-03
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -265,14 +265,48 @@ public:
     long get_measures ();
 
     void set_bpm (long a_beats_per_measure);
-    long get_bpm ();
+
+    /**
+     * \getter m_time_beats_per_measure
+     */
+
+    long get_bpm () const
+    {
+        return m_time_beats_per_measure;
+    }
 
     void set_bw (long a_beat_width);
-    long get_bw ();
+
+    /**
+     * \getter m_time_beat_width
+     *
+     * \threadsafe
+     */
+
+    long get_bw () const
+    {
+        return m_time_beat_width;
+    }
+
     void set_rec_vol (long a_rec_vol);
 
-    void set_song_mute (bool a_mute);
-    bool get_song_mute ();
+    /**
+     * \setter m_song_mute
+     */
+
+    void set_song_mute(bool a_mute)
+    {
+        m_song_mute = a_mute;
+    }
+
+    /**
+     * \getter m_song_mute
+     */
+
+    bool get_song_mute () const
+    {
+        return m_song_mute;
+    }
 
     const char * get_name ();
 
@@ -320,8 +354,25 @@ public:
     void toggle_playing ();
     void toggle_queued ();
     void off_queued ();
-    bool get_queued ();
-    long get_queued_tick ();
+
+    /**
+     * \getter m_queued
+     */
+
+    bool get_queued () const
+    {
+        return m_queued;
+    }
+
+    /**
+     * \getter m_queued_tick
+     */
+
+    long get_queued_tick () const
+    {
+        return m_queued_tick;
+    }
+
     void set_recording (bool);
     bool get_recording ();
     void set_snap_tick (int a_st);
@@ -374,7 +425,16 @@ public:
     void move_triggers (long a_start_tick, long a_distance, bool a_direction);
     void copy_triggers (long a_start_tick, long a_distance);
     void clear_triggers ();
-    long get_trigger_offset ();
+
+    /**
+     * \getter m_trigger_offset
+     */
+
+    long get_trigger_offset () const
+    {
+        return m_trigger_offset;
+    }
+
     void set_midi_bus (char a_mb);
     char get_midi_bus ();
     void set_master_midi_bus (mastermidibus * a_mmb);

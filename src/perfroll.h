@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -69,24 +69,24 @@ private:
     Glib::RefPtr<Gdk::Pixmap> m_pixmap;
     Glib::RefPtr<Gdk::Pixmap> m_background;
     perform * m_mainperf;
+    int m_window_x;
+    int m_window_y;
+    int m_drop_x;
+    int m_drop_y;
+    Adjustment * m_vadjust;
+    Adjustment * m_hadjust;
     int m_snap;
     int m_measure_length;
     int m_beat_length;
-    int m_window_x;
-    int m_window_y;
     long m_old_progress_ticks;
     int m_4bar_offset;
     int m_sequence_offset;
     int m_roll_length_ticks;
-    int m_drop_x;
-    int m_drop_y;
     long m_drop_tick;
     long m_drop_tick_trigger_offset;
     int m_drop_sequence;
     bool m_sequence_active[c_total_seqs];
     AbstractPerfInput * m_interaction;
-    Adjustment * m_vadjust;
-    Adjustment * m_hadjust;
     bool m_moving;
     bool m_growing;
     bool m_grow_direction;

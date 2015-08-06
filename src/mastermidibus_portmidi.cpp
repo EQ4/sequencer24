@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-30
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  *  This file provides a Windows-only implementation of the mastermidibus class.
@@ -39,7 +39,7 @@
 
 /**
  *  This constructor fills the array for our busses.  The only member
- *  "missing" from this windows version is the "m_alsa_seq" member of the
+ *  "missing" from this Windows version is the "m_alsa_seq" member of the
  *  Linux version.
  */
 
@@ -173,26 +173,6 @@ mastermidibus::init ()
 
     for (int i = 0; i < m_num_in_buses; i++)
         set_input(i, m_init_input[i]);
-}
-
-/**
- *  Mutex lock.
- */
-
-void
-mastermidibus::lock ()
-{
-    m_mutex.lock();
-}
-
-/**
- *  Mutex unlock.
- */
-
-void
-mastermidibus::unlock ()
-{
-    m_mutex.unlock();
 }
 
 /**
@@ -483,26 +463,6 @@ mastermidibus::print ()
     {
         printf("%s\n", m_buses_out[i]->m_name.c_str());
     }
-}
-
-/**
- * \getter m_num_out_buses
- */
-
-int
-mastermidibus::get_num_out_buses ()
-{
-    return m_num_out_buses;
-}
-
-/**
- * \getter m_num_in_buses
- */
-
-int
-mastermidibus::get_num_in_buses ()
-{
-    return m_num_in_buses;
 }
 
 /**

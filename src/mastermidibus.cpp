@@ -81,7 +81,6 @@ mastermidibus::mastermidibus ()
     }
 
 #ifdef HAVE_LIBASOUND
-
     /* open the sequencer client */
 
     int result  = snd_seq_open(&m_alsa_seq, "default",  SND_SEQ_OPEN_DUPLEX, 0);
@@ -92,15 +91,12 @@ mastermidibus::mastermidibus ()
     }
     snd_seq_set_client_name(m_alsa_seq, "seq24");   /* client's name  */
     m_queue = snd_seq_alloc_queue(m_alsa_seq);      /* client's queue */
-
 #endif
 
 #ifdef LASH_SUPPORT
-
     /* notify lash of our client ID so it can restore connections */
 
     lash_driver->set_alsa_client_id(snd_seq_client_id(m_alsa_seq));
-
 #endif
 }
 
@@ -120,17 +116,13 @@ mastermidibus::~mastermidibus ()
             m_buses_out[i] = nullptr;
         }
     }
-
 #ifdef HAVE_LIBASOUND
-
     snd_seq_event_t ev;
     snd_seq_ev_clear(&ev);                          /* kill timer */
     snd_seq_stop_queue(m_alsa_seq, m_queue, &ev);
     snd_seq_free_queue(m_alsa_seq, m_queue);
     snd_seq_close(m_alsa_seq);                      /* close client */
-
 #endif
-
 }
 
 /**
@@ -141,9 +133,7 @@ mastermidibus::~mastermidibus ()
 void
 mastermidibus::init()
 {
-
 #ifdef HAVE_LIBASOUND
-
     snd_seq_client_info_t * cinfo;          /* client info */
     snd_seq_port_info_t * pinfo;            /* port info   */
     snd_seq_client_info_alloca(&cinfo);
@@ -304,26 +294,6 @@ mastermidibus::init()
 }
 
 /**
- *  Mutex lock.
- */
-
-void
-mastermidibus::lock ()
-{
-    m_mutex.lock();
-}
-
-/**
- *  Mutex unlock.
- */
-
-void
-mastermidibus::unlock ()
-{
-    m_mutex.unlock();
-}
-
-/**
  *  Starts all of the configured output busses up to m_num_out_buses.
  *
  * \threadsafe
@@ -333,14 +303,12 @@ void
 mastermidibus::start ()
 {
 #ifdef HAVE_LIBASOUND
-
     lock();
     snd_seq_start_queue(m_alsa_seq, m_queue, NULL); /* start timer */
     for (int i = 0; i < m_num_out_buses; i++)
         m_buses_out[i]->start();
 
     unlock();
-
 #endif
 }
 
@@ -354,14 +322,12 @@ void
 mastermidibus::continue_from (long a_tick)
 {
 #ifdef HAVE_LIBASOUND
-
     lock();
     snd_seq_start_queue(m_alsa_seq, m_queue, NULL); /* start timer */
     for (int i = 0; i < m_num_out_buses; i++)
         m_buses_out[i]->continue_from(a_tick);
 
     unlock();
-
 #endif
 }
 
@@ -566,27 +532,6 @@ mastermidibus::get_clock (unsigned char a_bus)
 }
 
 /**
- *  Set the clock mod to the given value, if legal.
- */
-
-void
-midibus::set_clock_mod (int a_clock_mod)
-{
-    if (a_clock_mod != 0)
-        m_clock_mod = a_clock_mod;
-}
-
-/**
- *  Get the clock mod.
- */
-
-int
-midibus::get_clock_mod ()
-{
-    return m_clock_mod;
-}
-
-/**
  *  Set the status of the given input buss, if a legal buss number.
  *
  *  Why is another buss-count constant, and a global one at that, being
@@ -701,26 +646,6 @@ mastermidibus::print ()
 }
 
 /**
- * \getter m_num_out_buses
- */
-
-int
-mastermidibus::get_num_out_buses ()
-{
-    return m_num_out_buses;
-}
-
-/**
- * \getter m_num_in_buses
- */
-
-int
-mastermidibus::get_num_in_buses ()
-{
-    return m_num_in_buses;
-}
-
-/**
  *  Initiate a poll() on the existing poll descriptors.
  */
 
@@ -744,7 +669,6 @@ mastermidibus::poll_for_midi ()
 bool
 mastermidibus::is_more_input ()
 {
-
 #ifdef HAVE_LIBASOUND
     lock();
     int size = snd_seq_event_input_pending(m_alsa_seq, 0);
@@ -752,7 +676,6 @@ mastermidibus::is_more_input ()
 #else
     int size = 0;
 #endif
-
     return size > 0;
 }
 
@@ -766,10 +689,8 @@ mastermidibus::is_more_input ()
 void
 mastermidibus::port_start (int a_client, int a_port)
 {
-    lock();
-
 #ifdef HAVE_LIBASOUND
-
+    lock();
     snd_seq_client_info_t * cinfo;                      /* client info */
     snd_seq_client_info_alloca(&cinfo);
     snd_seq_get_any_client_info(m_alsa_seq, a_client, cinfo);
@@ -779,7 +700,6 @@ mastermidibus::port_start (int a_client, int a_port)
     snd_seq_get_any_port_info(m_alsa_seq, a_client, a_port, pinfo);
 
     int cap = snd_seq_port_info_get_capability(pinfo);  /* get its capability */
-
     if (snd_seq_client_id(m_alsa_seq) != snd_seq_port_info_get_client(pinfo))
     {
         if                                              /* the outputs */
@@ -871,10 +791,8 @@ mastermidibus::port_start (int a_client, int a_port)
     (
         m_alsa_seq, m_poll_descriptors, m_num_poll_descriptors, POLLIN
     );
-
-#endif  // HAVE_LIBASOUND
-
     unlock();
+#endif  // HAVE_LIBASOUND
 }
 
 /**
@@ -886,9 +804,8 @@ mastermidibus::port_start (int a_client, int a_port)
 void
 mastermidibus::port_exit (int a_client, int a_port)
 {
-    lock();
-
 #ifdef HAVE_LIBASOUND
+    lock();
     for (int i = 0; i < m_num_out_buses; i++)
     {
         if (m_buses_out[i]->get_client() == a_client &&
@@ -905,9 +822,8 @@ mastermidibus::port_exit (int a_client, int a_port)
             m_buses_in_active[i] = false;
         }
     }
-#endif
-
     unlock();
+#endif
 }
 
 /**
@@ -919,10 +835,8 @@ mastermidibus::port_exit (int a_client, int a_port)
 bool
 mastermidibus::get_midi_event (event * a_in)
 {
-    lock();
-
 #ifdef HAVE_LIBASOUND
-
+    lock();
     snd_seq_event_t * ev;
     bool sysex = false;
     bool result = false;
@@ -1009,10 +923,8 @@ mastermidibus::get_midi_event (event * a_in)
             sysex = false;
     }
     snd_midi_event_free(midi_ev);
-
-#endif  // HAVE_LIBASOUND
-
     unlock();
+#endif  // HAVE_LIBASOUND
     return true;
 }
 

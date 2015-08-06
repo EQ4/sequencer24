@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-30
- * \updates       2015-07-30
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  *  The mastermidibus module is the Linux version of the mastermidibus module.
@@ -182,13 +182,28 @@ public:
      * \getter m_alsa_seq
      */
 
-    snd_seq_t * get_alsa_seq ()
+    snd_seq_t * get_alsa_seq () const
     {
         return m_alsa_seq;
     }
 
-    int get_num_out_buses ();
-    int get_num_in_buses ();
+    /**
+     * \getter m_num_out_buses
+     */
+
+    int get_num_out_buses () const
+    {
+        return m_num_out_buses;
+    }
+
+    /**
+     * \getter m_num_in_buses
+     */
+
+    int get_num_in_buses () const
+    {
+        return m_num_in_buses;
+    }
 
     void set_bpm (int a_bpm);
     void set_ppqn (int a_ppqn);
@@ -197,7 +212,7 @@ public:
      * \getter m_bpm
      */
 
-    int get_bpm ()
+    int get_bpm () const
     {
         return m_bpm;
     }
@@ -206,24 +221,20 @@ public:
      * \getter m_ppqn
      */
 
-    int get_ppqn ()
+    int get_ppqn () const
     {
         return m_ppqn;
     }
 
     std::string get_midi_out_bus_name (int a_bus);
     std::string get_midi_in_bus_name (int a_bus);
-
     void print ();
     void flush ();
-
     void start ();
     void stop ();
-
     void clock (long a_tick);
     void continue_from (long a_tick);
     void init_clock (long a_tick);
-
     int poll_for_midi ();
     bool is_more_input ();
     bool get_midi_event (event *a_in);
@@ -233,7 +244,7 @@ public:
      * \getter m_dumping_input
      */
 
-    bool is_dumping ()
+    bool is_dumping () const
     {
         return m_dumping_input;
     }
@@ -242,28 +253,39 @@ public:
      * \getter m_seq
      */
 
-    sequence * get_sequence ()
+    sequence * get_sequence () const
     {
         return m_seq;
     }
 
     void sysex (event * a_event);
-
     void port_start (int a_client, int a_port);
     void port_exit (int a_client, int a_port);
-
     void play (unsigned char a_bus, event * a_e24, unsigned char a_channel);
-
     void set_clock (unsigned char a_bus, clock_e a_clock_type);
     clock_e get_clock (unsigned char a_bus);
-
     void set_input (unsigned char a_bus, bool a_inputing);
     bool get_input (unsigned char a_bus);
 
 private:
 
-    void lock ();
-    void unlock ();
+    /**
+     *  Mutex lock.
+     */
+
+    void lock ()
+    {
+        m_mutex.lock();
+    }
+
+    /**
+     *  Mutex unlock.
+     */
+
+    void unlock ()
+    {
+        m_mutex.unlock();
+    }
 
 };
 

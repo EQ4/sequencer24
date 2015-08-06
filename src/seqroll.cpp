@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -64,8 +64,6 @@ seqroll::seqroll
     Adjustment * a_hadjust,
     Adjustment * a_vadjust
 ) :
-    m_fruity_interaction    (),
-    m_seq24_interaction     (),
     m_gc                    (),
     m_window                (),
     m_black                 (Gdk::Color("black")),
@@ -74,23 +72,31 @@ seqroll::seqroll
     m_dk_grey               (Gdk::Color("gray50")),
     m_red                   (Gdk::Color("orange")),
     m_pixmap                (),
+    m_mainperf              (a_perf),
+    m_window_x              (10),       // why so small?
+    m_window_y              (10),
+    m_current_x             (0),
+    m_current_y             (0),
+    m_drop_x                (0),
+    m_drop_y                (0),
+    m_vadjust               (a_vadjust),
+    m_hadjust               (a_hadjust),
     m_background            (),         // another pixmap
     m_old                   (),
     m_selected              (),
     m_seq                   (a_seq),
     m_clipboard             (new sequence()),
-    m_perform               (a_perf),
     m_seqdata_wid           (a_seqdata_wid),
     m_seqevent_wid          (a_seqevent_wid),
     m_seqkeys_wid           (a_seqkeys_wid),
+    m_fruity_interaction    (),
+    m_seq24_interaction     (),
     m_pos                   (a_pos),
     m_zoom                  (a_zoom),
     m_snap                  (a_snap),
     m_note_length           (0),
     m_scale                 (0),
     m_key                   (0),
-    m_window_x              (10),       // why so small?
-    m_window_y              (10),
     m_selecting             (false),
     m_moving                (false),
     m_moving_init           (false),
@@ -100,16 +106,10 @@ seqroll::seqroll
     m_is_drag_pasting       (false),
     m_is_drag_pasting_start (false),
     m_justselected_one      (false),
-    m_drop_x                (0),
-    m_drop_y                (0),
     m_move_delta_x          (0),
     m_move_delta_y          (0),
-    m_current_x             (0),
-    m_current_y             (0),
     m_move_snap_offset_x    (0),
     m_old_progress_x        (0),
-    m_vadjust               (a_vadjust),
-    m_hadjust               (a_hadjust),
     m_scroll_offset_ticks   (0),
     m_scroll_offset_key     (0),
     m_scroll_offset_x       (0),
@@ -313,16 +313,6 @@ seqroll::redraw_events ()
 }
 
 /**
- * \setter m_ignore_redraw
- */
-
-void
-seqroll::set_ignore_redraw (bool a_ignore)
-{
-    m_ignore_redraw = a_ignore;
-}
-
-/**
  *  Draws the main pixmap.
  */
 
@@ -467,27 +457,6 @@ seqroll::set_zoom (int a_zoom)
 }
 
 /**
- *  Sets the snap to the given value, and then resets the view.
- */
-
-void
-seqroll::set_snap (int a_snap)
-{
-    m_snap = a_snap;
-    reset();
-}
-
-/**
- * \setter m_note_length
- */
-
-void
-seqroll::set_note_length (int a_note_length)
-{
-    m_note_length = a_note_length;
-}
-
-/**
  *  Sets the music scale to the given value, and then resets the view.
  */
 
@@ -571,8 +540,8 @@ seqroll::draw_events_on (Glib::RefPtr<Gdk::Drawable> a_draw)
     {
         if (method == 0 && m_drawing_background_seq)
         {
-            if (m_perform->is_active(m_background_sequence))
-                seq = m_perform->get_sequence(m_background_sequence);
+            if (m_mainperf->is_active(m_background_sequence))
+                seq = m_mainperf->get_sequence(m_background_sequence);
             else
                 method++;
         }
@@ -1116,26 +1085,26 @@ bool
 seqroll::on_key_press_event (GdkEventKey * a_p0)
 {
     bool result = false;
-    bool dont_toggle = m_perform->m_key_start != m_perform->m_key_stop;
+    bool dont_toggle = m_mainperf->m_key_start != m_mainperf->m_key_stop;
     if
     (
-        a_p0->keyval ==  m_perform->m_key_start &&
+        a_p0->keyval ==  m_mainperf->m_key_start &&
         (dont_toggle || ! is_pattern_playing)
     )
     {
-        m_perform->position_jack(false);
-        m_perform->start(false);
-        m_perform->start_jack();
+        m_mainperf->position_jack(false);
+        m_mainperf->start(false);
+        m_mainperf->start_jack();
         is_pattern_playing = true;
     }
     else if
     (
-        a_p0->keyval ==  m_perform->m_key_stop &&
+        a_p0->keyval ==  m_mainperf->m_key_stop &&
         (dont_toggle || is_pattern_playing)
     )
     {
-        m_perform->stop_jack();
-        m_perform->stop();
+        m_mainperf->stop_jack();
+        m_mainperf->stop();
         is_pattern_playing = false;
     }
     if (a_p0->type == GDK_KEY_PRESS)

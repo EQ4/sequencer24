@@ -118,10 +118,26 @@ public:
     bool init_out ();
     bool init_in ();
     void print ();
-    std::string get_name ();
-    int get_id ();
 
-    void play(event * a_e24, unsigned char a_channel);
+    /**
+     * \getter n_name
+     */
+
+    const std::string & get_name () const
+    {
+        return m_name;
+    }
+
+    /**
+     * \getter m_id
+     */
+
+    int get_id () const
+    {
+        return m_id;
+    }
+
+    void play (event * a_e24, unsigned char a_channel);
     void sysex(event * a_e24);
 
     int poll_for_midi ();
@@ -135,15 +151,45 @@ public:
     void clock (long a_tick);
     void continue_from (long a_tick);
     void init_clock (long a_tick);
-    void set_clock (clock_e a_clocking);
-    clock_e get_clock ();
 
     /**
-     *  Input functions
+     * \setter m_clock_type
      */
 
-    void set_input (bool a_inputing);
-    bool get_input ();
+    void set_clock (clock_e a_clock_type)
+    {
+        m_clock_type = a_clock_type;
+    }
+
+    /**
+     * \getter m_clock_type
+     */
+
+    clock_e get_clock () const
+    {
+        return m_clock_type;
+    }
+
+    /**
+     * \setter m_inputing
+     *      Compare this Windows version to the Linux version.
+     */
+
+    void set_input (bool a_inputing)
+    {
+        if (m_inputing != a_inputing)
+            m_inputing = a_inputing;
+    }
+
+    /**
+     * \getter m_inputing
+     */
+
+    bool get_input () const
+    {
+        return m_inputing;
+    }
+
     void flush ();
 
 
@@ -152,8 +198,23 @@ public:
 
 private:
 
-    void lock();
-    void unlock();
+    /**
+     *  Lock the mutex.
+     */
+
+    void lock ()
+    {
+        m_mutex.lock();
+    }
+
+    /**
+     *  Unlock the mutex.
+     */
+
+    void unlock ()
+    {
+        m_mutex.unlock();
+    }
 
 };
 

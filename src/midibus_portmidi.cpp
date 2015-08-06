@@ -127,26 +127,6 @@ midibus::poll_for_midi ()
 }
 
 /**
- *  Lock the mutex.
- */
-
-void
-midibus::lock ()
-{
-    m_mutex.lock();
-}
-
-/**
- *  Unlock the mutex.
- */
-
-void
-midibus::unlock ()
-{
-    m_mutex.unlock();
-}
-
-/**
  *  Initialize the MIDI output port.
  */
 
@@ -177,16 +157,6 @@ bool midibus::init_in ()
 }
 
 /**
- * \getter m_id
- */
-
-int
-midibus::get_id ()
-{
-    return m_id;
-}
-
-/**
  *  Prints m_name.
  */
 
@@ -194,16 +164,6 @@ void
 midibus::print ()
 {
     printf("%s" , m_name.c_str());
-}
-
-/**
- * \getter n_name
- */
-
-std::string
-midibus::get_name ()
-{
-    return m_name;
 }
 
 /**
@@ -236,12 +196,7 @@ midibus::play (event * a_e24, unsigned char a_channel)
 inline long
 min (long a, long b)
 {
-
-    if (a < b)
-        return a;
-
-    return b;
-
+    return (a < b) ? a : b ;
 }
 
 /**
@@ -355,50 +310,6 @@ midibus::start ()
 }
 
 /**
- * \setter m_clock_type
- */
-
-void
-midibus::set_clock (clock_e a_clock_type)
-{
-    m_clock_type = a_clock_type;
-}
-
-/**
- * \getter m_clock_type
- */
-
-clock_e
-midibus::get_clock ()
-{
-    return m_clock_type;
-}
-
-/**
- * \setter m_inputing
- *      Compare this Windows version to the Linux version.
- */
-
-void
-midibus::set_input (bool a_inputing)
-{
-    if (m_inputing != a_inputing)
-    {
-        m_inputing = a_inputing;
-    }
-}
-
-/**
- * \getter m_inputing
- */
-
-bool
-midibus::get_input ()
-{
-    return m_inputing;
-}
-
-/**
  *  Stops the MIDI clock, if the clock-type is not e_clock_off.
  */
 
@@ -426,7 +337,6 @@ midibus::clock (long a_tick)
     if (m_clock_type != e_clock_off)
     {
         bool done = false;
-//      long uptotick = a_tick;
         if (m_lasttick >= a_tick)
             done = true;
 

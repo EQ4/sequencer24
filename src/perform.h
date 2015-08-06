@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  *  This class has way too many members.
@@ -334,7 +334,19 @@ public:
     perform ();
     ~perform ();
 
-    bool is_running ();
+    /**
+     * \getter m_running
+     */
+
+    bool is_running () const
+    {
+        return m_running;
+    }
+
+    /**
+     * \getter m_mode_group_learn
+     */
+
     bool is_learn_mode () const
     {
         return m_mode_group_learn;
@@ -358,12 +370,45 @@ public:
         return m_tick;
     }
 
-    void set_left_tick (long a_tick);
-    long get_left_tick ();
-    void set_starting_tick (long a_tick);
-    long get_starting_tick ();
-    void set_right_tick (long a_tick);
-    long get_right_tick ();
+    void set_left_tick (long a_tick);       // too long to inline
+
+    /**
+     * \getter m_left_tick
+     */
+
+    long get_left_tick () const
+    {
+        return m_left_tick;
+    }
+
+    /**
+     * \setter m_starting_tick
+     */
+
+    void set_starting_tick (long a_tick)
+    {
+        m_starting_tick = a_tick;
+    }
+
+    /**
+     * \getter m_starting_tick
+     */
+
+    long get_starting_tick () const
+    {
+        return m_starting_tick;
+    }
+
+    void set_right_tick (long a_tick);          // too long to inline
+
+    /**
+     * \getter m_right_tick
+     */
+
+    long get_right_tick () const
+    {
+        return m_right_tick;
+    }
 
     void move_triggers (bool a_direction);
     void copy_triggers ();
@@ -381,13 +426,49 @@ public:
     void set_screen_set_notepad (int a_screen_set, std::string * a_note);
     std::string * get_screen_set_notepad (int a_screen_set);
 
-    void set_screenset (int a_ss);
-    int get_screenset ();
-    void set_playing_screenset ();
-    int get_playing_screenset ();
+    void set_screenset (int a_ss);      // a little much to inline
+
+    /**
+     * \getter m_screen_set
+     */
+
+    int get_screenset () const
+    {
+        return m_screen_set;
+    }
+
+    void set_playing_screenset ();      // a little much to inline
+
+    /**
+     * \getter m_playing_screen
+     */
+
+    int get_playing_screenset () const
+    {
+        return m_playing_screen;
+    }
+
     void mute_group_tracks ();
     void select_and_mute_group (int a_g_group);
-    void set_mode_group_mute ();
+
+    /**
+     * \setter m_mode_group
+     */
+
+    void set_mode_group_mute ()
+    {
+        m_mode_group = true;
+    }
+
+    /**
+     * \setter m_mode_group
+     *      Unsets this member.
+     */
+
+    void unset_mode_group_mute ()
+    {
+        m_mode_group = false;
+    }
     void select_group_mute (int a_g_mute);
     void set_mode_group_learn ();
     void unset_mode_group_learn ();
@@ -396,7 +477,6 @@ public:
         return m_mode_group_learn;
     }
     void select_mute_group (int a_group);
-    void unset_mode_group_mute ();
     void start (bool a_state);
     void stop ();
 
@@ -453,11 +533,34 @@ public:
     void set_group_mute_state (int a_g_track, bool a_mute_state);
     bool get_group_mute_state (int a_g_track);
     void mute_all_tracks ();
-    mastermidibus * get_master_midi_bus ();
+
+    /**
+     * \getter m_master_bus address
+     */
+
+    mastermidibus * get_master_midi_bus ()
+    {
+        return &m_master_bus;
+    }
+
     void output_func ();
     void input_func ();
     long get_max_trigger ();
-    void set_offset (int a_offset);
+
+    /**
+     *  Calculates the offset into the screen sets.
+     *
+     *  Sets m_offset = a_offset * c_mainwnd_rows * c_mainwnd_cols;
+     *
+     * \param a_offset
+     *      The desired offset.
+     */
+
+    void set_offset (int a_offset)
+    {
+        m_offset = a_offset * c_mainwnd_rows * c_mainwnd_cols;
+    }
+
     void save_playing_state ();
     void restore_playing_state ();
 
@@ -521,7 +624,15 @@ public:
 
 private:
 
-    void set_running (bool a_running);
+    /**
+     * \setter m_running
+     */
+
+    void set_running (bool a_running)
+    {
+        m_running = a_running;
+    }
+
     void set_playback_mode (bool a_playback_mode);
     void inner_start (bool a_state);
     void inner_stop ();

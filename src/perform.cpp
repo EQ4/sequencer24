@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -399,27 +399,6 @@ perform::clear_all ()
 }
 
 /**
- * \setter m_mode_group
- */
-
-void
-perform::set_mode_group_mute ()
-{
-    m_mode_group = true;
-}
-
-/**
- * \setter m_mode_group
- *  Unsets this member.
- */
-
-void
-perform::unset_mode_group_mute ()
-{
-    m_mode_group = false;
-}
-
-/**
  * \setter m_mute_group
  */
 
@@ -643,36 +622,6 @@ perform::set_left_tick (long a_tick)
 }
 
 /**
- * \getter m_left_tick
- */
-
-long
-perform::get_left_tick ()
-{
-    return m_left_tick;
-}
-
-/**
- * \setter m_starting_tick
- */
-
-void
-perform::set_starting_tick (long a_tick)
-{
-    m_starting_tick = a_tick;
-}
-
-/**
- * \getter m_starting_tick
- */
-
-long
-perform::get_starting_tick ()
-{
-    return m_starting_tick;
-}
-
-/**
  *  Set the right marker at the given tick.
  */
 
@@ -691,21 +640,28 @@ perform::set_right_tick (long a_tick)
 }
 
 /**
- * \getter m_right_tick
- */
-
-long
-perform::get_right_tick ()
-{
-    return m_right_tick;
-}
-
-/**
  *  Adds a pattern/sequence pointer to the list of patterns.
  *  No check is made for a null pointer.
  *
+ *  Check for preferred.  This occurs if a_perf is in the valid range (0
+ *  to c_max_sequence) and it is not active.  If preferred, then add it
+ *  and activate it.
+ *
+ *  Otherwise, iterate through all patterns from a_perf to c_max_sequence
+ *  and add and activate the first one that is not active.
+ *
+ *  Is there a usefulness in setting the sequence's tag?
+ *
+ * \warning
+ *  The logic of the if-statement in this function was such that \a a_perf
+ *  could be out-of-bounds in the else-clause.  We reworked the logic to
+ *  be airtight.  This bug was caught by gcc 4.8.3 on CentOS, but not
+ *  on gcc 4.9.3 on Debian Sid!  However, this decision-making seems
+ *  goofy, and we ought to revisit it!
+ *
  * \param a_seq
- *      The pattern pointer.
+ *      The number or index of the pattern/sequence to add.  If this value
+ *      is out-of-range, then it is ignored.
  *
  * \param a_perf
  *      The performance number of the pattern?
@@ -714,32 +670,26 @@ perform::get_right_tick ()
 void
 perform::add_sequence (sequence * a_seq, int a_perf)
 {
-    /**
-     * Check for preferred.  This occurs if a_perf is in the valid range
-     * (0 to c_max_sequence) and it is not active.  If preferred, then
-     * add it and activate it.
-     *
-     * Otherwise, iterate through all patterns from a_perf to
-     * c_max_sequence and add and activate the first one that is not
-     * active.
-     *
-     * Is there a usefulness in setting the sequence's tag?
-     */
-
-    if (a_perf < c_max_sequence && ! is_active(a_perf) && a_perf >= 0)
+    bool safe = a_perf >= 0 && a_perf < c_max_sequence;
+    if (safe && ! is_active(a_perf))                /* check for preferred */
     {
         m_seqs[a_perf] = a_seq;
-        set_active(a_perf, true); // a_seq->set_tag(a_perf);
+        set_active(a_perf, true);
     }
     else
     {
-        for (int i = a_perf; i < c_max_sequence; i++)
+        /* If "safe", this clause will never get run! */
+
+        if (safe)                                   /* air-tight !         */
         {
-            if (! is_active(i))
+            for (int i = a_perf; i < c_max_sequence; i++)
             {
-                m_seqs[i] = a_seq;
-                set_active(i, true); // a_seq->set_tag(i);
-                break;
+                if (! is_active(i))
+                {
+                    m_seqs[i] = a_seq;
+                    set_active(i,true);
+                    break;
+                }
             }
         }
     }
@@ -949,36 +899,6 @@ perform::get_sequence (int a_sequence)
      */
 
     return m_seqs[a_sequence];
-}
-
-/**
- * \getter m_master_bus address
- */
-
-mastermidibus *
-perform::get_master_midi_bus ()
-{
-    return &m_master_bus;
-}
-
-/**
- * \setter m_running
- */
-
-void
-perform::set_running (bool a_running)
-{
-    m_running = a_running;
-}
-
-/**
- * \getter m_running
- */
-
-bool
-perform::is_running ()
-{
-    return m_running;
 }
 
 /**
@@ -1196,16 +1116,6 @@ perform::set_screenset (int a_ss)
 }
 
 /**
- * \getter m_screen_set
- */
-
-int
-perform::get_screenset ()
-{
-    return m_screen_set;
-}
-
-/**
  *  Sets the screen set that is active, based on the value of
  *  m_playing_screen.
  *
@@ -1257,31 +1167,6 @@ perform::set_playing_screenset ()
         m_playing_screen = m_screen_set;
         mute_group_tracks();
     }
-}
-
-/**
- * \getter m_playing_screen
- */
-
-int
-perform::get_playing_screenset ()
-{
-    return m_playing_screen;
-}
-
-/**
- *  Calculates the offset into the screen sets.
- *
- *  Sets m_offset = a_offset * c_mainwnd_rows * c_mainwnd_cols;
- *
- * \param a_offset
- *      The desired offset.
- */
-
-void
-perform::set_offset (int a_offset)
-{
-    m_offset = a_offset * c_mainwnd_rows * c_mainwnd_cols;
 }
 
 /**

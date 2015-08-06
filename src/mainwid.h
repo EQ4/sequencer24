@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -60,6 +60,8 @@ class mainwid : public Gtk::DrawingArea, public seqmenu
 
 private:
 
+    static const char m_seq_to_char[c_seqs_in_set];
+
     Glib::RefPtr<Gdk::GC> m_gc;
     Glib::RefPtr<Gdk::Window> m_window;
     Gdk::Color m_black;
@@ -68,13 +70,17 @@ private:
     Gdk::Color m_background;
     Gdk::Color m_foreground;
     Glib::RefPtr<Gdk::Pixmap> m_pixmap;
-    int m_screenset;
     perform * const m_mainperf;
-    sequence m_moving_seq;
     int m_window_x;
     int m_window_y;
-    bool m_button_down;
-    bool m_moving;
+
+    /**
+     *  The x and y value of the current location of the mouse (during
+     *  dragging?)
+     */
+
+    int m_current_x;
+    int m_current_y;
 
     /**
      *  These values are used when roping and highlighting a bunch of events.
@@ -85,19 +91,15 @@ private:
     int m_drop_x;
     int m_drop_y;
 
-    /**
-     *  The x and y value of the current location of the mouse (during
-     *  dragging?)
-     */
-
-    int m_current_x;
-    int m_current_y;
+    sequence m_moving_seq;
+    bool m_button_down;
+    bool m_moving;
 
     int m_old_seq;
+    int m_screenset;
 
     long m_last_tick_x[c_max_sequence];
     bool m_last_playing[c_max_sequence];
-    static const char m_seq_to_char[c_seqs_in_set];
 
 public:
 
@@ -112,16 +114,6 @@ public:
     void update_markers (int a_ticks);
     void draw_marker_on_sequence (int a_seq, int a_tick);
 
-private:                               // callback functions
-
-    void on_realize ();
-    bool on_expose_event (GdkEventExpose * a_ev);
-    bool on_button_press_event (GdkEventButton * a_ev);
-    bool on_button_release_event (GdkEventButton * a_ev);
-    bool on_motion_notify_event (GdkEventMotion * a_p0);
-    bool on_focus_in_event (GdkEventFocus *);
-    bool on_focus_out_event (GdkEventFocus *);
-
 private:
 
     void draw_sequence_on_pixmap (int a_seq);
@@ -132,6 +124,16 @@ private:
     int seq_from_xy (int a_x, int a_y);
     int timeout ();
     void redraw (int a_seq);
+
+private:        // callbacks
+
+    void on_realize ();
+    bool on_expose_event (GdkEventExpose * a_ev);
+    bool on_button_press_event (GdkEventButton * a_ev);
+    bool on_button_release_event (GdkEventButton * a_ev);
+    bool on_motion_notify_event (GdkEventMotion * a_p0);
+    bool on_focus_in_event (GdkEventFocus *);
+    bool on_focus_out_event (GdkEventFocus *);
 
 };
 

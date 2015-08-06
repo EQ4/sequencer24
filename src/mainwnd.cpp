@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -54,6 +54,12 @@
  */
 
 bool is_pattern_playing = false;
+
+/**
+ *  This static member provides a couple pipes for signalling/messaging.
+ */
+
+int mainwnd::m_sigpipe[2];
 
 /**
  *  The constructor the main window of the application.
@@ -831,7 +837,6 @@ mainwnd::file_import_dialog ()
     dlg.show_all_children();
 
     int result = dlg.run();
-
     switch (result)                    // handle the response
     {
     case (Gtk::RESPONSE_OK):
@@ -850,7 +855,6 @@ mainwnd::file_import_dialog ()
             );
             errdialog.run();
         }
-
         global_filename = std::string(dlg.get_filename());
         update_window_title();
         m_modified = true;
@@ -1046,23 +1050,18 @@ mainwnd::on_key_press_event (GdkEventKey * a_ev)
             printf("key_press[%d]\n", a_ev->keyval);
             fflush(stdout);
         }
-
         if (a_ev->keyval == m_mainperf->m_key_bpm_dn)
         {
             m_mainperf->set_bpm(m_mainperf->get_bpm() - 1);
             m_adjust_bpm->set_value(m_mainperf->get_bpm());
         }
-
         if (a_ev->keyval ==  m_mainperf->m_key_bpm_up)
         {
             m_mainperf->set_bpm(m_mainperf->get_bpm() + 1);
             m_adjust_bpm->set_value(m_mainperf->get_bpm());
         }
-
         if (a_ev->keyval == m_mainperf->m_key_replace)
-        {
             m_mainperf->set_sequence_control_status(c_status_replace);
-        }
 
         if
         (
@@ -1072,7 +1071,6 @@ mainwnd::on_key_press_event (GdkEventKey * a_ev)
         {
             m_mainperf->set_sequence_control_status(c_status_queue);
         }
-
         if
         (
             a_ev->keyval == m_mainperf->m_key_snapshot_1 ||
@@ -1081,10 +1079,8 @@ mainwnd::on_key_press_event (GdkEventKey * a_ev)
         {
             m_mainperf->set_sequence_control_status(c_status_snapshot);
         }
-
         if (a_ev->keyval == m_mainperf->m_key_screenset_dn)
         {
-
             m_mainperf->set_screenset(m_mainperf->get_screenset() - 1);
             m_main_wid->set_screenset(m_mainperf->get_screenset());
             m_adjust_ss->set_value(m_mainperf->get_screenset());
@@ -1093,7 +1089,6 @@ mainwnd::on_key_press_event (GdkEventKey * a_ev)
                 *m_mainperf->get_screen_set_notepad(m_mainperf->get_screenset())
             );
         }
-
         if (a_ev->keyval == m_mainperf->m_key_screenset_up)
         {
 
@@ -1105,37 +1100,25 @@ mainwnd::on_key_press_event (GdkEventKey * a_ev)
                 *m_mainperf->get_screen_set_notepad(m_mainperf->get_screenset())
             );
         }
-
         if (a_ev->keyval == m_mainperf->m_key_set_playing_screenset)
-        {
             m_mainperf->set_playing_screenset();
-        }
 
         if (a_ev->keyval == m_mainperf->m_key_group_on)
-        {
             m_mainperf->set_mode_group_mute();
-        }
 
         if (a_ev->keyval == m_mainperf->m_key_group_off)
-        {
             m_mainperf->unset_mode_group_mute();
-        }
 
         if (a_ev->keyval == m_mainperf->m_key_group_learn)
-        {
             m_mainperf->set_mode_group_learn();
-        }
 
         if (m_mainperf->get_key_groups().count(a_ev->keyval) != 0)
         {
-            // activate mute group key
-
-            m_mainperf->select_and_mute_group
+            m_mainperf->select_and_mute_group /* activate mute group key    */
             (
                 m_mainperf->lookup_keygroup_group(a_ev->keyval)
             );
         }
-
         if
         (
             m_mainperf->is_learn_mode() &&
@@ -1267,22 +1250,6 @@ mainwnd::update_window_title ()
 
     set_title(title.c_str());
 }
-
-/**
- * \getter m_modified
- */
-
-bool
-mainwnd::is_modified ()
-{
-    return m_modified;
-}
-
-/**
- *  Provides a couple pipes for signalling/messaging.
- */
-
-int mainwnd::m_sigpipe[2];
 
 
 /**

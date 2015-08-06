@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-06
  * \license       GNU GPLv2 or above
  *
  */
@@ -51,9 +51,9 @@ perftime::perftime (perform * a_perf, Adjustment * a_hadjust)
     m_grey              (Gdk::Color("grey")),
     m_pixmap            (),
     m_mainperf          (a_perf),
-    m_hadjust           (a_hadjust),
     m_window_x          (0),
     m_window_y          (0),
+    m_hadjust           (a_hadjust),
     m_4bar_offset       (0),
     m_snap              (c_ppqn),
     m_measure_length    (c_ppqn * 4)
