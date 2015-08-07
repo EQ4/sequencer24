@@ -631,7 +631,6 @@ FruitySeqRollInput::on_motion_notify_event
         sroll.m_moving_init = false;
         sroll.m_moving = true;
     }
-
     updateMousePtr(sroll);              /* context sensitive mouse pointer... */
 
     /*

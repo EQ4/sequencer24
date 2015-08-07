@@ -107,8 +107,7 @@ public:
     ~mainwid ();
 
     void reset ();
-
-    void set_screenset (int a_ss);     // undefined: int get_screenset ();
+    void set_screenset (int a_ss);      // undefined: int get_screenset ();
     void update_sequence_on_window (int a_seq);
     void update_sequences_on_window ();
     void update_markers (int a_ticks);

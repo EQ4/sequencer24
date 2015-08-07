@@ -19,7 +19,7 @@
  */
 
 /**
- * \file          event.h
+ * \file          event.cpp
  *
  *  This module declares/defines the base class for MIDI events.
  *
@@ -81,13 +81,9 @@ bool
 event::operator > (const event & a_rhsevent)
 {
     if (m_timestamp == a_rhsevent.m_timestamp)
-    {
         return get_rank() > a_rhsevent.get_rank();
-    }
     else
-    {
         return m_timestamp > a_rhsevent.m_timestamp;
-    }
 }
 
 /**
@@ -103,13 +99,9 @@ bool
 event::operator < (const event & a_rhsevent)
 {
     if (m_timestamp == a_rhsevent.m_timestamp)
-    {
         return (get_rank() < a_rhsevent.get_rank());
-    }
     else
-    {
         return (m_timestamp < a_rhsevent.m_timestamp);
-    }
 }
 
 /**
@@ -367,7 +359,7 @@ event::get_rank (void) const
 }
 
 /*
- * event.h
+ * event.cpp
  *
  * vim: sw=4 ts=4 wm=8 et ft=cpp
  */

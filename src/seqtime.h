@@ -86,7 +86,6 @@ private:
     void draw_progress_on_window ();
     void update_pixmap ();
     bool idle_progress ();
-    void on_size_allocate (Gtk::Allocation &);
     void change_horz ();
     void update_sizes ();
     void force_draw ();
@@ -97,6 +96,7 @@ private:          // callbacks
     bool on_expose_event (GdkEventExpose * a_ev);
     bool on_button_press_event (GdkEventButton * a_ev);
     bool on_button_release_event (GdkEventButton * a_ev);
+    void on_size_allocate (Gtk::Allocation &);
 
 };
 

@@ -104,7 +104,7 @@ public:
      *  make this an inline function and use it as common code.
      */
 
-    inline void redraw ()
+    void redraw ()
     {
         update_pixmap();
         queue_draw();
