@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-07
  * \license       GNU GPLv2 or above
  *
  */
@@ -40,6 +40,7 @@
 #include "lash.h"
 #endif
 
+#include "globals.h"
 #include "mainwnd.h"
 #include "midifile.h"
 #include "optionsfile.h"
@@ -71,34 +72,6 @@ static struct option long_options[] =
 };
 
 static const char versiontext[] = PACKAGE " " VERSION "\n";
-
-/*
- * Most of these variables are declared and used in other modules, as
- * well.
- */
-
-bool global_manual_alsa_ports = false;
-bool global_showmidi = false;
-bool global_priority = false;
-bool global_device_ignore = false;
-int global_device_ignore_num = 0;
-bool global_stats = false;
-bool global_pass_sysex = false;
-std::string global_filename = "";
-std::string last_used_dir = "/";
-std::string config_filename = ".seq24rc";
-std::string user_filename = ".seq24usr";
-bool global_print_keys = false;
-interaction_method_e global_interactionmethod = e_seq24_interaction;
-
-bool global_with_jack_transport = false;
-bool global_with_jack_master = false;
-bool global_with_jack_master_cond = false;
-bool global_jack_start_mode = true;
-std::string global_jack_session_uuid = "";
-
-user_midi_bus_definition   global_user_midi_bus_definitions[c_maxBuses];
-user_instrument_definition global_user_instrument_definitions[c_max_instruments];
 
 /*
  * Global pointer!  Declared in font.h.
@@ -258,7 +231,7 @@ main (int argc, char * argv [])
      *  Prepare global MIDI definitions.
      */
 
-    for (int i = 0; i < c_maxBuses; i++)
+    for (int i = 0; i < c_max_busses; i++)
     {
         for (int j = 0; j < 16; j++)
             global_user_midi_bus_definitions[i].instrument[j] = -1;
@@ -275,8 +248,8 @@ main (int argc, char * argv [])
     if (getenv(HOME) != NULL)          /* is $HOME set?               */
     {
         std::string home(getenv(HOME));
-        std::string total_file = home + SLASH + config_filename;
-        last_used_dir = home;
+        std::string total_file = home + SLASH + global_config_filename;
+        global_last_used_dir = home;
         if (Glib::file_test(total_file, Glib::FILE_TEST_EXISTS))
         {
             printf("Reading [%s]\n", total_file.c_str());
@@ -284,7 +257,7 @@ main (int argc, char * argv [])
             if (! options.parse(&p))
                 printf("Error Reading [%s]\n", total_file.c_str());
         }
-        total_file = home + SLASH + user_filename;
+        total_file = home + SLASH + global_user_filename;
         if (Glib::file_test(total_file, Glib::FILE_TEST_EXISTS))
         {
             printf("Reading [%s]\n", total_file.c_str());
@@ -326,7 +299,7 @@ main (int argc, char * argv [])
     if (getenv(HOME) != NULL)
     {
         std::string home(getenv(HOME));
-        std::string total_file = home + SLASH + config_filename;
+        std::string total_file = home + SLASH + global_config_filename;
         printf("Writing [%s]\n", total_file.c_str());
         optionsfile options(total_file);
         if (!options.write(&p))

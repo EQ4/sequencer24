@@ -1730,7 +1730,7 @@ sequence::stream_event (event *a_ev)
     a_ev->mod_timestamp(m_length);              /* adjust the tick */
     if (m_recording)
     {
-        if (is_pattern_playing)
+        if (global_is_pattern_playing)
         {
             add_event(a_ev);
             set_dirty();
@@ -1757,7 +1757,7 @@ sequence::stream_event (event *a_ev)
         put_event_on_bus(a_ev);
     }
     link_new();
-    if (m_quantized_rec && is_pattern_playing)
+    if (m_quantized_rec && global_is_pattern_playing)
     {
         if (a_ev->is_note_off())
         {
@@ -3062,7 +3062,7 @@ sequence::get_name ()
 long
 sequence::get_last_tick ()
 {
-    return (m_last_tick + (m_length -  m_trigger_offset)) % m_length;
+    return (m_last_tick + (m_length - m_trigger_offset)) % m_length;
 }
 
 /* sets the midibus to dump to */

@@ -28,13 +28,12 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-25
- * \updates       2015-08-05
+ * \updates       2015-08-07
  * \license       GNU GPLv2 or above
  *
  */
 
 #include <string>
-#include <gtkmm/drawingarea.h>         // overkill just to get Glib name
 
 #include "easy_macros.h"               // with platform_macros.h, too
 
@@ -129,7 +128,7 @@ const int c_bpm = 120;
  *  ~/.seq24usr file.
  */
 
-const int c_maxBuses = 32;
+const int c_max_busses = 32;
 
 /**
  *  The trigger width in milliseconds.  This value is 4 ms.
@@ -145,27 +144,48 @@ const int c_thread_trigger_lookahead_ms = 2;
 
 /**
  *  Constants for the mainwid class.  The c_text_x and c_text_y constants
- *  help define the "seqarea" size.
+ *  help define the "seqarea" size.  It looks like these two values are
+ *  the character width (x) and height (y) in pixels.
  */
 
-const int c_text_x = 6;
+const int c_text_x =  6;
 const int c_text_y = 12;
+
+/**
+ *  Constants for the mainwid class.  The c_seqchars_x and c_seqchars_y
+ *  constants help define the "seqarea" size.  These look like the number
+ *  of characters per line and the number of lines of characters, in a
+ *  pattern/sequence box.
+ */
+
+const int c_seqchars_x = 15;
+const int c_seqchars_y =  5;
 
 /*
  *  Compare these two constants to c_seqarea_seq_x(y) in mainwid.h.
  */
 
-const int c_seqarea_x = c_text_x * 15;
-const int c_seqarea_y = c_text_y * 5;
+const int c_seqarea_x = c_text_x * c_seqchars_x;
+const int c_seqarea_y = c_text_y * c_seqchars_y;
 
 const int c_mainwid_border = 0;
 const int c_mainwid_spacing = 2;
 const int c_control_height = 0;
+
+/*
+ * The width of the main pattern/sequence grid, in pixels.
+ */
+
 const int c_mainwid_x =
 (
     (c_seqarea_x + c_mainwid_spacing) * c_mainwnd_cols -
         c_mainwid_spacing + c_mainwid_border * 2
 );
+
+/*
+ * The height  of the main pattern/sequence grid, in pixels.
+ */
+
 const int c_mainwid_y =
 (
     (c_seqarea_y + c_mainwid_spacing) * c_mainwnd_rows +
@@ -206,9 +226,9 @@ const int c_num_keys = 128;
  *  piano roll.
  */
 
-const int c_keyarea_y = c_key_y * c_num_keys + 1;
 const int c_keyarea_x = 36;
 const int c_keyoffset_x = c_keyarea_x - c_key_x;
+const int c_keyarea_y = c_key_y * c_num_keys + 1;
 
 
 /**
@@ -230,8 +250,8 @@ const int c_eventarea_y = 16;
  *  each event.
  */
 
-const int c_eventevent_y = 10;
 const int c_eventevent_x = 5;
+const int c_eventevent_y = 10;
 
 /**
  *  The time scale window on top of the piano roll, in pixels.
@@ -273,12 +293,8 @@ const unsigned long c_notes =           0x24240005;
 const unsigned long c_timesig =         0x24240006;
 const unsigned long c_bpmtag =          0x24240007;
 const unsigned long c_triggers_new =    0x24240008;
-const unsigned long c_midictrl =        0x24240010;
-
-// Comment: Not sure why we went to 10 above, this might need a different
-//          value.
-
 const unsigned long c_mutegroups =      0x24240009;
+const unsigned long c_midictrl =        0x24240010;
 
 /**
  *  Provides the various font sizes for the default font.
@@ -323,6 +339,12 @@ const int c_perf_scale_x = 32;  // units are ticks per pixel
 const int c_max_instruments = 64;
 
 /**
+ *  A global variable for handle size.
+ */
+
+const long c_handlesize = 16;
+
+/**
  *  These global values seemed to be use mainly in the options,
  *  optionsfile, perform, seq24, and userfile modules.
  */
@@ -339,10 +361,16 @@ extern bool global_manual_alsa_ports;
 
 extern std::string global_filename;
 extern std::string global_jack_session_uuid;
-extern std::string last_used_dir;
 
-extern bool is_pattern_playing;
+extern std::string global_last_used_dir;
+extern std::string global_config_filename;
+extern std::string global_user_filename;
+
+extern bool global_is_pattern_playing;
 extern bool global_print_keys;
+
+extern bool global_device_ignore;           // seq24 module
+extern int global_device_ignore_num;        // seq24 module
 
 /**
  *  This structure corresponds to [user-midi-bus-0] definitions in the
@@ -372,7 +400,7 @@ struct user_instrument_definition
  */
 
 extern user_midi_bus_definition
-    global_user_midi_bus_definitions[c_maxBuses];
+    global_user_midi_bus_definitions[c_max_busses];
 
 extern user_instrument_definition
     global_user_instrument_definitions[c_max_instruments];

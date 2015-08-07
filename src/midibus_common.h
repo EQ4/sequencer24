@@ -28,19 +28,12 @@
  * \library       sequencer24 application
  * \author        Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-07
  * \license       GNU GPLv2 or above
  *
  */
 
 #include <string>
-// #include "platform_macros.h"
-
-// #ifdef PLATFORM_WINDOWS
-// #include "configwin32.h"
-// #else
-// #include "config.h"
-// #endif
 
 #include "event.h"
 #include "mutex.h"

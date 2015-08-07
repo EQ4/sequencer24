@@ -124,7 +124,7 @@ perfedit::perfedit (perform * a_perf)
     using namespace Menu_Helpers;
 
     set_icon(Gdk::Pixbuf::create_from_xpm_data(perfedit_xpm));
-    set_title("seq24 - Song Editor");                   /* main window */
+    set_title("Sequencer24 - Song Editor");                   /* main window */
     set_size_request(700, 400);
     m_table->set_border_width(2);
     m_hlbox->set_border_width(2);

@@ -45,17 +45,17 @@
 
 mastermidibus::mastermidibus ()
  :
-    m_num_out_buses     (0),        // or c_maxBuses, or what?
-    m_num_in_buses      (0),        // or c_maxBuses, or 1, or what?
-    m_buses_out         (),         // array of c_maxBuses midibus pointers
-    m_buses_in          (),         // array of c_maxBuses midibus pointers
+    m_num_out_buses     (0),        // or c_max_busses, or what?
+    m_num_in_buses      (0),        // or c_max_busses, or 1, or what?
+    m_buses_out         (),         // array of c_max_busses midibus pointers
+    m_buses_in          (),         // array of c_max_busses midibus pointers
     m_bus_announce      (nullptr),  // one pointer
-    m_buses_out_active  (),         // array of c_maxBuses booleans
-    m_buses_in_active   (),         // array of c_maxBuses booleans
-    m_buses_out_init    (),         // array of c_maxBuses booleans
-    m_buses_in_init     (),         // array of c_maxBuses booleans
-    m_init_clock        (),         // array of c_maxBuses clock_e values
-    m_init_input        (),         // array of c_maxBuses booleans
+    m_buses_out_active  (),         // array of c_max_busses booleans
+    m_buses_in_active   (),         // array of c_max_busses booleans
+    m_buses_out_init    (),         // array of c_max_busses booleans
+    m_buses_in_init     (),         // array of c_max_busses booleans
+    m_init_clock        (),         // array of c_max_busses clock_e values
+    m_init_input        (),         // array of c_max_busses booleans
     m_queue             (0),
     m_ppqn              (0),
     m_bpm               (0),
@@ -65,7 +65,7 @@ mastermidibus::mastermidibus ()
     m_seq               (nullptr),
     m_mutex             ()
 {
-    for (int i = 0; i < c_maxBuses; ++i)        // why the global?
+    for (int i = 0; i < c_max_busses; ++i)        // why the global?
     {
         m_buses_in_active[i] = false;
         m_buses_out_active[i] = false;
@@ -339,7 +339,7 @@ void
 mastermidibus::set_clock (unsigned char a_bus, clock_e a_clock_type)
 {
     lock();
-    if (a_bus < c_maxBuses)
+    if (a_bus < c_max_busses)
     {
         m_init_clock[a_bus] = a_clock_type;
     }
@@ -398,7 +398,7 @@ void
 mastermidibus::set_input (unsigned char a_bus, bool a_inputing)
 {
     lock();
-    if (a_bus < c_maxBuses)         // should be m_num_in_buses I believe!!!
+    if (a_bus < c_max_busses)         // should be m_num_in_buses I believe!!!
     {
         m_init_input[a_bus] = a_inputing;
     }

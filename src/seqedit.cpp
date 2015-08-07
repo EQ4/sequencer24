@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-07
  * \license       GNU GPLv2 or above
  *
  */
@@ -91,16 +91,16 @@ int seqedit::m_initial_sequence = -1;
 
 // Actions
 
-static const int select_all_notes      = 1;
-static const int select_all_events     = 2;
-static const int select_inverse_notes  = 3;
-static const int select_inverse_events = 4;
-static const int c_quantize_notes    = 5;
-static const int c_quantize_events   = 6;
-static const int tighten_events   =  8;
-static const int tighten_notes    =  9;
-static const int transpose     = 10;
-static const int transpose_h   = 12;
+static const int c_select_all_notes      =  1;
+static const int c_select_all_events     =  2;
+static const int c_select_inverse_notes  =  3;
+static const int c_select_inverse_events =  4;
+static const int c_quantize_notes        =  5;
+static const int c_quantize_events       =  6;
+static const int c_tighten_events        =  8;
+static const int c_tighten_notes         =  9;
+static const int c_transpose             = 10;
+static const int c_transpose_h           = 12;
 
 /**
  *  Connects to a menu item, tells the performance to launch the timer
@@ -379,7 +379,7 @@ seqedit::create_menus ()
      */
 
     char b[20];
-    for (int i = c_min_zoom; i <= c_max_zoom; i *= 2)           /* zoom */
+    for (int i = mc_min_zoom; i <= mc_max_zoom; i *= 2)           /* zoom */
     {
         snprintf(b, sizeof(b), "1:%d", i);
         m_menu_zoom->items().push_back
@@ -729,11 +729,11 @@ seqedit::popup_tool_menu ()
 
     holder->items().push_back
     (
-        MenuElem("All Notes", sigc::bind(DO_ACTION, select_all_notes, 0))
+        MenuElem("All Notes", sigc::bind(DO_ACTION, c_select_all_notes, 0))
     );
     holder->items().push_back
     (
-        MenuElem("Inverse Notes", sigc::bind(DO_ACTION, select_inverse_notes, 0))
+        MenuElem("Inverse Notes", sigc::bind(DO_ACTION, c_select_inverse_notes, 0))
     );
 
     /*
@@ -745,12 +745,12 @@ seqedit::popup_tool_menu ()
         holder->items().push_back(SeparatorElem());
         holder->items().push_back
         (
-            MenuElem("All Events", sigc::bind(DO_ACTION, select_all_events, 0))
+            MenuElem("All Events", sigc::bind(DO_ACTION, c_select_all_events, 0))
         );
         holder->items().push_back
         (
             MenuElem("Inverse Events",
-                sigc::bind(DO_ACTION, select_inverse_events, 0))
+                sigc::bind(DO_ACTION, c_select_inverse_events, 0))
         );
     }
 
@@ -764,7 +764,7 @@ seqedit::popup_tool_menu ()
     holder->items().push_back
     (
         MenuElem("Tighten Selected Notes",
-            sigc::bind(DO_ACTION, tighten_notes, 0))
+            sigc::bind(DO_ACTION, c_tighten_notes, 0))
     );
 
     if (m_editing_status != EVENT_NOTE_ON && m_editing_status != EVENT_NOTE_OFF)
@@ -783,7 +783,7 @@ seqedit::popup_tool_menu ()
         holder->items().push_back
         (
             MenuElem("Tighten Selected Events",
-                sigc::bind(DO_ACTION, tighten_events, 0))
+                sigc::bind(DO_ACTION, c_tighten_events, 0))
         );
     }
     m_menu_tools->items().push_back(MenuElem("Modify Time", *holder));
@@ -799,7 +799,7 @@ seqedit::popup_tool_menu ()
             snprintf(num, sizeof(num), "%+d [%s]", i, c_interval_text[abs(i)]);
             holder2->items().push_front
             (
-                MenuElem(num, sigc::bind(DO_ACTION, transpose, i))
+                MenuElem(num, sigc::bind(DO_ACTION, c_transpose, i))
             );
         }
     }
@@ -817,7 +817,7 @@ seqedit::popup_tool_menu ()
             );
             holder2->items().push_front
             (
-                MenuElem(num, sigc::bind(DO_ACTION, transpose_h, i))
+                MenuElem(num, sigc::bind(DO_ACTION, c_transpose_h, i))
             );
         }
     }
@@ -841,21 +841,21 @@ seqedit::do_action (int a_action, int a_var)
 {
     switch (a_action)
     {
-    case select_all_notes:
+    case c_select_all_notes:
         m_seq->select_events(EVENT_NOTE_ON, 0);
         m_seq->select_events(EVENT_NOTE_OFF, 0);
         break;
 
-    case select_all_events:
+    case c_select_all_events:
         m_seq->select_events(m_editing_status, m_editing_cc);
         break;
 
-    case select_inverse_notes:
+    case c_select_inverse_notes:
         m_seq->select_events(EVENT_NOTE_ON, 0, true);
         m_seq->select_events(EVENT_NOTE_OFF, 0, true);
         break;
 
-    case select_inverse_events:
+    case c_select_inverse_events:
         m_seq->select_events(m_editing_status, m_editing_cc, true);
         break;
 
@@ -869,22 +869,22 @@ seqedit::do_action (int a_action, int a_var)
         m_seq->quantize_events(m_editing_status, m_editing_cc, m_snap, 1);
         break;
 
-    case tighten_notes:
+    case c_tighten_notes:
         m_seq->push_undo();
         m_seq->quantize_events(EVENT_NOTE_ON, 0, m_snap, 2 , true);
         break;
 
-    case tighten_events:
+    case c_tighten_events:
         m_seq->push_undo();
         m_seq->quantize_events(m_editing_status, m_editing_cc, m_snap, 2);
         break;
 
-    case transpose:
+    case c_transpose:
         m_seq->push_undo();
         m_seq->transpose_notes(a_var, 0);
         break;
 
-    case transpose_h:
+    case c_transpose_h:
         m_seq->push_undo();
         m_seq->transpose_notes(a_var, m_scale);
         break;
@@ -1284,7 +1284,7 @@ seqedit::popup_midich_menu ()
         snprintf(b, sizeof(b), "%d", i + 1);
         std::string name = string(b);
         int instrument = global_user_midi_bus_definitions[midi_bus].instrument[i];
-        if (instrument >= 0 && instrument < c_maxBuses)
+        if (instrument >= 0 && instrument < c_max_busses)
         {
             name = name +
             (
@@ -2012,12 +2012,12 @@ seqedit::on_scroll_event (GdkEventScroll * a_ev)
     {
         if (a_ev->direction == GDK_SCROLL_DOWN)
         {
-            if (m_zoom * 2 <= c_max_zoom)
+            if (m_zoom * 2 <= mc_max_zoom)
                 set_zoom(m_zoom * 2);
         }
         else if (a_ev->direction == GDK_SCROLL_UP)
         {
-            if (m_zoom / 2 >= c_min_zoom)
+            if (m_zoom / 2 >= mc_min_zoom)
                 set_zoom(m_zoom / 2);
         }
         return true;

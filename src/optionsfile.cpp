@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-07
  * \license       GNU GPLv2 or above
  *
  */
@@ -34,7 +34,7 @@
 #include "optionsfile.h"
 #include "perform.h"
 
-extern std::string last_used_dir;
+// extern std::string last_used_dir;
 
 /**
  *  Principal constructor.
@@ -314,7 +314,7 @@ optionsfile::parse (perform * a_perf)
     // FIXME: check for a valid path is missing
 
     if (m_line[0] == '/')
-        last_used_dir.assign(m_line);
+        global_last_used_dir.assign(m_line);
 
     /*
      *  Interaction method section.
@@ -584,7 +584,7 @@ optionsfile::write (perform * a_perf)
         );
         file << string(outs) << "\n";
     }
-    size_t kegsize = a_perf->get_key_groups().size() < (size_t)c_seqs_in_set ?
+    size_t kegsize = a_perf->get_key_groups().size() < size_t(c_seqs_in_set) ?
          a_perf->get_key_groups().size() :
          (size_t)c_seqs_in_set
          ;
@@ -678,7 +678,7 @@ optionsfile::write (perform * a_perf)
     file
         << "\n\n\n[last-used-dir]\n\n"
         << "# Last used directory.\n"
-        << last_used_dir << "\n\n"
+        << global_last_used_dir << "\n\n"
         ;
 
     file.close();

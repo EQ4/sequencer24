@@ -55,7 +55,6 @@ public:
 
 };
 
-
 #endif   // SEQ24_OPTIONSFILE_H
 
 /*

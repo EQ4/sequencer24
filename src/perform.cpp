@@ -569,13 +569,9 @@ perform::mute_group_tracks ()
                 if (is_active(i * c_seqs_in_set + j))
                 {
                     if ((i == m_playing_screen) && m_tracks_mute_state[j])
-                    {
                         sequence_playing_on(i * c_seqs_in_set + j);
-                    }
                     else
-                    {
                         sequence_playing_off(i * c_seqs_in_set + j);
-                    }
                 }
             }
 
@@ -878,9 +874,7 @@ perform::is_dirty_names (int a_sequence)
         return false;
 
     if (is_active(a_sequence))
-    {
         return m_seqs[a_sequence]->is_dirty_names();
-    }
 
     bool was_active = m_was_active_names[a_sequence];
     m_was_active_names[a_sequence] = false;
@@ -1398,11 +1392,13 @@ perform::position_jack (bool a_state)
      */
 
     current_tick *= 10;
-    pos.bar = (int32_t) (current_tick /
-        (long) pos.ticks_per_beat / pos.beats_per_bar);
+    pos.bar = int32_t
+    (
+        (current_tick / (long) pos.ticks_per_beat / pos.beats_per_bar);
+    );
 
-    pos.beat = (int32_t)((current_tick / (long) pos.ticks_per_beat) % 4);
-    pos.tick = (int32_t)(current_tick % (c_ppqn * 10));
+    pos.beat = int32_t(((current_tick / (long) pos.ticks_per_beat) % 4));
+    pos.tick = int32_t((current_tick % (c_ppqn * 10)));
     pos.bar_start_tick = pos.bar * pos.beats_per_bar * pos.ticks_per_beat;
     pos.frame_rate = rate;
     pos.frame = (jack_nframes_t)
@@ -1970,6 +1966,7 @@ perform::output_func ()
                     set_orig_ticks((long) jack_ticks_converted);
                     current_tick = clock_tick = total_tick =
                         jack_ticks_converted_last = jack_ticks_converted;
+
                     init_clock = true;
                     if (m_looping && m_playback_mode)
                     {
@@ -2364,11 +2361,16 @@ perform::handle_midi_control (int a_control, bool a_state)
         break;
 
     default:
+
+        /*
+         * Based on the value of c_midi_track_crl (32 *2) versus
+         * c_seqs_in_set (32), maybe the first comparison should be
+         * "a_control >= 2 * c_seqs_in_set".
+         */
+
         if ((a_control >= c_seqs_in_set) && (a_control < c_midi_track_ctrl))
-        {
-            // printf("group mute\n");
             select_and_mute_group(a_control - c_seqs_in_set);
-        }
+
         break;
     }
 }
@@ -2665,8 +2667,10 @@ perform::sequence_playing_on (int a_sequence)
             (a_sequence < ((m_playing_screen + 1) * c_seqs_in_set))
         )
         {
-            m_tracks_mute_state[a_sequence-m_playing_screen*c_seqs_in_set] =
-                true;
+            m_tracks_mute_state
+            [
+                a_sequence - m_playing_screen * c_seqs_in_set
+            ] = true;
         }
         if (not_nullptr_assert(m_seqs[a_sequence], "sequence_playing_on"))
         {

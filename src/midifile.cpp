@@ -189,7 +189,7 @@ midifile::parse (perform * a_perf, int a_screen_set)
      * We should be good to load now, for each Track in the MIDI file.
      */
 
-    for (int curTrack = 0; curTrack < NumTracks; curTrack++)
+    for (int curtrack = 0; curtrack < NumTracks; curtrack++)
     {
         bool done = false;                          /* done for each track */
         perf = 0;
@@ -590,13 +590,13 @@ bool midifile::write (perform * a_perf)
      * We should be good to load now for each Track in the midi file.
      */
 
-    for (int curTrack = 0; curTrack < c_max_sequence; curTrack++)
+    for (int curtrack = 0; curtrack < c_max_sequence; curtrack++)
     {
-        if (a_perf->is_active(curTrack))
+        if (a_perf->is_active(curtrack))
         {
-            sequence * seq = a_perf->get_sequence(curTrack);
+            sequence * seq = a_perf->get_sequence(curtrack);
             std::list<char> l;
-            seq->fill_list(&l, curTrack);
+            seq->fill_list(&l, curtrack);
 
             write_long(0x4D54726B);         /* magic number 'MTrk'      */
             write_long(l.size());

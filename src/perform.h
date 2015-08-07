@@ -28,11 +28,13 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-06
+ * \updates       2015-08-07
  * \license       GNU GPLv2 or above
  *
  *  This class has way too many members.
  */
+
+#include <gtkmm/drawingarea.h>
 
 #include "globals.h"               // globals, nullptr, and config headers
 
@@ -45,11 +47,9 @@
 #ifdef JACK_SUPPORT
 #include <jack/jack.h>
 #include <jack/transport.h>
-
 #ifdef JACK_SESSION
 #include <jack/session.h>
 #endif
-
 #endif   // JACK_SUPPORT
 
 #include "mastermidibus.h"

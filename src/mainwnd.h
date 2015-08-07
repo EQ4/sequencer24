@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-06
+ * \updates       2015-08-07
  * \license       GNU GPLv2 or above
  *
  */
@@ -226,9 +226,10 @@ private:
     void choose_file ();
     int query_save_changes ();
     bool is_save ();
-    static void handle_signal (int sig);
     bool install_signal_handlers ();
     bool signal_action (Glib::IOCondition condition);
+
+    static void handle_signal (int sig);
 
 private:
 

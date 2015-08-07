@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-07
  * \license       GNU GPLv2 or above
  *
  */
@@ -86,8 +86,8 @@ class seqedit : public Gtk::Window
 
 private:
 
-    static const int c_min_zoom = 1;
-    static const int c_max_zoom = 32;
+    static const int mc_min_zoom = 1;
+    static const int mc_max_zoom = 32;
     static int m_initial_zoom;
     static int m_initial_snap;
     static int m_initial_note_length;

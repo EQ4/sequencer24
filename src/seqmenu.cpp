@@ -160,7 +160,7 @@ seqmenu::popup_menu ()
                 int instrument = global_user_midi_bus_definitions[i].
                     instrument[j] ;
 
-                if (instrument >= 0 && instrument < c_maxBuses)
+                if (instrument >= 0 && instrument < c_max_busses)
                 {
                     name = name +
                     (

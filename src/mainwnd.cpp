@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-06
+ * \updates       2015-08-07
  * \license       GNU GPLv2 or above
  *
  */
@@ -49,11 +49,6 @@
 #include "pixmaps/seq24_32.xpm"
 #include "pixmaps/sequencer24_square.xpm" // replaces "pixmaps/seq24.xpm"
 
-/**
- *  Another global.
- */
-
-bool is_pattern_playing = false;
 
 /**
  *  This static member provides a couple pipes for signalling/messaging.
@@ -458,7 +453,7 @@ mainwnd::start_playing ()
     m_mainperf->position_jack(false);
     m_mainperf->start(false);
     m_mainperf->start_jack();
-    is_pattern_playing = true;
+    global_is_pattern_playing = true;
 }
 
 /**
@@ -471,7 +466,7 @@ mainwnd::stop_playing ()
     m_mainperf->stop_jack();
     m_mainperf->stop();
     m_main_wid->update_sequences_on_window();
-    is_pattern_playing = false;
+    global_is_pattern_playing = false;
 }
 
 /**
@@ -568,7 +563,7 @@ mainwnd::file_save_as ()
     filter_any.add_pattern("*");
     dialog.add_filter(filter_any);
 
-    dialog.set_current_folder(last_used_dir);
+    dialog.set_current_folder(global_last_used_dir);
     int result = dialog.run();
 
     switch (result)
@@ -643,7 +638,7 @@ mainwnd::open_file (const std::string & fn)
         return;
     }
 
-    last_used_dir = fn.substr(0, fn.rfind("/") + 1);
+    global_last_used_dir = fn.substr(0, fn.rfind("/") + 1);
     global_filename = fn;
     update_window_title();
     m_main_wid->reset();
@@ -687,7 +682,7 @@ mainwnd::choose_file ()
     filter_any.set_name("Any files");
     filter_any.add_pattern("*");
     dlg.add_filter(filter_any);
-    dlg.set_current_folder(last_used_dir);
+    dlg.set_current_folder(global_last_used_dir);
 
     int result = dlg.run();
     switch (result)
@@ -818,7 +813,7 @@ mainwnd::file_import_dialog ()
     filter_any.set_name("Any files");
     filter_any.add_pattern("*");
     dlg.add_filter(filter_any);
-    dlg.set_current_folder(last_used_dir);
+    dlg.set_current_folder(global_last_used_dir);
 
     ButtonBox * btnbox = dlg.get_action_area();
     HBox hbox(false, 2);
@@ -885,7 +880,7 @@ mainwnd::file_exit ()
 {
     if (is_save())
     {
-        if (is_pattern_playing)
+        if (global_is_pattern_playing)
             stop_playing();
 
         hide();
@@ -903,7 +898,7 @@ bool
 mainwnd::on_delete_event (GdkEventAny * a_e)
 {
     bool result = is_save();
-    if (result && is_pattern_playing)
+    if (result && global_is_pattern_playing)
         stop_playing();
 
     return ! result;
@@ -1191,7 +1186,7 @@ mainwnd::on_key_press_event (GdkEventKey * a_ev)
         if
         (
             a_ev->keyval == m_mainperf->m_key_start &&
-            (dont_toggle || !is_pattern_playing)
+            (dont_toggle || ! global_is_pattern_playing)
         )
         {
             start_playing();
@@ -1199,7 +1194,8 @@ mainwnd::on_key_press_event (GdkEventKey * a_ev)
         else if
         (
             a_ev->keyval == m_mainperf->m_key_stop &&
-            (dont_toggle || is_pattern_playing))
+            (dont_toggle || global_is_pattern_playing)
+        )
         {
             stop_playing();
         }

@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-06
+ * \updates       2015-08-07
  * \license       GNU GPLv2 or above
  *
  */
@@ -40,12 +40,6 @@
 #include "sequence.h"
 #include "seqkeys.h"
 #include "perform.h"
-
-/**
- *  Yet another global variable.
- */
-
-const long c_handlesize = 16;
 
 /**
  *  Principal constructor.
@@ -1089,23 +1083,23 @@ seqroll::on_key_press_event (GdkEventKey * a_p0)
     if
     (
         a_p0->keyval ==  m_mainperf->m_key_start &&
-        (dont_toggle || ! is_pattern_playing)
+        (dont_toggle || ! global_is_pattern_playing)
     )
     {
         m_mainperf->position_jack(false);
         m_mainperf->start(false);
         m_mainperf->start_jack();
-        is_pattern_playing = true;
+        global_is_pattern_playing = true;
     }
     else if
     (
         a_p0->keyval ==  m_mainperf->m_key_stop &&
-        (dont_toggle || is_pattern_playing)
+        (dont_toggle || global_is_pattern_playing)
     )
     {
         m_mainperf->stop_jack();
         m_mainperf->stop();
-        is_pattern_playing = false;
+        global_is_pattern_playing = false;
     }
     if (a_p0->type == GDK_KEY_PRESS)
     {
@@ -1116,7 +1110,7 @@ seqroll::on_key_press_event (GdkEventKey * a_p0)
             m_seq->remove_marked();
             result = true;
         }
-        if (! is_pattern_playing)
+        if (! global_is_pattern_playing)
         {
             if (a_p0->keyval == GDK_Home)
             {

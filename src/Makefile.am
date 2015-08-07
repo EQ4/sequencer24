@@ -6,7 +6,7 @@
 # \library    	sequencer24 application
 # \author     	Chris Ahlstrom
 # \date       	2015-07-24
-# \update      2015-08-02
+# \update      2015-08-07
 # \version    	$Revision$
 # \license    	$XPC_SUITE_GPL_LICENSE$
 #
@@ -118,7 +118,7 @@ sequencer24_SOURCES = \
 	font.cpp font.h \
    fruityseq.cpp fruityseq.h \
    fruityseqroll.cpp fruityseqroll.h \
-	globals.h \
+	globals.cpp globals.h \
    gtk_helpers.h \
 	keybindentry.cpp keybindentry.h \
 	lash.cpp lash.h \

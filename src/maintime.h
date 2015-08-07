@@ -29,12 +29,14 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-07
  * \license       GNU GPLv2 or above
  *
  */
 
-#include "globals.h"                   // Gtk::DrawingArea, etc.
+#include <gtkmm/drawingarea.h>
+
+#include "globals.h"
 
 const int c_maintime_x = 300;
 const int c_maintime_y = 10;

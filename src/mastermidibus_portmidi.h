@@ -64,13 +64,13 @@ private:
      *  Output MIDI busses.
      */
 
-    midibus * m_buses_out[c_maxBuses];
+    midibus * m_buses_out[c_max_busses];
 
     /**
      *  Input MIDI busses.
      */
 
-    midibus * m_buses_in[c_maxBuses];
+    midibus * m_buses_in[c_max_busses];
 
     /**
      *  MIDI buss announcer?
@@ -82,37 +82,37 @@ private:
      *  Active output MIDI busses.
      */
 
-    bool m_buses_out_active[c_maxBuses];
+    bool m_buses_out_active[c_max_busses];
 
     /**
      *  Active input MIDI busses.
      */
 
-    bool m_buses_in_active[c_maxBuses];
+    bool m_buses_in_active[c_max_busses];
 
     /**
      *  Output MIDI buss initialization.
      */
 
-    bool m_buses_out_init[c_maxBuses];
+    bool m_buses_out_init[c_max_busses];
 
     /**
      *  Input MIDI buss initialization.
      */
 
-    bool m_buses_in_init[c_maxBuses];
+    bool m_buses_in_init[c_max_busses];
 
     /**
      *  Clock initialization.
      */
 
-    clock_e m_init_clock[c_maxBuses];
+    clock_e m_init_clock[c_max_busses];
 
     /**
      *  Input initialization?
      */
 
-    bool m_init_input[c_maxBuses];
+    bool m_init_input[c_max_busses];
 
     /**
      *  The ID of the MIDI queue.

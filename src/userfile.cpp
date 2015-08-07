@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-07
  * \license       GNU GPLv2 or above
  *
  *  Note that the parse function has some code that is not yet enabled.
@@ -298,7 +298,7 @@ userfile::parse (perform * a_perf)
     // FIXME: check for a valid path is missing
 
     if (m_line[0] == '/')
-        last_used_dir.assign(m_line);
+        global_last_used_dir.assign(m_line);
 
     long method = 0;
     line_after(file, "[interaction-method]");

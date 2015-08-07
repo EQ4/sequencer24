@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-07
  * \license       GNU GPLv2 or above
  *
  */
@@ -113,7 +113,7 @@ private:
     Entry * m_entry_bw;
     HBox * m_hbox;
     HBox * m_hlbox;
-    Tooltips * m_tooltips;
+    Tooltips * m_tooltips;              // why not conditional on Gtk version?
 
     /**
      * Menus for time signature, beats per measure, beat width.

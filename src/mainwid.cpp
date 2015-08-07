@@ -336,8 +336,8 @@ mainwid::draw_sequence_pixmap_on_window (int a_seq)         // effective?
 
     if      /* Common code */
     (
-        a_seq >= (m_screenset  * c_mainwnd_rows * c_mainwnd_cols) &&
-        a_seq < ((m_screenset + 1)  * c_mainwnd_rows * c_mainwnd_cols)
+        a_seq >= (m_screenset * c_mainwnd_rows * c_mainwnd_cols) &&
+        a_seq < ((m_screenset+1) * c_mainwnd_rows * c_mainwnd_cols)
     )
     {
         int i = (a_seq / c_mainwnd_rows) % c_mainwnd_cols;

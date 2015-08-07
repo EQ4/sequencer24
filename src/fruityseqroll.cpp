@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-02
+ * \updates       2015-08-07
  * \license       GNU GPLv2 or above
  *
  */
@@ -38,12 +38,6 @@
 #include "sequence.h"
 #include "seqkeys.h"
 #include "perform.h"
-
-/**
- *  A global variable for handle size.
- */
-
-const long c_handlesize = 16;
 
 /**
  *  An internal function used by the FruitySeqRollInput class.
