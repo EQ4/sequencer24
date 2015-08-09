@@ -19,12 +19,13 @@
 /**
  * \file          mainwnd.cpp
  *
- *  This module declares/defines the base class for ...
+ *  This module declares/defines the base class for the main window of the
+ *  application.
  *
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-07
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -56,6 +57,8 @@
 
 int mainwnd::m_sigpipe[2];
 
+using namespace Gtk::Menu_Helpers;            // MenuElem, etc.
+
 /**
  *  The constructor the main window of the application.
  *  This constructor is way too large; it would be nicer to provide a
@@ -69,12 +72,12 @@ mainwnd::mainwnd (perform * a_p)
     m_mainperf              (a_p),
     m_modified              (false),
 #if GTK_MINOR_VERSION < 12
-    m_tooltips              (manage(new Tooltips())),
+    m_tooltips              (manage(new Gtk::Tooltips())),
 #endif
-    m_menubar               (manage(new MenuBar())),
-    m_menu_file             (manage(new Menu())),
-    m_menu_view             (manage(new Menu())),
-    m_menu_help             (manage(new Menu())),
+    m_menubar               (manage(new Gtk::MenuBar())),
+    m_menu_file             (manage(new Gtk::Menu())),
+    m_menu_view             (manage(new Gtk::Menu())),
+    m_menu_help             (manage(new Gtk::Menu())),
     m_main_wid              (manage(new mainwid(m_mainperf))),
     m_main_time             (manage(new maintime())),
     m_perf_edit             (new perfedit(m_mainperf)),     // copy construct
@@ -96,7 +99,6 @@ mainwnd::mainwnd (perform * a_p)
     set_icon(Gdk::Pixbuf::create_from_xpm_data(seq24_32_xpm));
     m_mainperf->m_notify.push_back(this);           // register for notification
     update_window_title();                          // main window
-
     m_menubar->items().push_front(MenuElem("_File", *m_menu_file));
     m_menubar->items().push_back(MenuElem("_View", *m_menu_view));
     m_menubar->items().push_back(MenuElem("_Help", *m_menu_help));
@@ -182,31 +184,32 @@ mainwnd::mainwnd (perform * a_p)
      * this application) and the "timeline" progress bar.
      */
 
-    HBox * tophbox = manage(new HBox(false, 0));
+    Gtk::HBox * tophbox = manage(new Gtk::HBox(false, 0));
     tophbox->pack_start
     (
         *manage
         (
-            new Image(Gdk::Pixbuf::create_from_xpm_data(sequencer24_square_xpm))
+            new Gtk::Image
+            (
+                Gdk::Pixbuf::create_from_xpm_data(sequencer24_square_xpm)
+            )
         ), false, false
     );
 
     /* Adjust placement of the logo. */
 
-    VBox * vbox_b = manage(new VBox());
-    HBox * hbox3 = manage(new HBox(false, 0));
+    Gtk::VBox * vbox_b = manage(new Gtk::VBox());
+    Gtk::HBox * hbox3 = manage(new Gtk::HBox(false, 0));
     vbox_b->pack_start(*hbox3, false, false);
     tophbox->pack_end(*vbox_b, false, false);
     hbox3->set_spacing(10);
-
-    hbox3->pack_start(*m_main_time, false, false);  // timeline
-
-    m_button_learn = manage(new Button());          // group learn ("L") button
+    hbox3->pack_start(*m_main_time, false, false);  /* timeline          */
+    m_button_learn = manage(new Gtk::Button());     /* group learn ("L") */
     m_button_learn->set_focus_on_click(false);
     m_button_learn->set_flags(m_button_learn->get_flags() & ~Gtk::CAN_FOCUS);
     m_button_learn->set_image
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(learn_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(learn_xpm)))
     );
     m_button_learn->signal_clicked().connect
     (
@@ -228,7 +231,7 @@ mainwnd::mainwnd (perform * a_p)
      *  via keys.
      */
 
-    Button w;
+    Gtk::Button w;
     hbox3->set_focus_child(w);
 
     /*
@@ -236,13 +239,13 @@ mainwnd::mainwnd (perform * a_p)
      *  the container that groups them.
      */
 
-    HBox * bottomhbox = manage(new HBox(false, 10));            // bottom box
-    HBox * startstophbox = manage(new HBox(false, 4));          // button box
+    Gtk::HBox * bottomhbox = manage(new Gtk::HBox(false, 10));   // bottom box
+    Gtk::HBox * startstophbox = manage(new Gtk::HBox(false, 4)); // button box
     bottomhbox->pack_start(*startstophbox, Gtk::PACK_SHRINK);
-    m_button_stop = manage(new Button());                       // stop button
+    m_button_stop = manage(new Gtk::Button());                   // stop button
     m_button_stop->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(stop_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(stop_xpm)))
     );
     m_button_stop->signal_clicked().connect
     (
@@ -250,11 +253,10 @@ mainwnd::mainwnd (perform * a_p)
     );
     add_tooltip(m_button_stop, "Stop playing MIDI sequence");
     startstophbox->pack_start(*m_button_stop, Gtk::PACK_SHRINK);
-
-    m_button_play = manage(new Button());                       // play button
+    m_button_play = manage(new Gtk::Button());                  // play button
     m_button_play->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(play2_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(play2_xpm)))
     );
     m_button_play->signal_clicked().connect
     (
@@ -267,17 +269,17 @@ mainwnd::mainwnd (perform * a_p)
      * BPM spin button with label.
      */
 
-    HBox * bpmhbox = manage(new HBox(false, 4));
+    Gtk::HBox * bpmhbox = manage(new Gtk::HBox(false, 4));
     bottomhbox->pack_start(*bpmhbox, Gtk::PACK_SHRINK);
-    m_adjust_bpm = manage(new Adjustment(m_mainperf->get_bpm(), 20, 500, 1));
-    m_spinbutton_bpm = manage(new SpinButton(*m_adjust_bpm));
+    m_adjust_bpm = manage(new Gtk::Adjustment(m_mainperf->get_bpm(), 20, 500, 1));
+    m_spinbutton_bpm = manage(new Gtk::SpinButton(*m_adjust_bpm));
     m_spinbutton_bpm->set_editable(false);
     m_adjust_bpm->signal_value_changed().connect
     (
         mem_fun(*this, &mainwnd::adj_callback_bpm)
     );
     add_tooltip(m_spinbutton_bpm, "Adjust beats per minute (BPM) value");
-    Label * bpmlabel = manage(new Label("_bpm", true));
+    Gtk::Label * bpmlabel = manage(new Gtk::Label("_bpm", true));
     bpmlabel->set_mnemonic_widget(*m_spinbutton_bpm);
     bpmhbox->pack_start(*bpmlabel, Gtk::PACK_SHRINK);
     bpmhbox->pack_start(*m_spinbutton_bpm, Gtk::PACK_SHRINK);
@@ -286,9 +288,9 @@ mainwnd::mainwnd (perform * a_p)
      * Screen set name edit line.
      */
 
-    HBox * notebox = manage(new HBox(false, 4));
+    Gtk::HBox * notebox = manage(new Gtk::HBox(false, 4));
     bottomhbox->pack_start(*notebox, Gtk::PACK_EXPAND_WIDGET);
-    m_entry_notes = manage(new Entry());
+    m_entry_notes = manage(new Gtk::Entry());
     m_entry_notes->signal_changed().connect
     (
         mem_fun(*this, &mainwnd::edit_callback_notepad)
@@ -298,7 +300,7 @@ mainwnd::mainwnd (perform * a_p)
         *m_mainperf->get_screen_set_notepad(m_mainperf->get_screenset())
     );
     add_tooltip(m_entry_notes, "Enter screen set name");
-    Label * notelabel = manage(new Label("_Name", true));
+    Gtk::Label * notelabel = manage(new Gtk::Label("_Name", true));
     notelabel->set_mnemonic_widget(*m_entry_notes);
     notebox->pack_start(*notelabel, Gtk::PACK_SHRINK);
     notebox->pack_start(*m_entry_notes, Gtk::PACK_EXPAND_WIDGET);
@@ -307,10 +309,10 @@ mainwnd::mainwnd (perform * a_p)
      * Sequence screen set spin button.
      */
 
-    HBox * sethbox = manage(new HBox(false, 4));
+    Gtk::HBox * sethbox = manage(new Gtk::HBox(false, 4));
     bottomhbox->pack_start(*sethbox, Gtk::PACK_SHRINK);
-    m_adjust_ss = manage(new Adjustment(0, 0, c_max_sets - 1, 1));
-    m_spinbutton_ss = manage(new SpinButton(*m_adjust_ss));
+    m_adjust_ss = manage(new Gtk::Adjustment(0, 0, c_max_sets - 1, 1));
+    m_spinbutton_ss = manage(new Gtk::SpinButton(*m_adjust_ss));
     m_spinbutton_ss->set_editable(false);
     m_spinbutton_ss->set_wrap(true);
     m_adjust_ss->signal_value_changed().connect
@@ -318,7 +320,7 @@ mainwnd::mainwnd (perform * a_p)
         mem_fun(*this, &mainwnd::adj_callback_ss)
     );
     add_tooltip(m_spinbutton_ss, "Select screen set");
-    Label * setlabel = manage(new Label("_Set", true));
+    Gtk::Label * setlabel = manage(new Gtk::Label("_Set", true));
     setlabel->set_mnemonic_widget(*m_spinbutton_ss);
     sethbox->pack_start(*setlabel, Gtk::PACK_SHRINK);
     sethbox->pack_start(*m_spinbutton_ss, Gtk::PACK_SHRINK);
@@ -327,10 +329,10 @@ mainwnd::mainwnd (perform * a_p)
      * Song editor button.
      */
 
-    m_button_perfedit = manage(new Button());
+    m_button_perfedit = manage(new Gtk::Button());
     m_button_perfedit->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(perfedit_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(perfedit_xpm)))
     );
     m_button_perfedit->signal_clicked().connect
     (
@@ -343,7 +345,7 @@ mainwnd::mainwnd (perform * a_p)
      * Vertical layout container for window content.
      */
 
-    VBox * contentvbox = new VBox();
+    Gtk::VBox * contentvbox = new Gtk::VBox();
     contentvbox->set_spacing(10);
     contentvbox->set_border_width(10);
     contentvbox->pack_start(*tophbox, Gtk::PACK_SHRINK);
@@ -354,7 +356,7 @@ mainwnd::mainwnd (perform * a_p)
      * Main container for menu and window content.
      */
 
-    VBox * mainvbox = new VBox();
+    Gtk::VBox * mainvbox = new Gtk::VBox();
     mainvbox->pack_start(*m_menubar, false, false);
     mainvbox->pack_start(*contentvbox);
     this->add(*mainvbox);                   // add main layout box
@@ -365,7 +367,9 @@ mainwnd::mainwnd (perform * a_p)
     (
         mem_fun(*this, &mainwnd::timer_callback), 25
     );
+
     // m_perf_edit = new perfedit(m_mainperf);
+
     m_sigpipe[0] = -1;                      // initialize static array
     m_sigpipe[1] = -1;
     install_signal_handlers();
@@ -480,7 +484,7 @@ mainwnd::on_grouplearnchange (bool state)
     (
         *manage
         (
-            new Image
+            new Gtk::Image
             (
                 Gdk::Pixbuf::create_from_xpm_data(state ? learn2_xpm : learn_xpm)
             )
@@ -815,17 +819,17 @@ mainwnd::file_import_dialog ()
     dlg.add_filter(filter_any);
     dlg.set_current_folder(global_last_used_dir);
 
-    ButtonBox * btnbox = dlg.get_action_area();
-    HBox hbox(false, 2);
+    Gtk::ButtonBox * btnbox = dlg.get_action_area();
+    Gtk::HBox hbox(false, 2);
     m_adjust_load_offset = manage
     (
-        new Adjustment(0, -(c_max_sets - 1), c_max_sets - 1, 1)
+        new Gtk::Adjustment(0, -(c_max_sets - 1), c_max_sets - 1, 1)
     );
-    m_spinbutton_load_offset = manage(new SpinButton(*m_adjust_load_offset));
+    m_spinbutton_load_offset = manage(new Gtk::SpinButton(*m_adjust_load_offset));
     m_spinbutton_load_offset->set_editable(false);
     m_spinbutton_load_offset->set_wrap(true);
     hbox.pack_end(*m_spinbutton_load_offset, false, false);
-    hbox.pack_end(*(manage(new Label("Screen Set Offset"))), false, false, 4);
+    hbox.pack_end(*(manage(new Gtk::Label("Screen Set Offset"))), false, false, 4);
     btnbox->pack_start(hbox, false, false);
     dlg.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
     dlg.add_button(Gtk::Stock::OPEN, Gtk::RESPONSE_OK);
@@ -997,7 +1001,7 @@ mainwnd::adj_callback_bpm ()
 void
 mainwnd::edit_callback_notepad ()
 {
-    string text = m_entry_notes->get_text();
+    std::string text = m_entry_notes->get_text();
     m_mainperf->set_screen_set_notepad(m_mainperf->get_screenset(), &text);
     m_modified = true;
 }
@@ -1238,11 +1242,11 @@ mainwnd::update_window_title ()
 {
     std::string title;
     if (global_filename == "")
-        title = (PACKAGE) + string(" - [unnamed]");
+        title = (PACKAGE) + std::string(" - [unnamed]");
     else
-        title = (PACKAGE) + string(" - [")
+        title = (PACKAGE) + std::string(" - [")
             + Glib::filename_to_utf8(global_filename)
-            + string("]");
+            + std::string("]");
 
     set_title(title.c_str());
 }

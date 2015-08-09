@@ -1,6 +1,6 @@
 /* src/config.h.in.  Generated from configure.ac by autoheader.  */
 
-#define VERSION_DATE_SHORT "2015-07-24"
+#define VERSION_DATE_SHORT "2015-08-08"
 #define VERSION "0.9.3"
 
 

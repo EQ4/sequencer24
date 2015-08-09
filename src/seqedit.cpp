@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-07
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -78,7 +78,7 @@
 #include "pixmaps/tools.xpm"
 #include "pixmaps/seq-editor.xpm"
 
-/*
+/**
  * Static data members.
  */
 
@@ -89,7 +89,9 @@ int seqedit::m_initial_scale = 0;
 int seqedit::m_initial_key = 0;
 int seqedit::m_initial_sequence = -1;
 
-// Actions
+/**
+ * Actions
+ */
 
 static const int c_select_all_notes      =  1;
 static const int c_select_all_events     =  2;
@@ -124,26 +126,26 @@ seqedit::seqedit (sequence * a_seq, perform * a_perf, int a_pos)
     m_measures              (0),
     m_seq                   (a_seq),
     m_mainperf              (a_perf),               /* set the performance */
-    m_menubar               (manage(new MenuBar())),
-    m_menu_tools            (manage(new Menu())),
-    m_menu_zoom             (manage(new Menu())),
-    m_menu_snap             (manage(new Menu())),
-    m_menu_note_length      (manage(new Menu())),
-    m_menu_length           (manage(new Menu())),
+    m_menubar               (manage(new Gtk::MenuBar())),
+    m_menu_tools            (manage(new Gtk::Menu())),
+    m_menu_zoom             (manage(new Gtk::Menu())),
+    m_menu_snap             (manage(new Gtk::Menu())),
+    m_menu_note_length      (manage(new Gtk::Menu())),
+    m_menu_length           (manage(new Gtk::Menu())),
     m_menu_midich           (nullptr),
     m_menu_midibus          (nullptr),
     m_menu_data             (nullptr),
-    m_menu_key              (manage(new Menu())),
-    m_menu_scale            (manage(new Menu())),
+    m_menu_key              (manage(new Gtk::Menu())),
+    m_menu_scale            (manage(new Gtk::Menu())),
     m_menu_sequences        (nullptr),
-    m_menu_bpm              (manage(new Menu())),
-    m_menu_bw               (manage(new Menu())),
-    m_menu_rec_vol          (manage(new Menu())),
+    m_menu_bpm              (manage(new Gtk::Menu())),
+    m_menu_bw               (manage(new Gtk::Menu())),
+    m_menu_rec_vol          (manage(new Gtk::Menu())),
     m_pos                   (a_pos),
-    m_vadjust               (manage(new Adjustment(55, 0, c_num_keys, 1, 1, 1))),
-    m_hadjust               (manage(new Adjustment(0, 0, 1, 1, 1, 1))),
-    m_vscroll_new           (manage(new VScrollbar(*m_vadjust))),
-    m_hscroll_new           (manage(new HScrollbar(*m_hadjust))),
+    m_vadjust               (manage(new Gtk::Adjustment(55, 0, c_num_keys, 1, 1, 1))),
+    m_hadjust               (manage(new Gtk::Adjustment(0, 0, 1, 1, 1, 1))),
+    m_vscroll_new           (manage(new Gtk::VScrollbar(*m_vadjust))),
+    m_hscroll_new           (manage(new Gtk::HScrollbar(*m_hadjust))),
     m_seqkeys_wid           (manage(new seqkeys(m_seq, m_vadjust))),
     m_seqtime_wid           (manage(new seqtime(m_seq, m_zoom, m_hadjust))),
     m_seqdata_wid           (manage(new seqdata(m_seq, m_zoom, m_hadjust))),
@@ -156,11 +158,11 @@ seqedit::seqedit (sequence * a_seq, perform * a_perf, int a_pos)
         manage(new seqroll(m_mainperf, m_seq, m_zoom, m_snap, m_seqdata_wid,
             m_seqevent_wid, m_seqkeys_wid, m_pos, m_hadjust, m_vadjust))
     ),
-    m_table                 (manage(new Table(7, 4, false))),
-    m_vbox                  (manage(new VBox(false, 2))),
-    m_hbox                  (manage(new HBox(false, 2))),
-    m_hbox2                 (manage(new HBox(false, 2))),
-    m_hbox3                 (manage(new HBox(false, 2))),
+    m_table                 (manage(new Gtk::Table(7, 4, false))),
+    m_vbox                  (manage(new Gtk::VBox(false, 2))),
+    m_hbox                  (manage(new Gtk::HBox(false, 2))),
+    m_hbox2                 (manage(new Gtk::HBox(false, 2))),
+    m_hbox3                 (manage(new Gtk::HBox(false, 2))),
     m_button_undo           (nullptr),
     m_button_redo           (nullptr),
     m_button_quantize       (nullptr),
@@ -183,18 +185,18 @@ seqedit::seqedit (sequence * a_seq, perform * a_perf, int a_pos)
     m_entry_key             (nullptr),
     m_button_scale          (nullptr),
     m_entry_scale           (nullptr),
-    m_tooltips              (manage(new Tooltips())),
-    m_button_data           (manage(new Button(" Event "))),
-    m_entry_data            (manage(new Entry())),
+    m_tooltips              (manage(new Gtk::Tooltips())),
+    m_button_data           (manage(new Gtk::Button(" Event "))),
+    m_entry_data            (manage(new Gtk::Entry())),
     m_button_bpm            (nullptr),
     m_entry_bpm             (nullptr),
     m_button_bw             (nullptr),
     m_entry_bw              (nullptr),
-    m_button_rec_vol        (manage(new Button())),
-    m_toggle_play           (manage(new ToggleButton())),
-    m_toggle_record         (manage(new ToggleButton())),
-    m_toggle_q_rec          (manage(new ToggleButton())),
-    m_toggle_thru           (manage(new ToggleButton())),
+    m_button_rec_vol        (manage(new Gtk::Button())),
+    m_toggle_play           (manage(new Gtk::ToggleButton())),
+    m_toggle_record         (manage(new Gtk::ToggleButton())),
+    m_toggle_q_rec          (manage(new Gtk::ToggleButton())),
+    m_toggle_thru           (manage(new Gtk::ToggleButton())),
     m_radio_select          (nullptr),
     m_radio_grow            (nullptr),
     m_radio_draw            (nullptr),
@@ -202,18 +204,17 @@ seqedit::seqedit (sequence * a_seq, perform * a_perf, int a_pos)
     m_editing_status        (0),
     m_editing_cc            (0)
 {
-    set_icon(Gdk::Pixbuf::create_from_xpm_data(seq_editor_xpm));
-
     std::string title = "seq24 - ";                         /* main window */
+    set_icon(Gdk::Pixbuf::create_from_xpm_data(seq_editor_xpm));
     title.append(m_seq->get_name());
     set_title(title);
     set_size_request(700, 500);
     m_seq->set_editing(true);
     create_menus();
 
-//  m_tooltips = manage(new Tooltips()); /* tooltips */
+//  m_tooltips = manage(new Gtk::Tooltips()); /* tooltips */
 
-    HBox * dhbox = manage(new HBox(false, 2));
+    Gtk::HBox * dhbox = manage(new Gtk::HBox(false, 2));
     m_vbox->set_border_width(2);
 
     /* fill table */
@@ -249,16 +250,12 @@ seqedit::seqedit (sequence * a_seq, perform * a_perf, int a_pos)
     /* expand, cause rollview expands */
 
     m_vbox->pack_start(*m_table, true, true, 0);
-
-
     m_button_data->signal_clicked().connect                 /* data button */
     (
         mem_fun(*this, &seqedit::popup_event_menu)
     );
-
     m_entry_data->set_size_request(40, -1);
     m_entry_data->set_editable(false);
-
     dhbox->pack_start(*m_button_data, false, false);
     dhbox->pack_start(*m_entry_data, true, true);
 
@@ -266,44 +263,40 @@ seqedit::seqedit (sequence * a_seq, perform * a_perf, int a_pos)
 
     m_toggle_play->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(play_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(play_xpm)))
     );
     m_toggle_play->signal_clicked().connect
     (
         mem_fun(*this, &seqedit::play_change_callback)
     );
     add_tooltip(m_toggle_play, "Sequence dumps data to MIDI bus.");
-
     m_toggle_record->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(rec_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(rec_xpm)))
     );
     m_toggle_record->signal_clicked().connect
     (
         mem_fun(*this, &seqedit::record_change_callback)
     );
     add_tooltip(m_toggle_record, "Records incoming MIDI data.");
-
     m_toggle_q_rec->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(q_rec_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(q_rec_xpm)))
     );
     m_toggle_q_rec->signal_clicked().connect
     (
         mem_fun(*this, &seqedit::q_rec_change_callback)
     );
     add_tooltip(m_toggle_q_rec, "Quantized record.");
-
-    m_button_rec_vol->add(*manage(new Label("Vol")));
+    m_button_rec_vol->add(*manage(new Gtk::Label("Vol")));
     m_button_rec_vol->signal_clicked().connect
     (
-        sigc::bind<Menu *>(mem_fun(*this, &seqedit::popup_menu), m_menu_rec_vol)
+        sigc::bind<Gtk::Menu *>(mem_fun(*this, &seqedit::popup_menu), m_menu_rec_vol)
     );
     add_tooltip(m_button_rec_vol, "Select recording volume");
-
     m_toggle_thru->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(thru_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(thru_xpm)))
     );
     m_toggle_thru->signal_clicked().connect
     (
@@ -322,10 +315,8 @@ seqedit::seqedit (sequence * a_seq, perform * a_perf, int a_pos)
     dhbox->pack_end(*m_toggle_record, false, false, 4);
     dhbox->pack_end(*m_toggle_thru, false, false, 4);
     dhbox->pack_end(*m_toggle_play, false, false, 4);
-    dhbox->pack_end(*(manage(new VSeparator())), false, false, 4);
+    dhbox->pack_end(*(manage(new Gtk::VSeparator())), false, false, 4);
     fill_top_bar();
-
-
     add(*m_vbox);       // this->add(*m_vbox); /* add table */
     show_all();
 
@@ -370,7 +361,7 @@ seqedit::~seqedit()
 void
 seqedit::create_menus ()
 {
-    using namespace Menu_Helpers;
+    using namespace Gtk::Menu_Helpers;
 
     /*
      *  This first menu is the Zoom menu, represented in the
@@ -442,7 +433,8 @@ seqedit::create_menus ()
     );
     m_menu_snap->items().push_back
     (
-        MenuElem("1/24", sigc::bind(SET_SNAP, c_ppqn / 2  / 3)));
+        MenuElem("1/24", sigc::bind(SET_SNAP, c_ppqn / 2  / 3))
+    );
     m_menu_snap->items().push_back
     (
         MenuElem("1/48", sigc::bind(SET_SNAP, c_ppqn / 4  / 3))
@@ -717,13 +709,13 @@ seqedit::create_menus ()
 void
 seqedit::popup_tool_menu ()
 {
-    using namespace Menu_Helpers;
+    using namespace Gtk::Menu_Helpers;
 
-    m_menu_tools = manage(new Menu());
+    m_menu_tools = manage(new Gtk::Menu());
 
-    Menu * holder;
-    Menu * holder2;
-    holder = manage(new Menu());
+    Gtk::Menu * holder;
+    Gtk::Menu * holder2;
+    holder = manage(new Gtk::Menu());
 
 #define DO_ACTION       mem_fun(*this, &seqedit::do_action)
 
@@ -755,7 +747,7 @@ seqedit::popup_tool_menu ()
     }
 
     m_menu_tools->items().push_back(MenuElem("Select", *holder));
-    holder = manage(new Menu());
+    holder = manage(new Gtk::Menu());
     holder->items().push_back
     (
         MenuElem("Quantize Selected Notes",
@@ -787,11 +779,10 @@ seqedit::popup_tool_menu ()
         );
     }
     m_menu_tools->items().push_back(MenuElem("Modify Time", *holder));
+    holder = manage(new Gtk::Menu());
 
-    holder = manage(new Menu());
-
-    char num[11];
-    holder2 = manage(new Menu());
+    char num[16];
+    holder2 = manage(new Gtk::Menu());
     for (int i = -12; i <= 12; ++i)
     {
         if (i != 0)
@@ -803,9 +794,8 @@ seqedit::popup_tool_menu ()
             );
         }
     }
-
     holder->items().push_back(MenuElem("Transpose Selected", *holder2));
-    holder2 = manage(new Menu());
+    holder2 = manage(new Gtk::Menu());
     for (int i = -7; i <= 7; ++i)
     {
         if (i != 0)
@@ -911,7 +901,7 @@ seqedit::fill_top_bar ()
      *  First row of top bar
      */
 
-    m_entry_name = manage(new Entry());                 /* name              */
+    m_entry_name = manage(new Gtk::Entry());            /* name              */
     m_entry_name->set_max_length(26);
     m_entry_name->set_width_chars(26);
     m_entry_name->set_text(m_seq->get_name());
@@ -922,88 +912,82 @@ seqedit::fill_top_bar ()
         mem_fun(*this, &seqedit::name_change_callback)
     );
     m_hbox->pack_start(*m_entry_name, true, true);
-    m_hbox->pack_start(*(manage(new VSeparator())), false, false, 4);
+    m_hbox->pack_start(*(manage(new Gtk::VSeparator())), false, false, 4);
 
-    m_button_bpm = manage(new Button());                /* beats per measure */
+    m_button_bpm = manage(new Gtk::Button());           /* beats per measure */
     m_button_bpm->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(down_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(down_xpm)))
     );
     m_button_bpm->signal_clicked().connect
     (
-        sigc::bind<Menu *>(mem_fun(*this, &seqedit::popup_menu), m_menu_bpm)
+        sigc::bind<Gtk::Menu *>(mem_fun(*this, &seqedit::popup_menu), m_menu_bpm)
     );
     add_tooltip(m_button_bpm, "Time Signature. Beats per Measure");
-    m_entry_bpm = manage(new Entry());
+    m_entry_bpm = manage(new Gtk::Entry());
     m_entry_bpm->set_width_chars(2);
     m_entry_bpm->set_editable(false);
     m_hbox->pack_start(*m_button_bpm , false, false);
     m_hbox->pack_start(*m_entry_bpm , false, false);
-
-    m_hbox->pack_start(*(manage(new Label("/"))), false, false, 4);
-
-    m_button_bw = manage(new Button());                 /* beat width        */
+    m_hbox->pack_start(*(manage(new Gtk::Label("/"))), false, false, 4);
+    m_button_bw = manage(new Gtk::Button());            /* beat width        */
     m_button_bw->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(down_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(down_xpm)))
     );
     m_button_bw->signal_clicked().connect
     (
-        sigc::bind<Menu *>(mem_fun(*this, &seqedit::popup_menu), m_menu_bw)
+        sigc::bind<Gtk::Menu *>(mem_fun(*this, &seqedit::popup_menu), m_menu_bw)
     );
     add_tooltip(m_button_bw, "Time Signature. Length of Beat");
-    m_entry_bw = manage(new Entry());
+    m_entry_bw = manage(new Gtk::Entry());
     m_entry_bw->set_width_chars(2);
     m_entry_bw->set_editable(false);
     m_hbox->pack_start(*m_button_bw , false, false);
     m_hbox->pack_start(*m_entry_bw , false, false);
-
-    m_button_length = manage(new Button());             /* length of pattern */
+    m_button_length = manage(new Gtk::Button());        /* length of pattern */
     m_button_length->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(length_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(length_xpm)))
     );
     m_button_length->signal_clicked().connect
     (
-        sigc::bind<Menu *>(mem_fun(*this, &seqedit::popup_menu), m_menu_length)
+        sigc::bind<Gtk::Menu *>(mem_fun(*this, &seqedit::popup_menu), m_menu_length)
     );
     add_tooltip(m_button_length, "Sequence length in Bars.");
-    m_entry_length = manage(new Entry());
+    m_entry_length = manage(new Gtk::Entry());
     m_entry_length->set_width_chars(2);
     m_entry_length->set_editable(false);
     m_hbox->pack_start(*m_button_length , false, false);
     m_hbox->pack_start(*m_entry_length , false, false);
-
-    m_hbox->pack_start(*(manage(new VSeparator())), false, false, 4);
-
-    m_button_bus = manage(new Button());                /* MIDI output bus   */
+    m_hbox->pack_start(*(manage(new Gtk::VSeparator())), false, false, 4);
+    m_button_bus = manage(new Gtk::Button());           /* MIDI output bus   */
     m_button_bus->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(bus_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(bus_xpm)))
     );
     m_button_bus->signal_clicked().connect
     (
         mem_fun(*this, &seqedit::popup_midibus_menu)
     );
     add_tooltip(m_button_bus, "Select Output Bus.");
-    m_entry_bus = manage(new Entry());
+    m_entry_bus = manage(new Gtk::Entry());
     m_entry_bus->set_max_length(60);
     m_entry_bus->set_width_chars(60);
     m_entry_bus->set_editable(false);
     m_hbox->pack_start(*m_button_bus , false, false);
     m_hbox->pack_start(*m_entry_bus , true, true);
-
-    m_button_channel = manage(new Button());            /* MIDI channel      */
+    m_button_channel = manage(new Gtk::Button());       /* MIDI channel      */
     m_button_channel->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(midi_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(midi_xpm)))
     );
     m_button_channel->signal_clicked().connect
     (
         mem_fun(*this, &seqedit::popup_midich_menu)
     );
     add_tooltip(m_button_channel, "Select Midi channel.");
-    m_entry_channel = manage(new Entry());
+    m_entry_channel = manage(new Gtk::Entry());
     m_entry_channel->set_width_chars(2);
     m_entry_channel->set_editable(false);
     m_hbox->pack_start(*m_button_channel , false, false);
@@ -1013,10 +997,10 @@ seqedit::fill_top_bar ()
      *  Second row of top bar
      */
 
-    m_button_undo = manage(new Button());                   /* undo          */
+    m_button_undo = manage(new Gtk::Button());              /* undo          */
     m_button_undo->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(undo_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(undo_xpm)))
     );
     m_button_undo->signal_clicked().connect
     (
@@ -1024,11 +1008,10 @@ seqedit::fill_top_bar ()
     );
     add_tooltip(m_button_undo, "Undo.");
     m_hbox2->pack_start(*m_button_undo , false, false);
-
-    m_button_redo = manage(new Button());                   /* redo          */
+    m_button_redo = manage(new Gtk::Button());              /* redo          */
     m_button_redo->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(redo_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(redo_xpm)))
     );
     m_button_redo->signal_clicked().connect
     (
@@ -1043,24 +1026,22 @@ seqedit::fill_top_bar ()
      * which quantizes events.
      */
 
-    m_button_quantize = manage(new Button());               /* Quantize      */
+    m_button_quantize = manage(new Gtk::Button());          /* Quantize      */
     m_button_quantize->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(quantize_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(quantize_xpm)))
     );
     m_button_quantize->signal_clicked().connect
     (
         sigc::bind(mem_fun(*this, &seqedit::do_action), c_quantize_notes, 0)
-        );
+    );
     add_tooltip(m_button_quantize, "Quantize Selection.");
     m_hbox2->pack_start(*m_button_quantize , false, false);
-
-    m_hbox2->pack_start(*(manage(new VSeparator())), false, false, 4);
-
-    m_button_tools = manage(new Button());                  /* tools button  */
+    m_hbox2->pack_start(*(manage(new Gtk::VSeparator())), false, false, 4);
+    m_button_tools = manage(new Gtk::Button());             /* tools button  */
     m_button_tools->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(tools_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(tools_xpm)))
     );
     m_button_tools->signal_clicked().connect
     (
@@ -1068,104 +1049,99 @@ seqedit::fill_top_bar ()
     );
     m_tooltips->set_tip(*m_button_tools, "Tools.");
     m_hbox2->pack_start(*m_button_tools , false, false);
-    m_hbox2->pack_start(*(manage(new VSeparator())), false, false, 4);
-
-    m_button_snap = manage(new Button());                   /* snap          */
+    m_hbox2->pack_start(*(manage(new Gtk::VSeparator())), false, false, 4);
+    m_button_snap = manage(new Gtk::Button());              /* snap          */
     m_button_snap->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(snap_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(snap_xpm)))
     );
     m_button_snap->signal_clicked().connect
     (
-        sigc::bind<Menu *>(mem_fun(*this, &seqedit::popup_menu), m_menu_snap)
+        sigc::bind<Gtk::Menu *>(mem_fun(*this, &seqedit::popup_menu), m_menu_snap)
     );
     add_tooltip(m_button_snap, "Grid snap.");
-    m_entry_snap = manage(new Entry());
+    m_entry_snap = manage(new Gtk::Entry());
     m_entry_snap->set_width_chars(5);
     m_entry_snap->set_editable(false);
     m_hbox2->pack_start(*m_button_snap , false, false);
     m_hbox2->pack_start(*m_entry_snap , false, false);
-
-    m_button_note_length = manage(new Button());            /* note_length   */
+    m_button_note_length = manage(new Gtk::Button());       /* note_length   */
     m_button_note_length->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(note_length_xpm)))
+        *manage
+        (
+            new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(note_length_xpm))
+        )
     );
     m_button_note_length->signal_clicked().connect
     (
-        sigc::bind<Menu *>(mem_fun(*this, &seqedit::popup_menu),
+        sigc::bind<Gtk::Menu *>(mem_fun(*this, &seqedit::popup_menu),
             m_menu_note_length)
     );
     add_tooltip(m_button_note_length, "Note Length.");
-    m_entry_note_length = manage(new Entry());
+    m_entry_note_length = manage(new Gtk::Entry());
     m_entry_note_length->set_width_chars(5);
     m_entry_note_length->set_editable(false);
     m_hbox2->pack_start(*m_button_note_length , false, false);
     m_hbox2->pack_start(*m_entry_note_length , false, false);
-
-    m_button_zoom = manage(new Button());                   /* zoom pixels   */
+    m_button_zoom = manage(new Gtk::Button());              /* zoom pixels   */
     m_button_zoom->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(zoom_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(zoom_xpm)))
     );
     m_button_zoom->signal_clicked().connect
     (
-        sigc::bind<Menu *>(mem_fun(*this, &seqedit::popup_menu), m_menu_zoom)
+        sigc::bind<Gtk::Menu *>(mem_fun(*this, &seqedit::popup_menu), m_menu_zoom)
     );
     add_tooltip(m_button_zoom, "Zoom. Pixels to Ticks");
-    m_entry_zoom = manage(new Entry());
+    m_entry_zoom = manage(new Gtk::Entry());
     m_entry_zoom->set_width_chars(4);
     m_entry_zoom->set_editable(false);
     m_hbox2->pack_start(*m_button_zoom , false, false);
     m_hbox2->pack_start(*m_entry_zoom , false, false);
-
-    m_hbox2->pack_start(*(manage(new VSeparator())), false, false, 4);
-
-    m_button_key = manage(new Button());                    /* musical key   */
+    m_hbox2->pack_start(*(manage(new Gtk::VSeparator())), false, false, 4);
+    m_button_key = manage(new Gtk::Button());               /* musical key   */
     m_button_key->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(key_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(key_xpm)))
     );
     m_button_key->signal_clicked().connect
     (
-        sigc::bind<Menu *>(mem_fun(*this, &seqedit::popup_menu), m_menu_key)
+        sigc::bind<Gtk::Menu *>(mem_fun(*this, &seqedit::popup_menu), m_menu_key)
     );
     add_tooltip(m_button_key, "Key of Sequence");
-    m_entry_key = manage(new Entry());
+    m_entry_key = manage(new Gtk::Entry());
     m_entry_key->set_width_chars(5);
     m_entry_key->set_editable(false);
     m_hbox2->pack_start(*m_button_key , false, false);
     m_hbox2->pack_start(*m_entry_key , false, false);
-
-    m_button_scale = manage(new Button());                  /* musical scale */
+    m_button_scale = manage(new Gtk::Button());             /* musical scale */
     m_button_scale->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(scale_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(scale_xpm)))
     );
     m_button_scale->signal_clicked().connect
     (
-        sigc::bind<Menu *>(mem_fun(*this, &seqedit::popup_menu), m_menu_scale)
+        sigc::bind<Gtk::Menu *>(mem_fun(*this, &seqedit::popup_menu), m_menu_scale)
     );
     add_tooltip(m_button_scale, "Musical Scale");
-    m_entry_scale = manage(new Entry());
+    m_entry_scale = manage(new Gtk::Entry());
     m_entry_scale->set_width_chars(5);
     m_entry_scale->set_editable(false);
     m_hbox2->pack_start(*m_button_scale , false, false);
     m_hbox2->pack_start(*m_entry_scale , false, false);
-
-    m_hbox2->pack_start(*(manage(new VSeparator())), false, false, 4);
-
-    m_button_sequence = manage(new Button());           /* background sequence */
+    m_hbox2->pack_start(*(manage(new Gtk::VSeparator())), false, false, 4);
+    m_button_sequence = manage(new Gtk::Button());      /* background sequence */
     m_button_sequence->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(sequences_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(sequences_xpm)))
     );
     m_button_sequence->signal_clicked().connect
     (
         mem_fun(*this, &seqedit::popup_sequence_menu)
     );
     add_tooltip(m_button_sequence, "Background Sequence");
-    m_entry_sequence = manage(new Entry());
+    m_entry_sequence = manage(new Gtk::Entry());
     m_entry_sequence->set_width_chars(14);
     m_entry_sequence->set_editable(false);
     m_hbox2->pack_start(*m_button_sequence , false, false);
@@ -1179,28 +1155,28 @@ seqedit::fill_top_bar ()
 
 #if 0
 
-    m_radio_select = manage(new RadioButton("Sel", true));      /* Select */
+    m_radio_select = manage(new Gtk::RadioButton("Sel", true)); /* Select */
     m_radio_select->signal_clicked().connect
     (
         sigc::bind(mem_fun(*this, &seqedit::mouse_action), e_action_select)
     );
     m_hbox3->pack_start(*m_radio_select, false, false);
 
-    m_radio_draw = manage(new RadioButton("Draw"));             /* Draw */
+    m_radio_draw = manage(new Gtk::RadioButton("Draw"));        /* Draw */
     m_radio_draw->signal_clicked().connect
     (
         sigc::bind(mem_fun(*this, &seqedit::mouse_action), e_action_draw)
     );
     m_hbox3->pack_start(*m_radio_draw, false, false);
 
-    m_radio_grow = manage(new RadioButton("Grow"));             /* Grow */
+    m_radio_grow = manage(new Gtk::RadioButton("Grow"));        /* Grow */
     m_radio_grow->signal_clicked().connect
     (
         sigc::bind(mem_fun(*this, &seqedit::mouse_action), e_action_grow)
     );
     m_hbox3->pack_start(*m_radio_grow, false, false);
 
-                                                                /* Stretch */
+    /* Stretch */
 
     Gtk::RadioButton::Group g = m_radio_select->get_group();
     m_radio_draw->set_group(g);
@@ -1235,7 +1211,7 @@ seqedit::mouse_action (mouse_action_e a_action)
  */
 
 void
-seqedit::popup_menu (Menu * a_menu)
+seqedit::popup_menu (Gtk::Menu * a_menu)
 {
     a_menu->popup(0, 0);
 }
@@ -1249,9 +1225,9 @@ seqedit::popup_menu (Menu * a_menu)
 void
 seqedit::popup_midibus_menu ()
 {
-    using namespace Menu_Helpers;
+    using namespace Gtk::Menu_Helpers;
 
-    m_menu_midibus = manage(new Menu());
+    m_menu_midibus = manage(new Gtk::Menu());
     mastermidibus * masterbus = m_mainperf->get_master_midi_bus();
 
 #define SET_BUS         mem_fun(*this, &seqedit::set_midi_bus)
@@ -1273,16 +1249,15 @@ seqedit::popup_midibus_menu ()
 void
 seqedit::popup_midich_menu ()
 {
-    using namespace Menu_Helpers;
+    using namespace Gtk::Menu_Helpers;
 
-    m_menu_midich = manage(new Menu());
+    m_menu_midich = manage(new Gtk::Menu());
     int midi_bus = m_seq->get_midi_bus();
-
     char b[16];
     for (int i = 0; i < 16; i++)                    /* midi channel menu */
     {
         snprintf(b, sizeof(b), "%d", i + 1);
-        std::string name = string(b);
+        std::string name = std::string(b);
         int instrument = global_user_midi_bus_definitions[midi_bus].instrument[i];
         if (instrument >= 0 && instrument < c_max_busses)
         {
@@ -1312,9 +1287,9 @@ seqedit::popup_midich_menu ()
 void
 seqedit::popup_sequence_menu ()
 {
-    using namespace Menu_Helpers;
+    using namespace Gtk::Menu_Helpers;
 
-    m_menu_sequences = manage(new Menu());
+    m_menu_sequences = manage(new Gtk::Menu());
 
 #define SET_BG_SEQ     mem_fun(*this, &seqedit::set_background_sequence)
 
@@ -1322,11 +1297,10 @@ seqedit::popup_sequence_menu ()
     (
         MenuElem("Off", sigc::bind(SET_BG_SEQ, -1))
     );
-
     m_menu_sequences->items().push_back(SeparatorElem());
     for (int ss = 0; ss < c_max_sets; ++ss)
     {
-        Menu * menu_ss = nullptr;
+        Gtk::Menu * menu_ss = nullptr;
         bool inserted = false;
         for (int seq = 0; seq <  c_seqs_in_set; seq++)
         {
@@ -1338,7 +1312,7 @@ seqedit::popup_sequence_menu ()
                 {
                     inserted = true;
                     snprintf(name, sizeof(name), "[%d]", ss);
-                    menu_ss = manage(new Menu());
+                    menu_ss = manage(new Gtk::Menu());
                     m_menu_sequences->items().push_back
                     (
                         MenuElem(name, *menu_ss)
@@ -1392,14 +1366,14 @@ seqedit::create_menu_image (bool a_state)
     {
         return manage
         (
-            new Image(Gdk::Pixbuf::create_from_xpm_data(menu_full_xpm))
+            new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(menu_full_xpm))
         );
     }
     else
     {
         return manage
         (
-            new Image(Gdk::Pixbuf::create_from_xpm_data(menu_empty_xpm))
+            new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(menu_empty_xpm))
         );
     }
 }
@@ -1415,7 +1389,7 @@ seqedit::create_menu_image (bool a_state)
 void
 seqedit::popup_event_menu ()
 {
-    using namespace Menu_Helpers;
+    using namespace Gtk::Menu_Helpers;
 
     bool ccs[128];
     char b[20];
@@ -1466,7 +1440,7 @@ seqedit::popup_event_menu ()
         }
     }
 
-    m_menu_data = manage(new Menu());
+    m_menu_data = manage(new Gtk::Menu());
     m_menu_data->items().push_back
     (
         ImageMenuElem
@@ -1550,7 +1524,7 @@ seqedit::popup_event_menu ()
     for (int i = 0; i < 8; i++)                 /* create control change */
     {
         snprintf(b, sizeof(b), "Controls %d-%d", (i * 16), (i * 16) + 15);
-        Menu * menu_cc = manage(new Menu());
+        Gtk::Menu * menu_cc = manage(new Gtk::Menu());
         for (int j = 0; j < 16; j++)
         {
             std::string controller_name(c_controller_names[i * 16 + j]);
@@ -1583,7 +1557,7 @@ seqedit::popup_event_menu ()
                 )
             );
         }
-        m_menu_data->items().push_back(MenuElem(string(b), *menu_cc));
+        m_menu_data->items().push_back(MenuElem(std::string(b), *menu_cc));
     }
     m_menu_data->popup(0, 0);
 }
@@ -1893,7 +1867,6 @@ seqedit::set_data_type (unsigned char a_status, unsigned char a_control)
     char hex[20];
     char type[80];
     snprintf(hex, sizeof(hex), "[0x%02X]", a_status);
-
     if (a_status == EVENT_NOTE_OFF)
         snprintf(type, sizeof(type), "Note Off");
     else if (a_status == EVENT_NOTE_ON)
@@ -1904,8 +1877,7 @@ seqedit::set_data_type (unsigned char a_status, unsigned char a_control)
     {
         int midi_bus = m_seq->get_midi_bus();
         int midi_ch = m_seq->get_midi_channel();
-
-        string controller_name(c_controller_names[a_control]);
+        std::string controller_name(c_controller_names[a_control]);
         int instrument =
             global_user_midi_bus_definitions[midi_bus].instrument[midi_ch];
 

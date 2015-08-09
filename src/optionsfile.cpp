@@ -19,22 +19,34 @@
 /**
  * \file          optionsfile.cpp
  *
- *  This module declares/defines the base class for managind the ~/.seq24rc
- *  configuration file.
+ *  This module declares/defines the base class for managing the
+ *  <tt> ~/.seq24rc </tt> configuration file.
  *
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-07
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
+ *  The <tt> ~/.seq24rc </tt> configuration file is fairly simple in
+ *  layout.  The documentation for this module is supplemented by the
+ *  following GitHub project:
+ *
+ *      https://github.com/ahlstromcj/seq24-doc.git
+ *
+ *  That document also relates these file setting to the application's
+ *  command-line options.
+ *
+ *  Note that these options are primarily read/written from/to the perform
+ *  object that is passed to the parse() and write() functions.
+ *  For an easier-to-digest list of items read and written, see the file
+ *  <tt> option-storage.txt </tt> in the <tt> contrib </tt>
+ *  directory.
  */
 
 #include "midibus.h"
 #include "optionsfile.h"
 #include "perform.h"
-
-// extern std::string last_used_dir;
 
 /**
  *  Principal constructor.
@@ -58,30 +70,105 @@ optionsfile::~optionsfile ()
 
 /**
  *  Parse the ~/.seq24rc file.
+ *
+ *  [midi-control]
+ *
+ *  Get the number of sequence definitions provided in the [midi-control]
+ *  section.  Ranges from 32 on up.  Then read in all of the sequence
+ *  lines.  The first 32 apply to the first screen set.  There can also be
+ *  a comment line "# mute in group" followed by 32 more lines.  Then
+ *  there are addditional comments and single lines for BPM up, BPM down,
+ *  Screen Set Up, Screen Set Down, Mod Replace, Mod Snapshot, Mod Queue,
+ *  Mod Gmute, Mod Glearn, and Screen Set Play.  These are all forms of
+ *  MIDI automation useful to control the playback while not sitting near
+ *  the computer.
+ *
+ *  [mute-group]
+ *
+ *  The mute-group starts with a line that indicates up to 32 mute-groups
+ *  are defined. A common value is 1024, which means there are 32 groups
+ *  times 32 keys.  But this value is currently thrown away.  This value
+ *  is followed by 32 lines of data, each contained 4 sets of 8 settings.
+ *  See the seq24-doc project on GitHub for a much more detailed
+ *  description of this section.
+ *
+ *  [midi-clock]
+ *
+ *  The MIDI-clock section defines the clocking value for up to 16 output
+ *  busses.  The first number, 16, indicates how many busses are
+ *  specified.  Generally, these busses are shown to the user with names
+ *  such as "[1] seq24 1".
+ *
+ *  [keyboard-control]
+ *
+ *  The keyboard control defines the keys that will toggle the stage of
+ *  each of up to 32 patterns in a pattern/sequence box.  These keys are
+ *  displayed in each box as a reminder.  The first number specifies the
+ *  Key number, and the second number specifies the Sequence number.
+ *
+ *  [keyboard-group]
+ *
+ *  The keyboard group specifies more automation for the application.
+ *  The first number specifies the Key number, and the second number
+ *  specifies the Group number.  This section should be better described
+ *  in the seq24-doc project on GitHub.
+ *
+ *  [jack-transport]
+ *
+ *  This section covers various JACK settings, one setting per line.  In
+ *  order, the following numbers are specfied:
+ *
+ *      -   jack_transport - Enable sync with JACK Transport.
+ *      -   jack_master - Seq24 will attempt to serve as JACK Master.
+ *      -   jack_master_cond - Seq24 will fail to be Master if there is
+ *          already a Master set.
+ *      -   jack_start_mode:
+ *          -   0 = Playback will be in Live mode.  Use this to allow
+ *              muting and unmuting of loops.
+ *          -   1 = Playback will use the Song Editor's data.
+ *
+ *  [midi-input]
+ *
+ *  This section covers the MIDI input busses, and has a format similar to
+ *  "[midi-clock]".  Generally, these busses are shown to the user with
+ *  names such as "[1] seq24 1", and currently there is only one input
+ *  buss.  The first field is the port number, and the second number
+ *  indicates whether it is disabled (0), or enabled (1).
+ *
+ *  [midi-clock-mod-ticks]
+ *
+ *  This section covers....  One common value is 64.
+ *
+ *  [manual-alsa-ports]
+ *
+ *  This section covers....
+ *  Set to 1 if you want seq24 to create its own ALSA ports and not
+ *  connect to other clients.
+ *
+ *  [last-used-dir]
+ *
+ *  This section simply holds the last path-name that was used to read or
+ *  write a MIDI file.  We still need to add a check for a valid path, and
+ *  currently the path must start with a "/", so it is not suitable for
+ *  Windows.
+ *
+ *  [interaction-method]
+ *
+ *  This section specified the kind of mouse interaction.
+ *
+ *  -   0 = 'seq24' (original Seq24 method).
+ *  -   1 = 'fruity' (similar to a certain fruity sequencer we like).
  */
 
 bool
 optionsfile::parse (perform * a_perf)
 {
-    std::ifstream file(m_name.c_str(), ios::in | ios::ate); /* binary file   */
+    std::ifstream file(m_name.c_str(), std::ios::in | std::ios::ate);
     if (! file.is_open())
         return false;
 
-    file.seekg(0, ios::beg);                                /* seek to start */
+    file.seekg(0, std::ios::beg);                           /* seek to start */
     line_after(file, "[midi-control]");                     /* find section  */
-
-    /*
-     *  Get the number of sequence definitions provided in this section.
-     *  Ranges from 32 on up.  Then read in all of the sequence lines.
-     *  The first 32 apply to the first screen set.  There can also be a
-     *  comment line "# mute in group" followed by 32 more lines.  Then
-     *  there are addditional comments and single lines for BPM up, BPM
-     *  down, Screen Set Up, Screen Set Down, Mod Replace, Mod Snapshot,
-     *  Mod Queue, Mod Gmute, Mod Glearn, and Screen Set Play.  These are
-     *  all forms of MIDI automation useful to control the playback while
-     *  not sitting near the computer.
-     */
-
     unsigned int sequences = 0;
     sscanf(m_line, "%u", &sequences);
     next_data_line(file);
@@ -119,18 +206,12 @@ optionsfile::parse (perform * a_perf)
         next_data_line(file);
     }
 
-    /*
-     *  The mute-group starts with a line that indicates ... what?
-     *  A common value is 1024.  This is followed by 32 lines of data.
-     *  See the seq24-doc project on GitHub for a much more detailed
-     *  description of this section.
-     */
-
     line_after(file, "[mute-group]");               /* Group MIDI control */
     int gtrack = 0;
-    sscanf(m_line, "%d", &gtrack);
+    sscanf(m_line, "%d", &gtrack);                  /* value thrown away  */
     next_data_line(file);
-    int mtx[c_seqs_in_set], j = 0;
+    int mtx[c_seqs_in_set];
+    int j = 0;
     for (int i = 0; i < c_seqs_in_set; i++)
     {
         a_perf->select_group_mute(j);
@@ -161,12 +242,6 @@ optionsfile::parse (perform * a_perf)
         next_data_line(file);
     }
 
-    /*
-     *  The MIDI-clock section defines the clocking value for up to 16
-     *  output busses.  The first number, 16, indicates how many busses
-     *  are specified.
-     */
-
     line_after(file, "[midi-clock]");
     long buses = 0;
     sscanf(m_line, "%ld", &buses);
@@ -178,12 +253,6 @@ optionsfile::parse (perform * a_perf)
         a_perf->get_master_midi_bus()->set_clock(bus, (clock_e) bus_on);
         next_data_line(file);
     }
-
-    /*
-     *  The keyboard control defines the keys that will toggle the stage
-     *  of each of up to 32 patterns in a pattern/sequence box.  These
-     *  keys are displayed in each box as a reminder.
-     */
 
     line_after(file, "[keyboard-control]");
     long keys = 0;
@@ -197,12 +266,6 @@ optionsfile::parse (perform * a_perf)
         a_perf->set_key_event(key, seq);
         next_data_line(file);
     }
-
-    /*
-     * The keyboard group specifies more automation for the application.
-     * This section should be better describe in the manual project on
-     * GitHub.
-     */
 
     line_after(file, "[keyboard-group]");
     long groups = 0;
@@ -253,13 +316,8 @@ optionsfile::parse (perform * a_perf)
     next_data_line(file);
     sscanf(m_line, "%u", &a_perf->m_key_stop);
 
-    /*
-     * JACK transport section.
-     */
-
     line_after(file, "[jack-transport]");
     long flag = 0;
-
     sscanf(m_line, "%ld", &flag);
     global_with_jack_transport = (bool) flag;
 
@@ -274,60 +332,36 @@ optionsfile::parse (perform * a_perf)
     next_data_line(file);
     sscanf(m_line, "%ld", &flag);
     global_jack_start_mode = (bool) flag;
+
     line_after(file, "[midi-input]");
     buses = 0;
     sscanf(m_line, "%ld", &buses);
     next_data_line(file);
-
     for (int i = 0; i < buses; ++i)
     {
-
         long bus_on, bus;
         sscanf(m_line, "%ld %ld", &bus, &bus_on);
         a_perf->get_master_midi_bus()->set_input(bus, (bool) bus_on);
         next_data_line(file);
     }
 
-    /*
-     *  MIDI Clock Mod section.
-     */
-
-    long ticks = 64;
     line_after(file, "[midi-clock-mod-ticks]");
+    long ticks = 64;
     sscanf(m_line, "%ld", &ticks);
     midibus::set_clock_mod(ticks);
-
-    /*
-     *  Manual ALSA ports section.
-     */
 
     line_after(file, "[manual-alsa-ports]");
     sscanf(m_line, "%ld", &flag);
     global_manual_alsa_ports = (bool) flag;
 
-    /*
-     *  Last-used directory preservation section.
-     */
-
     line_after(file, "[last-used-dir]");
-
-    // FIXME: check for a valid path is missing
-
     if (m_line[0] == '/')
-        global_last_used_dir.assign(m_line);
-
-    /*
-     *  Interaction method section.
-     */
+        global_last_used_dir.assign(m_line); // FIXME: need check for valid path
 
     long method = 0;
     line_after(file, "[interaction-method]");
     sscanf(m_line, "%ld", &method);
-    global_interactionmethod = (interaction_method_e)method;
-
-    /*
-     * Done!
-     */
+    global_interactionmethod = interaction_method_e(method);
 
     file.close();
     return true;
@@ -341,7 +375,7 @@ optionsfile::parse (perform * a_perf)
 bool
 optionsfile::write (perform * a_perf)
 {
-    std::ofstream file(m_name.c_str(), ios::out | ios::trunc); /* binary file */
+    std::ofstream file(m_name.c_str(), std::ios::out | std::ios::trunc);
     char outs[1024];
     if (! file.is_open())
         return false;
@@ -475,7 +509,7 @@ optionsfile::write (perform * a_perf)
             mtx[24], mtx[25], mtx[26], mtx[27],
             mtx[28], mtx[29], mtx[30], mtx[31]
         );
-        file << string(outs) << "\n";
+        file << std::string(outs) << "\n";
     }
 
     /*
@@ -582,7 +616,7 @@ optionsfile::write (perform * a_perf)
             outs, sizeof(outs), "%u  %ld        # %s",
             i->first, i->second, gdk_keyval_name(i->first)
         );
-        file << string(outs) << "\n";
+        file << std::string(outs) << "\n";
     }
     size_t kegsize = a_perf->get_key_groups().size() < size_t(c_seqs_in_set) ?
          a_perf->get_key_groups().size() :
@@ -605,7 +639,7 @@ optionsfile::write (perform * a_perf)
             outs, sizeof(outs), "%u  %ld        # %s",
             i->first, i->second, gdk_keyval_name(i->first)
         );
-        file << string(outs) << "\n";
+        file << std::string(outs) << "\n";
     }
 
     file

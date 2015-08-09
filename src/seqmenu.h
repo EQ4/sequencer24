@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-02
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -37,8 +37,6 @@
 
 class perform;
 class seqedit;
-
-using namespace Gtk;
 
 namespace Gtk
 {
@@ -57,7 +55,7 @@ class seqmenu : public virtual Glib::ObjectBase
 
 private:
 
-    Menu * m_menu;
+    Gtk::Menu * m_menu;
     perform * m_mainperf;
     sequence m_clipboard;
 

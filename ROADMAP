@@ -1,9 +1,11 @@
 Sequencer24/Seq24 Roadmap
 Chris Ahlstrom
-2015-07-23 to 2015-08-05
+2015-07-23 to 2015-08-08
 
 The starting point for the Sequencer24 project is version
-0.9.2 of seq24.  The following changes are planned:
+0.9.2 of seq24.  Sequencer24 starts with version 0.9.3.
+
+The following changes are planned ('x' means it is done):
 
 x  -  Create a Git project out of the existing Seq24 files: sequencer24
 x  -  Branch off to a permanent "Legacy" branch:
@@ -44,6 +46,8 @@ x  -  Branch off to a "Gtkmm-3" branch.
          make the actual module arrangement easier to grok.
       -  Get an idea of the design, and document it.  Look for ways
          to collect common code into base classes.
+      -  Make the code a bit cleaner, such as eliminating "using namespace"
+         directives, eliminating dead variables, etc.
       -  Generate Doxygen documentation.
       -  Merge "Document" back into the main trunk.
    -  Branch off to a "Library" branch:
@@ -63,7 +67,7 @@ Eventually, there will be a few features and fixes to try to add:
 
    -  A MIDI event text pane to display (and later edit) all MIDI events.
    -  Ignore updating patterns/sequences that are empty during playback.
-   -  Add more scales.
+   -  Add more musical scales.
    -  Even more friendliness for two-button mice.
    -  Lock the size of the Patterns Panel (expanding it just shows more
       grey, and it resizes horizontally very slowly).

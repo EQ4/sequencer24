@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-07
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -43,8 +43,6 @@ class perform;
 class seqdata;
 class seqevent;
 class seqkeys;
-
-using namespace Gtk;
 
 namespace Gtk
 {
@@ -88,8 +86,8 @@ private:
     int m_current_y;
     int m_drop_x;
     int m_drop_y;
-    Adjustment * const m_vadjust;
-    Adjustment * const m_hadjust;
+    Gtk::Adjustment * const m_vadjust;
+    Gtk::Adjustment * const m_hadjust;
     Glib::RefPtr<Gdk::Pixmap> m_background;
     rect m_old;
     rect m_selected;
@@ -160,8 +158,8 @@ public:
         seqevent * a_seqevent_wid,
         seqkeys * a_seqkeys_wid,
         int a_pos,
-        Adjustment * a_hadjust,
-        Adjustment * a_vadjust
+        Gtk::Adjustment * a_hadjust,
+        Gtk::Adjustment * a_vadjust
     );
     ~seqroll ();
 

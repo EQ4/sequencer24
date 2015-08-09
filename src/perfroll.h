@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-06
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -39,14 +39,17 @@
 #include "globals.h"
 #include "mutex.h"
 
-using namespace Gtk;
-
 class AbstractPerfInput;
 class perform;
 
-const int c_perfroll_background_x = (c_ppqn * 4 * 16) / c_perf_scale_x;
-const int c_perfroll_size_box_w = 3;
-const int c_perfroll_size_box_click_w = c_perfroll_size_box_w + 1 ;
+/**
+ *  These should be private members.  Used by this module and the
+ *  perfroll_input module.
+ */
+
+static const int c_perfroll_background_x = (c_ppqn * 4 * 16) / c_perf_scale_x;
+static const int c_perfroll_size_box_w = 3;
+static const int c_perfroll_size_box_click_w = c_perfroll_size_box_w + 1 ;
 
 /**
  *  This class implements the performance roll user interface.
@@ -73,8 +76,8 @@ private:
     int m_window_y;
     int m_drop_x;
     int m_drop_y;
-    Adjustment * m_vadjust;
-    Adjustment * m_hadjust;
+    Gtk::Adjustment * m_vadjust;
+    Gtk::Adjustment * m_hadjust;
     int m_snap;
     int m_measure_length;
     int m_beat_length;
@@ -85,7 +88,7 @@ private:
     long m_drop_tick;
     long m_drop_tick_trigger_offset;
     int m_drop_sequence;
-    bool m_sequence_active[c_total_seqs];
+    bool m_sequence_active[c_max_sequence];
     AbstractPerfInput * m_interaction;
     bool m_moving;
     bool m_growing;
@@ -93,7 +96,12 @@ private:
 
 public:
 
-    perfroll (perform * a_perf, Adjustment * a_hadjust, Adjustment * a_vadjust);
+    perfroll
+    (
+        perform * a_perf,
+        Gtk::Adjustment * a_hadjust,
+        Gtk::Adjustment * a_vadjust
+    );
     ~perfroll();
 
     void set_guides (int a_snap, int a_measure, int a_beat);

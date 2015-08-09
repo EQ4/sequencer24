@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-02
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -78,7 +78,7 @@
 #include "pixmaps/down.xpm"
 #include "pixmaps/perfedit.xpm"
 
-using namespace sigc;
+using namespace Gtk::Menu_Helpers;
 
 /**
  *  Principal constructor, has a pointer to a perform object.
@@ -89,47 +89,47 @@ using namespace sigc;
 perfedit::perfedit (perform * a_perf)
  :
     m_mainperf          (a_perf),
-    m_table             (manage(new Table(6, 3, false))),
-    m_vadjust           (manage(new Adjustment(0, 0, 1, 1, 1, 1))),
-    m_hadjust           (manage(new Adjustment(0, 0, 1, 1, 1, 1))),
-    m_vscroll           (manage(new VScrollbar(*m_vadjust))),
-    m_hscroll           (manage(new HScrollbar(*m_hadjust))),
+    m_table             (manage(new Gtk::Table(6, 3, false))),
+    m_vadjust           (manage(new Gtk::Adjustment(0, 0, 1, 1, 1, 1))),
+    m_hadjust           (manage(new Gtk::Adjustment(0, 0, 1, 1, 1, 1))),
+    m_vscroll           (manage(new Gtk::VScrollbar(*m_vadjust))),
+    m_hscroll           (manage(new Gtk::HScrollbar(*m_hadjust))),
     m_perfnames         (manage(new perfnames(m_mainperf, m_vadjust))),
     m_perfroll          (manage(new perfroll(m_mainperf, m_hadjust, m_vadjust))),
     m_perftime          (manage(new perftime(m_mainperf, m_hadjust))),
-    m_menu_snap         (manage(new Menu())),
-    m_button_snap       (manage(new Button())),
-    m_entry_snap        (manage(new Entry())),
-    m_button_stop       (manage(new Button())),
-    m_button_play       (manage(new Button())),
-    m_button_loop       (manage(new ToggleButton())),
-    m_button_expand     (manage(new Button())),
-    m_button_collapse   (manage(new Button())),
-    m_button_copy       (manage(new Button())),
-    m_button_grow       (manage(new Button())),
-    m_button_undo       (manage(new Button())),
-    m_button_bpm        (manage(new Button())),
-    m_entry_bpm         (manage(new Entry())),
-    m_button_bw         (manage(new Button())),
-    m_entry_bw          (manage(new Entry())),
-    m_hbox              (manage(new HBox(false, 2))),
-    m_hlbox             (manage(new HBox(false, 2))),
-    m_tooltips          (manage(new Tooltips())),
-    m_menu_bpm          (manage(new Menu())),
-    m_menu_bw           (manage(new Menu())),
+    m_menu_snap         (manage(new Gtk::Menu())),
+    m_button_snap       (manage(new Gtk::Button())),
+    m_entry_snap        (manage(new Gtk::Entry())),
+    m_button_stop       (manage(new Gtk::Button())),
+    m_button_play       (manage(new Gtk::Button())),
+    m_button_loop       (manage(new Gtk::ToggleButton())),
+    m_button_expand     (manage(new Gtk::Button())),
+    m_button_collapse   (manage(new Gtk::Button())),
+    m_button_copy       (manage(new Gtk::Button())),
+    m_button_grow       (manage(new Gtk::Button())),
+    m_button_undo       (manage(new Gtk::Button())),
+    m_button_bpm        (manage(new Gtk::Button())),
+    m_entry_bpm         (manage(new Gtk::Entry())),
+    m_button_bw         (manage(new Gtk::Button())),
+    m_entry_bw          (manage(new Gtk::Entry())),
+    m_hbox              (manage(new Gtk::HBox(false, 2))),
+    m_hlbox             (manage(new Gtk::HBox(false, 2))),
+    m_tooltips          (manage(new Gtk::Tooltips())),
+    m_menu_bpm          (manage(new Gtk::Menu())),
+    m_menu_bw           (manage(new Gtk::Menu())),
     m_snap              (8),                    // (c_ppqn / 4),
     m_bpm               (4),
     m_bw                (4)
 {
-    using namespace Menu_Helpers;
-
     set_icon(Gdk::Pixbuf::create_from_xpm_data(perfedit_xpm));
     set_title("Sequencer24 - Song Editor");                   /* main window */
     set_size_request(700, 400);
     m_table->set_border_width(2);
     m_hlbox->set_border_width(2);
-
-    m_button_grow->add(*manage(new Arrow(Gtk::ARROW_RIGHT, Gtk::SHADOW_OUT)));
+    m_button_grow->add
+    (
+        *manage(new Gtk::Arrow(Gtk::ARROW_RIGHT, Gtk::SHADOW_OUT))
+    );
     m_button_grow->signal_clicked().connect(mem_fun(*this, &perfedit::grow));
     add_tooltip(m_button_grow, "Increase size of Grid.");
 
@@ -148,7 +148,6 @@ perfedit::perfedit (perform * a_perf)
     m_table->attach(*m_hbox,  0, 1, 3, 4,  Gtk::FILL, Gtk::SHRINK, 0, 2);
     m_table->attach(*m_hscroll, 1, 2, 3, 4, Gtk::FILL | Gtk::EXPAND, Gtk::SHRINK);
     m_table->attach(*m_button_grow, 2, 3, 3, 4, Gtk::SHRINK, Gtk::SHRINK);
-
     m_menu_snap->items().push_back
     (
         MenuElem("1/1", sigc::bind(mem_fun(*this, &perfedit::set_snap), 1))
@@ -173,20 +172,20 @@ perfedit::perfedit (perform * a_perf)
     (
         MenuElem("1/32", sigc::bind(mem_fun(*this, &perfedit::set_snap), 32))
     );
-
     m_button_snap->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(snap_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(snap_xpm)))
     );
     m_button_snap->signal_clicked().connect
     (
-        bind<Menu *>(mem_fun(*this, &perfedit::popup_menu), m_menu_snap)
+        sigc::bind<Gtk::Menu *>
+        (
+            mem_fun(*this, &perfedit::popup_menu), m_menu_snap
+        )
     );
     add_tooltip(m_button_snap, "Grid snap. (Fraction of Measure Length)");
-
     m_entry_snap->set_size_request(40, -1);
     m_entry_snap->set_editable(false);
-
     m_menu_bw->items().push_back
     (
         MenuElem("1", sigc::bind(mem_fun(*this, &perfedit::set_bw), 1))
@@ -217,100 +216,88 @@ perfedit::perfedit (perform * a_perf)
             MenuElem(b, sigc::bind(mem_fun(*this, &perfedit::set_bpm), i + 1))
         );
     }
-
     m_button_bpm->add                               /* beats per measure */
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(down_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(down_xpm)))
     );
     m_button_bpm->signal_clicked().connect
     (
-        bind<Menu *>(mem_fun(*this, &perfedit::popup_menu), m_menu_bpm)
+        sigc::bind<Gtk::Menu *>(mem_fun(*this, &perfedit::popup_menu), m_menu_bpm)
     );
     add_tooltip(m_button_bpm, "Time Signature. Beats per Measure");
-
     m_entry_bpm->set_width_chars(2);
     m_entry_bpm->set_editable(false);
-
     m_button_bw->add                                /* beat width */
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(down_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(down_xpm)))
     );
     m_button_bw->signal_clicked().connect
     (
-        bind<Menu *>(mem_fun(*this, &perfedit::popup_menu), m_menu_bw)
+        sigc::bind<Gtk::Menu *>(mem_fun(*this, &perfedit::popup_menu), m_menu_bw)
     );
     add_tooltip(m_button_bw, "Time Signature.  Length of Beat");
-
     m_entry_bw->set_width_chars(2);
     m_entry_bw->set_editable(false);
-
     m_button_undo->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(undo_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(undo_xpm)))
     );
     m_button_undo->signal_clicked().connect
     (
         mem_fun(*this, &perfedit::undo)
     );
     add_tooltip(m_button_undo, "Undo.");
-
     m_button_expand->add                            /* expand */
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(expand_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(expand_xpm)))
     );
     m_button_expand->signal_clicked().connect
     (
         mem_fun(*this, &perfedit::expand)
     );
     add_tooltip(m_button_expand, "Expand between L and R markers.");
-
     m_button_collapse->add                          /* collapse */
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(collapse_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(collapse_xpm)))
     );
     m_button_collapse->signal_clicked().connect
     (
         mem_fun(*this, &perfedit::collapse)
     );
     add_tooltip(m_button_collapse, "Collapse between L and R markers.");
-
     m_button_copy->add                              /* expand & copy    */
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(copy_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(copy_xpm)))
     );
     m_button_copy->signal_clicked().connect(mem_fun(*this, &perfedit::copy));
     add_tooltip(m_button_copy, "Expand and copy between L and R markers.");
-
     m_button_loop->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(loop_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(loop_xpm)))
     );
     m_button_loop->signal_toggled().connect
     (
         mem_fun(*this, &perfedit::set_looped)
     );
     add_tooltip(m_button_loop, "Play looped between L and R.");
-
     m_button_stop->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(stop_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(stop_xpm)))
     );
     m_button_stop->signal_clicked().connect
     (
         mem_fun(*this, &perfedit::stop_playing)
     );
     add_tooltip(m_button_stop, "Stop playing.");
-
     m_button_play->add
     (
-        *manage(new Image(Gdk::Pixbuf::create_from_xpm_data(play2_xpm)))
+        *manage(new Gtk::Image(Gdk::Pixbuf::create_from_xpm_data(play2_xpm)))
     );
     m_button_play->signal_clicked().connect
     (
         mem_fun(*this, &perfedit::start_playing)
     );
     add_tooltip(m_button_play, "Begin playing at L marker.");
-
     m_hlbox->pack_end(*m_button_copy , false, false);
     m_hlbox->pack_end(*m_button_expand , false, false);
     m_hlbox->pack_end(*m_button_collapse , false, false);
@@ -318,18 +305,16 @@ perfedit::perfedit (perform * a_perf)
     m_hlbox->pack_start(*m_button_stop , false, false);
     m_hlbox->pack_start(*m_button_play , false, false);
     m_hlbox->pack_start(*m_button_loop , false, false);
-    m_hlbox->pack_start(*(manage(new VSeparator())), false, false, 4);
+    m_hlbox->pack_start(*(manage(new Gtk::VSeparator())), false, false, 4);
     m_hlbox->pack_start(*m_button_bpm , false, false);
     m_hlbox->pack_start(*m_entry_bpm , false, false);
-    m_hlbox->pack_start(*(manage(new Label("/"))), false, false, 4);
+    m_hlbox->pack_start(*(manage(new Gtk::Label("/"))), false, false, 4);
     m_hlbox->pack_start(*m_button_bw , false, false);
     m_hlbox->pack_start(*m_entry_bw , false, false);
-    m_hlbox->pack_start(*(manage(new Label("x"))), false, false, 4);
+    m_hlbox->pack_start(*(manage(new Gtk::Label("x"))), false, false, 4);
     m_hlbox->pack_start(*m_button_snap , false, false);
     m_hlbox->pack_start(*m_entry_snap , false, false);
-
-    this->add(*m_table);                    /* add table */
-
+    this->add(*m_table);                                /* add table */
     set_snap(8);
     set_bpm(4);
     set_bw(4);
@@ -444,7 +429,7 @@ perfedit::set_looped ()
  */
 
 void
-perfedit::popup_menu (Menu * a_menu)
+perfedit::popup_menu (Gtk::Menu * a_menu)
 {
     a_menu->popup(0, 0);
 }

@@ -20,7 +20,7 @@ The Document branch, first pass, is in progress.  Light documentation, code
 prettifying, warning elimination.  Trying to get a handle on all the global
 variables and how things work.
 
-See the ROADMAP file for more information.
+See the ROADMAP file for more information and a kind of TODO list.
 
 Note that the original seq24 is pretty well documented by the following
 project, which provides a 50-page PDF file and its LaTeX source code:

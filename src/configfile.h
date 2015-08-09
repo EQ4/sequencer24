@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -36,26 +36,19 @@
 #include <fstream>
 #include <string>
 #include <list>
-
 #include <gtkmm/drawingarea.h>
 
 #include "easy_macros.h"
 #include "perform.h"
 
 /**
- *    This class is the base class for optionsfile and userfile.
+ *    This class is the abstract base class for optionsfile and userfile.
  */
 
 class configfile
 {
 
 protected:
-
-    /*
-     * Member never used.
-     *
-     * int m_pos;
-     */
 
     /**
      *  Provides the name of the file.
@@ -71,23 +64,11 @@ protected:
     unsigned char * m_d;
 
     /**
-     *  List of characters, used for...
-     */
-
-    std::list<unsigned char> m_l;
-
-    /**
      *  The current line of text being processed.  This member receives
      *  an input line, and so needs to be a character buffer.
      */
 
     char m_line[1024];
-
-    /**
-     *  Indicates the the processing of the file is finished.
-     */
-
-    bool m_done;
 
 protected:
 

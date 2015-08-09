@@ -22,13 +22,17 @@
 /**
  * \file          event.h
  *
- *  This module declares/defines the base class for MIDI events.
+ *  This module declares/defines the event class for operating with
+ *  MIDI events.
  *
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-06
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
+ *
+ *  This module also declares/defines the various constants, status-byte
+ *  values, or data values for MIDI events.
  *
  */
 

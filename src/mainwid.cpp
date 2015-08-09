@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-06
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -36,6 +36,8 @@
 #include "mainwid.h"
 #include "seqedit.h"
 #include "font.h"
+
+using namespace Gtk::Menu_Helpers;
 
 /**
  *  Static array of characters for use in toggling patterns.
@@ -90,8 +92,6 @@ mainwid::mainwid (perform * a_p)
     m_last_tick_x       (),     // an array of size c_max_sequence
     m_last_playing      ()      // an array of size c_max_sequence
 {
-    using namespace Menu_Helpers;
-
     Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
     colormap->alloc_color(m_black);
     colormap->alloc_color(m_white);

@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-07
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -41,16 +41,7 @@
 #include "perform.h"
 #include "seqmenu.h"
 
-using namespace Gtk;
-
 class seqedit;
-
-/*
- * Area of...
- */
-
-const int c_seqarea_seq_x = c_text_x * 13;
-const int c_seqarea_seq_y = c_text_y * 2;
 
 /**
  *    This class implement the piano roll area of the application.

@@ -538,8 +538,8 @@ seqdata::on_button_release_event (GdkEventButton * a_p0)
         long tick_s, tick_f;
         if (m_current_x < m_drop_x)
         {
-            swap(m_current_x, m_drop_x);
-            swap(m_current_y, m_drop_y);
+            std::swap(m_current_x, m_drop_x);
+            std::swap(m_current_y, m_drop_y);
         }
         convert_x(m_drop_x, &tick_s);
         convert_x(m_current_x, &tick_f);

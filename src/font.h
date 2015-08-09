@@ -27,14 +27,17 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
 
 #include <gtkmm/image.h>
 
-using namespace Gtk;
+/**
+ *  This class provides a wrapper for rendering fonts that are encoded as
+ *  a 16 x 16 pixmap file in XPM format.
+ */
 
 class font
 {
@@ -43,7 +46,8 @@ public:
 
     /**
      *  A simple enumeration to describe the basic colors used in writing
-     *  text.
+     *  text.  Basically, these two values cause the selection of one or
+     *  another pixmap (font_b_xpm and font_w_xpm).
      */
 
     enum Color
@@ -54,9 +58,33 @@ public:
 
 private:
 
-    Glib::RefPtr<Gdk::Pixmap> m_pixmap;
+    /**
+     *  Points to the current pixmap (m_black_pixmap or m_white_pixmap)
+     *  to use to render a string.
+     */
+
+    Glib::RefPtr<Gdk::Pixmap> * m_pixmap;
+
+    /**
+     *  The pixmap in the file <tt> src/pixmaps/font_b.xpm </tt> is loaded
+     *  into this object.  It contains a black font on a white background.
+     */
+
     Glib::RefPtr<Gdk::Pixmap> m_black_pixmap;
+
+    /**
+     *  The pixmap in the file <tt> src/pixmaps/font_b.xpm </tt> is loaded
+     *  into this object.  It contains a black font on a white background.
+     */
+
     Glib::RefPtr<Gdk::Pixmap> m_white_pixmap;
+
+    /**
+     *  This object is instantiated as a default object.  All we know is
+     *  it seems to be a requirement for creating a pixmap object from an
+     *  XMP file.
+     */
+
     Glib::RefPtr<Gdk::Bitmap> m_clip_mask;
 
 public:
@@ -77,7 +105,8 @@ public:
 };
 
 /*
- * Global symbols
+ * Global symbols.  The p_font_renderer pointer is defined in the main
+ * module, seq24.cpp.
  */
 
 extern font * p_font_renderer;

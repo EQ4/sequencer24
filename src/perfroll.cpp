@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-06
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -46,8 +46,8 @@
 perfroll::perfroll
 (
     perform * a_perf,
-    Adjustment * a_hadjust,
-    Adjustment * a_vadjust
+    Gtk::Adjustment * a_hadjust,
+    Gtk::Adjustment * a_vadjust
 ) :
     Gtk::DrawingArea    (),
     m_gc                (),
@@ -97,7 +97,7 @@ perfroll::perfroll
     );
     set_size_request(10, 10);
     set_double_buffered(false);
-    for (int i = 0; i < c_total_seqs; ++i)
+    for (int i = 0; i < c_max_sequence; ++i)
         m_sequence_active[i] = false;
 
     switch (global_interactionmethod)
@@ -185,12 +185,12 @@ perfroll::update_sizes()
         m_hadjust->set_value(h_max_value);
     }
     m_vadjust->set_lower(0);
-    m_vadjust->set_upper(c_total_seqs);
+    m_vadjust->set_upper(c_max_sequence);
     m_vadjust->set_page_size(m_window_y / c_names_y);
     m_vadjust->set_step_increment(1);
     m_vadjust->set_page_increment(1);
 
-    int v_max_value = c_total_seqs - (m_window_y / c_names_y);
+    int v_max_value = c_max_sequence - (m_window_y / c_names_y);
     if (m_vadjust->get_value() > v_max_value)
         m_vadjust->set_value(v_max_value);
 
@@ -314,7 +314,7 @@ perfroll::draw_progress ()
 void
 perfroll::draw_sequence_on (Glib::RefPtr<Gdk::Drawable> a_draw, int a_sequence)
 {
-    if ((a_sequence < c_total_seqs) && m_mainperf->is_active(a_sequence))
+    if ((a_sequence < c_max_sequence) && m_mainperf->is_active(a_sequence))
     {
         long tick_offset = m_4bar_offset * c_ppqn * 16;
         long x_offset = tick_offset / c_perf_scale_x;
@@ -792,8 +792,8 @@ perfroll::convert_xy (int a_x, int a_y, long * a_tick, int * a_seq)
     long tick_offset = m_4bar_offset * c_ppqn * 16;
     long tick = a_x * c_perf_scale_x + tick_offset;
     int seq = a_y / c_names_y + m_sequence_offset;
-    if (seq >= c_total_seqs)
-        seq = c_total_seqs - 1;
+    if (seq >= c_max_sequence)
+        seq = c_max_sequence - 1;
 
     if (seq < 0)
         seq = 0;

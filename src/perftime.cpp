@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-06
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -42,7 +42,7 @@
  *  get_window() returns 0 because we have not been realized.
  */
 
-perftime::perftime (perform * a_perf, Adjustment * a_hadjust)
+perftime::perftime (perform * a_perf, Gtk::Adjustment * a_hadjust)
  :
     m_gc                (),
     m_window            (),

@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-06
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -36,8 +36,6 @@
 
 #include "globals.h"
 #include "seqmenu.h"
-
-using namespace Gtk;
 
 namespace Gtk
 {
@@ -63,13 +61,13 @@ private:
     perform * m_mainperf;
     int m_window_x;
     int m_window_y;
-    Adjustment * m_vadjust;
+    Gtk::Adjustment * m_vadjust;
     int m_sequence_offset;
-    bool m_sequence_active[c_total_seqs];
+    bool m_sequence_active[c_max_sequence];
 
 public:
 
-    perfnames (perform * a_perf, Adjustment * a_vadjust);
+    perfnames (perform * a_perf, Gtk::Adjustment * a_vadjust);
 
     void redraw_dirty_sequences ();
 

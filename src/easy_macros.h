@@ -10,7 +10,7 @@
  * \library       sequencer24
  * \author        Chris Ahlstrom and other authors; see documentation
  * \date          2013-11-17
- * \updates       2015-08-05
+ * \updates       2015-08-08
  * \version       $Revision$
  * \license       GNU GPL v2 or above
  *
@@ -128,7 +128,7 @@ typedef bool cbool_t;
  *    Visual Studio defines only __FUNCTION__, so a definition is provided
  *    below.
  *
- *//*-------------------------------------------------------------------------*/
+ */
 
 #define USE_PRETTY_FUNCTION   1
 

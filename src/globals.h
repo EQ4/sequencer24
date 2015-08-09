@@ -28,18 +28,12 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-25
- * \updates       2015-08-07
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
- */
-
-#include <string>
-
-#include "easy_macros.h"               // with platform_macros.h, too
-
-using namespace std;                   // will eventually remove this
-
-/**
+ *  We're going to try to collect all the globals here in one module, and
+ *  try to group them into functional units.
+ *
  *  This collection of global variables describes some facets of the
  *  "Patterns Panel" or "Sequences Window", which is visually presented by
  *  the Gtk::Window-derived class called mainwnd.
@@ -48,29 +42,40 @@ using namespace std;                   // will eventually remove this
  *  "sequence boxes".  All of the patterns in this grid comprise what is
  *  called a "set" (in the musical sense) or a "screen set".
  *
+ *  Other elements are also set by some of these variables.  See the
+ *  spreadsheet in <tt>contrib/sequence24-classes.ods</tt>.
+ *
  * \note
- *    This set of variables might be better off placed in a object that the
+ *    This set of variables would be better off placed in a object that the
  *    mainwnd class and its clients can access a little more safely and with
  *    a lot more clarity for the human reader.
  */
 
+#include <string>
+
+#include "easy_macros.h"               // with platform_macros.h, too
+
 /**
  *  Number of rows in the Patterns Panel.  The current value is 4, and
- *  probably won't change, since other values depend on it.
+ *  probably won't change, since other values depend on it.  Together with
+ *  c_mainwnd_cols, this value fixes the patterns grid into a 4 x 8 set of
+ *  patterns known as a "screen set".
  */
 
 const int c_mainwnd_rows = 4;
 
 /**
  *  Number of columns in the Patterns Panel.  The current value is 4, and
- *  probably won't change, since other values depend on it.
+ *  probably won't change, since other values depend on it.  Together with
+ *  c_mainwnd_rows, this value fixes the patterns grid into a 4 x 8 set of
+ *  patterns known as a "screen set".
  */
 
 const int c_mainwnd_cols = 8;
 
 /**
  *  Number of patterns/sequences in the Patterns Panel, also known as a
- *  "set" or "screen set".  This value is 4 x 8 = 32.
+ *  "set" or "screen set".  This value is 4 x 8 = 32 by default.
  */
 
 const int c_seqs_in_set = c_mainwnd_rows * c_mainwnd_cols;
@@ -90,22 +95,22 @@ const int c_gmute_tracks = c_seqs_in_set * c_seqs_in_set;
 
 const int c_max_sets = 32;
 
+/*
+ *  The maximum number of patterns supported is given by the number of
+ *  patterns supported in the panel (32) times the maximum number of sets
+ *  (32), or 1024 patterns.  It is basically the same value as
+ *  c_max_sequence, so we're going to make it obsolete.
+ *
+ *      const int c_total_seqs = c_seqs_in_set * c_max_sets;
+ */
+
 /**
  *  The maximum number of patterns supported is given by the number of
  *  patterns supported in the panel (32) times the maximum number of sets
  *  (32), or 1024 patterns.
- *
- *  It is basically defined in the same manner as c_max_sequence..
  */
 
-const int c_total_seqs = c_seqs_in_set * c_max_sets;
-
-/**
- *  Another variable representing the maximum number of patterns/sequences.
- *  It is basically defined in the same manner as c_total_seqs.
- */
-
-const int c_max_sequence = c_mainwnd_rows * c_mainwnd_cols * c_max_sets;
+const int c_max_sequence = c_seqs_in_set * c_max_sets;
 
 /**
  *  Provides the timing resolution of a MIDI sequencer, known as "pulses
@@ -145,7 +150,15 @@ const int c_thread_trigger_lookahead_ms = 2;
 /**
  *  Constants for the mainwid class.  The c_text_x and c_text_y constants
  *  help define the "seqarea" size.  It looks like these two values are
- *  the character width (x) and height (y) in pixels.
+ *  the character width (x) and height (y) in pixels.  Thus, these values
+ *  would be dependent on the font chosen.  But that, currently, is
+ *  hard-wired.  See the c_font_6_12[] array for the default font
+ *  specification.
+ *
+ *  However, please not that font files are not used.  Instead, the fonts
+ *  are provided by two pixmaps in the <tt> src/pixmap </tt> directory:
+ *  <tt> font_b.xpm </tt> (black lettering on a white background) and
+ *  <tt> font_w.xpm </tt> (white lettering on a black background).
  */
 
 const int c_text_x =  6;
@@ -161,19 +174,48 @@ const int c_text_y = 12;
 const int c_seqchars_x = 15;
 const int c_seqchars_y =  5;
 
-/*
- *  Compare these two constants to c_seqarea_seq_x(y) in mainwid.h.
+/**
+ *  The c_seqarea_x and c_seqarea_y constants are derived from the width
+ *  and heights of the default character set, and the number of characters
+ *  in width, and the number of lines, in a pattern/sequence box.
+ *
+ *  Compare these two constants to c_seqarea_seq_x(y), which was in
+ *  mainwid.h, but is now in this file.
  */
 
 const int c_seqarea_x = c_text_x * c_seqchars_x;
 const int c_seqarea_y = c_text_y * c_seqchars_y;
 
-const int c_mainwid_border = 0;
-const int c_mainwid_spacing = 2;
+/**
+ * Area of what?  Doesn't look at all like it is based on the size of
+ * characters.  These are used only in the mainwid module.
+ */
+
+const int c_seqarea_seq_x = c_text_x * 13;
+const int c_seqarea_seq_y = c_text_y * 2;
+
+/**
+ *  These control sizes.  We'll try changing them and see what happens.
+ *  Increasing these value spreads out the pattern grids a little bit and
+ *  makes the Patterns panel slightly bigger.  Seems like it would be
+ *  useful to make these values user-configurable.
+ */
+
+const int c_mainwid_border = 0;             // try 2 or 3instead of 0
+const int c_mainwid_spacing = 2;            // try 4 or 6 instead of 2
+
+/**
+ *  This constants seems to be created for a future purpose, perhaps to
+ *  reserve space for a new bar on the mainwid pane.  But it is used only
+ *  in this header file, to define c_mainwid_y, but doesn't add anything
+ *  to that value.
+ */
+
 const int c_control_height = 0;
 
-/*
- * The width of the main pattern/sequence grid, in pixels.
+/**
+ * The width of the main pattern/sequence grid, in pixels.  Affected by
+ * the c_mainwid_border and c_mainwid_spacing values.
  */
 
 const int c_mainwid_x =
@@ -183,7 +225,8 @@ const int c_mainwid_x =
 );
 
 /*
- * The height  of the main pattern/sequence grid, in pixels.
+ * The height  of the main pattern/sequence grid, in pixels.  Affected by
+ * the c_mainwid_border and c_control_height values.
  */
 
 const int c_mainwid_y =
@@ -217,6 +260,8 @@ const int c_key_y = 8;
 
 /**
  *  The number of MIDI keys, as well as keys in the virtual keyboard.
+ *  Note that only a subset of the virtual keys will be shown; one must
+ *  scroll to see them all.
  */
 
 const int c_num_keys = 128;
@@ -230,20 +275,13 @@ const int c_keyarea_x = 36;
 const int c_keyoffset_x = c_keyarea_x - c_key_x;
 const int c_keyarea_y = c_key_y * c_num_keys + 1;
 
-
 /**
  *  The height of the piano roll is the same as the height of the virtual
- *  keyboard area.
+ *  keyboard area.  Note that only a subset of the piano roll will be
+ *  shown; one must scroll to see it all.
  */
 
 const int c_rollarea_y = c_keyarea_y;
-
-/**
- *  The height of the events bar, which shows the little squares that
- *  represent the position of each event.
- */
-
-const int c_eventarea_y = 16;
 
 /**
  *  The dimensions of the little squares that represent the position of
@@ -254,7 +292,23 @@ const int c_eventevent_x = 5;
 const int c_eventevent_y = 10;
 
 /**
- *  The time scale window on top of the piano roll, in pixels.
+ *  A new constant that presents the padding above and below and event
+ *  rectangle, in pixels.
+ */
+
+const int c_eventpadding_y = 3;
+
+/**
+ *  The height of the events bar, which shows the little squares that
+ *  represent the position of each event.  This value was 16, but we've
+ *  broken out its components.
+ */
+
+const int c_eventarea_y = c_eventevent_y + 2 * c_eventpadding_y;
+
+/**
+ *  The height of the time scale window on top of the piano roll, in pixels.
+ *  It is slightly thicker than the event-area.
  */
 
 const int c_timearea_y = 18;
@@ -262,8 +316,8 @@ const int c_timearea_y = 18;
 /**
  *  The number of MIDI notes in what?  This value is used in the sequence
  *  module.  It looks like it is the maximum number of notes that
- *  seq24/sequencer24 can have playing at one time.  In other words, only
- *  256 simultaneously-playing notes can be managed.
+ *  seq24/sequencer24 can have playing at one time.  In other words,
+ *  "only" 256 simultaneously-playing notes can be managed.
  */
 
 const int c_midi_notes = 256;
@@ -296,13 +350,20 @@ const unsigned long c_triggers_new =    0x24240008;
 const unsigned long c_mutegroups =      0x24240009;
 const unsigned long c_midictrl =        0x24240010;
 
+#if USE_TRADITIONAL_FONT_HANDLING
+
 /**
- *  Provides the various font sizes for the default font.
+ *  Provides the various font sizes for the default font.  Not yet sure if
+ *  there's a mechanism for selecting the font.  No, there is not.
+ *  The font is actually fixed, and is embedded in a couple of XPM
+ *  pixmaps.
  */
 
 const char c_font_6_12[] = "-*-fixed-medium-r-*--12-*-*-*-*-*-*";
 const char c_font_8_13[] = "-*-fixed-medium-r-*--13-*-*-*-*-*-*";
 const char c_font_5_7[]  = "-*-fixed-medium-r-*--7-*-*-*-*-*-*";
+
+#endif  // USE_TRADITIONAL_FONT_HANDLING
 
 /**
  *  Values used in the menu to tell setState() what to do.
@@ -324,7 +385,7 @@ const int c_redraw_ms = 40;
 #endif
 
 /**
- *  Provides constants for the perform (performance) editor.
+ *  Provides constants for the perform object (performance editor).
  */
 
 const int c_names_x = 6 * 24;
@@ -333,7 +394,7 @@ const int c_perf_scale_x = 32;  // units are ticks per pixel
 
 /**
  *  Provides the maximum number of instruments that can be defined in the
- *  ~/.seq24usr file.
+ *  <tt> ~/.seq24usr <tt> file.
  */
 
 const int c_max_instruments = 64;
@@ -373,8 +434,8 @@ extern bool global_device_ignore;           // seq24 module
 extern int global_device_ignore_num;        // seq24 module
 
 /**
- *  This structure corresponds to [user-midi-bus-0] definitions in the
- *  ~/.seq24usr file.
+ *  This structure corresponds to <tt> [user-midi-bus-0] </tt> definitions
+ *  in the <tt> ~/.seq24usr </tt> file.
  */
 
 struct user_midi_bus_definition
@@ -384,8 +445,8 @@ struct user_midi_bus_definition
 };
 
 /**
- *  This structure corresponds to [user-instrument-0] definitions in the
- *  ~/.seq24usr file.
+ *  This structure corresponds to <tt> [user-instrument-0] </tt>
+ *  definitions in the <tt> ~/.seq24usr </tt> file.
  */
 
 struct user_instrument_definition
@@ -466,9 +527,6 @@ const int c_scales_symbol[c_scale_size][12] =
     { 32, 32, 32, 32, 32, 32, 32, 32, 129, 128, 129, 128},  /* minor */
 };
 
-// up 128
-// down 129
-
 /**
  *  The names of the supported scales.
  */
@@ -528,7 +586,8 @@ const char c_interval_text[][3] =
 
 /**
  *  Provides the entries for the Chord dropdown menu in the Pattern Editor
- *  window.  However, I have not seen this menu in the GUI!
+ *  window.  However, I have not seen this menu in the GUI!  Ah, it only
+ *  appears if the user has selected a musical scale like Major or Minor.
  */
 
 const char c_chord_text[][5] =
@@ -581,7 +640,7 @@ const char * const c_interaction_method_names[] =
  *  Provides descriptions for the mouse-handling used by the application.
  */
 
-const char* const c_interaction_method_descs[] =
+const char * const c_interaction_method_descs[] =
 {
     "original seq24 method",
     "similar to a certain fruity sequencer we like",
@@ -589,7 +648,8 @@ const char* const c_interaction_method_descs[] =
 };
 
 /**
- *
+ *  Provides the value of the interaction method in use, either "seq24" or
+ *  "fruity".
  */
 
 extern interaction_method_e global_interactionmethod;

@@ -22,27 +22,25 @@
 /**
  * \file          fruityseqroll.h
  *
- *  This module declares/defines the base class for ...
+ *  This module declares/defines the base class for seqroll interactions
+ *  using the "fruity" mouse paradigm.
  *
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-02
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
 
 #include "globals.h"
 
-class sequence;
 class perform;
 class seqdata;
 class seqevent;
 class seqkeys;
-
-using namespace Gtk;
-
 class seqroll;
+class sequence;
 
 /**
  *  Implements the fruity mouse interaction paradigm for the seqroll.
@@ -68,6 +66,8 @@ struct FruitySeqRollInput
     }
 
     void updateMousePtr (seqroll & ths);
+
+public:         // callbacks
 
     bool on_button_press_event (GdkEventButton * a_ev, seqroll & ths);
     bool on_button_release_event (GdkEventButton * a_ev, seqroll & ths);

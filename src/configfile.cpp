@@ -25,9 +25,10 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
+ *  We found a couple of unused members in this module and removed them.
  */
 
 #include <iostream>
@@ -37,16 +38,14 @@
  *  Provides the string constructor for a configuration file.
  *
  * @param a_name
- *  The name of the configuration file.
+ *      The name of the configuration file.
  */
 
 configfile::configfile (const std::string & a_name)
  :
     m_name  (a_name),
     m_d     (nullptr),
-    m_l     (),                 // list of characters
-    m_line  (),                 // array of characters
-    m_done  (false)
+    m_line  ()                  // array of characters
 {
    // empty body
 }
@@ -65,7 +64,7 @@ configfile::configfile (const std::string & a_name)
  *  Member m_line is a "global" return value.
  *
  * @param a_file
- *  Points to an input stream.
+ *      Points to an input stream.
  */
 
 void
@@ -85,18 +84,18 @@ configfile::next_data_line (std::ifstream & a_file)
  * This function gets a specific line of text, specified as a tag.
  *
  * @param a_file
- *  Points to the input file stream.
+ *      Points to the input file stream.
  *
  * @param a_tag
- *  Provides a tag to be found.  Lines are read until a match occurs with
- *  this tag.
+ *      Provides a tag to be found.  Lines are read until a match occurs
+ *      with this tag.
  */
 
 void
 configfile::line_after (std::ifstream & a_file, const std::string & a_tag)
 {
     a_file.clear();
-    a_file.seekg(0, ios::beg);
+    a_file.seekg(0, std::ios::beg);
     a_file.getline(m_line, sizeof(m_line));
     while
     (

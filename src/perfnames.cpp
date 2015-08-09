@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-06
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -39,7 +39,7 @@
  *  Principal constructor for this user-interface object.
  */
 
-perfnames::perfnames (perform * a_perf, Adjustment * a_vadjust)
+perfnames::perfnames (perform * a_perf, Gtk::Adjustment * a_vadjust)
  :
     Gtk::DrawingArea    (),
     seqmenu             (a_perf),
@@ -71,13 +71,12 @@ perfnames::perfnames (perform * a_perf, Adjustment * a_vadjust)
     colormap->alloc_color(m_black);
     colormap->alloc_color(m_white);
     colormap->alloc_color(m_grey);
-
     m_vadjust->signal_value_changed().connect
     (
         mem_fun(*(this), &perfnames::change_vert)
     );
     set_double_buffered(false);
-    for (int i = 0; i < c_total_seqs; ++i)
+    for (int i = 0; i < c_max_sequence; ++i)
         m_sequence_active[i] = false;
 }
 
@@ -133,7 +132,7 @@ void
 perfnames::draw_sequence (int sequence)
 {
     int i = sequence - m_sequence_offset;
-    if (sequence < c_total_seqs)
+    if (sequence < c_max_sequence)
     {
         m_gc->set_foreground(m_black);
         m_window->draw_rectangle
@@ -158,7 +157,6 @@ perfnames::draw_sequence (int sequence)
                 m_gc, true, 1, (c_names_y * (i)), (6 * 2) + 1, c_names_y
             );
         }
-
         if (m_mainperf->is_active(sequence))
             m_gc->set_foreground(m_white);
         else
@@ -240,8 +238,8 @@ perfnames::convert_y (int a_y, int * a_seq)
 {
     *a_seq = a_y / c_names_y;
     *a_seq += m_sequence_offset;
-    if (*a_seq >= c_total_seqs)
-        *a_seq = c_total_seqs - 1;
+    if (*a_seq >= c_max_sequence)
+        *a_seq = c_max_sequence - 1;
 
     if (*a_seq < 0)
         *a_seq = 0;
@@ -256,11 +254,9 @@ bool
 perfnames::on_button_press_event (GdkEventButton * a_e)
 {
     int sequence;
-//  int x = (int) a_e->x;
-    int y = (int) a_e->y;
+    int y = (int) a_e->y;              //  int x = (int) a_e->x;
     convert_y(y, &sequence);
     m_current_seq = sequence;
-
     if (a_e->button == 1)                           /* left mouse button */
     {
         if (m_mainperf->is_active(sequence))
@@ -288,7 +284,7 @@ perfnames::on_realize ()
     m_window->clear();
     m_pixmap = Gdk::Pixmap::create
     (
-        m_window, c_names_x, c_names_y * c_total_seqs + 1, -1
+        m_window, c_names_x, c_names_y * c_max_sequence + 1, -1
     );
 }
 
@@ -331,13 +327,10 @@ perfnames::on_scroll_event (GdkEventScroll * a_ev)
 {
     double val = m_vadjust->get_value();
     if (a_ev->direction == GDK_SCROLL_UP)
-    {
         val -= m_vadjust->get_step_increment();
-    }
     if (a_ev->direction == GDK_SCROLL_DOWN)
-    {
         val += m_vadjust->get_step_increment();
-    }
+
     m_vadjust->clamp_page(val, val + m_vadjust->get_page_size());
     return true;
 }
@@ -367,7 +360,7 @@ perfnames::redraw_dirty_sequences ()
     for (int y = y_s; y <= y_f; y++)
     {
         int seq = y + m_sequence_offset;
-        if (seq < c_total_seqs)
+        if (seq < c_max_sequence)
         {
             bool dirty = (m_mainperf->is_dirty_names(seq));
             if (dirty)

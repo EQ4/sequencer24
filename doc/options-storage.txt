@@ -1,0 +1,102 @@
+
+This file simply lists the items read/written via the optionsfile module.
+
+[midi-control]
+
+Read sequences value; write c_midi_controls.
+For i = 0 to sequences:
+    perform::get_midi_control_toggle(i)->m_active,
+    perform::get_midi_control_toggle(i)->m_inverse_active,
+    perform::get_midi_control_toggle(i)->m_status,
+    perform::get_midi_control_toggle(i)->m_data,
+    perform::get_midi_control_toggle(i)->m_min_value,
+    perform::get_midi_control_toggle(i)->m_max_value,
+    perform::get_midi_control_on(i)->m_active,
+    perform::get_midi_control_on(i)->m_inverse_active,
+    perform::get_midi_control_on(i)->m_status,
+    perform::get_midi_control_on(i)->m_data,
+    perform::get_midi_control_on(i)->m_min_value,
+    perform::get_midi_control_on(i)->m_max_value,
+    perform::get_midi_control_off(i)->m_active,
+    perform::get_midi_control_off(i)->m_inverse_active,
+    perform::get_midi_control_off(i)->m_status,
+    perform::get_midi_control_off(i)->m_data,
+    perform::get_midi_control_off(i)->m_min_value,
+    perform::get_midi_control_off(i)->m_max_value
+
+[mute-group]
+
+    perform::select_group_mute(j);
+    Read gtrack value, but thrown away; write c_gmute_tracks
+    For k = 0 to c_seqs_in_set:
+        perform::{gs}et_group_mute_state(k, value[k]);
+
+[midi-clock]
+
+    Read buses value; write perform::get_master_midi_bus()->get_num_out_buses()
+    For i = 0 to buses:
+        perform::get_master_midi_bus()->{gs}et_clock(bus, (clock_e) bus_on);
+
+[keyboard-control]
+
+    Read keys value; write perform::get_key_events().size() or c_seqs_in_set.
+    For i = 0 to keys:
+        perform::{gs}et_key_event(key, seq);
+
+[keyboard-group]
+
+    Read groups value; write perform::get_key_groups().size() or (c_seqs_in_set.
+    for i = 0 to groups:
+        perform::{gs}et_key_group(key, group);
+
+    Read/write:
+        perform::m_key_bpm_up
+        perform::m_key_bpm_dn
+        perform::m_key_screenset_up
+        perform::m_key_screenset_dn
+        perform::m_key_set_playing_screenset
+        perform::m_key_group_on
+        perform::m_key_group_off
+        perform::m_key_group_learn
+        perform::m_key_replace
+        perform::m_key_queue
+        perform::m_key_snapshot_1
+        perform::m_key_snapshot_2
+        perform::m_key_keep_queue
+        perform::m_show_ui_sequence_key
+        perform::m_key_start
+        perform::m_key_stop
+
+[jack-transport]
+
+    Read/write:
+        global_with_jack_transport
+        global_with_jack_master
+        global_with_jack_master_cond
+        global_jack_start_mode
+
+[midi-input]
+
+    Read buses value; write perform::get_master_midi_bus()->get_num_in_buses().
+    For i = 0 to busses:
+        perform::get_master_midi_bus()->set_input(bus, (bool) bus_on);
+
+[midi-clock-mod-ticks]
+
+    Read ticks, midibus::set_clock_mod(ticks); write
+    midibus::get_clock_mod().
+
+[manual-alsa-ports]
+
+    Read flag, global_manual_alsa_ports = flag; write
+    global_manual_alsa_ports.
+
+[last-used-dir]
+
+    Read line, global_last_used_dir.assign(line), write
+        global_last_used_dir.
+
+[interaction-method]
+
+    Read method, global_interactionmethod = method; write
+        global_interactionmethod.

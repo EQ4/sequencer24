@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-06
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -36,8 +36,6 @@
 #include <gtkmm/window.h>
 
 #include "globals.h"
-
-using namespace Gtk;
 
 namespace Gtk
 {
@@ -64,14 +62,14 @@ private:
     perform * const m_mainperf;
     int m_window_x;
     int m_window_y;
-    Adjustment * const m_hadjust;
+    Gtk::Adjustment * const m_hadjust;
     int m_4bar_offset;
     int m_snap;
     int m_measure_length;
 
 public:
 
-    perftime (perform * a_perf, Adjustment * a_hadjust);
+    perftime (perform * a_perf, Gtk::Adjustment * a_hadjust);
 
     void reset ();
     void set_scale (int a_scale);

@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-07
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -39,8 +39,6 @@
 #include <sigc++/bind.h>
 
 #include "globals.h"
-
-using namespace Gtk;
 
 namespace Gtk
 {
@@ -119,85 +117,85 @@ private:
 
     sequence * const m_seq;
     perform * const m_mainperf;
-    MenuBar * m_menubar;
-    Menu * m_menu_tools;
-    Menu * m_menu_zoom;
-    Menu * m_menu_snap;
-    Menu * m_menu_note_length;
+    Gtk::MenuBar * m_menubar;
+    Gtk::Menu * m_menu_tools;
+    Gtk::Menu * m_menu_zoom;
+    Gtk::Menu * m_menu_snap;
+    Gtk::Menu * m_menu_note_length;
 
     /**
      *  Provides the length in measures.
      */
 
-    Menu * m_menu_length;
-    Menu * m_menu_midich;
-    Menu * m_menu_midibus;
-    Menu * m_menu_data;
-    Menu * m_menu_key;
-    Menu * m_menu_scale;
-    Menu * m_menu_sequences;
+    Gtk::Menu * m_menu_length;
+    Gtk::Menu * m_menu_midich;
+    Gtk::Menu * m_menu_midibus;
+    Gtk::Menu * m_menu_data;
+    Gtk::Menu * m_menu_key;
+    Gtk::Menu * m_menu_scale;
+    Gtk::Menu * m_menu_sequences;
 
     /**
      *  These member provife the time signature, beats per measure, and
      *  beat width menus.
      */
 
-    Menu * m_menu_bpm;
-    Menu * m_menu_bw;
-    Menu * m_menu_rec_vol;
+    Gtk::Menu * m_menu_bpm;
+    Gtk::Menu * m_menu_bw;
+    Gtk::Menu * m_menu_rec_vol;
     int m_pos;
-    Adjustment * m_vadjust;
-    Adjustment * m_hadjust;
-    VScrollbar * m_vscroll_new;
-    HScrollbar * m_hscroll_new;
+    Gtk::Adjustment * m_vadjust;
+    Gtk::Adjustment * m_hadjust;
+    Gtk::VScrollbar * m_vscroll_new;
+    Gtk::HScrollbar * m_hscroll_new;
     seqkeys * m_seqkeys_wid;
     seqtime * m_seqtime_wid;
     seqdata * m_seqdata_wid;
     seqevent * m_seqevent_wid;
     seqroll * m_seqroll_wid;
-    Table * m_table;
-    VBox * m_vbox;
-    HBox * m_hbox;
-    HBox * m_hbox2;
-    HBox * m_hbox3;
-    Button * m_button_undo;
-    Button * m_button_redo;
-    Button * m_button_quantize;
-    Button * m_button_tools;
-    Button * m_button_sequence;
-    Entry * m_entry_sequence;
-    Button * m_button_bus;
-    Entry * m_entry_bus;
-    Button * m_button_channel;
-    Entry * m_entry_channel;
-    Button * m_button_snap;
-    Entry * m_entry_snap;
-    Button * m_button_note_length;
-    Entry * m_entry_note_length;
-    Button * m_button_zoom;
-    Entry * m_entry_zoom;
-    Button * m_button_length;
-    Entry * m_entry_length;
-    Button * m_button_key;
-    Entry * m_entry_key;
-    Button * m_button_scale;
-    Entry * m_entry_scale;
-    Tooltips * m_tooltips;
-    Button * m_button_data;
-    Entry * m_entry_data;
-    Button * m_button_bpm;
-    Entry * m_entry_bpm;
-    Button * m_button_bw;
-    Entry * m_entry_bw;
-    Button * m_button_rec_vol;
-    ToggleButton * m_toggle_play;
-    ToggleButton * m_toggle_record;
-    ToggleButton * m_toggle_q_rec;
-    ToggleButton * m_toggle_thru;
-    RadioButton * m_radio_select;
-    RadioButton * m_radio_grow;
-    RadioButton * m_radio_draw;
-    Entry * m_entry_name;
+    Gtk::Table * m_table;
+    Gtk::VBox * m_vbox;
+    Gtk::HBox * m_hbox;
+    Gtk::HBox * m_hbox2;
+    Gtk::HBox * m_hbox3;
+    Gtk::Button * m_button_undo;
+    Gtk::Button * m_button_redo;
+    Gtk::Button * m_button_quantize;
+    Gtk::Button * m_button_tools;
+    Gtk::Button * m_button_sequence;
+    Gtk::Entry * m_entry_sequence;
+    Gtk::Button * m_button_bus;
+    Gtk::Entry * m_entry_bus;
+    Gtk::Button * m_button_channel;
+    Gtk::Entry * m_entry_channel;
+    Gtk::Button * m_button_snap;
+    Gtk::Entry * m_entry_snap;
+    Gtk::Button * m_button_note_length;
+    Gtk::Entry * m_entry_note_length;
+    Gtk::Button * m_button_zoom;
+    Gtk::Entry * m_entry_zoom;
+    Gtk::Button * m_button_length;
+    Gtk::Entry * m_entry_length;
+    Gtk::Button * m_button_key;
+    Gtk::Entry * m_entry_key;
+    Gtk::Button * m_button_scale;
+    Gtk::Entry * m_entry_scale;
+    Gtk::Tooltips * m_tooltips;
+    Gtk::Button * m_button_data;
+    Gtk::Entry * m_entry_data;
+    Gtk::Button * m_button_bpm;
+    Gtk::Entry * m_entry_bpm;
+    Gtk::Button * m_button_bw;
+    Gtk::Entry * m_entry_bw;
+    Gtk::Button * m_button_rec_vol;
+    Gtk::ToggleButton * m_toggle_play;
+    Gtk::ToggleButton * m_toggle_record;
+    Gtk::ToggleButton * m_toggle_q_rec;
+    Gtk::ToggleButton * m_toggle_thru;
+    Gtk::RadioButton * m_radio_select;
+    Gtk::RadioButton * m_radio_grow;
+    Gtk::RadioButton * m_radio_draw;
+    Gtk::Entry * m_entry_name;
 
     /**
      *  Indicates what is the data window currently editing?
@@ -243,7 +241,7 @@ private:
      * An unsed, empty function:    void menu_action_quantise ();
      */
 
-    void popup_menu (Menu * a_menu);
+    void popup_menu (Gtk::Menu * a_menu);
     void popup_event_menu ();
     void popup_midibus_menu ();
     void popup_sequence_menu ();

@@ -6,7 +6,7 @@
 # \library     sequencer24
 # \author      Chris Ahlstrom
 # \date        2015-07-24
-# \updates     2015-07-24
+# \updates     2015-08-08
 # \version     $Revision$
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
@@ -124,7 +124,7 @@ libtool: $(LIBTOOL_DEPS)
 # SUBDIRS
 #-----------------------------------------------------------------------------
 
-SUBDIRS = man src
+SUBDIRS = man src src/pixmaps doc/dox
 
 #*****************************************************************************
 # DIST_SUBDIRS

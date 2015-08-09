@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-07
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -38,8 +38,6 @@
 #include <gtkmm/widget.h>       // somehow, can't forward-declare GdkEventAny
 
 #include "globals.h"
-
-using namespace Gtk;
 
 /*
  *  Since these items are pointers, we were able to move (most) of the
@@ -88,39 +86,39 @@ class perfedit: public Gtk::Window
 private:
 
     perform * m_mainperf;
-    Table * m_table;
-    Adjustment * m_vadjust;
-    Adjustment * m_hadjust;
-    VScrollbar * m_vscroll;
-    HScrollbar * m_hscroll;
+    Gtk::Table * m_table;
+    Gtk::Adjustment * m_vadjust;
+    Gtk::Adjustment * m_hadjust;
+    Gtk::VScrollbar * m_vscroll;
+    Gtk::HScrollbar * m_hscroll;
     perfnames * m_perfnames;
     perfroll * m_perfroll;
     perftime * m_perftime;
-    Menu * m_menu_snap;
-    Button * m_button_snap;
-    Entry * m_entry_snap;
-    Button * m_button_stop;
-    Button * m_button_play;
-    ToggleButton * m_button_loop;
-    Button * m_button_expand;
-    Button * m_button_collapse;
-    Button * m_button_copy;
-    Button * m_button_grow;
-    Button * m_button_undo;
-    Button * m_button_bpm;
-    Entry * m_entry_bpm;
-    Button * m_button_bw;
-    Entry * m_entry_bw;
-    HBox * m_hbox;
-    HBox * m_hlbox;
-    Tooltips * m_tooltips;              // why not conditional on Gtk version?
+    Gtk::Menu * m_menu_snap;
+    Gtk::Button * m_button_snap;
+    Gtk::Entry * m_entry_snap;
+    Gtk::Button * m_button_stop;
+    Gtk::Button * m_button_play;
+    Gtk::ToggleButton * m_button_loop;
+    Gtk::Button * m_button_expand;
+    Gtk::Button * m_button_collapse;
+    Gtk::Button * m_button_copy;
+    Gtk::Button * m_button_grow;
+    Gtk::Button * m_button_undo;
+    Gtk::Button * m_button_bpm;
+    Gtk::Entry * m_entry_bpm;
+    Gtk::Button * m_button_bw;
+    Gtk::Entry * m_entry_bw;
+    Gtk::HBox * m_hbox;
+    Gtk::HBox * m_hlbox;
+    Gtk::Tooltips * m_tooltips;              // why not conditional on Gtk version?
 
     /**
      * Menus for time signature, beats per measure, beat width.
      */
 
-    Menu * m_menu_bpm;
-    Menu * m_menu_bw;
+    Gtk::Menu * m_menu_bpm;
+    Gtk::Menu * m_menu_bw;
 
     /**
      * Set snap-to in "pulses".
@@ -151,7 +149,7 @@ private:
     void collapse ();
     void copy ();
     void undo ();
-    void popup_menu (Menu * a_menu);
+    void popup_menu (Gtk::Menu * a_menu);
     bool timeout ();
 
     void on_realize ();

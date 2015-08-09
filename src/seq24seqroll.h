@@ -27,14 +27,12 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
 
 #include "globals.h"
-
-using namespace Gtk;
 
 class seqroll;
 
@@ -56,7 +54,7 @@ struct Seq24SeqRollInput
         // Empty body
     }
 
-    void set_adding (bool a_adding, seqroll& ths);
+    void set_adding (bool a_adding, seqroll & ths);
 
     bool on_button_press_event (GdkEventButton * a_ev, seqroll & ths);
     bool on_button_release_event (GdkEventButton * a_ev, seqroll & ths);

@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-07
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -44,9 +44,6 @@
 #include "maintime.h"
 #include "perfedit.h"
 #include "options.h"
-
-using namespace Gtk;
-using namespace Menu_Helpers;
 
 /**
  *  This class implements the functionality of the main window of the
@@ -78,17 +75,17 @@ private:
     bool m_modified;
 
 #if GTK_MINOR_VERSION < 12
-    Tooltips * m_tooltips;
+    Gtk::Tooltips * m_tooltips;
 #endif
 
     /**
      *  Theses objects support the menu and its sub-menus.
      */
 
-    MenuBar * m_menubar;
-    Menu * m_menu_file;
-    Menu * m_menu_view;
-    Menu * m_menu_help;
+    Gtk::MenuBar * m_menubar;
+    Gtk::Menu * m_menu_file;
+    Gtk::Menu * m_menu_view;
+    Gtk::Menu * m_menu_help;
 
     /**
      *  The biggest sub-components of mainwnd.  The first is the Patterns
@@ -126,39 +123,39 @@ private:
      *  button.
      */
 
-    Button * m_button_learn;
+    Gtk::Button * m_button_learn;
 
     /**
      *  Implements the red square stop button.
      */
 
-    Button * m_button_stop;
+    Gtk::Button * m_button_stop;
 
     /**
      *  Implements the green triangle play button.
      */
 
-    Button * m_button_play;
+    Gtk::Button * m_button_play;
 
     /**
      *  The button for bringing up the Song Editor (Performance Editor).
      */
 
-    Button * m_button_perfedit;
+    Gtk::Button * m_button_perfedit;
 
     /**
      *  The spin/adjustment controls for the BPM (beats-per-minute) value.
      */
 
-    SpinButton * m_spinbutton_bpm;
-    Adjustment * m_adjust_bpm;
+    Gtk::SpinButton * m_spinbutton_bpm;
+    Gtk::Adjustment * m_adjust_bpm;
 
     /**
      *  The spin/adjustment controls for the screen set value.
      */
 
-    SpinButton * m_spinbutton_ss;
-    Adjustment * m_adjust_ss;
+    Gtk::SpinButton * m_spinbutton_ss;
+    Gtk::Adjustment * m_adjust_ss;
 
     /**
      *  The spin/adjustment controls for the load offset value.
@@ -166,14 +163,14 @@ private:
      *  but I've never seen the button!
      */
 
-    SpinButton * m_spinbutton_load_offset;
-    Adjustment * m_adjust_load_offset;
+    Gtk::SpinButton * m_spinbutton_load_offset;
+    Gtk::Adjustment * m_adjust_load_offset;
 
     /**
      *  What is this?
      */
 
-    Entry * m_entry_notes;
+    Gtk::Entry * m_entry_notes;
 
     /**
      *  Provides a timeout handler?

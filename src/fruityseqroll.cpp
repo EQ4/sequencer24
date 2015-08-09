@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-07
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -46,7 +46,7 @@
 inline static long
 clamp (long val, long low, long hi)
 {
-    return val < low ? low : hi < val ? hi : val;
+    return val < low ? low : (hi < val ? hi : val) ;
 }
 
 /**

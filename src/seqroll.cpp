@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-07
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -55,8 +55,8 @@ seqroll::seqroll
     seqevent * a_seqevent_wid,
     seqkeys * a_seqkeys_wid,
     int a_pos,
-    Adjustment * a_hadjust,
-    Adjustment * a_vadjust
+    Gtk::Adjustment * a_hadjust,
+    Gtk::Adjustment * a_vadjust
 ) :
     m_gc                    (),
     m_window                (),
@@ -112,8 +112,6 @@ seqroll::seqroll
     m_drawing_background_seq(false),
     m_ignore_redraw         (false)
 {
-    using namespace Menu_Helpers;
-
     Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
     colormap->alloc_color(m_black);
     colormap->alloc_color(m_white);

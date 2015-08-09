@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -37,8 +37,6 @@
 #include <sigc++/bind.h>
 
 #include "globals.h"
-
-using namespace Gtk;
 
 namespace Gtk
 {
@@ -82,26 +80,26 @@ private:
 private:
 
 #if GTK_MINOR_VERSION < 12
-    Tooltips * m_tooltips;
+    Gtk::Tooltips * m_tooltips;
 #endif
 
     /**
      *  The performance object to which some of these options apply.
      */
 
-    perform * m_perf;
+    perform * m_mainperf;
 
     /**
      *  The famous "OK" button's pointer.
      */
 
-    Button * m_button_ok;
+    Gtk::Button * m_button_ok;
 
     /**
      *  Not sure yet what this notebook is for.  Must be a GTK thang.
      */
 
-    Notebook * m_notebook;
+    Gtk::Notebook * m_notebook;
 
 public:
 
@@ -109,12 +107,12 @@ public:
 
 private:
 
-    void clock_callback_off (int a_bus, RadioButton * a_button);
-    void clock_callback_on (int a_bus, RadioButton * a_button);
-    void clock_callback_mod (int a_bus, RadioButton * a_button);
-    void clock_mod_callback (Adjustment * adj);
-    void input_callback (int a_bus, Button * a_button);
-    void transport_callback (button a_type, Button * a_button);
+    void clock_callback_off (int a_bus, Gtk::RadioButton * a_button);
+    void clock_callback_on (int a_bus, Gtk::RadioButton * a_button);
+    void clock_callback_mod (int a_bus, Gtk::RadioButton * a_button);
+    void clock_mod_callback (Gtk::Adjustment * adj);
+    void input_callback (int a_bus, Gtk::Button * a_button);
+    void transport_callback (button a_type, Gtk::Button * a_button);
     void mouse_seq24_callback (Gtk::RadioButton *);
     void mouse_fruity_callback (Gtk::RadioButton *);
 

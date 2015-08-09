@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-07
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  *  Note that the parse function has some code that is not yet enabled.
@@ -58,17 +58,17 @@ userfile::~userfile ()
 
 /**
  *  Parses a "usr" file, filling in the given perform object.
- *  This function opens the file as a binary file.  ?
+ *  This function opens the file as a text file (line-oriented).
  */
 
 bool
 userfile::parse (perform * a_perf)
 {
-    std::ifstream file(m_name.c_str(), ios::in | ios::ate);
+    std::ifstream file(m_name.c_str(), std::ios::in | std::ios::ate);
     if (! file.is_open())
         return false;
 
-    file.seekg(0, ios::beg);                            /* seek to start */
+    file.seekg(0, std::ios::beg);                       /* seek to start */
     line_after(file, "[user-midi-bus-definitions]");    /* find the tag  */
     int buses = 0;
     sscanf(m_line, "%d", &buses);                       /* atavistic!    */
@@ -311,6 +311,10 @@ userfile::parse (perform * a_perf)
     return true;
 }
 
+/**
+ *  This function just returns false, as there is no "perfrom" information
+ *  in the user-file.
+ */
 
 bool
 userfile::write (perform * a_perf)

@@ -6,7 +6,7 @@ dnl \file          configure.ac
 dnl \library       sequencer24
 dnl \author        Chris Ahlstrom
 dnl \date          2015-07-24
-dnl \update        2015-08-02
+dnl \update        2015-08-08
 dnl \version       $Revision$
 dnl \license       $XPC_SUITE_GPL_LICENSE$
 dnl
@@ -49,7 +49,7 @@ PACKAGE=sequencer24
 AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE")
 AC_SUBST(PACKAGE)
 
-VERSION="0.2.0"
+VERSION="0.9.3"
 AC_DEFINE_UNQUOTED(VERSION, "$VERSION")
 AC_SUBST(VERSION)
 
@@ -402,7 +402,7 @@ dnl #define API_VERSION "0.9"             // already defined on command line
 
 AH_TOP(
 
-#define VERSION_DATE_SHORT "2015-07-24"
+#define VERSION_DATE_SHORT "2015-08-08"
 #define VERSION "0.9.3"
 
 )
@@ -437,5 +437,18 @@ dnl CXXFLAGS="$CFLAGS $COMMONFLAGS -Wno-variadic-macros"
 CFLAGS="$CFLAGS $COMMONFLAGS"
 CXXFLAGS="$CFLAGS -Wno-variadic-macros"
 
-AC_OUTPUT(Makefile man/Makefile src/Makefile src/pixmaps/Makefile)
+AC_CONFIG_FILES([
+ Makefile
+ man/Makefile
+ src/Makefile
+ src/pixmaps/Makefile
+ doc/dox/Makefile
+ ])
 
+AC_OUTPUT
+
+dnl ***************************************************************************
+dnl configure.ac (midicvt)
+dnl ---------------------------------------------------------------------------
+dnl vim: ts=4 sw=4 et ft=config
+dnl ---------------------------------------------------------------------------

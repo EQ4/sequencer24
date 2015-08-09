@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -133,7 +133,10 @@ midifile::read_var ()
 bool
 midifile::parse (perform * a_perf, int a_screen_set)
 {
-    std::ifstream file(m_name.c_str(), ios::in | ios::binary | ios::ate);
+    std::ifstream file
+    (
+        m_name.c_str(), std::ios::in | std::ios::binary | std::ios::ate
+    );
     if (! file.is_open())
     {
         errprint("Error opening MIDI file");
@@ -141,7 +144,7 @@ midifile::parse (perform * a_perf, int a_screen_set)
     }
 
     int file_size = file.tellg();                   /* get end offset ??  */
-    file.seekg(0, ios::beg);                        /* seek to start      */
+    file.seekg(0, std::ios::beg);                   /* seek to start      */
     try
     {
         m_data.resize(file_size);                   /* allocate more data */
@@ -616,7 +619,7 @@ bool midifile::write (perform * a_perf)
     write_short(c_max_sets);
     for (int i = 0; i < c_max_sets; i++)
     {
-        string * note = a_perf->get_screen_set_notepad(i);
+        std::string * note = a_perf->get_screen_set_notepad(i);
         write_short(note->length());
         for (unsigned int j = 0; j < note->length(); j++)
             write_byte((*note)[j]);
@@ -634,7 +637,10 @@ bool midifile::write (perform * a_perf)
             write_long(a_perf->get_group_mute_state(i));
     }
 
-    std::ofstream file(m_name.c_str(), ios::out | ios::binary | ios::trunc);
+    std::ofstream file
+    (
+        m_name.c_str(), std::ios::out | std::ios::binary | std::ios::trunc
+    );
     if (! file.is_open())
         return false;
 

@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-06
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -3201,14 +3201,14 @@ sequence::get_thru ()
 /* sets sequence name */
 
 void
-sequence::set_name (char *a_name)
+sequence::set_name (char * a_name)
 {
     m_name = a_name;
     set_dirty_mp();
 }
 
 void
-sequence::set_name (std::string a_name)
+sequence::set_name (const std::string & a_name)
 {
     m_name = a_name;
     set_dirty_mp();

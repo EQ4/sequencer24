@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
  */
@@ -54,8 +54,6 @@ seqmenu::seqmenu (perform * a_p)
     m_seqedit       (nullptr),
     m_current_seq   (0)
 {
-    using namespace Menu_Helpers;
-
     m_clipboard.set_master_midi_bus(a_p->get_master_midi_bus());
 }
 
@@ -82,12 +80,12 @@ seqmenu::~seqmenu ()
 void
 seqmenu::popup_menu ()
 {
-    using namespace Menu_Helpers;
+    using namespace Gtk::Menu_Helpers;
 
     if (not_nullptr(m_menu))
         delete m_menu;
 
-    m_menu = manage(new Menu());
+    m_menu = manage(new Gtk::Menu());
     if (m_mainperf->is_active(m_current_seq))
     {
         m_menu->items().push_back
@@ -122,7 +120,7 @@ seqmenu::popup_menu ()
         );
     }
     m_menu->items().push_back(SeparatorElem());
-    Menu * menu_song = manage(new Menu());
+    Gtk::Menu * menu_song = manage(new Gtk::Menu());
     m_menu->items().push_back(MenuElem("Song", *menu_song));
     if (m_mainperf->is_active(m_current_seq))
     {
@@ -138,7 +136,7 @@ seqmenu::popup_menu ()
     if (m_mainperf->is_active(m_current_seq))
     {
         m_menu->items().push_back(SeparatorElem());
-        Menu * menu_buses = manage(new Menu());
+        Gtk::Menu * menu_buses = manage(new Gtk::Menu());
         m_menu->items().push_back(MenuElem("Midi Bus", *menu_buses));
 
         /* Get the MIDI buses */
@@ -146,7 +144,7 @@ seqmenu::popup_menu ()
         mastermidibus * masterbus = m_mainperf->get_master_midi_bus();
         for (int i = 0; i < masterbus->get_num_out_buses(); i++)
         {
-            Menu * menu_channels = manage(new Menu());
+            Gtk::Menu * menu_channels = manage(new Gtk::Menu());
             menu_buses->items().push_back
             (
                 MenuElem(masterbus->get_midi_out_bus_name(i), *menu_channels)
@@ -156,17 +154,15 @@ seqmenu::popup_menu ()
             for (int j = 0; j < 16; j++)                /* MIDI channel menu */
             {
                 snprintf(b, sizeof(b), "%d", j + 1);
-                std::string name = string(b);
-                int instrument = global_user_midi_bus_definitions[i].
-                    instrument[j] ;
-
-                if (instrument >= 0 && instrument < c_max_busses)
+                std::string name = std::string(b);
+                int instrum = global_user_midi_bus_definitions[i].instrument[j] ;
+                if (instrum >= 0 && instrum < c_max_busses)
                 {
                     name = name +
                     (
                         std::string(" (") +
-                        global_user_instrument_definitions[instrument].
-                            instrument + std::string(")")
+                        global_user_instrument_definitions[instrum].instrument +
+                        std::string(")")
                     );
                 }
 

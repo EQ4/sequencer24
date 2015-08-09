@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-06
+ * \updates       2015-08-07
  * \license       GNU GPLv2 or above
  *
  */
@@ -2560,7 +2560,7 @@ perform::input_func ()
 void
 perform::save_playing_state ()
 {
-    for (int i = 0; i < c_total_seqs; i++)
+    for (int i = 0; i < c_max_sequence; i++)
     {
         if (is_active(i))
         {
@@ -2580,7 +2580,7 @@ perform::save_playing_state ()
 void
 perform::restore_playing_state ()
 {
-    for (int i = 0; i < c_total_seqs; i++)
+    for (int i = 0; i < c_max_sequence; i++)
     {
         if (is_active(i))
         {

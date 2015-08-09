@@ -35,8 +35,6 @@
 
 #include <gdk/gdkevents.h>              // GdkEventButton & GdkEventMotion
 
-using namespace Gtk;
-
 class seqevent;
 
 /**

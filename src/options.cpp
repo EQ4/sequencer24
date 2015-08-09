@@ -25,9 +25,25 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
  *
+ *  Here is a list of the global variables used/stored/modified by this
+ *  module:
+ *
+ *      -   c_max_sequence
+ *      -   e_fruity_interaction and e_seq24_interation
+ *      -   e_clock_off, e_clock_pos, e_clock_mod
+ *      -   e_keylabelsonsequence
+ *      -   e_jack_transport, e_jack_master,
+ *          e_jack_master_cond, e_jack_master_connect,
+ *          e_jack_master_disconnect, e_jack_master_song_mode,
+ *      -   global_interactionmethod
+ *      -   global_with_jack_transport);
+ *      -   global_with_jack_master);
+ *      -   global_with_jack_master_cond);
+ *      -   global_jack_start_mode)
+ *      -   global_interactionmethod = e_seq24_interaction;
  */
 
 #include <sstream>
@@ -51,16 +67,6 @@
 #include "sequence.h"
 
 /**
- *  These are some internal constants for the options module.
- */
-
-static const int c_status = 0;
-static const int c_status_inv = 1;
-static const int c_d1 = 2;
-static const int c_d2 = 3;
-static const int c_d3 = 4;
-
-/**
  *  Yet another way to define a constant.
  */
 
@@ -81,13 +87,13 @@ options::options
 ) :
     Gtk::Dialog                     ("Options", parent, true, true),
 #if GTK_MINOR_VERSION < 12
-    m_tooltips                      (manage(new Tooltips()),
+    m_tooltips                      (manage(new Gtk::Tooltips()),
 #endif
-    m_perf                          (a_p),
-    m_button_ok                     (manage(new Button(Gtk::Stock::OK))),
-    m_notebook                      (manage(new Notebook()))
+    m_mainperf                      (a_p),
+    m_button_ok                     (manage(new Gtk::Button(Gtk::Stock::OK))),
+    m_notebook                      (manage(new Gtk::Notebook()))
 {
-    HBox * hbox = manage(new HBox());
+    Gtk::HBox * hbox = manage(new Gtk::HBox());
     get_vbox()->pack_start(*hbox, false, false);
     get_action_area()->set_border_width(2);
     hbox->set_border_width(6);
@@ -103,47 +109,48 @@ options::options
 
 /**
  *  Adds the MIDI Clock page (tab) to the Options dialog.
+ *  It counts the MIDI Output clock busses, among other things.
  */
 
 void
 options::add_midi_clock_page ()
 {
-    // Count the clock busses
-
-    int buses = m_perf->get_master_midi_bus()->get_num_out_buses();
-
-    VBox * vbox = manage(new VBox());
+    int buses = m_mainperf->get_master_midi_bus()->get_num_out_buses();
+    Gtk::VBox * vbox = manage(new Gtk::VBox());
     vbox->set_border_width(6);
     m_notebook->append_page(*vbox, "MIDI _Clock", true);
 #if GTK_MINOR_VERSION < 12
-    manage(new Tooltips());
+    manage(new Gtk::Tooltips());
 #endif
     for (int i = 0; i < buses; i++)
     {
-        HBox * hbox2 = manage(new HBox());
-        Label * label = manage
+        Gtk::HBox * hbox2 = manage(new Gtk::HBox());
+        Gtk::Label * label = manage
         (
-            new Label(m_perf->get_master_midi_bus()->get_midi_out_bus_name(i), 0)
+            new Gtk::Label
+            (
+                m_mainperf->get_master_midi_bus()->get_midi_out_bus_name(i), 0
+            )
         );
         hbox2->pack_start(*label, false, false);
 
-        Gtk::RadioButton * rb_off = manage(new RadioButton("Off"));
-        add_tooltip(rb_off, "Midi Clock will be disabled.");
+        Gtk::RadioButton * rb_off = manage(new Gtk::RadioButton("Off"));
+        add_tooltip(rb_off, "MIDI Clock will be disabled.");
 
-        Gtk::RadioButton * rb_on = manage(new RadioButton("On (Pos)"));
+        Gtk::RadioButton * rb_on = manage(new Gtk::RadioButton("On (Pos)"));
         add_tooltip
         (
             rb_on,
-            "Midi Clock will be sent. Midi Song Position and Midi Continue "
+            "MIDI Clock will be sent. MIDI Song Position and MIDI Continue "
             "will be sent if starting after tick 0 in song mode; otherwise "
-            "Midi Start is sent."
+            "MIDI Start is sent."
         );
 
-        Gtk::RadioButton * rb_mod = manage(new RadioButton("On (Mod)"));
+        Gtk::RadioButton * rb_mod = manage(new Gtk::RadioButton("On (Mod)"));
         add_tooltip
         (
             rb_mod,
-            "Midi Clock will be sent.  Midi Start will be sent and clocking "
+            "MIDI Clock will be sent.  MIDI Start will be sent and clocking "
             "will begin once the song position has reached the modulo of "
             "the specified Size. (Used for gear that doesn't respond to Song "
             "Position)"
@@ -169,13 +176,11 @@ options::add_midi_clock_page ()
         (
             sigc::bind(mem_fun(*this, &options::clock_callback_mod), i, rb_mod)
         );
-
         hbox2->pack_end(*rb_mod, false, false);
         hbox2->pack_end(*rb_on, false, false);
         hbox2->pack_end(*rb_off, false, false);
         vbox->pack_start(*hbox2, false, false);
-
-        switch (m_perf->get_master_midi_bus()->get_clock(i))
+        switch (m_mainperf->get_master_midi_bus()->get_clock(i))
         {
         case e_clock_off:
             rb_off->set_active(1);
@@ -191,15 +196,15 @@ options::add_midi_clock_page ()
         }
     }
 
-    Adjustment * clock_mod_adj = new Adjustment
+    Gtk::Adjustment * clock_mod_adj = new Gtk::Adjustment
     (
         midibus::get_clock_mod(), 1, 16 << 10, 1
     );
-    SpinButton * clock_mod_spin = new SpinButton(*clock_mod_adj);
-    HBox * hbox2 = manage(new HBox());
+    Gtk::SpinButton * clock_mod_spin = new Gtk::SpinButton(*clock_mod_adj);
+    Gtk::HBox * hbox2 = manage(new Gtk::HBox());
     hbox2->pack_start
     (
-        *(manage(new Label("Clock Start Modulo (1/16 Notes)"))), false, false, 4
+        *(manage(new Gtk::Label("Clock Start Modulo (1/16 Notes)"))), false, false, 4
     );
     hbox2->pack_start(*clock_mod_spin, false, false);
     vbox->pack_start(*hbox2, false, false);
@@ -218,26 +223,24 @@ options::add_midi_input_page ()
 {
     // Count the input busses
 
-    int buses = m_perf->get_master_midi_bus()->get_num_in_buses();
-
-    VBox *vbox = manage(new VBox());
+    int buses = m_mainperf->get_master_midi_bus()->get_num_in_buses();
+    Gtk::VBox * vbox = manage(new Gtk::VBox());
     vbox->set_border_width(6);
     m_notebook->append_page(*vbox, "MIDI _Input", true);
-
     for (int i = 0; i < buses; i++)
     {
-        CheckButton * check = manage
+        Gtk::CheckButton * check = manage
         (
-            new CheckButton
+            new Gtk::CheckButton
             (
-                m_perf->get_master_midi_bus()->get_midi_in_bus_name(i), 0
+                m_mainperf->get_master_midi_bus()->get_midi_in_bus_name(i), 0
             )
         );
         check->signal_toggled().connect
         (
             bind(mem_fun(*this, &options::input_callback), i, check)
         );
-        check->set_active(m_perf->get_master_midi_bus()->get_input(i));
+        check->set_active(m_mainperf->get_master_midi_bus()->get_input(i));
         vbox->pack_start(*check, false, false);
     }
 }
@@ -247,144 +250,147 @@ options::add_midi_input_page ()
  */
 
 #define AddKey(text, integer) \
-    label = manage(new Label(text)); \
+    label = manage(new Gtk::Label(text)); \
     hbox->pack_start(*label, false, false, 4); \
     entry = manage(new KeyBindEntry(KeyBindEntry::location, &integer)); \
     hbox->pack_start(*entry, false, false, 4);
 
 /**
  *  Adds the Keyboard page (tab) to the Options dialog.  This tab is the
- *  Keybinding setup editor for the ~/.seq24rc keybindings.
+ *  Keybinding setup editor for the <tt> ~/.seq24rc </tt> keybindings.
  */
 
 void
 options::add_keyboard_page ()
 {
-    VBox * mainbox = manage(new VBox());
+    Gtk::VBox * mainbox = manage(new Gtk::VBox());
     mainbox->set_spacing(6);
     m_notebook->append_page(*mainbox, "_Keyboard", true);
 
-    HBox * hbox = manage(new HBox());
-    CheckButton * check = manage
+    Gtk::HBox * hbox = manage(new Gtk::HBox());
+    Gtk::CheckButton * check = manage
     (
-        new CheckButton("_Show key labels on sequences", true)
+        new Gtk::CheckButton("_Show key labels on sequences", true)
     );
     check->signal_toggled().connect
     (
         bind
         (
             mem_fun(*this, &options::input_callback),
-            (int) e_keylabelsonsequence, check
+            int(e_keylabelsonsequence), check
         )
     );
-    check->set_active(m_perf->m_show_ui_sequence_key);
+    check->set_active(m_mainperf->m_show_ui_sequence_key);
     mainbox->pack_start(*check, false, false);
 
     /* Frame for sequence toggle keys */
 
-    Frame * controlframe = manage(new Frame("Control keys"));
+    Gtk::Frame * controlframe = manage(new Gtk::Frame("Control keys"));
     controlframe->set_border_width(4);
     mainbox->pack_start(*controlframe, Gtk::PACK_SHRINK);
 
-    Table * controltable = manage(new Table(4, 8, false));
+    Gtk::Table * controltable = manage(new Gtk::Table(4, 8, false));
     controltable->set_border_width(4);
     controltable->set_spacings(4);
     controlframe->add(*controltable);
 
-    Label * label = manage(new Label("Start", Gtk::ALIGN_RIGHT));
+    Gtk::Label * label = manage(new Gtk::Label("Start", Gtk::ALIGN_RIGHT));
     KeyBindEntry * entry = manage
     (
-        new KeyBindEntry(KeyBindEntry::location, &m_perf->m_key_start)
+        new KeyBindEntry
+        (
+            KeyBindEntry::location, &m_mainperf->m_key_start
+        )
     );
     controltable->attach(*label, 0, 1, 0, 1);
     controltable->attach(*entry, 1, 2, 0, 1);
 
-    label = manage(new Label("Stop", Gtk::ALIGN_RIGHT));
+    label = manage(new Gtk::Label("Stop", Gtk::ALIGN_RIGHT));
     entry = manage
     (
-        new KeyBindEntry(KeyBindEntry::location, &m_perf->m_key_stop)
+        new KeyBindEntry(KeyBindEntry::location, &m_mainperf->m_key_stop)
     );
     controltable->attach(*label, 0, 1, 1, 2);
     controltable->attach(*entry, 1, 2, 1, 2);
 
-    label = manage(new Label("Snapshot 1", Gtk::ALIGN_RIGHT));
+    label = manage(new Gtk::Label("Snapshot 1", Gtk::ALIGN_RIGHT));
     entry = manage
     (
-        new KeyBindEntry(KeyBindEntry::location, &m_perf->m_key_snapshot_1)
+        new KeyBindEntry(KeyBindEntry::location, &m_mainperf->m_key_snapshot_1)
     );
     controltable->attach(*label, 2, 3, 0, 1);
     controltable->attach(*entry, 3, 4, 0, 1);
 
-    label = manage(new Label("Snapshot 2", Gtk::ALIGN_RIGHT));
+    label = manage(new Gtk::Label("Snapshot 2", Gtk::ALIGN_RIGHT));
     entry = manage
     (
-        new KeyBindEntry(KeyBindEntry::location, &m_perf->m_key_snapshot_2)
+        new KeyBindEntry(KeyBindEntry::location, &m_mainperf->m_key_snapshot_2)
     );
     controltable->attach(*label, 2, 3, 1, 2);
     controltable->attach(*entry, 3, 4, 1, 2);
 
-    label = manage(new Label("bpm down", Gtk::ALIGN_RIGHT));
+    label = manage(new Gtk::Label("bpm down", Gtk::ALIGN_RIGHT));
     entry = manage
     (
-        new KeyBindEntry(KeyBindEntry::location, &m_perf->m_key_bpm_dn)
+        new KeyBindEntry(KeyBindEntry::location, &m_mainperf->m_key_bpm_dn)
     );
     controltable->attach(*label, 2, 3, 3, 4);
     controltable->attach(*entry, 3, 4, 3, 4);
 
-    label = manage(new Label("bpm up", Gtk::ALIGN_RIGHT));
+    label = manage(new Gtk::Label("bpm up", Gtk::ALIGN_RIGHT));
     entry = manage
     (
-        new KeyBindEntry(KeyBindEntry::location, &m_perf->m_key_bpm_up)
+        new KeyBindEntry(KeyBindEntry::location, &m_mainperf->m_key_bpm_up)
     );
     controltable->attach(*label, 2, 3, 2, 3);
     controltable->attach(*entry, 3, 4, 2, 3);
 
-    label = manage(new Label("Replace", Gtk::ALIGN_RIGHT));
+    label = manage(new Gtk::Label("Replace", Gtk::ALIGN_RIGHT));
     entry = manage
     (
-        new KeyBindEntry(KeyBindEntry::location, &m_perf->m_key_replace)
+        new KeyBindEntry(KeyBindEntry::location, &m_mainperf->m_key_replace)
     );
     controltable->attach(*label, 4, 5, 0, 1);
     controltable->attach(*entry, 5, 6, 0, 1);
 
-    label = manage(new Label("Queue", Gtk::ALIGN_RIGHT));
+    label = manage(new Gtk::Label("Queue", Gtk::ALIGN_RIGHT));
     entry = manage
     (
-        new KeyBindEntry(KeyBindEntry::location, &m_perf->m_key_queue)
+        new KeyBindEntry(KeyBindEntry::location, &m_mainperf->m_key_queue)
     );
     controltable->attach(*label, 4, 5, 1, 2);
     controltable->attach(*entry, 5, 6, 1, 2);
 
-    label = manage(new Label("Keep queue", Gtk::ALIGN_RIGHT));
+    label = manage(new Gtk::Label("Keep queue", Gtk::ALIGN_RIGHT));
     entry = manage
     (
-        new KeyBindEntry(KeyBindEntry::location, &m_perf->m_key_keep_queue)
+        new KeyBindEntry(KeyBindEntry::location, &m_mainperf->m_key_keep_queue)
     );
     controltable->attach(*label, 4, 5, 2, 3);
     controltable->attach(*entry, 5, 6, 2, 3);
 
-    label = manage(new Label("Screenset up", Gtk::ALIGN_RIGHT));
+    label = manage(new Gtk::Label("Screenset up", Gtk::ALIGN_RIGHT));
     entry = manage
     (
-        new KeyBindEntry(KeyBindEntry::location, &m_perf->m_key_screenset_up)
+        new KeyBindEntry(KeyBindEntry::location, &m_mainperf->m_key_screenset_up)
     );
     controltable->attach(*label, 6, 7, 0, 1);
     controltable->attach(*entry, 7, 8, 0, 1);
 
-    label = manage(new Label("Screenset down", Gtk::ALIGN_RIGHT));
+    label = manage(new Gtk::Label("Screenset down", Gtk::ALIGN_RIGHT));
     entry = manage
     (
-        new KeyBindEntry(KeyBindEntry::location, &m_perf->m_key_screenset_dn)
+        new KeyBindEntry(KeyBindEntry::location, &m_mainperf->m_key_screenset_dn)
     );
     controltable->attach(*label, 6, 7, 1, 2);
     controltable->attach(*entry, 7, 8, 1, 2);
 
-    label = manage(new Label("Set playing screenset", Gtk::ALIGN_RIGHT));
+    label = manage(new Gtk::Label("Set playing screenset", Gtk::ALIGN_RIGHT));
     entry = manage
     (
         new KeyBindEntry
         (
-            KeyBindEntry::location, &m_perf->m_key_set_playing_screenset
+            KeyBindEntry::location, &m_mainperf->m_key_set_playing_screenset
         )
     );
     controltable->attach(*label, 6, 7, 2, 3);
@@ -392,29 +398,26 @@ options::add_keyboard_page ()
 
     /* Frame for sequence toggle keys */
 
-    Frame * toggleframe = manage(new Frame("Sequence toggle keys"));
+    Gtk::Frame * toggleframe = manage(new Gtk::Frame("Sequence toggle keys"));
     toggleframe->set_border_width(4);
     mainbox->pack_start(*toggleframe, Gtk::PACK_SHRINK);
 
-    Table * toggletable = manage(new Table(4, 16, false));
+    Gtk::Table * toggletable = manage(new Gtk::Table(4, 16, false));
     toggletable->set_border_width(4);
     toggletable->set_spacings(4);
     toggleframe->add(*toggletable);
 
-    Label * numlabel;
-    int x = 0;
-    int y = 0;
     for (int i = 0; i < 32; i++)
     {
-        x = i % 8 * 2;
-        y = i / 8;
+        int x = i % 8 * 2;
+        int y = i / 8;
         int slot = x * 2 + y;           // count this way: 0, 4, 8, 16...
         char buf[16];
         snprintf(buf, sizeof(buf), "%d", slot);
-        numlabel = manage(new Label(buf, Gtk::ALIGN_RIGHT));
+        Gtk::Label * numlabel = manage(new Gtk::Label(buf, Gtk::ALIGN_RIGHT));
         entry = manage
         (
-            new KeyBindEntry(KeyBindEntry::events, NULL, m_perf, slot)
+            new KeyBindEntry(KeyBindEntry::events, NULL, m_mainperf, slot)
         );
         toggletable->attach(*numlabel, x, x+1, y, y+1);
         toggletable->attach(*entry, x+1, x+2, y, y+1);
@@ -422,35 +425,37 @@ options::add_keyboard_page ()
 
     /* Frame for mute group slots */
 
-    Frame * mutegroupframe = manage(new Frame("Mute-group slots"));
+    Gtk::Frame * mutegroupframe = manage(new Gtk::Frame("Mute-group slots"));
     mutegroupframe->set_border_width(4);
     mainbox->pack_start(*mutegroupframe, Gtk::PACK_SHRINK);
 
-    Table * mutegrouptable = manage(new Table(4, 16, false));
+    Gtk::Table * mutegrouptable = manage(new Gtk::Table(4, 16, false));
     mutegrouptable->set_border_width(4);
     mutegrouptable->set_spacings(4);
     mutegroupframe->add(*mutegrouptable);
     for (int i = 0; i < 32; i++)
     {
-        x = i % 8 * 2;
-        y = i / 8;
+        int x = i % 8 * 2;
+        int y = i / 8;
         char buf[16];
         snprintf(buf, sizeof(buf), "%d", i);
-        numlabel = manage(new Label(buf, Gtk::ALIGN_RIGHT));
+        Gtk::Label * numlabel = manage(new Gtk::Label(buf, Gtk::ALIGN_RIGHT));
         entry = manage
         (
-            new KeyBindEntry(KeyBindEntry::groups, NULL, m_perf, i)
+            new KeyBindEntry(KeyBindEntry::groups, NULL, m_mainperf, i)
         );
         mutegrouptable->attach(*numlabel, x, x+1, y, y+1);
         mutegrouptable->attach(*entry, x+1, x+2, y, y+1);
     }
-
-    hbox = manage(new HBox());
-    AddKey("Learn (while pressing a mute-group key):", m_perf->m_key_group_learn);
-    AddKey("Disable:", m_perf->m_key_group_off);
-    AddKey("Enable:", m_perf->m_key_group_on);
+    hbox = manage(new Gtk::HBox());
+    AddKey
+    (
+        "Learn (while pressing a mute-group key):",
+        m_mainperf->m_key_group_learn
+    );
+    AddKey("Disable:", m_mainperf->m_key_group_off);
+    AddKey("Enable:", m_mainperf->m_key_group_on);
     mainbox->pack_start(*hbox, false, false);
-
 }
 
 #undef AddKey
@@ -462,37 +467,36 @@ options::add_keyboard_page ()
 void
 options::add_mouse_page ()
 {
-    VBox * vbox = manage(new VBox());
+    Gtk::VBox * vbox = manage(new Gtk::VBox());
     m_notebook->append_page(*vbox, "_Mouse", true);
 
     /* Frame for transport options */
 
-    Frame * interactionframe = manage(new Frame("Interaction method"));
+    Gtk::Frame * interactionframe = manage(new Gtk::Frame("Interaction method"));
     interactionframe->set_border_width(4);
     vbox->pack_start(*interactionframe, Gtk::PACK_SHRINK);
 
-    VBox * interactionbox = manage(new VBox());
+    Gtk::VBox * interactionbox = manage(new Gtk::VBox());
     interactionbox->set_border_width(4);
     interactionframe->add(*interactionbox);
 
     Gtk::RadioButton * rb_seq24 = manage
     (
-        new RadioButton("se_q24 (original style)", true)
+        new Gtk::RadioButton("Se_q24 (original style)", true)
     );
     interactionbox->pack_start(*rb_seq24, Gtk::PACK_SHRINK);
 
     Gtk::RadioButton * rb_fruity = manage
     (
-        new RadioButton
+        new Gtk::RadioButton
         (
-            "_fruity (similar to a certain well known sequencer)", true
+            "_Fruity (similar to a certain well-known sequencer)", true
         )
     );
     interactionbox->pack_start(*rb_fruity, Gtk::PACK_SHRINK);
 
     Gtk::RadioButton::Group group = rb_seq24->get_group();
     rb_fruity->set_group(group);
-
     switch (global_interactionmethod)
     {
     case e_fruity_interaction:
@@ -508,7 +512,6 @@ options::add_mouse_page ()
     (
         sigc::bind(mem_fun(*this, &options::mouse_seq24_callback), rb_seq24)
     );
-
     rb_fruity->signal_toggled().connect
     (
         sigc::bind(mem_fun(*this, &options::mouse_fruity_callback), rb_fruity)
@@ -523,21 +526,21 @@ void
 options::add_jack_sync_page ()
 {
 #ifdef JACK_SUPPORT
-    VBox * vbox = manage(new VBox());
+    Gtk::VBox * vbox = manage(new Gtk::VBox());
     vbox->set_border_width(4);
-    m_notebook->append_page(*vbox, "_Jack Sync", true);
+    m_notebook->append_page(*vbox, "_JACK Sync", true);
 
     /* Frame for transport options */
 
-    Frame * transportframe = manage(new Frame("Transport"));
+    Gtk::Frame * transportframe = manage(new Gtk::Frame("Transport"));
     transportframe->set_border_width(4);
     vbox->pack_start(*transportframe, Gtk::PACK_SHRINK);
 
-    VBox * transportbox = manage(new VBox());
+    Gtk::VBox * transportbox = manage(new Gtk::VBox());
     transportbox->set_border_width(4);
     transportframe->add(*transportbox);
 
-    CheckButton * check = manage(new CheckButton("Jack _Transport", true));
+    Gtk::CheckButton * check = manage(new Gtk::CheckButton("JACK _Transport", true));
     check->set_active(global_with_jack_transport);
     add_tooltip(check, "Enable sync with JACK Transport.");
     check->signal_toggled().connect
@@ -550,7 +553,7 @@ options::add_jack_sync_page ()
     );
     transportbox->pack_start(*check, false, false);
 
-    check = manage(new CheckButton("Trans_port Master", true));
+    check = manage(new Gtk::CheckButton("Trans_port Master", true));
     check->set_active(global_with_jack_master);
     add_tooltip(check, "Seq24 will attempt to serve as JACK Master.");
     check->signal_toggled().connect
@@ -559,12 +562,12 @@ options::add_jack_sync_page ()
     );
     transportbox->pack_start(*check, false, false);
 
-    check = manage(new CheckButton("Master C_onditional", true));
+    check = manage(new Gtk::CheckButton("Master C_onditional", true));
     check->set_active(global_with_jack_master_cond);
     add_tooltip
     (
         check,
-        "Seq24 will fail to be master if there is already a master set."
+        "Seq24 will fail to be Master if there is already a Master set."
     );
     check->signal_toggled().connect
     (
@@ -578,24 +581,24 @@ options::add_jack_sync_page ()
 
     /* Frame for jack start mode options */
 
-    Frame * modeframe = manage(new Frame("Jack start mode"));
+    Gtk::Frame * modeframe = manage(new Gtk::Frame("JACK Start mode"));
     modeframe->set_border_width(4);
     vbox->pack_start(*modeframe, Gtk::PACK_SHRINK);
 
-    VBox * modebox = manage(new VBox());
+    Gtk::VBox * modebox = manage(new Gtk::VBox());
     modebox->set_border_width(4);
     modeframe->add(*modebox);
 
-    Gtk::RadioButton * rb_live = manage(new RadioButton("_Live Mode", true));
+    Gtk::RadioButton * rb_live = manage(new Gtk::RadioButton("_Live Mode", true));
     add_tooltip
     (
         rb_live,
-        "Playback will be in live mode.  Use this to "
-        "allow muting and unmuting of loops."
+        "Playback will be in Live mode.  Use this to "
+        "allow muting and unmuting of patterns (loops)."
     );
 
-    Gtk::RadioButton * rb_perform = manage(new RadioButton("_Song Mode", true));
-    add_tooltip(rb_perform, "Playback will use the song editor's data.");
+    Gtk::RadioButton * rb_perform = manage(new Gtk::RadioButton("_Song Mode", true));
+    add_tooltip(rb_perform, "Playback will use the Song Editor's data.");
 
     Gtk::RadioButton::Group group = rb_live->get_group();
     rb_perform->set_group(group);
@@ -617,13 +620,13 @@ options::add_jack_sync_page ()
 
     /* Connection buttons */
 
-    HButtonBox * buttonbox = manage(new HButtonBox());
+    Gtk::HButtonBox * buttonbox = manage(new Gtk::HButtonBox());
     buttonbox->set_layout(Gtk::BUTTONBOX_START);
     buttonbox->set_spacing(6);
     vbox->pack_start(*buttonbox, false, false);
 
-    Gtk::Button * button = manage(new Button("Co_nnect", true));
-    add_tooltip(button, "Connect to Jack.");
+    Gtk::Button * button = manage(new Gtk::Button("Co_nnect", true));
+    add_tooltip(button, "Connect to JACK.");
     button->signal_clicked().connect
     (
         bind
@@ -634,8 +637,8 @@ options::add_jack_sync_page ()
     );
     buttonbox->pack_start(*button, false, false);
 
-    button = manage(new Button("_Disconnect", true));
-    add_tooltip(button, "Disconnect Jack.");
+    button = manage(new Gtk::Button("_Disconnect", true));
+    add_tooltip(button, "Disconnect JACK.");
     button->signal_clicked().connect
     (
         bind
@@ -653,10 +656,10 @@ options::add_jack_sync_page ()
  */
 
 void
-options::clock_callback_off (int a_bus, RadioButton * a_button)
+options::clock_callback_off (int a_bus, Gtk::RadioButton * a_button)
 {
     if (a_button->get_active())
-        m_perf->get_master_midi_bus()->set_clock(a_bus, e_clock_off);
+        m_mainperf->get_master_midi_bus()->set_clock(a_bus, e_clock_off);
 }
 
 /**
@@ -664,10 +667,10 @@ options::clock_callback_off (int a_bus, RadioButton * a_button)
  */
 
 void
-options::clock_callback_on (int a_bus, RadioButton * a_button)
+options::clock_callback_on (int a_bus, Gtk::RadioButton * a_button)
 {
     if (a_button->get_active())
-        m_perf->get_master_midi_bus()->set_clock(a_bus, e_clock_pos);
+        m_mainperf->get_master_midi_bus()->set_clock(a_bus, e_clock_pos);
 }
 
 /**
@@ -675,10 +678,10 @@ options::clock_callback_on (int a_bus, RadioButton * a_button)
  */
 
 void
-options::clock_callback_mod (int a_bus, RadioButton * a_button)
+options::clock_callback_mod (int a_bus, Gtk::RadioButton * a_button)
 {
     if (a_button->get_active())
-        m_perf->get_master_midi_bus()->set_clock(a_bus, e_clock_mod);
+        m_mainperf->get_master_midi_bus()->set_clock(a_bus, e_clock_mod);
 }
 
 /**
@@ -686,7 +689,7 @@ options::clock_callback_mod (int a_bus, RadioButton * a_button)
  */
 
 void
-options::clock_mod_callback (Adjustment * adj)
+options::clock_mod_callback (Gtk::Adjustment * adj)
 {
     midibus::set_clock_mod((int)adj->get_value());
 }
@@ -696,21 +699,21 @@ options::clock_mod_callback (Adjustment * adj)
  */
 
 void
-options::input_callback (int a_bus, Button * i_button)
+options::input_callback (int a_bus, Gtk::Button * i_button)
 {
-    CheckButton * a_button = (CheckButton *) i_button;
+    Gtk::CheckButton * a_button = (Gtk::CheckButton *) i_button;
     bool input = a_button->get_active();
     if (9999 == a_bus)
     {
-        m_perf->m_show_ui_sequence_key = input;
+        m_mainperf->m_show_ui_sequence_key = input;
         for (int i = 0; i < c_max_sequence; i++)
         {
-            if (m_perf->get_sequence(i))
-                m_perf->get_sequence(i)->set_dirty();
+            if (m_mainperf->get_sequence(i))
+                m_mainperf->get_sequence(i)->set_dirty();
         }
         return;
     }
-    m_perf->get_master_midi_bus()->set_input(a_bus, input);
+    m_mainperf->get_master_midi_bus()->set_input(a_bus, input);
 }
 
 /**
@@ -740,9 +743,9 @@ options::mouse_fruity_callback (Gtk::RadioButton * btn)
  */
 
 void
-options::transport_callback (button a_type, Button * a_check)
+options::transport_callback (button a_type, Gtk::Button * a_check)
 {
-    CheckButton * check = (CheckButton *) a_check;
+    Gtk::CheckButton * check = (Gtk::CheckButton *) a_check;
     switch (a_type)
     {
     case e_jack_transport:
@@ -762,11 +765,11 @@ options::transport_callback (button a_type, Button * a_check)
         break;
 
     case e_jack_connect:
-        m_perf->init_jack();
+        m_mainperf->init_jack();
         break;
 
     case e_jack_disconnect:
-        m_perf->deinit_jack();
+        m_mainperf->deinit_jack();
         break;
 
     default:
