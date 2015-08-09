@@ -19,14 +19,17 @@
 /**
  * \file          seqtime.cpp
  *
- *  This module declares/defines the base class for ...
+ *  This module declares/defines the base class for drawing the
+ *  time/measures bar at the top of the patterns/sequence editor.
  *
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-06
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
+ *  The patterns/sequence editor is expandable in both directions, but the
+ *  time/measures bar does not change in size.
  */
 
 #include <gtkmm/adjustment.h>

@@ -19,14 +19,17 @@
 /**
  * \file          perftime.cpp
  *
- *  This module declares/defines the base class for ...
+ *  This module declares/defines the base class for the time or measures
+ *  area at the top of the performance window.
  *
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
+ *  The time bar shows markers and numbers for the measures of the song,
+ *  and also depicts the left and right markers.
  */
 
 #include <gtkmm/adjustment.h>

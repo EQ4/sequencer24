@@ -6,7 +6,7 @@
 # \library    	generic
 # \author     	Chris Ahlstrom
 # \date       	2015-08-08
-# \update     	2015-08-08
+# \update     	2015-08-09
 # \version    	$Revision$
 # \license    	$XPC_SUITE_GPL_LICENSE$
 #
@@ -73,13 +73,12 @@ html/*: docs
 
 docs: dox-stamp
 	$(srcdir)/make_dox $(srcdir) reference
-	$(srcdir)/make_dox clean
-	$(srcdir)/make_dox $(srcdir) userman
 
 dox-stamp: $(EXTRA_DIST)
 	touch dox-stamp
 
 clean:
+	-rm -f *.db
 	-rm -rf html
 	-rm -rf latex
 	-rm -f *.log dox-stamp

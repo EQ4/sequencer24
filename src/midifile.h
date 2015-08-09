@@ -27,9 +27,12 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
+ *  The Seq24 MIDI file is a standard, Format 1 MIDI file, with some extra
+ *  "proprietary" tracks that hold information needed to set up the song
+ *  in Seq24.
  */
 
 #include <string>
@@ -37,6 +40,13 @@
 #include <vector>
 
 class perform;                          // forward reference
+
+/**
+ *  This class handles the parsing and writing of MIDI files.  In addition
+ *  to the standard MIDI tracks, it also handles some "private" or
+ *  "proprietary" tracks specific to Seq24.  It does not, however,
+ *  handle SYSEX events.
+ */
 
 class midifile
 {

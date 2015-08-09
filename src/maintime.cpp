@@ -19,18 +19,31 @@
 /**
  * \file          maintime.cpp
  *
- *  This module declares/defines the base class for ...
+ *  This module declares/defines the base class for the "time" progress
+ *  window.
  *
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-26
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
+ *  The "time" window is the horizontal bar at the upper right of the main
+ *  window, just to the left of the "L" button.  This bar shows one or
+ *  more black "pills" that show that the tune, and the measures, are
+ *  progressing as playback occurs.
  */
 
+#include "globals.h"
 #include "maintime.h"
-#include "platform_macros.h"
+
+/**
+ *  Static internal constants.
+ */
+
+static const int c_maintime_x = 300;
+static const int c_maintime_y = 10;
+static const int c_pill_width = 8;
 
 /**
  *  This constructor sets up the colors black, white, and grey, and then
@@ -58,7 +71,7 @@ maintime::maintime()
 /**
  *  Handles realization of the window.  It performs the base class's
  *  on_realize() function.  It then allocates some additional resources: a
- *  window, a GC (?), and it clears the windowl  Then it sets the default
+ *  window, a GC (?), and it clears the window.  Then it sets the default
  *  size of the window, specified by c_maintime_x and c_maintime_y.
  */
 
@@ -69,12 +82,12 @@ maintime::on_realize ()
     m_window = get_window();
     m_gc = Gdk::GC::create(m_window);
     m_window->clear();
-    set_size_request(c_maintime_x , c_maintime_y);
+    set_size_request(c_maintime_x, c_maintime_y);
 }
 
 /**
  *  This function clears the window, sets the foreground to black, draws
- *  the main window's rectangle, and more.
+ *  the "time" window's rectangle, and more.
  *
  *  Idle hands do the devil's work.  We need to figure at a high level
  *  what this routine draws, what a maintime is, and where it is located.

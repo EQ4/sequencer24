@@ -41,7 +41,9 @@
 #include <gtkmm/table.h>
 #include <gtkmm/tooltips.h>
 
-#include "easy_macros.h"
+#include <sigc++/bind.h>
+
+#include "globals.h"
 #include "controllers.h"
 #include "event.h"
 #include "gtk_helpers.h"

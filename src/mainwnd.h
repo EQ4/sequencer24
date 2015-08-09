@@ -27,23 +27,38 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
+ *  The main windows is known as the "Patterns window" or "Patterns
+ *  panel".
  */
 
 #include <map>
 #include <string>
-#include <gtkmm.h>
+#include <gtkmm/window.h>
 
-#include "globals.h"
-#include "mainwid.h"
 #include "perform.h"
-#include "sequence.h"
-#include "event.h"
-#include "maintime.h"
-#include "perfedit.h"
-#include "options.h"
+
+namespace Gtk
+{
+    class Adjustment;
+    class Button;
+    class Cursor;
+    class Entry;
+    class MenuBar;
+    class Menu;
+    class SpinButton;
+
+#if GTK_MINOR_VERSION < 12
+    class Tooltips;
+#endif
+}
+
+class maintime;
+class mainwid;
+class options;
+class perfedit;
 
 /**
  *  This class implements the functionality of the main window of the
@@ -187,6 +202,8 @@ public:
 
 private:
 
+    static void handle_signal (int sig);
+
     void file_import_dialog ();
     void options_dialog ();
     void about_dialog ();
@@ -225,8 +242,6 @@ private:
     bool is_save ();
     bool install_signal_handlers ();
     bool signal_action (Glib::IOCondition condition);
-
-    static void handle_signal (int sig);
 
 private:
 

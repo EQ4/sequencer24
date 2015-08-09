@@ -32,7 +32,6 @@
 
 #include <gtkmm/accelkey.h>
 
-#include "easy_macros.h"
 #include "event.h"
 #include "perform.h"
 #include "perfroll.h"

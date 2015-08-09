@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
  */
@@ -33,9 +33,9 @@
 #include <gtkmm/combo.h>               // Gtk::Entry
 #include <gtkmm/menubar.h>
 
-#include "mainwid.h"
-#include "seqedit.h"
 #include "font.h"
+#include "mainwid.h"
+#include "perform.h"
 
 using namespace Gtk::Menu_Helpers;
 

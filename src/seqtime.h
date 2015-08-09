@@ -22,20 +22,19 @@
 /**
  * \file          seqtime.h
  *
- *  This module declares/defines the base class for ...
+ *  This module declares/defines the base class for drawing the
+ *  time/measures bar at the top of the patterns/sequence editor.
  *
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-07
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
  */
 
 #include <gtkmm/drawingarea.h>
 #include <gtkmm/window.h>
-
-#include "globals.h"
 
 namespace Gtk
 {

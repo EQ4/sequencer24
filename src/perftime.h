@@ -22,20 +22,19 @@
 /**
  * \file          perftime.h
  *
- *  This module declares/defines the base class for ...
+ *  The time bar shows markers and numbers for the measures of the song,
+ *  and also depicts the left and right markers.
  *
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
  */
 
 #include <gtkmm/drawingarea.h>
 #include <gtkmm/window.h>
-
-#include "globals.h"
 
 namespace Gtk
 {
@@ -45,7 +44,8 @@ namespace Gtk
 class perform;
 
 /**
- *  This class implements drawing the piano time.
+ *  This class implements drawing the piano time at the top of the
+ *  "performance window", also known as the "song editor".
  */
 
 class perftime: public Gtk::DrawingArea

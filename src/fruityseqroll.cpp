@@ -19,12 +19,13 @@
 /**
  * \file          fruityseqroll.cpp
  *
- *  This module declares/defines the base class for ...
+ *  This module declares/defines the base class for seqroll interactions
+ *  using the "fruity" mouse paradigm.
  *
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
  */
@@ -33,11 +34,8 @@
 
 #include "event.h"
 #include "seqroll.h"
-#include "seqdata.h"
-#include "seqevent.h"
 #include "sequence.h"
 #include "seqkeys.h"
-#include "perform.h"
 
 /**
  *  An internal function used by the FruitySeqRollInput class.

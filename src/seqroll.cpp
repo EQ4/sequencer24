@@ -19,12 +19,13 @@
 /**
  * \file          seqroll.cpp
  *
- *  This module declares/defines the base class for ...
+ *  This module declares/defines the base class for drawing on the piano
+ *  roll of the patterns editor.
  *
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
  */

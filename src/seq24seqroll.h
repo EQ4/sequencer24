@@ -22,17 +22,17 @@
 /**
  * \file          seq24seqroll.h
  *
- *  This module declares/defines the base class for ...
+ *  This module declares/defines the base class for handling the Seq24
+ *  mode of mouse interaction in the piano roll of the pattern/sequence
+ *  editor.
  *
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
  */
-
-#include "globals.h"
 
 class seqroll;
 

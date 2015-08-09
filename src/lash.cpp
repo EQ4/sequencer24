@@ -24,9 +24,12 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
+ *  Not totally sure that the LASH support is completely finished, at this
+ *  time.  The version that ships with Debian Sid does not have it
+ *  enabled.
  */
 
 #include <string>

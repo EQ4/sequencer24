@@ -1,8 +1,7 @@
-#ifndef SEQ24_SEQTIME_H
-#define SEQ24_SEQTIME_H
+#ifndef SEQ24_MAINTIME_H
+#define SEQ24_MAINTIME_H
 
 /*
- *
  *  This file is part of seq24/sequencer24.
  *
  *  seq24 is free software; you can redistribute it and/or modify
@@ -18,32 +17,28 @@
  *  You should have received a copy of the GNU General Public License
  *  along with seq24; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 
 /**
  * \file          maintime.h
  *
- *  This module declares/defines the base class for ...
+ *  This module declares/defines the base class for the "time" progress
+ *  window.
  *
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-07
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
  */
 
 #include <gtkmm/drawingarea.h>
 
-#include "globals.h"
-
-const int c_maintime_x = 300;
-const int c_maintime_y = 10;
-const int c_pill_width = 8;
-
 /**
- *  Thsi class provides ...
+ *  This class provides the drawing of the progress bar at the top of the
+ *  main window, along with the "pills" that move in time with the
+ *  measures.
  */
 
 class maintime: public Gtk::DrawingArea
@@ -70,7 +65,7 @@ private:        // callbacks
 
 };
 
-#endif   // SEQ24_SEQTIME_H
+#endif   // SEQ24_MAINTIME_H
 
 /*
  * maintime.h

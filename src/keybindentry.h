@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-26
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
  *  This module define a GTK text-edit widget for getting keyboard button
@@ -39,15 +39,15 @@
 
 #include <gtkmm/entry.h>
 
-#include "easy_macros.h"
+#include "easy_macros.h"               // nullptr
 
-class perform;      /* forward declaration */
+class perform;
 
 /**
  *  Class for management of application key-bindings.
  */
 
-class KeyBindEntry : public Gtk::Entry
+class keybindentry : public Gtk::Entry
 {
 
     friend class options;
@@ -83,7 +83,7 @@ private:
 
 public:
 
-    KeyBindEntry
+    keybindentry
     (
         type t,
         unsigned int * location_to_write = nullptr,

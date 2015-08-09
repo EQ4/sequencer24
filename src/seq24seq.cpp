@@ -20,12 +20,12 @@
  * \file          seq24seq.cpp
  *
  *  This module declares/defines the mouse interactions for the "seq24"
- *  mode.
+ *  mode in the pattern/sequence editor.
  *
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-08-02
- * \updates       2015-08-02
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
  *  This code was extracted from seqevent to make that module more
@@ -251,9 +251,9 @@ Seq24SeqEventInput::on_button_release_event
         }
         if (seqev.m_moving)
         {
-            delta_x -= seqev.m_move_snap_offset_x;      /* adjust for snap */
-            seqev.convert_x(delta_x, &delta_tick); /* to screen corridinates */
-            seqev.m_seq->push_undo();               /* still moves events */
+            delta_x -= seqev.m_move_snap_offset_x; /* adjust for snap       */
+            seqev.convert_x(delta_x, &delta_tick); /* to screen coordinates */
+            seqev.m_seq->push_undo();              /* still moves events    */
             seqev.m_seq->move_selected_notes(delta_tick, 0);
         }
         set_adding(m_adding, seqev);
@@ -262,16 +262,13 @@ Seq24SeqEventInput::on_button_release_event
     {
         set_adding(false, seqev);
     }
-
-    /* turn off */
-
-    seqev.m_selecting = false;
+    seqev.m_selecting = false;                      /* turn off             */
     seqev.m_moving = false;
     seqev.m_growing = false;
     seqev.m_moving_init = false;
     seqev.m_painting = false;
     seqev.m_seq->unpaint_all();
-    seqev.update_pixmap();          /* if they clicked, something changed */
+    seqev.update_pixmap();            /* if they clicked, something changed */
     seqev.draw_pixmap_on_window();
     return true;
 }

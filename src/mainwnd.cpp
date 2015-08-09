@@ -34,12 +34,26 @@
 #include <csignal>
 #include <cerrno>
 #include <cstring>
-#include <gtk/gtkversion.h>
 
+#include <gdkmm/cursor.h>
+#include <gtk/gtkversion.h>
+#include <gtkmm/aboutdialog.h>
+#include <gtkmm/adjustment.h>
+#include <gtkmm/entry.h>
+#include <gtkmm/filechooserdialog.h>
+#include <gtkmm/menubar.h>
+#include <gtkmm/menu.h>
+#include <gtkmm/messagedialog.h>
+#include <gtkmm/spinbutton.h>
+#include <gtkmm/stock.h>
+
+#include "globals.h"
 #include "gtk_helpers.h"
+#include "maintime.h"
+#include "mainwid.h"
 #include "mainwnd.h"
-#include "perform.h"
 #include "midifile.h"
+#include "options.h"
 #include "perfedit.h"
 
 #include "pixmaps/play2.xpm"
@@ -49,7 +63,6 @@
 #include "pixmaps/perfedit.xpm"
 #include "pixmaps/seq24_32.xpm"
 #include "pixmaps/sequencer24_square.xpm" // replaces "pixmaps/seq24.xpm"
-
 
 /**
  *  This static member provides a couple pipes for signalling/messaging.
@@ -566,15 +579,12 @@ mainwnd::file_save_as ()
     filter_any.set_name("Any files");
     filter_any.add_pattern("*");
     dialog.add_filter(filter_any);
-
     dialog.set_current_folder(global_last_used_dir);
-    int result = dialog.run();
-
-    switch (result)
+    int response = dialog.run();
+    switch (response)
     {
         case Gtk::RESPONSE_OK:
         {
-            bool result = false;
             std::string fname = dialog.get_filename();
             Gtk::FileFilter* current_filter = dialog.get_filter();
             if
@@ -604,8 +614,8 @@ mainwnd::file_save_as ()
                    "File already exists!\nDo you want to overwrite it?",
                    false, Gtk::MESSAGE_WARNING, Gtk::BUTTONS_YES_NO, true
                 );
-                result = warning.run();
-                if (result == Gtk::RESPONSE_NO)
+                response = warning.run();
+                if (response == Gtk::RESPONSE_NO)
                     return;
             }
             global_filename = fname;
@@ -829,14 +839,17 @@ mainwnd::file_import_dialog ()
     m_spinbutton_load_offset->set_editable(false);
     m_spinbutton_load_offset->set_wrap(true);
     hbox.pack_end(*m_spinbutton_load_offset, false, false);
-    hbox.pack_end(*(manage(new Gtk::Label("Screen Set Offset"))), false, false, 4);
+    hbox.pack_end
+    (
+        *(manage(new Gtk::Label("Screen Set Offset"))), false, false, 4
+    );
     btnbox->pack_start(hbox, false, false);
     dlg.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
     dlg.add_button(Gtk::Stock::OPEN, Gtk::RESPONSE_OK);
     dlg.show_all_children();
 
-    int result = dlg.run();
-    switch (result)                    // handle the response
+    int response = dlg.run();
+    switch (response)                  // handle the response
     {
     case (Gtk::RESPONSE_OK):
     {

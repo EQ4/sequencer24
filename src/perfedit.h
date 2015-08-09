@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
  */
@@ -36,8 +36,6 @@
 #include <list>
 #include <string>
 #include <gtkmm/widget.h>       // somehow, can't forward-declare GdkEventAny
-
-#include "globals.h"
 
 /*
  *  Since these items are pointers, we were able to move (most) of the

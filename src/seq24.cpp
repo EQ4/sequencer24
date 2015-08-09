@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-07
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
  */
@@ -33,19 +33,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "easy_macros.h"               // full platform configuration
+#include <gdkmm/cursor.h>
+#include <gtkmm/main.h>
+
 #include "font.h"
-
-#ifdef LASH_SUPPORT
-#include "lash.h"
-#endif
-
-#include "globals.h"
+#include "globals.h"                   // full platform configuration
 #include "mainwnd.h"
 #include "midifile.h"
 #include "optionsfile.h"
 #include "perform.h"
 #include "userfile.h"
+
+#ifdef LASH_SUPPORT
+#include "lash.h"
+#endif
 
 /**
  *  A structure for command parsing.
