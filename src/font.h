@@ -48,6 +48,12 @@ public:
      *  A simple enumeration to describe the basic colors used in writing
      *  text.  Basically, these two values cause the selection of one or
      *  another pixmap (font_b_xpm and font_w_xpm).
+     *
+     * \var BLACK
+     *      The first supported color.
+     *
+     * \var WHITE
+     *      The second supported color.
      */
 
     enum Color
@@ -60,7 +66,8 @@ private:
 
     /**
      *  Points to the current pixmap (m_black_pixmap or m_white_pixmap)
-     *  to use to render a string.
+     *  to use to render a string.  This member used to be an object, but
+     *  it's probably a bit faster to just use a pointer.
      */
 
     Glib::RefPtr<Gdk::Pixmap> * m_pixmap;

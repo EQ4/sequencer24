@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
  *  The <tt> ~/.seq24rc </tt> configuration file is fairly simple in
@@ -376,7 +376,7 @@ bool
 optionsfile::write (perform * a_perf)
 {
     std::ofstream file(m_name.c_str(), std::ios::out | std::ios::trunc);
-    char outs[1024];
+    char outs[SEQ24_LINE_MAX];
     if (! file.is_open())
         return false;
 

@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
  */
@@ -1391,7 +1391,7 @@ seqedit::popup_event_menu ()
 {
     using namespace Gtk::Menu_Helpers;
 
-    bool ccs[128];
+    bool ccs[MIDI_COUNT_MAX];
     char b[20];
     bool note_on = false;
     bool note_off = false;
@@ -1402,7 +1402,7 @@ seqedit::popup_event_menu ()
     unsigned char status, cc;
     int midi_bus = m_seq->get_midi_bus();
     int midi_ch = m_seq->get_midi_channel();
-    memset(ccs, false, sizeof(bool) * 128);
+    memset(ccs, false, sizeof(bool) * MIDI_COUNT_MAX);
     m_seq->reset_draw_marker();
     while (m_seq->get_next_event(&status, &cc))
     {

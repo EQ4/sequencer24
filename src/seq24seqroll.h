@@ -48,13 +48,15 @@ struct Seq24SeqRollInput
      * Default constructor.
      */
 
-    Seq24SeqRollInput() :
+    Seq24SeqRollInput () :
         m_adding    (false)
     {
         // Empty body
     }
 
     void set_adding (bool a_adding, seqroll & ths);
+
+public:         // callbacks
 
     bool on_button_press_event (GdkEventButton * a_ev, seqroll & ths);
     bool on_button_release_event (GdkEventButton * a_ev, seqroll & ths);

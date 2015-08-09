@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
  */
@@ -279,7 +279,7 @@ mainwnd::mainwnd (perform * a_p)
         mem_fun(*this, &mainwnd::adj_callback_bpm)
     );
     add_tooltip(m_spinbutton_bpm, "Adjust beats per minute (BPM) value");
-    Gtk::Label * bpmlabel = manage(new Gtk::Label("_bpm", true));
+    Gtk::Label * bpmlabel = manage(new Gtk::Label("_BPM", true));
     bpmlabel->set_mnemonic_widget(*m_spinbutton_bpm);
     bpmhbox->pack_start(*bpmlabel, Gtk::PACK_SHRINK);
     bpmhbox->pack_start(*m_spinbutton_bpm, Gtk::PACK_SHRINK);
@@ -920,7 +920,7 @@ mainwnd::about_dialog ()
     Gtk::AboutDialog dialog;
     dialog.set_transient_for(*this);
     dialog.set_name(PACKAGE_NAME);
-    dialog.set_version(VERSION);
+    dialog.set_version(VERSION " " VERSION_DATE_SHORT);
     dialog.set_comments("Interactive MIDI Sequencer\n");
     dialog.set_copyright
     (

@@ -28,18 +28,21 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
  */
 
 #include <string>
 
+#include "globals.h"                   // MIDI_COUNT_MAX constant
+
 /**
- *  Provides the default names of MIDI controllers.
+ *  Provides the default names of MIDI controllers.  This array is used
+ *  only by the seqedit class.
  */
 
-std::string c_controller_names[128] =
+std::string c_controller_names[MIDI_COUNT_MAX] =
 {
     "0 Bank Select",
     "1 Modulation Wheel ",

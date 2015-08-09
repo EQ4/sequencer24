@@ -56,6 +56,15 @@ private:
 
     /**
      * Provides the type of keybindings that can be made.
+     *
+     * \var location
+     *      Used for binding to pattern/sequence boxes, we think.
+     *
+     * \var events
+     *      Used for binding to events.
+     *
+     * \var groups
+     *      Used for binding to groups.
      */
 
     enum type

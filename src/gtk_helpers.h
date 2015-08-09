@@ -27,14 +27,17 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-30
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
+ *
+ *  Copyright (C) 2015-2015 Chris Ahlstrom <ahlstromcj@gmail.com>
  *
  *  Currently, the only thing defined is the add_tooltip() macro.
  */
 
 /**
  *  This macro defines a tooltip helper, for old versus new GTK handling.
+ *  It is used in the mainwnd, options, perfedit, and seqedit classes.
  */
 
 #if GTK_MINOR_VERSION >= 12

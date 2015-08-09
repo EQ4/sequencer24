@@ -11,8 +11,10 @@
  * \library       sequencer24 application
  * \author        Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-26
+ * \updates       2015-08-08
  * \license       GNU GPLv2 or above
+ *
+ *  Copyright (C) 2013-2015 Chris Ahlstrom <ahlstromcj@gmail.com>
  *
  *  We need a uniform way to specify OS and compiler features without
  *  have to litter our code with many macros.

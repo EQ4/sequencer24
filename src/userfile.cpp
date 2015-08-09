@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
  *  Note that the parse function has some code that is not yet enabled.
@@ -102,7 +102,7 @@ userfile::parse (perform * a_perf)
         next_data_line(file);
         int ccs = 0;
         int cc = 0;
-        char cc_name[1024];
+        char cc_name[SEQ24_LINE_MAX];
         sscanf(m_line, "%d", &ccs);
         for (int j = 0; j < ccs; j++)
         {

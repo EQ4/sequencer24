@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-25
- * \updates       2015-08-08
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
  *  We're going to try to collect all the globals here in one module, and
@@ -54,6 +54,13 @@
 #include <string>
 
 #include "easy_macros.h"               // with platform_macros.h, too
+
+/**
+ *  Manifest constant for the maximum value limit of a MIDI byte when used
+ *  to limit the size of an array.
+ */
+
+#define MIDI_COUNT_MAX      128
 
 /**
  *  Number of rows in the Patterns Panel.  The current value is 4, and
@@ -238,10 +245,10 @@ const int c_mainwid_y =
 /**
  *  The height of the data-entry area for velocity, aftertouch, and other
  *  controllers, as well as note on and off velocity.  This value looks to
- *  be in pixels.
+ *  be in pixels; one pixel per MIDI value.
  */
 
-const int c_dataarea_y = 128;
+const int c_dataarea_y = 128;          // MIDI_COUNT_MAX ?
 
 /**
  *  The width of the 'bar', presumably the line that ends a measure, in
@@ -264,7 +271,7 @@ const int c_key_y = 8;
  *  scroll to see them all.
  */
 
-const int c_num_keys = 128;
+const int c_num_keys = MIDI_COUNT_MAX; // 128
 
 /**
  *  The dimensions and offset of the virtual keyboard at the left of the
@@ -336,7 +343,9 @@ const std::string c_dummy("Untitled");
 const int c_maxbeats = 0xFFFF;
 
 /**
- *  Provides midifile tags.  Need to find out what these are for.
+ *  Provides tags used by the midifile class to control the reading and
+ *  writing of the extra "proprietary" information stored in a Seq24 MIDI
+ *  file.
  */
 
 const unsigned long c_midibus =         0x24240001;
@@ -452,8 +461,8 @@ struct user_midi_bus_definition
 struct user_instrument_definition
 {
     std::string instrument;
-    bool controllers_active[128];
-    std::string controllers[128];
+    bool controllers_active[MIDI_COUNT_MAX];
+    std::string controllers[MIDI_COUNT_MAX];
 };
 
 /**
@@ -470,6 +479,8 @@ extern user_instrument_definition
  *  Corresponds to the small number of musical scales that the application
  *  can handle.  Scales can be shown in the piano roll as gray bars for
  *  reference purposes.
+ *
+ *  It would be good to offload this stuff into a new "scale" class.
  */
 
 enum c_music_scales

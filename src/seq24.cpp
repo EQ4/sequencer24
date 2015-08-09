@@ -239,7 +239,7 @@ main (int argc, char * argv [])
 
     for (int i = 0; i < c_max_instruments; i++)
     {
-        for (int j = 0; j < 128; j++)
+        for (int j = 0; j < MIDI_COUNT_MAX; j++)
             global_user_instrument_definitions[i].controllers_active[j] = false;
     }
 

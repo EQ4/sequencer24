@@ -22,13 +22,13 @@
 /**
  * \file          configfile.h
  *
- *  This module declares the base class for configuration and options
- *  files.
+ *  This module declares the abstract base class for configuration and
+ *  options files.
  *
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
  */
@@ -40,6 +40,13 @@
 
 #include "easy_macros.h"
 #include "perform.h"
+
+/**
+ *  A manifest constant for controlling the length of a line-reading
+ *  array in a configuration file.
+ */
+
+#define SEQ24_LINE_MAX                 1024
 
 /**
  *    This class is the abstract base class for optionsfile and userfile.
@@ -68,7 +75,7 @@ protected:
      *  an input line, and so needs to be a character buffer.
      */
 
-    char m_line[1024];
+    char m_line[SEQ24_LINE_MAX];
 
 protected:
 

@@ -10,9 +10,11 @@
  * \library       sequencer24
  * \author        Chris Ahlstrom and other authors; see documentation
  * \date          2013-11-17
- * \updates       2015-08-08
+ * \updates       2015-08-09
  * \version       $Revision$
  * \license       GNU GPL v2 or above
+ *
+ *  Copyright (C) 2013-2015 Chris Ahlstrom <ahlstromcj@gmail.com>
  *
  *  The macros in this file cover:
  *
@@ -23,7 +25,6 @@
  *
  *  Generally, we'll try to hide this file in "globals.h".
  *
- * Copyright (C) 2013-2015 Chris Ahlstrom <ahlstromcj@gmail.com>
  */
 
 #include <stdio.h>

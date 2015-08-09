@@ -28,19 +28,12 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
  */
 
-#include "globals.h"
-
-class perform;
-class seqdata;
-class seqevent;
-class seqkeys;
 class seqroll;
-class sequence;
 
 /**
  *  Implements the fruity mouse interaction paradigm for the seqroll.
@@ -57,7 +50,7 @@ struct FruitySeqRollInput
      * Default constructor.
      */
 
-    FruitySeqRollInput() :
+    FruitySeqRollInput () :
         m_adding        (false),
         m_canadd        (true),
         m_erase_painting(false)

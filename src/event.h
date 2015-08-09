@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
  *  This module also declares/defines the various constants, status-byte
@@ -36,7 +36,11 @@
  *
  */
 
-#include "globals.h"
+/**
+ *  Defines the number of data bytes in MIDI status data.
+ */
+
+#define MIDI_DATA_BYTE_COUNT           2
 
 /**
  *  This highest bit of the status byte is always 1.
@@ -45,7 +49,7 @@
 const unsigned char  EVENT_STATUS_BIT       = 0x80;
 
 /**
- *  The following events are channel messages.
+ *  The following MIDI events are channel messages.
  */
 
 const unsigned char  EVENT_NOTE_OFF         = 0x80;
@@ -57,7 +61,7 @@ const unsigned char  EVENT_CHANNEL_PRESSURE = 0xD0;
 const unsigned char  EVENT_PITCH_WHEEL      = 0xE0;
 
 /**
- *  The following events have no channel.
+ *  The following MIDI events have no channel.
  */
 
 const unsigned char  EVENT_CLEAR_CHAN_MASK  = 0xF0;
@@ -122,7 +126,7 @@ private:
      *  most-significant bit of a data byte is always 0.
      */
 
-    unsigned char m_data[2];
+    unsigned char m_data[MIDI_DATA_BYTE_COUNT];
 
     /**
      *  Points to the data buffer for SYSEX messages.
@@ -145,25 +149,26 @@ private:
     event * m_linked;
 
     /**
-     *  Indicates that a link is...
+     *  Indicates that a link has been made.  This item is used [via
+     *  the get_link() and link() accessors] in the sequence class.
      */
 
     bool m_has_link;
 
     /**
-     *  Answers the question "is this event selected in editing.
+     *  Answers the question "is this event selected in editing."
      */
 
     bool m_selected;
 
     /**
-     *  Answers the question "is this event marked in processing.
+     *  Answers the question "is this event marked in processing."
      */
 
     bool m_marked;
 
     /**
-     *  Answers the question "is this event being painted.
+     *  Answers the question "is this event being painted."
      */
 
     bool m_painted;
@@ -235,7 +240,6 @@ public:
     void decrement_data1 ();
     void increment_data2 ();
     void decrement_data2 ();
-
     void start_sysex ();
     bool append_sysex (unsigned char *a_data, long size);
 
@@ -448,7 +452,9 @@ public:
 private:
 
     /**
-     *  This function is used in sorting.  Sorting what?
+     *  This function is used in sorting MIDI status events (e.g. note
+     *  on/off, aftertouch, control change, etc.)  The sort order is not
+     *  determined by the actual status values.
      */
 
     int get_rank () const;

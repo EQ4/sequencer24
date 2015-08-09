@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-09
  * \license       GNU GPLv2 or above
  *
  */
@@ -35,6 +35,19 @@
 #include "perform.h"                    // must precede midifile.h !
 #include "midifile.h"
 #include "sequence.h"
+
+/**
+ *  A manifest constant for controlling the length of a line-reading
+ *  array in a configuration file.
+ */
+
+#define SEQ24_MIDI_LINE_MAX            1024
+
+/**
+ *  The maximum length of a Seq24 track name.  This is a bit excessive.
+ */
+
+#define TRACKNAME_MAX                   256
 
 /**
  *  Principal constructor.
@@ -156,35 +169,24 @@ midifile::parse (perform * a_perf, int a_screen_set)
     }
     file.read((char *) &m_data[0], file_size);
     file.close();
-    m_pos = 0;
 
-    unsigned long ID;                               /* chunk info         */
-    unsigned long TrackLength;
     unsigned long Delta;                            /* time               */
     unsigned long RunningTime;
     unsigned long CurrentTime;
-    unsigned short Format;                          /* 0,1,2              */
-    unsigned short NumTracks;
-    unsigned short ppqn;
-    unsigned short perf;
-    char TrackName[256];                            /* track name from file */
-    int i;                                          /* used in small loops  */
-    sequence * seq;                                 /* sequence pointer     */
-    event e;
-
-    ID = read_long();                               /* read in header */
-    TrackLength = read_long();
-    Format = read_short();
-    NumTracks = read_short();
-    ppqn = read_short();
+    char TrackName[TRACKNAME_MAX];                  /* track name from file */
+    unsigned long ID = read_long();                 /* read hdr chunk info  */
+    unsigned long TrackLength = read_long();
+    unsigned short Format = read_short();           /* 0,1,2                */
+    unsigned short NumTracks = read_short();
+    unsigned short ppqn = read_short();
     if (ID != 0x4D546864)                           /* magic number 'MThd' */
     {
-        fprintf(stderr, "Invalid MIDI header detected: %8lX\n", ID);
+        errprintf("Invalid MIDI header detected: %8lX\n", ID);
         return false;
     }
     if (Format != 1)                                /* only support format 1 */
     {
-        fprintf(stderr, "Unsupported MIDI format detected: %d\n", Format);
+        errprintf("Unsupported MIDI format detected: %d\n", Format);
         return false;
     }
 
@@ -192,14 +194,14 @@ midifile::parse (perform * a_perf, int a_screen_set)
      * We should be good to load now, for each Track in the MIDI file.
      */
 
+    event e;
+    m_pos = 0;
     for (int curtrack = 0; curtrack < NumTracks; curtrack++)
     {
         bool done = false;                          /* done for each track */
-        perf = 0;
+        unsigned short perf = 0;
         unsigned char status = 0, type, data[2], laststatus; /* events */
-        long len;
         unsigned long proprietary = 0;
-
         ID = read_long();                           /* Get ID + Length */
         TrackLength = read_long();
         if (ID == 0x4D54726B)                       /* magic number 'MTrk' */
@@ -209,10 +211,11 @@ midifile::parse (perform * a_perf, int a_screen_set)
              * sequence to dump it to.
              */
 
-            seq = new sequence();
+            long len;
+            sequence * seq = new sequence();
             if (seq == NULL)
             {
-                fprintf(stderr, "Memory allocation failed\n");
+                errprint("Memory allocation failed");
                 return false;
             }
             seq->set_master_midi_bus(&a_perf->m_master_bus);    /* set buss  */
@@ -332,9 +335,9 @@ midifile::parse (perform * a_perf, int a_screen_set)
                         case 0x2f:                       /* Trk Done          */
                             /*
                              * If delta is 0, then another event happened
-                             * at the same time as the track end.  The
-                             * sequence class discards the last note.  This
-                             * fixes that.  A native Seq24 file will
+                             * at the same time as the track-end.  The
+                             * sequence class discards the last note.
+                             * This fixes that.  A native Seq24 file will
                              * always have a Delta >= 1.
                              */
 
@@ -347,22 +350,22 @@ midifile::parse (perform * a_perf, int a_screen_set)
                             break;
 
                         case 0x03:                        /* Track name      */
-                            for (i = 0; i < len; i++)
+                            if (len > TRACKNAME_MAX)
+                                len = TRACKNAME_MAX;      /* avoid a vuln    */
+
+                            for (int i = 0; i < len; i++)
                                 TrackName[i] = read_byte();
 
-                            TrackName[i] = '\0';
+                            TrackName[len] = '\0';
                             seq->set_name(TrackName);
                             break;
 
                         case 0x00:                        /* sequence number */
-                            if (len == 0x00)
-                                perf = 0;
-                            else
-                                perf = read_short();
+                            perf = (len == 0x00) ? 0 : read_short();
                             break;
 
                         default:
-                            for (i = 0; i < len; i++)
+                            for (int i = 0; i < len; i++)
                                 (void) read_byte();      /* ignore the rest */
                             break;
                         }
@@ -371,39 +374,39 @@ midifile::parse (perform * a_perf, int a_screen_set)
                     {
                         len = read_var();                /* sysex           */
                         m_pos += len;                    /* skip it         */
-                        errprint("No support for SYSEX messages, discarding.");
+                        errprint("No support for SYSEX messages, skipping...");
                     }
                     else
                     {
-                        errprintf("Unexpected system event : 0x%.2X", status);
+                        errprintf("Unexpected System event: 0x%.2X", status);
                         return false;
                     }
                     break;
 
                 default:
 
-                    fprintf(stderr, "Unsupported MIDI event: %x\n", int(status));
+                    errprintf("Unsupported MIDI event: %x\n", int(status));
                     return false;
                     break;
                 }
-            } /* while not done loading Trk chunk */
+            }                          /* while not done loading Trk chunk */
 
             /* Sequence has been filled, add it to the performance  */
 
             a_perf->add_sequence(seq, perf + (a_screen_set * c_seqs_in_set));
         }
-        else   /* */
+        else
         {
             /*
              * We don't know what kind of chunk it is.  It's not a MTrk, we
              * don't know how to deal with it, so we just eat it.
              */
 
-            fprintf(stderr, "Unsupported MIDI header detected: %8lX\n", ID);
+            errprintf("Unsupported MIDI chunk detected, skipping: %8lX\n", ID);
             m_pos += TrackLength;
             done = true;
         }
-    } /* for each track */
+    }                                                   /* for each track  */
 
     /*
      * After all of the conventional MIDI tracks are read, we're now at
@@ -415,6 +418,9 @@ midifile::parse (perform * a_perf, int a_screen_set)
      *  -   c_notes:
      *  -   c_bpmtag:
      *  -   c_mutegroups:
+     *
+     *  (There are more tags defined in the globals module, but they are
+     *  not used in this function.)
      *
      *  The format is 1) tag ID; 2) length of data; 3) the data.
      */
@@ -430,29 +436,25 @@ midifile::parse (perform * a_perf, int a_screen_set)
                 a_perf->get_midi_control_toggle(i)->m_active = read_byte();
                 a_perf->get_midi_control_toggle(i)->m_inverse_active =
                     read_byte();
+
                 a_perf->get_midi_control_toggle(i)->m_status = read_byte();
                 a_perf->get_midi_control_toggle(i)->m_data = read_byte();
                 a_perf->get_midi_control_toggle(i)->m_min_value = read_byte();
                 a_perf->get_midi_control_toggle(i)->m_max_value = read_byte();
-
                 a_perf->get_midi_control_on(i)->m_active = read_byte();
-                a_perf->get_midi_control_on(i)->m_inverse_active =
-                    read_byte();
+                a_perf->get_midi_control_on(i)->m_inverse_active = read_byte();
                 a_perf->get_midi_control_on(i)->m_status = read_byte();
                 a_perf->get_midi_control_on(i)->m_data = read_byte();
                 a_perf->get_midi_control_on(i)->m_min_value = read_byte();
                 a_perf->get_midi_control_on(i)->m_max_value = read_byte();
-
                 a_perf->get_midi_control_off(i)->m_active = read_byte();
-                a_perf->get_midi_control_off(i)->m_inverse_active =
-                    read_byte();
+                a_perf->get_midi_control_off(i)->m_inverse_active = read_byte();
                 a_perf->get_midi_control_off(i)->m_status = read_byte();
                 a_perf->get_midi_control_off(i)->m_data = read_byte();
                 a_perf->get_midi_control_off(i)->m_min_value = read_byte();
                 a_perf->get_midi_control_off(i)->m_max_value = read_byte();
             }
         }
-
         ID = read_long();                               /* Get ID + Length */
         if (ID == c_midiclocks)
         {
@@ -485,7 +487,6 @@ midifile::parse (perform * a_perf, int a_screen_set)
             }
         }
     }
-
     if ((file_size - m_pos) > (int) sizeof(unsigned int))
     {
         ID = read_long();                               /* Get ID + Length  */
@@ -506,7 +507,7 @@ midifile::parse (perform * a_perf, int a_screen_set)
             long length = read_long();
             if (c_gmute_tracks != length)
             {
-                printf("corrupt data in mutegroup section\n");
+                errprint("corrupt data in mute-group section");
             }
             for (int i = 0; i < c_seqs_in_set; i++)
             {
@@ -600,7 +601,6 @@ bool midifile::write (perform * a_perf)
             sequence * seq = a_perf->get_sequence(curtrack);
             std::list<char> l;
             seq->fill_list(&l, curtrack);
-
             write_long(0x4D54726B);         /* magic number 'MTrk'      */
             write_long(l.size());
             while (l.size() > 0)            /* write the track data     */
@@ -610,7 +610,6 @@ bool midifile::write (perform * a_perf)
             }
         }
     }
-
     write_long(c_midictrl);                 /* midi control tag         */
     write_long(0);
     write_long(c_midiclocks);               /* bus mute/unmute data     */
@@ -624,7 +623,6 @@ bool midifile::write (perform * a_perf)
         for (unsigned int j = 0; j < note->length(); j++)
             write_byte((*note)[j]);
     }
-
     write_long(c_bpmtag);                   /* bpm tag                  */
     write_long(a_perf->get_bpm());
     write_long(c_mutegroups);               /* the mute groups tag      */
@@ -644,7 +642,7 @@ bool midifile::write (perform * a_perf)
     if (! file.is_open())
         return false;
 
-    char file_buffer[1024];                 /* enable bufferization     */
+    char file_buffer[SEQ24_MIDI_LINE_MAX];  /* enable bufferization     */
     file.rdbuf()->pubsetbuf(file_buffer, sizeof file_buffer);
     for
     (
