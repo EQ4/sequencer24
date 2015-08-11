@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-09
+ * \updates       2015-08-10
  * \license       GNU GPLv2 or above
  *
  */
@@ -38,8 +38,7 @@
 #include <list>
 #include <gtkmm/drawingarea.h>
 
-#include "easy_macros.h"
-#include "perform.h"
+class perform;
 
 /**
  *  A manifest constant for controlling the length of a line-reading

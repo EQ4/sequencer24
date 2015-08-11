@@ -26,14 +26,15 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-09
+ * \updates       2015-08-10
  * \license       GNU GPLv2 or above
  *
  */
 
+#include <string.h>                    // memcpy()
+
 #include "easy_macros.h"
 #include "event.h"
-#include "string.h"                    // memcpy()
 
 /**
  *  This constructor simply initializes all of the class members.

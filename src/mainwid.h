@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-09
+ * \updates       2015-08-10
  * \license       GNU GPLv2 or above
  *
  */
@@ -40,7 +40,6 @@
 #include "seqmenu.h"
 
 class perform;
-class seqedit;
 
 /**
  *    This class implement the piano roll area of the application.

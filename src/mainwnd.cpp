@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-09
+ * \updates       2015-08-10
  * \license       GNU GPLv2 or above
  *
  */
@@ -380,9 +380,6 @@ mainwnd::mainwnd (perform * a_p)
     (
         mem_fun(*this, &mainwnd::timer_callback), 25
     );
-
-    // m_perf_edit = new perfedit(m_mainperf);
-
     m_sigpipe[0] = -1;                      // initialize static array
     m_sigpipe[1] = -1;
     install_signal_handlers();
@@ -394,8 +391,12 @@ mainwnd::mainwnd (perform * a_p)
 
 mainwnd::~mainwnd ()
 {
-    delete m_perf_edit;
-    delete m_options;
+    if (not_nullptr(m_perf_edit))
+        delete m_perf_edit;
+
+    if (not_nullptr(m_options))
+        delete m_options;
+
     if (m_sigpipe[0] != -1)
         close(m_sigpipe[0]);
 

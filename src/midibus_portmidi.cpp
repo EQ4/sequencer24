@@ -25,13 +25,12 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-07-30
+ * \updates       2015-08-10
  * \license       GNU GPLv2 or above
  *
  *  This file provides a Windows-only implementation of the midibus class.
  */
 
-#include "easy_macros.h"
 #include "midibus_portmidi.h"
 
 #ifdef PLATFORM_WINDOWS                // covers this whole module

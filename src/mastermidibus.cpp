@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-30
- * \updates       2015-07-30
+ * \updates       2015-08-10
  * \license       GNU GPLv2 or above
  *
  *  This file provides a Linux-only implementation of MIDI support.
@@ -33,8 +33,6 @@
  */
 
 #include "easy_macros.h"
-#include "mastermidibus.h"
-#include "midibus.h"
 
 #ifdef HAVE_LIBASOUND
 #include <sys/poll.h>
@@ -42,6 +40,9 @@
 #include "lash.h"
 #endif
 #endif
+
+#include "mastermidibus.h"
+#include "midibus.h"
 
 /**
  *  The mastermidibus constructor fills the array with our busses.
@@ -152,12 +153,10 @@ mastermidibus::init()
             m_buses_out_init[i] = true;
         }
         m_num_out_buses = num_buses;
-
-        m_num_in_buses = 1;                 /* only one in */
+        m_num_in_buses = 1;                 /* only one in, or 0? */
         m_buses_in[0] = new midibus
         (
             snd_seq_client_id(m_alsa_seq), m_alsa_seq, m_num_in_buses, m_queue
-                                       // might have been 0 ^^^^^
         );
         m_buses_in[0]->init_in_sub();
         m_buses_in_active[0] = true;
@@ -165,26 +164,17 @@ mastermidibus::init()
     }
     else
     {
-        /* while the next client for the sequencer is avaiable */
+        /* While the next client for the sequencer is available */
 
         while (snd_seq_query_next_client(m_alsa_seq, cinfo) >= 0)
         {
-            /* get client from cinfo */
-
             int client = snd_seq_client_info_get_client(cinfo);
-
-            /* fill pinfo */
-
-            snd_seq_port_info_alloca(&pinfo);
+            snd_seq_port_info_alloca(&pinfo);           /* will fill pinfo */
             snd_seq_port_info_set_client(pinfo, client);
             snd_seq_port_info_set_port(pinfo, -1);
-
-            /* while the next port is avail */
-
             while (snd_seq_query_next_port(m_alsa_seq, pinfo) >= 0)
             {
-
-                /* get its capability */
+                /* While the next port is available, get its capability */
 
                 int cap =  snd_seq_port_info_get_capability(pinfo);
                 if
@@ -222,7 +212,6 @@ mastermidibus::init()
 
                         m_num_out_buses++;
                     }
-
                     if                              /* the inputs */
                     (
                         (cap & SND_SEQ_PORT_CAP_SUBS_READ) != 0 &&
@@ -247,10 +236,8 @@ mastermidibus::init()
                     }
                 }
             }
-
         } /* end loop for clients */
     }
-
     set_bpm(c_bpm);
     set_ppqn(c_ppqn);
 
@@ -260,8 +247,7 @@ mastermidibus::init()
 
     m_num_poll_descriptors = snd_seq_poll_descriptors_count(m_alsa_seq, POLLIN);
     m_poll_descriptors = new pollfd[m_num_poll_descriptors]; /* allocate into */
-
-    snd_seq_poll_descriptors                /* get input poll descriptors */
+    snd_seq_poll_descriptors                    /* get input poll descriptors */
     (
         m_alsa_seq, m_poll_descriptors, m_num_poll_descriptors, POLLIN
     );
@@ -271,7 +257,6 @@ mastermidibus::init()
 
     snd_seq_set_output_buffer_size(m_alsa_seq, c_midibus_output_size);
     snd_seq_set_input_buffer_size(m_alsa_seq, c_midibus_input_size);
-
     m_bus_announce = new midibus
     (
         snd_seq_client_id(m_alsa_seq),
@@ -279,7 +264,6 @@ mastermidibus::init()
         m_alsa_seq, "system", "annouce", 0, m_queue
     );
     m_bus_announce->set_input(true);
-
     for (int i = 0; i < m_num_out_buses; i++)
         set_clock(i, m_init_clock[i]);
 
@@ -287,10 +271,6 @@ mastermidibus::init()
         set_input(i, m_init_input[i]);
 
 #endif  // HAVE_LIBASOUND
-
-// Windows routine already defined, moved this implementation to
-// the junk directory.
-
 }
 
 /**
@@ -365,7 +345,6 @@ mastermidibus::stop()
     snd_seq_sync_output_queue(m_alsa_seq);
     snd_seq_stop_queue(m_alsa_seq, m_queue, NULL); /* start timer */
 #endif
-
     unlock();
 }
 
@@ -490,9 +469,8 @@ mastermidibus::play (unsigned char a_bus, event * a_e24, unsigned char a_channel
 {
     lock();
     if (m_buses_out_active[a_bus] && a_bus < m_num_out_buses)
-    {
         m_buses_out[a_bus]->play(a_e24, a_channel);
-    }
+
     unlock();
 }
 
@@ -507,13 +485,11 @@ mastermidibus::set_clock (unsigned char a_bus, clock_e a_clock_type)
 {
     lock();
     if (a_bus < c_max_busses)
-    {
         m_init_clock[a_bus] = a_clock_type;
-    }
+
     if (m_buses_out_active[a_bus] && a_bus < m_num_out_buses)
-    {
         m_buses_out[a_bus]->set_clock(a_clock_type);
-    }
+
     unlock();
 }
 
@@ -525,9 +501,8 @@ clock_e
 mastermidibus::get_clock (unsigned char a_bus)
 {
     if (m_buses_out_active[a_bus] && a_bus < m_num_out_buses)
-    {
         return m_buses_out[a_bus]->get_clock();
-    }
+
     return e_clock_off;
 }
 
@@ -545,13 +520,11 @@ mastermidibus::set_input (unsigned char a_bus, bool a_inputing)
 {
     lock();
     if (a_bus < c_max_busses)         // should be m_num_in_buses I believe!!!
-    {
         m_init_input[a_bus] = a_inputing;
-    }
+
     if (m_buses_in_active[a_bus] && a_bus < m_num_in_buses)
-    {
         m_buses_in[a_bus]->set_input(a_inputing);
-    }
+
     unlock();
 }
 
@@ -563,9 +536,8 @@ bool
 mastermidibus::get_input (unsigned char a_bus)
 {
     if (m_buses_in_active[a_bus] && a_bus < m_num_in_buses)
-    {
         return m_buses_in[a_bus]->get_input();
-    }
+
     return false;
 }
 
@@ -588,8 +560,7 @@ mastermidibus::get_midi_out_bus_name (int a_bus)
             snprintf
             (
                 tmp, 59, "[%d] %d:%d (disconnected)",
-                a_bus,
-                m_buses_out[a_bus]->get_client(),
+                a_bus, m_buses_out[a_bus]->get_client(),
                 m_buses_out[a_bus]->get_port()
             );
         }
@@ -619,8 +590,7 @@ mastermidibus::get_midi_in_bus_name (int a_bus)
             snprintf
             (
                 tmp, 59, "[%d] %d:%d (disconnected)",
-                a_bus,
-                m_buses_in[a_bus]->get_client(),
+                a_bus, m_buses_in[a_bus]->get_client(),
                 m_buses_in[a_bus]->get_port()
             );
         }
@@ -640,9 +610,7 @@ mastermidibus::print ()
 {
     printf("Available Buses\n");
     for (int i = 0; i < m_num_out_buses; i++)
-    {
         printf("%s\n", m_buses_out[i]->m_name.c_str());
-    }
 }
 
 /**

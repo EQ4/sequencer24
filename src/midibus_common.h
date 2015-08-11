@@ -28,16 +28,16 @@
  * \library       sequencer24 application
  * \author        Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-07
+ * \updates       2015-08-10
  * \license       GNU GPLv2 or above
  *
  */
 
 #include <string>
 
+#include "globals.h"
 #include "event.h"
 #include "mutex.h"
-#include "globals.h"
 
 /*
  * Multiple forward references

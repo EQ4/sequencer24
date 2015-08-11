@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-09
+ * \updates       2015-08-10
  * \license       GNU GPLv2 or above
  *
  *  Not totally sure that the LASH support is completely finished, at this
@@ -36,7 +36,6 @@
 #include <sigc++/slot.h>
 #include <gtkmm.h>
 
-#include "easy_macros.h"
 #include "lash.h"
 #include "midifile.h"
 #include "perform.h"
@@ -48,16 +47,19 @@
  */
 
 lash::lash (int argc, char ** argv)
-#ifdef LASH_SUPPORT
  :
-    m_perform       (nullptr),
-    m_client        (nullptr),
-    m_lash_args     (nullptr)
-#endif // LASH_SUPPORT
+    m_perform           (nullptr),
+#ifdef LASH_SUPPORT
+    m_client            (nullptr),
+    m_lash_args         (nullptr),
+    m_is_lash_supported (true)
+#else
+    m_is_lash_supported (false)
+#endif
 {
 #ifdef LASH_SUPPORT
     m_lash_args = lash_extract_args(&argc, &argv);
-#endif // LASH_SUPPORT
+#endif
 }
 
 /**
@@ -68,8 +70,9 @@ void lash::init (perform * p)
 {
     if (not_nullptr(p))
     {
-#ifdef LASH_SUPPORT
         m_perform = p;
+
+#ifdef LASH_SUPPORT
         m_client = lash_init
         (
             m_lash_args, PACKAGE_NAME, LASH_Config_File, LASH_PROTOCOL(2, 0)
@@ -107,14 +110,14 @@ lash::set_alsa_client_id (int id)
  */
 
 void
-lash::start()
+lash::start ()
 {
 #ifdef LASH_SUPPORT
     Glib::signal_timeout().connect
     (
         sigc::mem_fun(*this, &lash::process_events), 250
     );
-#endif // LASH_SUPPORT
+#endif
 }
 
 #ifdef LASH_SUPPORT
@@ -126,8 +129,8 @@ lash::start()
 bool
 lash::process_events ()
 {
-    lash_event_t * ev = NULL;
-    while ((ev = lash_get_event(m_client)) != NULL)     // process events
+    lash_event_t * ev = nullptr;
+    while ((ev = lash_get_event(m_client)) != nullptr)  // process events
     {
         handle_event(ev);
         lash_event_destroy(ev);
@@ -163,9 +166,7 @@ lash::handle_event (lash_event_t * ev)
         Gtk::Main::quit();
     }
     else
-    {
-        fprintf(stderr, "Warning:  Unhandled LASH event.\n");
-    }
+        errprint("Warning:  Unhandled LASH event.");
 }
 
 /*

@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-05
+ * \updates       2015-08-10
  * \license       GNU GPLv2 or above
  *
  */
@@ -53,19 +53,14 @@ class lash
 
 private:
 
-#ifdef LASH_SUPPORT
-
     perform * m_perform;
+
+#ifdef LASH_SUPPORT
     lash_client_t * m_client;
     lash_args_t * m_lash_args;
+#endif
 
-private:
-
-    bool process_events ();
-    void handle_event (lash_event_t * conf);
-    void handle_config (lash_config_t * conf);
-
-#endif // LASH_SUPPORT
+    bool m_is_lash_supported;
 
 public:
 
@@ -73,6 +68,15 @@ public:
     void init (perform * perform);
     void set_alsa_client_id (int id);
     void start ();
+
+#ifdef LASH_SUPPORT
+private:
+
+    bool process_events ();
+    void handle_event (lash_event_t * conf);
+    void handle_config (lash_config_t * conf);
+#endif
+
 };
 
 /*

@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-10
  * \license       GNU GPLv2 or above
  *
  */
@@ -59,7 +59,6 @@
 
 #include <sigc++/bind.h>
 
-#include "easy_macros.h"
 #include "gtk_helpers.h"
 #include "perfedit.h"
 #include "perform.h"

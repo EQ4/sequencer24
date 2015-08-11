@@ -25,14 +25,16 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-10
  * \license       GNU GPLv2 or above
  *
  *  We found a couple of unused members in this module and removed them.
  */
 
 #include <iostream>
+
 #include "configfile.h"
+#include "perform.h"
 
 /**
  *  Provides the string constructor for a configuration file.

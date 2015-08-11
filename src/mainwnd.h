@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-09
+ * \updates       2015-08-10
  * \license       GNU GPLv2 or above
  *
  *  The main windows is known as the "Patterns window" or "Patterns
@@ -38,7 +38,7 @@
 #include <string>
 #include <gtkmm/window.h>
 
-#include "perform.h"
+#include "perform.h"                   // perform and performcallback
 
 namespace Gtk
 {

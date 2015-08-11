@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-09
+ * \updates       2015-08-10
  * \license       GNU GPLv2 or above
  *
  */
@@ -43,7 +43,6 @@
 namespace Gtk
 {
     class Adjustment;
-
 }
 
 class seqdata;
@@ -60,6 +59,11 @@ class seqevent : public Gtk::DrawingArea
     friend struct Seq24SeqEventInput;
 
 private:
+
+    /**
+     * Why should we need both at the same time?  Just load the one that
+     * is specified in the configuration.
+     */
 
     FruitySeqEventInput m_fruity_interaction;
     Seq24SeqEventInput m_seq24_interaction;

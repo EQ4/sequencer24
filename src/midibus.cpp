@@ -25,13 +25,12 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-06
+ * \updates       2015-08-10
  * \license       GNU GPLv2 or above
  *
  *  This file provides a Linux-only implementation of MIDI support.
  */
 
-#include "easy_macros.h"
 #include "midibus.h"
 
 #ifdef HAVE_LIBASOUND
