@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-11
+ * \updates       2015-08-12
  * \license       GNU GPLv2 or above
  *
  */
@@ -104,29 +104,32 @@ sequence::~sequence ()
 }
 
 /**
- *  Principal assignment operator.
+ *  Principal assignment operator.  Follows the stock rules for such an
+ *  operator, but does a little more then just assign member values.
+ *
+ * \threadsafe
  */
 
 sequence &
 sequence::operator = (const sequence & a_rhs)
 {
     lock();
-    if (this != &a_rhs) /* dont copy to self */
+    if (this != &a_rhs)
     {
         m_list_event   = a_rhs.m_list_event;
-        m_list_trigger   = a_rhs.m_list_trigger;
+        m_list_trigger = a_rhs.m_list_trigger;
         m_midi_channel = a_rhs.m_midi_channel;
         m_masterbus    = a_rhs.m_masterbus;
         m_bus          = a_rhs.m_bus;
         m_name         = a_rhs.m_name;
         m_length       = a_rhs.m_length;
+        m_playing      = false;
         m_time_beats_per_measure = a_rhs.m_time_beats_per_measure;
         m_time_beat_width = a_rhs.m_time_beat_width;
-        m_playing      = false;
-        for (int i = 0; i < c_midi_notes; i++) /* no notes are playing */
+        for (int i = 0; i < c_midi_notes; i++)      /* no notes are playing */
             m_playing_notes[i] = 0;
 
-        zero_markers(); /* reset */
+        zero_markers();                             /* reset */
     }
     verify_and_link();
     unlock();
@@ -3439,9 +3442,13 @@ sequence::quantize_events
 
         /* correct status and correct cc */
 
-        if (a_status == EVENT_CONTROL_CHANGE && i->get_status() == a_status && d0 == a_cc)
+        if
+        (   a_status == EVENT_CONTROL_CHANGE &&
+            i->get_status() == a_status && d0 == a_cc
+        )
+        {
             set = true;
-
+        }
         if (!i->is_marked())
             set = false;
 
@@ -3480,14 +3487,22 @@ sequence::quantize_events
     unlock();
 }
 
+/**
+ *  This was a <i> global </i> internal function called addListVar().
+ *  Let's at least make it a private static member now, and hew to the
+ *  naming conventions of this class.
+ */
+
 void
-addListVar (std::list<char> * a_list, long a_var)
+sequence::add_list_var (CharList * a_list, long a_var)
 {
     long buffer;
     buffer = a_var & 0x7F;
 
-    /* we shift it right 7, if there is
-       still set bits, encode into buffer in reverse order */
+    /*
+     * We shift it right 7, and, if there are still set bits, we encode
+     * into buffer in reverse order.
+     */
 
     while ((a_var >>= 7))
     {
@@ -3504,8 +3519,14 @@ addListVar (std::list<char> * a_list, long a_var)
     }
 }
 
+/**
+ *  This was a <i> global </i> internal function called addLongList().
+ *  Let's at least make it a private static member now, and hew to the
+ *  naming conventions of this class.
+ */
+
 void
-addLongList (std::list<char> * a_list, long a_x)
+sequence::add_long_list (CharList * a_list, long a_x)
 {
     a_list->push_front((a_x & 0xFF000000) >> 24);
     a_list->push_front((a_x & 0x00FF0000) >> 16);
@@ -3514,26 +3535,24 @@ addLongList (std::list<char> * a_list, long a_x)
 }
 
 void
-sequence::fill_list (std::list<char> * a_list, int a_pos)
+sequence::fill_list (CharList * a_list, int a_pos)
 {
     lock();
-    *a_list = std::list<char>(); /* clear list */
-    addListVar(a_list, 0);   /* sequence number */
+    *a_list = CharList();                               /* clear list */
+    add_list_var(a_list, 0);                              /* sequence number */
     a_list->push_front(char(0xFF));
     a_list->push_front(0x00);
     a_list->push_front(0x02);
     a_list->push_front(char((a_pos & 0xFF00) >> 8));
     a_list->push_front(char(a_pos & 0x00FF));
 
-    /* name */
-    addListVar(a_list, 0);
+    add_list_var(a_list, 0);                              /* name */
     a_list->push_front(char(0xFF));
     a_list->push_front(0x03);
 
     int length =  m_name.length();
     if (length > 0x7F) length = 0x7f;
     a_list->push_front(length);
-
     for (int i = 0; i < length; i++)
         a_list->push_front(m_name.c_str()[i]);
 
@@ -3545,10 +3564,9 @@ sequence::fill_list (std::list<char> * a_list, int a_pos)
         timestamp = e.get_timestamp();
         delta_time = timestamp - prev_timestamp;
         prev_timestamp = timestamp;
+        add_list_var(a_list, delta_time);             /* encode delta_time */
 
-        addListVar(a_list, delta_time); /* encode delta_time */
-
-        /* now that the timestamp is encoded, do the status and data */
+        /* timestamp is encoded, now do the status and data */
 
         a_list->push_front(e.m_status | m_midi_channel);
         switch (e.m_status & 0xF0)
@@ -3578,53 +3596,47 @@ sequence::fill_list (std::list<char> * a_list, int a_pos)
     TriggerList::iterator t = m_list_trigger.begin();
     TriggerList::iterator p;
 
-    addListVar(a_list, 0);
+    add_list_var(a_list, 0);
     a_list->push_front(char(0xFF));
     a_list->push_front(char(0x7F));
-    addListVar(a_list, (num_triggers * 3 * 4) + 4);
-    addLongList(a_list, c_triggers_new);
+    add_list_var(a_list, (num_triggers * 3 * 4) + 4);
+    add_long_list(a_list, c_triggers_new);
     for (int i = 0; i < num_triggers; i++)
     {
         p = t;
-        addLongList(a_list, t->m_tick_start);
-        addLongList(a_list, t->m_tick_end);
-        addLongList(a_list, t->m_offset);
+        add_long_list(a_list, t->m_tick_start);
+        add_long_list(a_list, t->m_tick_end);
+        add_long_list(a_list, t->m_offset);
         t++;
     }
 
-    /* bus */
-    addListVar(a_list, 0);
+    add_list_var(a_list, 0);                              /* bus */
     a_list->push_front(char(0xF));
     a_list->push_front(char(0x7F));
     a_list->push_front(char(0x05));
-    addLongList(a_list, c_midibus);
+    add_long_list(a_list, c_midibus);
     a_list->push_front(m_bus);
 
-    /* timesig */
-    addListVar(a_list, 0);
+    add_list_var(a_list, 0);                              /* timesig */
     a_list->push_front(char(0xFF));
     a_list->push_front(char(0x7F));
     a_list->push_front(char(0x06));
-    addLongList(a_list, c_timesig);
+    add_long_list(a_list, c_timesig);
     a_list->push_front(m_time_beats_per_measure);
     a_list->push_front(m_time_beat_width);
 
-    /* channel */
-    addListVar(a_list, 0);
+    add_list_var(a_list, 0);                              /* channel */
     a_list->push_front(char(0xFF));
     a_list->push_front(char(0x7F));
     a_list->push_front(char(0x05));
-    addLongList(a_list, c_midich);
+    add_long_list(a_list, c_midich);
     a_list->push_front(m_midi_channel);
 
-    delta_time = m_length - prev_timestamp;
-
-    /* meta track end */
-    addListVar(a_list, delta_time);
+    delta_time = m_length - prev_timestamp;             /* meta track end */
+    add_list_var(a_list, delta_time);
     a_list->push_front(char(0xFF));
     a_list->push_front(char(0x2F));
     a_list->push_front(char(0x00));
-
     unlock();
 }
 
@@ -3633,4 +3645,3 @@ sequence::fill_list (std::list<char> * a_list, int a_pos)
  *
  * vim: sw=4 ts=4 wm=8 et ft=cpp
  */
-

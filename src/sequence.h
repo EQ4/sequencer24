@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-11
+ * \updates       2015-08-12
  * \license       GNU GPLv2 or above
  *
  */
@@ -156,6 +156,7 @@ private:
     typedef std::list<trigger> TriggerList;
     typedef std::stack<std::list<event> > EventStack;
     typedef std::stack<std::list<trigger> > TriggerStack;
+    typedef std::list<char> CharList;
 
 private:
 
@@ -209,7 +210,6 @@ private:
     bool m_quantized_rec;
     bool m_thru;
     bool m_queued;
-
     bool m_trigger_copied;
 
     /* flag indicates that contents has changed from a recording */
@@ -516,7 +516,7 @@ public:
         long * a_tick_on, long * a_tick_off,
         bool * a_selected, long * a_tick_offset
     );
-    void fill_list (std::list<char> * a_list, int a_pos);
+    void fill_list (CharList * a_list, int a_pos);
     void quantize_events
     (
         unsigned char a_status, unsigned char a_cc,
@@ -525,6 +525,9 @@ public:
     void transpose_notes (int a_steps, int a_scale);
 
 private:
+
+    static void add_list_var (CharList * a_list, long a_var);
+    static void add_long_list (CharList * a_list, long a_x);
 
     void put_event_on_bus (event * a_e);
     void remove_all ();

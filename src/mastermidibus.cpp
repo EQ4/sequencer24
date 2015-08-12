@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-30
- * \updates       2015-08-10
+ * \updates       2015-08-12
  * \license       GNU GPLv2 or above
  *
  *  This file provides a Linux-only implementation of MIDI support.
@@ -251,7 +251,7 @@ mastermidibus::init()
     (
         m_alsa_seq, m_poll_descriptors, m_num_poll_descriptors, POLLIN
     );
-    set_sequence_input(false, NULL);
+    set_sequence_input(false, nullptr);
 
     /* Set the input and output buffer sizes */
 
@@ -284,7 +284,7 @@ mastermidibus::start ()
 {
 #ifdef HAVE_LIBASOUND
     lock();
-    snd_seq_start_queue(m_alsa_seq, m_queue, NULL); /* start timer */
+    snd_seq_start_queue(m_alsa_seq, m_queue, NULL);     /* start timer */
     for (int i = 0; i < m_num_out_buses; i++)
         m_buses_out[i]->start();
 
@@ -303,7 +303,7 @@ mastermidibus::continue_from (long a_tick)
 {
 #ifdef HAVE_LIBASOUND
     lock();
-    snd_seq_start_queue(m_alsa_seq, m_queue, NULL); /* start timer */
+    snd_seq_start_queue(m_alsa_seq, m_queue, NULL);     /* start timer */
     for (int i = 0; i < m_num_out_buses; i++)
         m_buses_out[i]->continue_from(a_tick);
 
@@ -706,7 +706,6 @@ mastermidibus::port_start (int a_client, int a_port)
             m_buses_out[bus_slot]->init_out();
             m_buses_out_active[bus_slot] = true;
             m_buses_out_init[bus_slot] = true;
-
             if (! replacement)
                 m_num_out_buses++;
         }
@@ -714,7 +713,8 @@ mastermidibus::port_start (int a_client, int a_port)
         (
             (cap & (SND_SEQ_PORT_CAP_SUBS_READ | SND_SEQ_PORT_CAP_READ)) ==
                 (SND_SEQ_PORT_CAP_SUBS_READ | SND_SEQ_PORT_CAP_READ) &&
-            snd_seq_client_id(m_alsa_seq) != snd_seq_port_info_get_client(pinfo))
+            snd_seq_client_id(m_alsa_seq) != snd_seq_port_info_get_client(pinfo)
+        )
         {
             bool replacement = false;
             int bus_slot = m_num_in_buses;
@@ -747,7 +747,7 @@ mastermidibus::port_start (int a_client, int a_port)
             if (! replacement)
                 m_num_in_buses++;
         }
-    } /* end loop for clients */
+    }                                           /* end loop for clients */
 
     /*
      * Get the number of MIDI input poll file descriptors.
@@ -859,27 +859,24 @@ mastermidibus::get_midi_event (event * a_in)
      */
 
 #if 0
-    if ( buffer[0] == EVENT_SYSEX ){
+    if ( buffer[0] == EVENT_SYSEX )
     {
-
-        /* set up for sysex if needed */
-        a_in->start_sysex();
+        a_in->start_sysex();            /* set up for sysex if needed */
         sysex = a_in->append_sysex(buffer, bytes);
     }
     else
-#endif
     {
-        a_in->set_data(buffer[1], buffer[2]);
-
+#endif
         /* some keyboards send Note On with velocity 0 for Note Off */
 
-        if (a_in->get_status() == EVENT_NOTE_ON &&
-                a_in->get_note_velocity() == 0x00)
-        {
+        a_in->set_data(buffer[1], buffer[2]);
+        if (a_in->get_status() == EVENT_NOTE_ON && a_in->get_note_velocity() == 0)
             a_in->set_status(EVENT_NOTE_OFF);
-        }
+
         sysex = false;
+#if 0
     }
+#endif
 
     while (sysex)       /* sysex messages might be more than one message */
     {
@@ -904,7 +901,7 @@ mastermidibus::get_midi_event (event * a_in)
  */
 
 void
-mastermidibus::set_sequence_input(bool a_state, sequence *a_seq)
+mastermidibus::set_sequence_input (bool a_state, sequence * a_seq)
 {
     lock();
     m_seq = a_seq;

@@ -1,0 +1,61 @@
+Chris Ahlstrom
+Sequence "diagrams" for Sequencer24
+2015-08-12 to 2015-08-12
+
+1. Startup:    "$ ./sequencer24"
+
+   1. for i = 0 to c_max_busses, for j = 0 to 16:
+         global_user_midi_bus_definitions[i].instrument[j] = -1;
+
+   2. for i = 0 to c_max_instruments, for j = 0 to MIDI_COUNT_MAX:
+         global_user_instrument_definitions[i].controllers_active[j] = false;
+
+   3. Create perform object (p) in main() on stack.
+
+      1. Initialize mastermidibus (default constructor).
+      2. Zero the pointer-to-sequences array and its "active" array.
+      3. Initialize the m_midi_cc_toggle/on/off array.
+      4. Set the sequence-toggling key events.
+      4. Set the sequence-group keys.
+
+   4. Create font object (p_font_renderer) in main() on heap.
+
+   5. Parse options-file and user-file.
+
+   6. More perform functions:
+
+      1. p.init()
+         1. mastermidibus::init()
+            1. ALSA setups
+            2. Create and initialize 16 output busses. (Need #define)
+            3. Create and initialize 1 inputput busses. (Need #define)
+            4. Set MIDI speeds, poll descriptors.
+            5. set_sequence_input(false...) !
+            6. Create MIDI announce-buss.
+      2. p.launch_input_thread(): start input_thread_func(this)
+      3. p.launch_output_thread(): start output_thread_func(this)
+      4. p.init_jack().
+
+   7. Create mainwnd object (seq24_window) on stack, hooking into the
+      perform object p.
+
+      1. Create menubar and menu items.
+      2. Create mainwid with the perform reference.
+      3. Create maintime.
+      4. Create perfedit with the perform reference.
+      5. Register this mainwnd for perform object notification
+
+      Make it a perform function and use it in mainwnd.cpp #113
+
+      MORE TO COME
+
+   8. Initialize LASH driver if enabled.
+
+   9. Run the seq24_window object.
+
+  10. Call p.deinit_jack().
+
+  11. Write the options file (unconditionally?)
+      Write the MIDI file (unconditionally).
+
+
