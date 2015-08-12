@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-11
  * \license       GNU GPLv2 or above
  *
  */
@@ -74,8 +74,8 @@ public:
 
     long m_tick_start;
     long m_tick_end;
-    bool m_selected;
     long m_offset;
+    bool m_selected;
 
 public:
 
@@ -83,19 +83,20 @@ public:
      *  Initializes the trigger structure.
      */
 
-    trigger ()
+    trigger () :
+        m_tick_start    (0),
+        m_tick_end      (0),
+        m_offset        (0),
+        m_selected      (false)
     {
-        m_tick_start = 0;
-        m_tick_end = 0;
-        m_offset = 0;
-        m_selected = false;
+        // Empty body
     }
 
     /**
      *  This operator compares only the m_tick_start members.
      */
 
-    bool operator< (trigger rhs)
+    bool operator< (const trigger & rhs)
     {
         if (m_tick_start < rhs.m_tick_start)
             return true;
@@ -151,30 +152,35 @@ public:
 
 private:
 
-    static std::list<event> m_list_clipboard;
+    typedef std::list<event> EventList;
+    typedef std::list<trigger> TriggerList;
+    typedef std::stack<std::list<event> > EventStack;
+    typedef std::stack<std::list<trigger> > TriggerStack;
+
+private:
+
+    static EventList m_list_clipboard;
 
     /**
      *  This list holds the current pattern/sequence events.
      */
 
-    std::list<event> m_list_event;
-
-    std::list<trigger> m_list_trigger;
+    EventList m_list_event;
+    TriggerList m_list_trigger;
     trigger m_trigger_clipboard;
-
-    std::stack<std::list<event> > m_list_undo;
-    std::stack<std::list<event> > m_list_redo;
-    std::stack<std::list<trigger> > m_list_trigger_undo;
-    std::stack<std::list<trigger> > m_list_trigger_redo;
+    EventStack m_list_undo;
+    EventStack m_list_redo;
+    TriggerStack m_list_trigger_undo;
+    TriggerStack m_list_trigger_redo;
 
     /* markers */
 
-    std::list<event>::iterator m_iterator_play;
-    std::list<event>::iterator m_iterator_draw;
-    std::list<trigger>::iterator m_iterator_play_trigger;
-    std::list<trigger>::iterator m_iterator_draw_trigger;
+    EventList::iterator m_iterator_play;
+    EventList::iterator m_iterator_draw;
+    TriggerList::iterator m_iterator_play_trigger;
+    TriggerList::iterator m_iterator_draw_trigger;
 
-    /* contains the proper midi channel */
+    /* contains the proper MIDI channel */
 
     char m_midi_channel;
     char m_bus;
@@ -254,16 +260,12 @@ public:
     void push_undo ();
     void pop_undo ();
     void pop_redo ();
-
     void push_trigger_undo ();
     void pop_trigger_undo ();
-
     void set_name (const std::string & a_name);
     void set_name (char * a_name);
-
     void set_measures (long a_length_measures);
     long get_measures ();
-
     void set_bpm (long a_beats_per_measure);
 
     /**
@@ -532,7 +534,7 @@ private:
     void split_trigger (trigger & trig, long a_split_tick);
     void adjust_trigger_offsets_to_length( long a_new_len);
     long adjust_offset (long a_offset);
-    void remove (std::list<event>::iterator i);
+    void remove (EventList::iterator i);
     void remove (event * e);
 
 };

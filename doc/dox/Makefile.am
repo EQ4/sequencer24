@@ -82,6 +82,7 @@ clean:
 	-rm -rf html
 	-rm -rf latex
 	-rm -f *.log dox-stamp
+	-rm -f ../reference_manual.pdf
 
 #******************************************************************************
 # Installing documentation

@@ -153,7 +153,8 @@ public:
     seqroll
     (
         perform * a_perf,
-        sequence * a_seq, int a_zoom, int a_snap,
+        sequence * a_seq,
+        int a_zoom, int a_snap,
         seqdata * a_seqdata_wid,
         seqevent * a_seqevent_wid,
         seqkeys * a_seqkeys_wid,

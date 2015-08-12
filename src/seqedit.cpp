@@ -144,7 +144,10 @@ seqedit::seqedit (sequence * a_seq, perform * a_perf, int a_pos)
     m_menu_bw               (manage(new Gtk::Menu())),
     m_menu_rec_vol          (manage(new Gtk::Menu())),
     m_pos                   (a_pos),
-    m_vadjust               (manage(new Gtk::Adjustment(55, 0, c_num_keys, 1, 1, 1))),
+    m_vadjust
+    (
+        manage(new Gtk::Adjustment(55, 0, c_num_keys, 1, 1, 1))
+    ),
     m_hadjust               (manage(new Gtk::Adjustment(0, 0, 1, 1, 1, 1))),
     m_vscroll_new           (manage(new Gtk::VScrollbar(*m_vadjust))),
     m_hscroll_new           (manage(new Gtk::HScrollbar(*m_hadjust))),
