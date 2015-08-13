@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-10
+ * \updates       2015-08-12
  * \license       GNU GPLv2 or above
  *
  */
@@ -75,7 +75,7 @@ midifile::~midifile ()
  *  Reads 4 bytes of data using read_byte().
  *
  * \warning
- *      This code looks endian-dependent.
+ *      This code looks endian-dependent and integer-size dependent.
  */
 
 unsigned long
@@ -130,10 +130,7 @@ midifile::read_var ()
         result <<= 7;                               /* shift result 7 bits */
         result += (c & 0x7F);                       /* add bits 0-6        */
     }
-
-    /* bit was clear */
-
-    result <<= 7;
+    result <<= 7;                                   /* bit was clear       */
     result += (c & 0x7F);
     return result;
 }

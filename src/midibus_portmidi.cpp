@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-10
+ * \updates       2015-08-12
  * \license       GNU GPLv2 or above
  *
  *  This file provides a Windows-only implementation of the midibus class.
@@ -58,8 +58,8 @@ midibus::midibus (char a_id, char a_pm_num, const char * a_client_name)
 {
     /* copy the client names */
 
-    char tmp[60];
-    snprintf(tmp, 59, "[%d] %s", m_id, a_client_name);
+    char tmp[64];
+    snprintf(tmp, sizeof(tmp), "[%d] %s", m_id, a_client_name);
     m_name = tmp;
 }
 
@@ -84,8 +84,8 @@ midibus::midibus (char a_id, int a_queue)
 
     /* synthesize the client names */
 
-    char tmp[60];
-    snprintf(tmp, 59, "[%d] seq24 %d", m_id, m_id);
+    char tmp[64];
+    snprintf(tmp, sizeof(tmp), "[%d] seq24 %d", m_id, m_id);
     m_name = tmp;
 }
 

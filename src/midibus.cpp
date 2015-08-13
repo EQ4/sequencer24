@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-10
+ * \updates       2015-08-12
  * \license       GNU GPLv2 or above
  *
  *  This file provides a Linux-only implementation of MIDI support.
@@ -76,23 +76,23 @@ midibus::midibus
     m_lasttick          (0),
     m_mutex             ()
 {
-    char name[60];
+    char name[64];
     if (global_user_midi_bus_definitions[m_id].alias.length() > 0)
     {
         snprintf
         (
-            name, 59, "(%s)",
+            name, sizeof(name), "(%s)",
             global_user_midi_bus_definitions[m_id].alias.c_str()
         );
     }
     else
     {
-        snprintf(name, 59, "(%s)", a_port_name);
+        snprintf(name, sizeof(name), "(%s)", a_port_name);
     }
 
     /* copy the client names */
 
-    char tmp[60];
+    char tmp[64];
     snprintf
     (
         tmp, 59, "[%d] %d:%d %s",
@@ -127,8 +127,8 @@ midibus::midibus
 {
     /* copy the client name */
 
-    char tmp[60];
-    snprintf(tmp, 59, "[%d] seq24 %d", m_id, m_id);
+    char tmp[64];
+    snprintf(tmp, sizeof(tmp), "[%d] seq24 %d", m_id, m_id);
     m_name = tmp;
 }
 

@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-07
+ * \updates       2015-08-12
  * \license       GNU GPLv2 or above
  *
  */
@@ -341,8 +341,7 @@ perform::init_jack ()
                 break;
             }
 
-        }
-        while (0);
+        } while (0);                    // weird
     }
 #endif  // JACK_SUPPORT
 }
@@ -386,16 +385,12 @@ perform::clear_all ()
 {
     reset_sequences();
     for (int i = 0; i < c_max_sequence; i++)
-    {
         if (is_active(i))
             delete_sequence(i);
-    }
 
-    std::string e;                              // ("");
+    std::string e;
     for (int i = 0; i < c_max_sets; i++)
-    {
         set_screen_set_notepad(i, &e);
-    }
 }
 
 /**

@@ -94,7 +94,7 @@ perfroll::perfroll
         Gdk::POINTER_MOTION_MASK | Gdk::KEY_PRESS_MASK |
         Gdk::KEY_RELEASE_MASK | Gdk::FOCUS_CHANGE_MASK | Gdk::SCROLL_MASK
     );
-    set_size_request(10, 10);
+    set_size_request(10, 10);           // source of these constants?
     set_double_buffered(false);
     for (int i = 0; i < c_max_sequence; ++i)
         m_sequence_active[i] = false;

@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-09
+ * \updates       2015-08-12
  * \license       GNU GPLv2 or above
  *
  *  Here is a list of the global variables used/stored/modified by this
@@ -207,7 +207,8 @@ options::add_midi_clock_page ()
     Gtk::HBox * hbox2 = manage(new Gtk::HBox());
     hbox2->pack_start
     (
-        *(manage(new Gtk::Label("Clock Start Modulo (1/16 Notes)"))), false, false, 4
+        *(manage(new Gtk::Label("Clock Start Modulo (1/16 Notes)"))),
+        false, false, 4
     );
     hbox2->pack_start(*clock_mod_spin, false, false);
     vbox->pack_start(*hbox2, false, false);
@@ -409,13 +410,12 @@ options::add_keyboard_page ()
     toggletable->set_border_width(4);
     toggletable->set_spacings(4);
     toggleframe->add(*toggletable);
-
-    for (int i = 0; i < 32; i++)
+    for (int i = 0; i < 32; i++)        // c_seqs_in_set ?
     {
         int x = i % 8 * 2;
         int y = i / 8;
         int slot = x * 2 + y;           // count this way: 0, 4, 8, 16...
-        char buf[16];
+        char buf[32];
         snprintf(buf, sizeof(buf), "%d", slot);
         Gtk::Label * numlabel = manage(new Gtk::Label(buf, Gtk::ALIGN_RIGHT));
         entry = manage
@@ -436,7 +436,7 @@ options::add_keyboard_page ()
     mutegrouptable->set_border_width(4);
     mutegrouptable->set_spacings(4);
     mutegroupframe->add(*mutegrouptable);
-    for (int i = 0; i < 32; i++)
+    for (int i = 0; i < 32; i++)        // c_seqs_in_set ?
     {
         int x = i % 8 * 2;
         int y = i / 8;
@@ -706,7 +706,7 @@ options::input_callback (int a_bus, Gtk::Button * i_button)
 {
     Gtk::CheckButton * a_button = (Gtk::CheckButton *) i_button;
     bool input = a_button->get_active();
-    if (9999 == a_bus)
+    if (9999 == a_bus)                  // another manifest constant needed
     {
         m_mainperf->m_show_ui_sequence_key = input;
         for (int i = 0; i < c_max_sequence; i++)

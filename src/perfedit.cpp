@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-10
+ * \updates       2015-08-12
  * \license       GNU GPLv2 or above
  *
  */
@@ -136,8 +136,8 @@ perfedit::perfedit (perform * a_perf)
      * Fill the table
      */
 
-    m_table->attach(*m_hlbox,  0, 3, 0, 1,  Gtk::FILL, Gtk::SHRINK, 2, 0);
-    m_table->attach(*m_perfnames,    0, 1, 2, 3, Gtk::SHRINK, Gtk::FILL);
+    m_table->attach(*m_hlbox, 0, 3, 0, 1,  Gtk::FILL, Gtk::SHRINK, 2, 0);
+    m_table->attach(*m_perfnames, 0, 1, 2, 3, Gtk::SHRINK, Gtk::FILL);
     m_table->attach(*m_perftime, 1, 2, 1, 2, Gtk::FILL, Gtk::SHRINK);
     m_table->attach
     (
@@ -223,7 +223,7 @@ perfedit::perfedit (perform * a_perf)
     (
         sigc::bind<Gtk::Menu *>(mem_fun(*this, &perfedit::popup_menu), m_menu_bpm)
     );
-    add_tooltip(m_button_bpm, "Time Signature. Beats per Measure");
+    add_tooltip(m_button_bpm, "Time Signature. Beats per Measure.");
     m_entry_bpm->set_width_chars(2);
     m_entry_bpm->set_editable(false);
     m_button_bw->add                                /* beat width */
@@ -234,7 +234,7 @@ perfedit::perfedit (perform * a_perf)
     (
         sigc::bind<Gtk::Menu *>(mem_fun(*this, &perfedit::popup_menu), m_menu_bw)
     );
-    add_tooltip(m_button_bw, "Time Signature.  Length of Beat");
+    add_tooltip(m_button_bw, "Time Signature.  Length of Beat.");
     m_entry_bw->set_width_chars(2);
     m_entry_bw->set_editable(false);
     m_button_undo->add
@@ -458,7 +458,7 @@ perfedit::set_guides ()
 void
 perfedit::set_snap (int a_snap)
 {
-    char b[10];
+    char b[32];
     snprintf(b, sizeof(b), "1/%d", a_snap);
     m_entry_snap->set_text(b);
     m_snap = a_snap;
@@ -473,7 +473,7 @@ perfedit::set_snap (int a_snap)
 void
 perfedit::set_bpm (int a_beats_per_measure)
 {
-    char b[10];
+    char b[32];
     snprintf(b, sizeof(b), "%d", a_beats_per_measure);
     m_entry_bpm->set_text(b);
     m_bpm = a_beats_per_measure;
@@ -488,7 +488,7 @@ perfedit::set_bpm (int a_beats_per_measure)
 void
 perfedit::set_bw (int a_beat_width)
 {
-    char b[10];
+    char b[32];
     snprintf(b, sizeof(b), "%d", a_beat_width);
     m_entry_bw->set_text(b);
     m_bw = a_beat_width;
