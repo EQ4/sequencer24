@@ -653,11 +653,13 @@ seqedit::create_menus ()
 
     /*
      *  This menu sets the scale to show on the panel, and the button
-     *  shows a "staircase" image.
+     *  shows a "staircase" image.  See the c_music_scales enumeration
+     *  defined in the globals module.
      */
 
 #define SET_SCALE   mem_fun(*this, &seqedit::set_scale)
 
+#if 0
     m_menu_scale->items().push_back                     /* music scale */
     (
         MenuElem(c_scales_text[0], sigc::bind(SET_SCALE, c_scale_off))
@@ -670,6 +672,15 @@ seqedit::create_menus ()
     (
         MenuElem(c_scales_text[2], sigc::bind(SET_SCALE, c_scale_minor))
     );
+#endif
+
+    for (int i = int(c_scale_off); i < int(c_scale_size); i++)
+    {
+        m_menu_scale->items().push_back                     /* music scale */
+        (
+            MenuElem(c_scales_text[i], sigc::bind(SET_SCALE, i))
+        );
+    }
 
     /*
      *  This section sets up two different menus.  The first is
@@ -2025,7 +2036,7 @@ seqedit::on_scroll_event (GdkEventScroll * a_ev)
  */
 
 bool
-seqedit::on_key_press_event(GdkEventKey* a_ev)
+seqedit::on_key_press_event (GdkEventKey * a_ev)
 {
     guint modifiers;    // Used to filter out caps/num lock etc.
     modifiers = gtk_accelerator_get_default_mod_mask();

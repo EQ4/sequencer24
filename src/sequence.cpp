@@ -3380,8 +3380,7 @@ sequence::transpose_notes (int a_steps, int a_scale)
 
     for (i = m_list_event.begin(); i != m_list_event.end(); i++)
     {
-        /* is it being moved ? */
-        if
+        if                                          /* is it being moved ? */
         (
             (i->get_status() ==  EVENT_NOTE_ON ||
                 i->get_status() ==  EVENT_NOTE_OFF) &&

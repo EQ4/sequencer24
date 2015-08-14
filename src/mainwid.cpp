@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-09
+ * \updates       2015-08-12
  * \license       GNU GPLv2 or above
  *
  */
@@ -44,19 +44,26 @@ using namespace Gtk::Menu_Helpers;
  *  These look like the "Sequence toggle keys" in the Options / Keyboard
  *  dialog, except that they are upper-case here, and lower-case in that
  *  configuration dialog.
+ *
+ * \obsolete
+ *      It's only use was in this module, and is commented out below,
+ *      replaced by another lookup method.
+ *
+\verbatim
+    const char mainwid::m_seq_to_char[c_seqs_in_set] =
+    {
+        '1', 'Q', 'A', 'Z',
+        '2', 'W', 'S', 'X',
+        '3', 'E', 'D', 'C',
+        '4', 'R', 'F', 'V',
+        '5', 'T', 'G', 'B',
+        '6', 'Y', 'H', 'N',
+        '7', 'U', 'J', 'M',
+        '8', 'I', 'K', ','
+    };
+\endverbatim
+ *
  */
-
-const char mainwid::m_seq_to_char[c_seqs_in_set] =
-{
-    '1', 'Q', 'A', 'Z',
-    '2', 'W', 'S', 'X',
-    '3', 'E', 'D', 'C',
-    '4', 'R', 'F', 'V',
-    '5', 'T', 'G', 'B',
-    '6', 'Y', 'H', 'N',
-    '7', 'U', 'J', 'M',
-    '8', 'I', 'K', ','
-};
 
 /**
  *  This constructor sets a lot of the members, but not all.  And it asks
@@ -202,8 +209,8 @@ mainwid::draw_sequence_on_pixmap (int a_seq)
             );
             m_gc->set_foreground(m_foreground);
 
-            char name[20];
-            snprintf(name, sizeof name, "%.13s", seq->get_name());
+            char temp[20];                      // SEQ_NAME_SIZE !
+            snprintf(temp, sizeof temp, "%.13s", seq->get_name());
             font::Color col = font::BLACK;
             if (m_foreground == m_black)
                 col = font::BLACK;
@@ -213,33 +220,37 @@ mainwid::draw_sequence_on_pixmap (int a_seq)
 
             p_font_renderer->render_string_on_drawable      // name of pattern
             (
-                m_gc, base_x+c_text_x, base_y+4, m_pixmap, name, col
+                m_gc, base_x+c_text_x, base_y+4, m_pixmap, temp, col
             );
 
-            char str[20];
+            /*
+             * midi channel + key + timesig
+             * char key =  m_seq_to_char[local_seq];        // obsolete
+             */
+
             if (m_mainperf->show_ui_sequence_key())
             {
                 snprintf
                 (
-                    str, sizeof str, "%c",
+                    temp, sizeof temp, "%c",
                     (char) m_mainperf->lookup_keyevent_key(a_seq)
                 );
                 p_font_renderer->render_string_on_drawable  // shortcut key
                 (
                     m_gc, base_x+c_seqarea_x-7, base_y + c_text_y*4 - 2,
-                    m_pixmap, str, col
+                    m_pixmap, temp, col
                 );
             }
             snprintf
             (
-                str, sizeof str, "%d-%d %ld/%ld",
+                temp, sizeof temp, "%d-%d %ld/%ld",
                 seq->get_midi_bus(), seq->get_midi_channel() + 1,
                 seq->get_bpm(), seq->get_bw()
             );
             p_font_renderer->render_string_on_drawable      // bus, ch, etc.
             (
                 m_gc, base_x + c_text_x, base_y + c_text_y*4 - 2,
-                m_pixmap, str, col
+                m_pixmap, temp, col
             );
 
             int rectangle_x = base_x + c_text_x - 1;

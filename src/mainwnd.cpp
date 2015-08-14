@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-10
+ * \updates       2015-08-12
  * \license       GNU GPLv2 or above
  *
  */
@@ -1220,18 +1220,27 @@ mainwnd::on_key_press_event (GdkEventKey * a_ev)
 
         /*
          * Toggle the sequence mute/unmute setting using keyboard keys.
+         *
+         * \change ca 2015-08-12
+         *      However, do not do this if the Ctrl key is being pressed.
+         *      Ctrl-E, for example, brings up the Song Editor, and should
+         *      not toggle the sequence controlled by the "e" key.  Will
+         *      also see if the Alt key should be intercepted.
          */
 
         if (m_mainperf->get_key_events().count(a_ev->keyval) != 0)
         {
-            sequence_key(m_mainperf->lookup_keyevent_seq(a_ev->keyval));
+            guint modifiers = gtk_accelerator_get_default_mod_mask();
+            bool ok = (a_ev->state & modifiers) != GDK_CONTROL_MASK;
+            if (ok)
+                sequence_key(m_mainperf->lookup_keyevent_seq(a_ev->keyval));
         }
     }
     return false;
 }
 
 /**
- *  Handle a sequence key to toggle the palying of an active pattern in
+ *  Handle a sequence key to toggle the playing of an active pattern in
  *  the selected screen-set.
  */
 

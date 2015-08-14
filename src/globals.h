@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-25
- * \updates       2015-08-09
+ * \updates       2015-08-13
  * \license       GNU GPLv2 or above
  *
  *  We're going to try to collect all the globals here in one module, and
@@ -488,65 +488,186 @@ enum c_music_scales
     c_scale_off,
     c_scale_major,
     c_scale_minor,
+    c_scale_harmonic_minor,
+    c_scale_melodic_minor,
+    c_scale_c_whole_tone,
     c_scale_size            // a "maximum" or "size of set" value.
 };
 
 /**
  *  Each value in the kind of scale is denoted by a true value in these
- *  arrays.
+ *  arrays.  See the following sites for more information:
+ *
+ *      http://method-behind-the-music.com/theory/scalesandkeys/
+ *
+ *      https://en.wikipedia.org/wiki/Heptatonic_scale
+ *
+ *  Note that melodic minor descends in the same way as the natural minor
+ *  scale, so it descends differently than it ascends.  We don't deal with
+ *  that trick, at all.
+ *
+\verbatim
+                        0  1  2  3  4  5  6  7  8  9  10 11  Notes, chord
+                        -----------------------------------
+    Chromatic           C  C# D  D# E  F  F# G  G# A  A# B
+    Major               C  .  D  .  E  F  .  G  .  A  .  B
+    Minor               C  .  D  Eb .  F  .  G  Ab .  Bb .
+    Harmonic Minor      C  .  D  Eb .  F  .  G  Ab .  .  B
+    Melodic Minor       C  .  D  Eb .  F  .  G  .  A  .  B   Descending diff.
+    C Whole Tone        C  .  D  .  E  .  F# .  G# .  A# .   C+7 chord
+    C Lydian Dominant   C  .  D  .  E  .  F# .  G  .  A  Bb  Unimplemented, A7
+    A Mixolydian        C# .  D  .  E  .  F# .  G  .  A  .   Unimplemented, A7
+    B Whole Tone        .  Db .  Eb .  F  .  G  .  A  .  B   Unimplemented
+    G Whole Tone        .  C# .  D# .  F  .  G  .  A  .  B   Unimplemented, same
+    G Octatonic         .  C# D  .  E  F  .  G  Ab .  Bb B   Unimplemented
+\endverbatim
  */
 
 const bool c_scales_policy[c_scale_size][12] =
 {
-    /* off = chromatic */
-    {
+    {                                                       /* off = chromatic */
         true, true, true, true, true, true,
         true, true, true, true, true, true
     },
-
-    /* major */
-    {
+    {                                                       /* major           */
         true, false, true, false, true, true,
         false, true, false, true, false, true
     },
-
-    /* minor */
-    {
+    {                                                       /* minor           */
         true, false, true, true, false, true,
         false, true, true, false, true, false
     },
+    {                                                       /* harmonic minor  */
+        true, false, true, true, false, true,
+        false, true, true, false, false, true
+    },
+    {                                                       /* melodic minor   */
+        true, false, true, true, false, true,
+        false, true, false, true, false, true
+    },
+    {                                                       /* C whole tone    */
+        true, false, true, false, true, false,
+        true, false, true, false, true, false
+    },
 };
+
+/**
+ *  Increment values needed to transpose each scale up so that it remains
+ *  in the same key.  For example, if we simply add 1 semitone to each
+ *  note, it remains a minor key, but it is in a different minor key.
+ *  Using the transpositions in these arrays, the minor key remains the
+ *  same minor key.
+ *
+\verbatim
+    Major               C  .  D  .  E  F  .  G  .  A  .  B
+    Transpose up        2  0  2  0  1  2  0  2  0  2  0  1
+    Result up           D  .  E  .  F  G  .  A  .  B  .  C
+
+    Minor               C  .  D  D# .  F  .  G  G# .  A# .
+    Transpose up        2  0  1  2  0  2  0  1  2  0  2  0
+    Result up           D  .  D# F  .  G  .  G# A# .  C  .
+
+    Harmonic minor      C  .  D  Eb .  F  .  G  Ab .  .  B
+    Transpose up        2  .  1  2  .  2  .  1  3  .  .  1
+    Result up           D  .  Eb F  .  G  .  Ab B  .  .  C
+
+    Melodic minor       C  .  D  Eb .  F  .  G  .  A  .  B
+    Transpose up        2  .  1  2  .  2  .  2  .  2  .  1
+    Result up           D  .  Eb F  .  G  .  A  .  B  .  C
+
+    C Whole Tone        C  .  D  .  E  .  F# .  G# .  A# .
+    Transpose up        2  .  2  .  2  .  2  .  2  .  2  .
+    Result up           D  .  E  .  F# .  G# .  A# .  C  .
+\endverbatim
+ */
 
 const int c_scales_transpose_up[c_scale_size][12] =
 {
-    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},      /* off = chromatic */
-    { 2, 0, 2, 0, 1, 2, 0, 2, 0, 2, 0, 1},      /* major */
-    { 2, 0, 1, 2, 0, 2, 0, 1, 2, 0, 2, 0},      /* minor */
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},                  /* off = chromatic */
+    { 2, 0, 2, 0, 1, 2, 0, 2, 0, 2, 0, 1},                  /* major           */
+    { 2, 0, 1, 2, 0, 2, 0, 1, 2, 0, 2, 0},                  /* minor           */
+    { 2, 0, 1, 2, 0, 2, 0, 1, 3, 0, 0, 1},                  /* harmonic minor  */
+    { 2, 0, 1, 2, 0, 2, 0, 2, 0, 2, 0, 1},                  /* melodic minor   */
+    { 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0},                  /* C whole tone    */
 };
 
 const int c_scales_transpose_dn[c_scale_size][12] =
 {
-    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},  /* off = chromatic */
-    { -1, 0, -2, 0, -2, -1, 0, -2, 0, -2, 0, -2},       /* major */
-    { -2, 0, -2, -1, 0, -2, 0, -2, -1, 0, -2, 0},       /* minor */
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},      /* off = chromatic */
+    { -1, 0, -2, 0, -2, -1, 0, -2, 0, -2, 0, -2},           /* major           */
+    { -2, 0, -2, -1, 0, -2, 0, -2, -1, 0, -2, 0},           /* minor           */
+    { -1, -0, -2, -1, 0, -2, 0, -2, -1, 0, 0, -3},          /* harmonic minor  */
+    { -1, 0, -2, -1, 0, -2, 0, -2, 0, -2, 0, -2},           /* melodic minor   */
+    { -2, 0, -2, 0, -2, 0, -2, 0, -2, 0, -2, 0},            /* C whole tone    */
 };
 
+/**
+ *  Making these positive makes it easier to read.  Just remember to
+ *  negate each value before using it.
+ *
+\verbatim
+    Major               C  .  D  .  E  F  .  G  .  A  .  B
+    Transpose down      1  0  2  0  2  1  0  2  0  2  0  2
+    Result down         B  .  C  .  D  E  .  F  .  G  .  A
+
+    Minor               C  .  D  D# .  F  .  G  G# .  A# .
+    Transpose down      2  0  2  1  0  2  0  2  1  0  2  0
+    Result down         A# .  C  D  .  D# .  F  G  .  G# .
+
+    Harmonic minor      C  .  D  Eb .  F  .  G  Ab .  .  B
+    Transpose down      1  .  2  1  .  2  .  2  1  .  .  3
+    Result down         B  .  C  D  .  Eb .  F  G  .  .  Ab
+
+    Melodic minor       C  .  D  Eb .  F  .  G  .  A  .  B
+    Transpose down      1  .  2  1  .  2  .  2  .  2  .  2
+    Result down         B  .  C  D  .  Eb .  F  .  G  .  A
+
+    C whole tone        C  .  D  .  E  .  F# .  G# .  A# .
+    Transpose down      2  .  2  .  2  .  2  .  2  .  2  .
+    Result down         A# .  C  .  D  .  E  .  F# .  G# .
+\endverbatim
+ */
+
+const int c_scales_transpose_dn_neg[c_scale_size][12] =
+{
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},                  /* off = chromatic */
+    { 1, 0, 2, 0, 2, 1, 0, 2, 0, 2, 0, 2},                  /* major           */
+    { 2, 0, 2, 1, 0, 2, 0, 2, 1, 0, 2, 0},                  /* minor           */
+    { 1, 0, 2, 1, 0, 2, 0, 2, 1, 0, 0, 3},                  /* harmonic minor  */
+    { 1, 0, 2, 1, 0, 2, 0, 2, 0, 2, 0, 2},                  /* melodic minor   */
+    { 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0},                  /* C whole tone    */
+};
+
+/**
+ *  This array is currently commented out int seqkeys.cpp in the
+ *  update_pixmap() function.
+ *
+\verbatim
 const int c_scales_symbol[c_scale_size][12] =
 {
-    { 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32},      /* off = chromatic */
-    { 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32},      /* major */
-    { 32, 32, 32, 32, 32, 32, 32, 32, 129, 128, 129, 128},  /* minor */
+    { 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32},      // off = chromatic
+    { 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32},      // major
+    { 32, 32, 32, 32, 32, 32, 32, 32, 129, 128, 129, 128},  // minor
+    { 32, 32, 32, 32, 32, 32, 32, 32, 129, 128, 129, 128},  // harmonic minor
+    { 32, 32, 32, 32, 32, 32, 32, 32, 129, 128, 129, 128},  // melodic minor
+    { 32, 32, 32, 32, 32, 32, 32, 32, 129, 128, 129, 128},  // C whole tone
 };
+\endverbatim
+ *
+ */
 
 /**
  *  The names of the supported scales.
  */
 
-const char c_scales_text[c_scale_size][6] =
+const char c_scales_text[c_scale_size][32] =                /* careful!        */
 {
-    "Off",
+    "Off (chromatic)",
     "Major",
-    "Minor"
+    "Minor",
+    "Harmonic Minor",
+    "Melodic Minor",
+    "C Whole Tone",
 };
 
 /**

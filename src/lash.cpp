@@ -166,7 +166,9 @@ lash::handle_event (lash_event_t * ev)
         Gtk::Main::quit();
     }
     else
+    {
         errprint("Warning:  Unhandled LASH event.");
+    }
 }
 
 /*
