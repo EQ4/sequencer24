@@ -58,4 +58,17 @@ Sequence "diagrams" for Sequencer24
   11. Write the options file (unconditionally?)
       Write the MIDI file (unconditionally).
 
+2. Reading a Seq24 *.midi file [midifile::parse()]:
+
+   1. Read ID and track length.
+
+      For b4uacuse.midi, ID = 0x4D546864 ("MThd", but it should be 0x4D54726B
+      ("MTrk").  We now ignore the warning if it is the first (0th) track,
+      but still skip the data.
+
+      SIDE NOTE:  For the midicvt project, we get a "garbage at end" warning,
+                  but it might be worth upgrading midicvt to convert it to
+                  readable text (and handle both directions).  Also, why doesn't it
+                  show "MThd" near the beginning?
+
 

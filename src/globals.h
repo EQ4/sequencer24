@@ -507,9 +507,7 @@ enum c_music_scales
  *  that trick, at all.
  *
 \verbatim
-                        0  1  2  3  4  5  6  7  8  9  10 11  Notes, chord
-                        -----------------------------------
-    Chromatic           C  C# D  D# E  F  F# G  G# A  A# B
+    Chromatic           C  C# D  D# E  F  F# G  G# A  A# B   Notes, chord
     Major               C  .  D  .  E  F  .  G  .  A  .  B
     Minor               C  .  D  Eb .  F  .  G  Ab .  Bb .
     Harmonic Minor      C  .  D  Eb .  F  .  G  Ab .  .  B
@@ -639,6 +637,8 @@ const int c_scales_transpose_dn_neg[c_scale_size][12] =
 };
 
 /**
+ * \internal
+ *
  *  This array is currently commented out int seqkeys.cpp in the
  *  update_pixmap() function.
  *
@@ -653,7 +653,6 @@ const int c_scales_symbol[c_scale_size][12] =
     { 32, 32, 32, 32, 32, 32, 32, 32, 129, 128, 129, 128},  // C whole tone
 };
 \endverbatim
- *
  */
 
 /**

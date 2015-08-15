@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-07
+ * \updates       2015-08-15
  * \license       GNU GPLv2 or above
  *
  *  This class has way too many members.
@@ -50,7 +50,7 @@
 #ifdef JACK_SESSION
 #include <jack/session.h>
 #endif
-#endif   // JACK_SUPPORT
+#endif
 
 #include "mastermidibus.h"
 
@@ -205,6 +205,8 @@ private:
      *  Provides our MIDI buss.
      */
 
+private:
+
     mastermidibus m_master_bus;
 
 private:
@@ -335,6 +337,15 @@ public:
     ~perform ();
 
     /**
+     * \getter m_master_bus
+     */
+
+    mastermidibus & master_bus ()
+    {
+        return m_master_bus;
+    }
+
+    /**
      * \getter m_running
      */
 
@@ -364,6 +375,30 @@ public:
     void delete_sequence (int a_num);
     bool is_sequence_in_edit (int a_num);
     void clear_sequence_triggers (int a_seq);
+
+    /**
+     *  Provides common code to check for the bounds of a sequence number.
+     *
+     * \return
+     *      Returns true if the sequence number is valid.
+     */
+
+    bool is_sequence_valid (int a_sequence) const
+    {
+        return a_sequence >= 0 || a_sequence < c_max_sequence;
+    }
+
+    /**
+     *  Provides common code to check for the bounds of a sequence number.
+     *
+     * \return
+     *      Returns true if the sequence number is invalid.
+     */
+
+    bool is_sequence_invalid (int a_sequence) const
+    {
+        return ! is_sequence_valid(a_sequence);
+    }
 
     long get_tick ()
     {
@@ -533,16 +568,6 @@ public:
     void set_group_mute_state (int a_g_track, bool a_mute_state);
     bool get_group_mute_state (int a_g_track);
     void mute_all_tracks ();
-
-    /**
-     * \getter m_master_bus address
-     */
-
-    mastermidibus * get_master_midi_bus ()
-    {
-        return &m_master_bus;
-    }
-
     void output_func ();
     void input_func ();
     long get_max_trigger ();

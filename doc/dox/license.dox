@@ -10,10 +10,9 @@
 
    This file is a copy of the main license file.
 
-\page       gpl_license_subproject Licenses, XPC Projects
+\page       gpl_license_subproject Licenses
 \library    This application and its libraries, sub-applications, and documents.
-\license    $XPC_SUITE_GPL_LICENSE$
-\author     Chris Ahlstrom 2014-06-01
+\author     Chris Ahlstrom 2015-08-14
 
 \section gpl_license_text License Terms for the This Project.
 

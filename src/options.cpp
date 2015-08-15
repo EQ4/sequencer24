@@ -118,7 +118,7 @@ options::options
 void
 options::add_midi_clock_page ()
 {
-    int buses = m_mainperf->get_master_midi_bus()->get_num_out_buses();
+    int buses = m_mainperf->master_bus().get_num_out_buses();
     Gtk::VBox * vbox = manage(new Gtk::VBox());
     vbox->set_border_width(6);
     m_notebook->append_page(*vbox, "MIDI _Clock", true);
@@ -132,7 +132,7 @@ options::add_midi_clock_page ()
         (
             new Gtk::Label
             (
-                m_mainperf->get_master_midi_bus()->get_midi_out_bus_name(i), 0
+                m_mainperf->master_bus().get_midi_out_bus_name(i), 0
             )
         );
         hbox2->pack_start(*label, false, false);
@@ -183,7 +183,7 @@ options::add_midi_clock_page ()
         hbox2->pack_end(*rb_on, false, false);
         hbox2->pack_end(*rb_off, false, false);
         vbox->pack_start(*hbox2, false, false);
-        switch (m_mainperf->get_master_midi_bus()->get_clock(i))
+        switch (m_mainperf->master_bus().get_clock(i))
         {
         case e_clock_off:
             rb_off->set_active(1);
@@ -227,7 +227,7 @@ options::add_midi_input_page ()
 {
     // Count the input busses
 
-    int buses = m_mainperf->get_master_midi_bus()->get_num_in_buses();
+    int buses = m_mainperf->master_bus().get_num_in_buses();
     Gtk::VBox * vbox = manage(new Gtk::VBox());
     vbox->set_border_width(6);
     m_notebook->append_page(*vbox, "MIDI _Input", true);
@@ -237,14 +237,14 @@ options::add_midi_input_page ()
         (
             new Gtk::CheckButton
             (
-                m_mainperf->get_master_midi_bus()->get_midi_in_bus_name(i), 0
+                m_mainperf->master_bus().get_midi_in_bus_name(i), 0
             )
         );
         check->signal_toggled().connect
         (
             bind(mem_fun(*this, &options::input_callback), i, check)
         );
-        check->set_active(m_mainperf->get_master_midi_bus()->get_input(i));
+        check->set_active(m_mainperf->master_bus().get_input(i));
         vbox->pack_start(*check, false, false);
     }
 }
@@ -662,7 +662,7 @@ void
 options::clock_callback_off (int a_bus, Gtk::RadioButton * a_button)
 {
     if (a_button->get_active())
-        m_mainperf->get_master_midi_bus()->set_clock(a_bus, e_clock_off);
+        m_mainperf->master_bus().set_clock(a_bus, e_clock_off);
 }
 
 /**
@@ -673,7 +673,7 @@ void
 options::clock_callback_on (int a_bus, Gtk::RadioButton * a_button)
 {
     if (a_button->get_active())
-        m_mainperf->get_master_midi_bus()->set_clock(a_bus, e_clock_pos);
+        m_mainperf->master_bus().set_clock(a_bus, e_clock_pos);
 }
 
 /**
@@ -684,7 +684,7 @@ void
 options::clock_callback_mod (int a_bus, Gtk::RadioButton * a_button)
 {
     if (a_button->get_active())
-        m_mainperf->get_master_midi_bus()->set_clock(a_bus, e_clock_mod);
+        m_mainperf->master_bus().set_clock(a_bus, e_clock_mod);
 }
 
 /**
@@ -716,7 +716,7 @@ options::input_callback (int a_bus, Gtk::Button * i_button)
         }
         return;
     }
-    m_mainperf->get_master_midi_bus()->set_input(a_bus, input);
+    m_mainperf->master_bus().set_input(a_bus, input);
 }
 
 /**

@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-09
+ * \updates       2015-08-14
  * \license       GNU GPLv2 or above
  *
  */
@@ -659,21 +659,6 @@ seqedit::create_menus ()
 
 #define SET_SCALE   mem_fun(*this, &seqedit::set_scale)
 
-#if 0
-    m_menu_scale->items().push_back                     /* music scale */
-    (
-        MenuElem(c_scales_text[0], sigc::bind(SET_SCALE, c_scale_off))
-    );
-    m_menu_scale->items().push_back
-    (
-        MenuElem(c_scales_text[1], sigc::bind(SET_SCALE, c_scale_major))
-    );
-    m_menu_scale->items().push_back
-    (
-        MenuElem(c_scales_text[2], sigc::bind(SET_SCALE, c_scale_minor))
-    );
-#endif
-
     for (int i = int(c_scale_off); i < int(c_scale_size); i++)
     {
         m_menu_scale->items().push_back                     /* music scale */
@@ -1244,15 +1229,15 @@ seqedit::popup_midibus_menu ()
     using namespace Gtk::Menu_Helpers;
 
     m_menu_midibus = manage(new Gtk::Menu());
-    mastermidibus * masterbus = m_mainperf->get_master_midi_bus();
+    mastermidibus & masterbus = m_mainperf->master_bus();
 
 #define SET_BUS         mem_fun(*this, &seqedit::set_midi_bus)
 
-    for (int i = 0; i < masterbus->get_num_out_buses(); i++)
+    for (int i = 0; i < masterbus.get_num_out_buses(); i++)
     {
         m_menu_midibus->items().push_back
         (
-            MenuElem(masterbus->get_midi_out_bus_name(i), sigc::bind(SET_BUS, i))
+            MenuElem(masterbus.get_midi_out_bus_name(i), sigc::bind(SET_BUS, i))
         );
     }
     m_menu_midibus->popup(0, 0);
@@ -1601,8 +1586,8 @@ void
 seqedit::set_midi_bus (int a_midibus)
 {
     m_seq->set_midi_bus(a_midibus);
-    mastermidibus * mmb =  m_mainperf->get_master_midi_bus();
-    m_entry_bus->set_text(mmb->get_midi_out_bus_name(a_midibus));
+    mastermidibus & mmb =  m_mainperf->master_bus();
+    m_entry_bus->set_text(mmb.get_midi_out_bus_name(a_midibus));
 }
 
 /**
@@ -1810,7 +1795,7 @@ seqedit::play_change_callback ()
 void
 seqedit::record_change_callback ()
 {
-    m_mainperf->get_master_midi_bus()->set_sequence_input(true, m_seq);
+    m_mainperf->master_bus().set_sequence_input(true, m_seq);
     m_seq->set_recording(m_toggle_record->get_active());
 }
 
@@ -1861,7 +1846,7 @@ seqedit::redo_callback ()
 void
 seqedit::thru_change_callback ()
 {
-    m_mainperf->get_master_midi_bus()->set_sequence_input(true, m_seq);
+    m_mainperf->master_bus().set_sequence_input(true, m_seq);
     m_seq->set_thru(m_toggle_thru->get_active());
 }
 
@@ -1981,7 +1966,7 @@ bool
 seqedit::on_delete_event (GdkEventAny * a_event)
 {
     m_seq->set_recording(false);
-    m_mainperf->get_master_midi_bus()->set_sequence_input(false, NULL);
+    m_mainperf->master_bus().set_sequence_input(false, NULL);
     m_seq->set_editing(false);
     delete this;
     return false;

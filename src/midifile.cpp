@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-12
+ * \updates       2015-08-15
  * \license       GNU GPLv2 or above
  *
  */
@@ -136,7 +136,8 @@ midifile::read_var ()
 }
 
 /**
- *  This function opens a binary file.
+ *  This function opens a binary MIDI file and parses it into sequences
+ *  and other application objects.
  */
 
 bool
@@ -148,7 +149,7 @@ midifile::parse (perform * a_perf, int a_screen_set)
     );
     if (! file.is_open())
     {
-        errprint("Error opening MIDI file");
+        errprintf("Error opening MIDI file '%s'", m_name.c_str());
         return false;
     }
 
@@ -160,7 +161,7 @@ midifile::parse (perform * a_perf, int a_screen_set)
     }
     catch (std::bad_alloc & ex)
     {
-        errprint("Memory allocation failed");
+        errprint("Memory allocation failed in midifile::parse()");
         return false;
     }
     file.read((char *) &m_data[0], file_size);
@@ -191,31 +192,29 @@ midifile::parse (perform * a_perf, int a_screen_set)
      */
 
     event e;
-    m_pos = 0;
     for (int curtrack = 0; curtrack < NumTracks; curtrack++)
     {
-        bool done = false;                          /* done for each track */
         unsigned short perf = 0;
-        unsigned char status = 0, type, data[2], laststatus; /* events */
-        unsigned long proprietary = 0;
-        ID = read_long();                           /* Get ID + Length */
+        unsigned char status = 0, type, data[2], laststatus; /* events       */
+        unsigned long proprietary = 0;              /* sequencer-specifics   */
+        ID = read_long();                           /* Get ID + Length       */
         TrackLength = read_long();
-        if (ID == 0x4D54726B)                       /* magic number 'MTrk' */
+        if (ID == 0x4D54726B)                       /* magic number 'MTrk'   */
         {
             /*
-             * We know we have a good track, so we can create a new
-             * sequence to dump it to.
+             * We may have a good track, and can create a new sequence for it.
              */
 
             long len;
             sequence * seq = new sequence();
-            if (seq == NULL)
+            if (seq == nullptr)
             {
-                errprint("Memory allocation failed");
+                errprint("Memory allocation failed, midifile::parse()");
                 return false;
             }
-            seq->set_master_midi_bus(&a_perf->m_master_bus);    /* set buss  */
+            seq->set_master_midi_bus(&a_perf->master_bus());    /* set buss  */
             RunningTime = 0;                    /* reset time                */
+            bool done = false;                  /* done for each track */
             while (! done)                      /* get each event in the Trk */
             {
                 Delta = read_var();             /* get time delta            */
@@ -237,8 +236,7 @@ midifile::parse (perform * a_perf, int a_screen_set)
 
                 CurrentTime = (RunningTime * c_ppqn) / ppqn;
                 e.set_timestamp(CurrentTime);
-
-                switch (status & 0xF0)   /* switch on the channelless status */
+                switch (status & 0xF0)   /* switch on channel-less status    */
                 {
                 case EVENT_NOTE_OFF:     /* case for those with 2 data bytes */
                 case EVENT_NOTE_ON:
@@ -283,7 +281,6 @@ midifile::parse (perform * a_perf, int a_screen_set)
                                 proprietary = read_long();
                                 len -= 4;
                             }
-
                             if (proprietary == c_midibus)
                             {
                                 seq->set_midi_bus(read_byte());
@@ -324,11 +321,11 @@ midifile::parse (perform * a_perf, int a_screen_set)
                                     seq->add_trigger(on, length, offset, false);
                                 }
                             }
-
                             m_pos += len;                /* eat the rest      */
                             break;
 
                         case 0x2f:                       /* Trk Done          */
+
                             /*
                              * If delta is 0, then another event happened
                              * at the same time as the track-end.  The
@@ -398,9 +395,10 @@ midifile::parse (perform * a_perf, int a_screen_set)
              * don't know how to deal with it, so we just eat it.
              */
 
-            errprintf("Unsupported MIDI chunk detected, skipping: %8lX\n", ID);
+            if (curtrack > 0)                          /* MThd comes first */
+                errprintf("Unsupported MIDI chunk, skipping: %8lX\n", ID);
+
             m_pos += TrackLength;
-            done = true;
         }
     }                                                   /* for each track  */
 
@@ -462,7 +460,7 @@ midifile::parse (perform * a_perf, int a_screen_set)
             for (unsigned int x = 0; x < TrackLength; x++)
             {
                 int bus_on = read_byte();
-                a_perf->get_master_midi_bus()->set_clock(x, (clock_e) bus_on);
+                a_perf->master_bus().set_clock(x, (clock_e) bus_on);
             }
         }
     }
@@ -507,10 +505,26 @@ midifile::parse (perform * a_perf, int a_screen_set)
             }
             for (int i = 0; i < c_seqs_in_set; i++)
             {
-                a_perf->select_group_mute(read_long());
+                long groupmute = read_long();
+                a_perf->select_group_mute(groupmute);
+#ifdef PLATFORM_DEBUG
+                if (groupmute != 0)
+                    fprintf(stderr, "group-mute[%d] = %ld\n", i, groupmute);
+#endif
                 for (int k = 0; k < c_seqs_in_set; ++k)
                 {
-                    a_perf->set_group_mute_state(k, read_long());
+                    long gmutestate = read_long();
+                    a_perf->set_group_mute_state(k, gmutestate);
+#ifdef PLATFORM_DEBUG
+                    if (gmutestate != 0)
+                    {
+                        fprintf
+                        (
+                            stderr, "group-mute-state[%d] = %ld\n",
+                            k, gmutestate
+                        );
+                    }
+#endif
                 }
             }
         }
@@ -574,20 +588,14 @@ bool midifile::write (perform * a_perf)
         if (a_perf->is_active(i))
             numtracks++;
     }
+    write_long(0x4D546864);                 /* MIDI Format 1 header MThd    */
+    write_long(6);                          /* Length of the header         */
+    write_short(1);                         /* MIDI Format 1                */
+    write_short(numtracks);                 /* number of tracks             */
+    write_short(c_ppqn);                    /* parts per quarter note       */
 
     /*
-     * Write the MIDI Format 1 header: 'MThd' and a length of 6.
-     */
-
-    write_long(0x4D546864);
-    write_long(0x00000006);
-
-    write_short(0x0001);                    /* format 1                 */
-    write_short(numtracks);                 /* number of tracks         */
-    write_short(c_ppqn);                    /* parts per quarter note   */
-
-    /*
-     * We should be good to load now for each Track in the midi file.
+     * Write out the active tracks.  The value of c_max_sequence is 1024.
      */
 
     for (int curtrack = 0; curtrack < c_max_sequence; curtrack++)
@@ -595,7 +603,7 @@ bool midifile::write (perform * a_perf)
         if (a_perf->is_active(curtrack))
         {
             sequence * seq = a_perf->get_sequence(curtrack);
-            std::list<char> l;
+            std::list<char> l;              /* should be unsigned char! */
             seq->fill_list(&l, curtrack);
             write_long(0x4D54726B);         /* magic number 'MTrk'      */
             write_long(l.size());
@@ -623,6 +631,12 @@ bool midifile::write (perform * a_perf)
     write_long(a_perf->get_bpm());
     write_long(c_mutegroups);               /* the mute groups tag      */
     write_long(c_gmute_tracks);
+
+    /*
+     * We need a way to make this optional.  Why write 4096 bytes
+     * needlessly?
+     */
+
     for (int j = 0; j < c_seqs_in_set; ++j)
     {
         a_perf->select_group_mute(j);
@@ -658,4 +672,3 @@ bool midifile::write (perform * a_perf)
  *
  * vim: sw=4 ts=4 wm=8 et ft=cpp
  */
-

@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-07
+ * \updates       2015-08-15
  * \license       GNU GPLv2 or above
  *
  */
@@ -56,13 +56,13 @@ protected:
      *  Provides a mutex lock usable by a single module or class.
      */
 
-    pthread_mutex_t  m_mutex_lock;
+    mutable pthread_mutex_t  m_mutex_lock;
 
 public:
 
     mutex ();
-    void lock ();
-    void unlock ();
+    void lock () const;
+    void unlock () const;
 
 };
 

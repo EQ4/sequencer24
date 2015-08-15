@@ -250,7 +250,7 @@ optionsfile::parse (perform * a_perf)
     {
         long bus_on, bus;
         sscanf(m_line, "%ld %ld", &bus, &bus_on);
-        a_perf->get_master_midi_bus()->set_clock(bus, (clock_e) bus_on);
+        a_perf->master_bus().set_clock(bus, (clock_e) bus_on);
         next_data_line(file);
     }
 
@@ -341,7 +341,7 @@ optionsfile::parse (perform * a_perf)
     {
         long bus_on, bus;
         sscanf(m_line, "%ld %ld", &bus, &bus_on);
-        a_perf->get_master_midi_bus()->set_input(bus, (bool) bus_on);
+        a_perf->master_bus().set_input(bus, (bool) bus_on);
         next_data_line(file);
     }
 
@@ -516,20 +516,20 @@ optionsfile::write (perform * a_perf)
      * Bus mute/unmute data
      */
 
-    int buses = a_perf->get_master_midi_bus()->get_num_out_buses();
+    int buses = a_perf->master_bus().get_num_out_buses();
     file << "\n\n\n[midi-clock]\n";
     file << buses << "\n";
     for (int i = 0; i < buses; i++)
     {
         file
             << "# "
-            << a_perf->get_master_midi_bus()->get_midi_out_bus_name(i)
+            << a_perf->master_bus().get_midi_out_bus_name(i)
             << "\n"
             ;
         snprintf
         (
             outs, sizeof(outs), "%d %d",
-            i, (char) a_perf->get_master_midi_bus()->get_clock(i)
+            i, (char) a_perf->master_bus().get_clock(i)
         );
         file << outs << "\n";
     }
@@ -547,7 +547,7 @@ optionsfile::write (perform * a_perf)
      * Bus input data
      */
 
-    buses = a_perf->get_master_midi_bus()->get_num_in_buses();
+    buses = a_perf->master_bus().get_num_in_buses();
     file
         << "\n\n\n[midi-input]\n"
         << buses << "\n"
@@ -556,13 +556,13 @@ optionsfile::write (perform * a_perf)
     {
         file
             << "# "
-            << a_perf->get_master_midi_bus()->get_midi_in_bus_name(i)
+            << a_perf->master_bus().get_midi_in_bus_name(i)
             << "\n"
             ;
         snprintf
         (
             outs, sizeof(outs), "%d %d",
-            i, (char) a_perf->get_master_midi_bus()->get_input(i)
+            i, (char) a_perf->master_bus().get_input(i)
         );
         file << outs << "\n";
     }

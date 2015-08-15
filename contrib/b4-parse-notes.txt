@@ -1,0 +1,126 @@
+Chris Ahlstrom
+Analyzing the Parsing of b4uacuse-seq24.midi
+2015-08-15 to 2015-08-15
+
+We found a bug (self-induced) in the reading of this file. While tracking it
+down, we also examined how a naming track is treated, and how the
+proprietary section of the Seq24 MIDI file is processed.
+
+Reading Clapton name track:
+
+   -  status (m_data[0x13aa3]) = FF, type= 7F (proprietary), length = 4
+      Delta = 0 timestamp = 0
+
+      In midifile.cpp #280, we read a long only if len > 4, but nothing
+      otherwise -- we skip len bytes in the buffer.  This skips:
+
+         SeqSpec 24 24 00 08
+
+      This is c_triggers, but there are no triggers in this case.
+
+   -  status = FF, type= 7F (proprietary), length = 5
+      Now len > 4, so we read a long [and do len -= 4], and get 0x24240001 ==
+      c_midibus, so we read the next byte [and do len--] to get the MIDI buss = 0.
+
+   -  status = FF, type= 7F (proprietary), length = 6
+      proprietary = 0x24240006 == c_timesig, and we get the two byte 04 04 to
+      set beats-per-measure = 4 and beat-width = 4
+
+   -  status = FF, type= 7F (proprietary), length = 5, proprietary = 0x24240002
+      == c_midich, and that byte is 0.
+
+   -  status = FF, type= 2F (track end), length = 0
+      Delta = 48, the sequence length ends up being 48 (but no notes or other
+      MIDI events)
+
+      This sequence gets added to the perform object.  This particular
+      sequence has only a track name and some parametric information,
+      so we would like to be able to have it not be played...
+      
+      ...Visible, but not active.
+
+   To summarize:
+
+      MTrk
+      0 SeqNr 12
+      0 Meta TrkName "Eric Clapton &"
+      0 SeqSpec 24 24 00 08            # c_triggers, no triggers
+      0 SeqSpec 24 24 00 01 00         # c_midibus, buss 0
+      0 SeqSpec 24 24 00 06 04 04
+      0 SeqSpec 24 24 00 02 00
+      48 Meta TrkEnd
+      TrkEnd
+
+Seq24 Data at the end:
+
+   After all the tracks are read, Seq24 checks for extra data.
+   If there is extra data, Seq24 reads a long value.  The first one
+   encountered is 
+
+      0x24240010 == Seq24's c_midictrl proprietary value.
+
+   ===== BUG =====
+
+   Getting this value first is actually wrong, it is bad MIDI.
+   As we saw above, we first need the triad of
+
+   -  status = FF, type= 7F (proprietary), length = whatever
+
+   So, as a bug fix, we need to be able to write this information properly,
+   and read it.  We also need to be able to read the wrong format as well,
+   to support legacy Seq24 MIDI files.
+
+   ===============
+
+   Any way, we have c_midictrl.  Next, we read a long value, seqs.  It is 0.
+
+-  24 24 00 10 00 00 00 00
+
+   Read the next long value, 0x24240003.  This is c_midiclocks.  We get a
+   value of 0 for "TrackLength":
+
+-  24 24 00 03 00 00 00 00
+
+   If TrackLength were > 0, then for each value, we would read a byte value
+   represent the bus a clock was on, and setting the clock value of the
+   master MIDI buss.
+
+   Another check for more data is made.
+
+-  24 24 00 05 00 20 00 00
+
+   0x24240005 is c_notes.  The value screen_sets is read (two bytes) and
+   here is 0x20 = 32.  For each screen-set:
+
+      len = read_short()
+
+   If non-zero, each of the len bytes is appended as a string.  Here, len is 
+   0 for all 32 screenset, so the screen-set notepad is set to an empty
+   string.
+
+   Another check for more data is made.
+
+-  24 24 00 07 00 00 00 78
+
+   0x24240007 is c_bpmtag.  The long value is read and sets the perform
+   object's bpm value.  Here, it is 120 bpm.
+
+   Another check for more data is made.
+
+-  24 24 00 09 00 00 04 00
+
+   0x24240009 is c_mutegroups.  The long value obtained here is 1024.
+   If this value is not equal to the constant c_gmute_tracks (1024), a
+   warning is emitted to the console, but processing continues anyway,
+   32 x 32 long values are read to select the given group-mute, and then set
+   each of its 32 group-mute-states.
+
+   In our sample file, 32 groups are specified, but all 32 group-mute-state
+   values for each are 0.
+
+
+
+
+
+
+

@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-12
+ * \updates       2015-08-15
  * \license       GNU GPLv2 or above
  *
  */
@@ -81,6 +81,7 @@ mainwid::mainwid (perform * a_p)
     m_black             (Gdk::Color("black")),
     m_white             (Gdk::Color("white")),
     m_grey              (Gdk::Color("grey")),
+    m_yellow            (Gdk::Color("yellow")),
     m_background        (),
     m_foreground        (),
     m_pixmap            (),
@@ -190,18 +191,40 @@ mainwid::draw_sequence_on_pixmap (int a_seq)
         if (m_mainperf->is_active(a_seq))
         {
             sequence * seq = m_mainperf->get_sequence(a_seq);
-            if (seq->get_playing())
+
+            /*
+             * \change ca 2015-08-15
+             *      Color sequences without events differently.
+             */
+
+            if (seq->event_count() > 0)
             {
-                m_last_playing[a_seq] = true;   // active and playing
-                m_background = m_black;
-                m_foreground = m_white;
+                if (seq->get_playing())
+                {
+                    m_last_playing[a_seq] = true;   // active and playing
+                    m_background = m_black;
+                    m_foreground = m_white;
+                }
+                else
+                {
+                    m_last_playing[a_seq] = false;  // active and not playing
+                    m_background = m_white;
+                    m_foreground = m_black;
+                }
             }
             else
             {
                 m_last_playing[a_seq] = false;  // active and not playing
-                m_background = m_white;
-                m_foreground = m_black;
+
+                /**
+                 * ACTIVATE AFTER YOU FIGURE IT OUT
+                 *
+                m_background = m_black;
+                m_foreground = m_yellow;
+                 *
+                 */
             }
+
             m_gc->set_foreground(m_background); // tricky reversal of color!
             m_pixmap->draw_rectangle            // ?????
             (

@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-10
+ * \updates       2015-08-15
  * \license       GNU GPLv2 or above
  *
  */
@@ -53,7 +53,7 @@ seqmenu::seqmenu (perform * a_p)
     m_seqedit       (nullptr),
     m_current_seq   (0)
 {
-    m_clipboard.set_master_midi_bus(a_p->get_master_midi_bus());
+    m_clipboard.set_master_midi_bus(&a_p->master_bus());    // precedence?
 }
 
 /**
@@ -140,13 +140,13 @@ seqmenu::popup_menu ()
 
         /* Get the MIDI buses */
 
-        mastermidibus * masterbus = m_mainperf->get_master_midi_bus();
-        for (int i = 0; i < masterbus->get_num_out_buses(); i++)
+        mastermidibus & masterbus = m_mainperf->master_bus();
+        for (int i = 0; i < masterbus.get_num_out_buses(); i++)
         {
             Gtk::Menu * menu_channels = manage(new Gtk::Menu());
             menu_buses->items().push_back
             (
-                MenuElem(masterbus->get_midi_out_bus_name(i), *menu_channels)
+                MenuElem(masterbus.get_midi_out_bus_name(i), *menu_channels)
             );
 
             char b[4];

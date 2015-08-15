@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-12
+ * \updates       2015-08-15
  * \license       GNU GPLv2 or above
  *
  */
@@ -36,6 +36,8 @@
 #include <string>
 #include <list>
 #include <stack>
+
+#include "easy_macros.h"
 
 #ifdef PLATFORM_WINDOWS
 #include "midibus_portmidi.h"
@@ -246,7 +248,9 @@ private:
     long m_time_beat_width;
     long m_rec_vol;
 
-    /* locking */
+    /**
+     *  Provides locking for the sequence.
+     */
 
     mutex m_mutex;
 
@@ -257,6 +261,7 @@ public:
 
     sequence & operator = (const sequence & a_rhs);
 
+    int event_count () const;
     void push_undo ();
     void pop_undo ();
     void pop_redo ();
@@ -438,7 +443,16 @@ public:
     }
 
     void set_midi_bus (char a_mb);
-    char get_midi_bus ();
+
+    /**
+     * \getter m_bus
+     */
+
+    char get_midi_bus () const
+    {
+        return m_bus;
+    }
+
     void set_master_midi_bus (mastermidibus * a_mmb);
     int select_note_events
     (
@@ -531,8 +545,8 @@ private:
 
     void put_event_on_bus (event * a_e);
     void remove_all ();
-    void lock ();
-    void unlock ();
+    void lock () const;
+    void unlock () const;
     void set_trigger_offset (long a_trigger_offset);
     void split_trigger (trigger & trig, long a_split_tick);
     void adjust_trigger_offsets_to_length( long a_new_len);

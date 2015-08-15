@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-10
+ * \updates       2015-08-15
  * \license       GNU GPLv2 or above
  *
  */
@@ -57,6 +57,7 @@ private:
     Gdk::Color m_black;
     Gdk::Color m_white;
     Gdk::Color m_grey;
+    Gdk::Color m_yellow;
     Gdk::Color m_background;
     Gdk::Color m_foreground;
     Glib::RefPtr<Gdk::Pixmap> m_pixmap;

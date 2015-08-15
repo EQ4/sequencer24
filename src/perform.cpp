@@ -569,7 +569,6 @@ perform::mute_group_tracks ()
                         sequence_playing_off(i * c_seqs_in_set + j);
                 }
             }
-
         }
     }
 }
@@ -693,18 +692,13 @@ perform::add_sequence (sequence * a_seq, int a_perf)
 void
 perform::set_active (int a_sequence, bool a_active)
 {
-    /*
-     * Common code.
-     */
-
-    if (a_sequence < 0 || a_sequence >= c_max_sequence)
-        return;
-
-    if (m_seqs_active[a_sequence] && ! a_active)
+    if (is_sequence_valid(a_sequence))
     {
-        set_was_active(a_sequence);
+        if (m_seqs_active[a_sequence] && ! a_active)
+            set_was_active(a_sequence);
+
+        m_seqs_active[a_sequence] = a_active;
     }
-    m_seqs_active[a_sequence] = a_active;
 }
 
 /**
@@ -717,17 +711,13 @@ perform::set_active (int a_sequence, bool a_active)
 void
 perform::set_was_active (int a_sequence)
 {
-    /*
-     * Common code.
-     */
-
-    if (a_sequence < 0 || a_sequence >= c_max_sequence)
-        return;
-
-    m_was_active_main[a_sequence] = true;
-    m_was_active_edit[a_sequence] = true;
-    m_was_active_perf[a_sequence] = true;
-    m_was_active_names[a_sequence] = true;
+    if (is_sequence_valid(a_sequence))
+    {
+        m_was_active_main[a_sequence] = true;
+        m_was_active_edit[a_sequence] = true;
+        m_was_active_perf[a_sequence] = true;
+        m_was_active_names[a_sequence] = true;
+    }
 }
 
 /**
@@ -744,14 +734,7 @@ perform::set_was_active (int a_sequence)
 bool
 perform::is_active (int a_sequence)
 {
-    /*
-     * Common code.
-     */
-
-    if (a_sequence < 0 || a_sequence >= c_max_sequence)
-        return false;
-
-    return m_seqs_active[a_sequence];
+    return is_sequence_valid(a_sequence) ? m_seqs_active[a_sequence] : false ;
 }
 
 /**
@@ -768,20 +751,19 @@ perform::is_active (int a_sequence)
 bool
 perform::is_dirty_main (int a_sequence)
 {
-    /*
-     * Common code.
-     */
-
-    if (a_sequence < 0 || a_sequence >= c_max_sequence)
-        return false;
-
-    if (is_active(a_sequence))
+    bool was_active = false;
+    if (is_sequence_valid(a_sequence))
     {
-        return m_seqs[a_sequence]->is_dirty_main();
+        if (is_active(a_sequence))
+        {
+            was_active = m_seqs[a_sequence]->is_dirty_main();
+        }
+        else
+        {
+            was_active = m_was_active_main[a_sequence];
+            m_was_active_main[a_sequence] = false;
+        }
     }
-
-    bool was_active = m_was_active_main[a_sequence];
-    m_was_active_main[a_sequence] = false;
     return was_active;
 }
 
@@ -799,20 +781,19 @@ perform::is_dirty_main (int a_sequence)
 bool
 perform::is_dirty_edit (int a_sequence)
 {
-    /*
-     * Common code.
-     */
-
-    if (a_sequence < 0 || a_sequence >= c_max_sequence)
-        return false;
-
-    if (is_active(a_sequence))
+    bool was_active = false;
+    if (is_sequence_valid(a_sequence))
     {
-        return m_seqs[a_sequence]->is_dirty_edit();
+        if (is_active(a_sequence))
+        {
+            was_active = m_seqs[a_sequence]->is_dirty_edit();
+        }
+        else
+        {
+            was_active = m_was_active_edit[a_sequence];
+            m_was_active_edit[a_sequence] = false;
+        }
     }
-
-    bool was_active = m_was_active_edit[a_sequence];
-    m_was_active_edit[a_sequence] = false;
     return was_active;
 }
 
@@ -830,20 +811,19 @@ perform::is_dirty_edit (int a_sequence)
 bool
 perform::is_dirty_perf (int a_sequence)
 {
-    /*
-     * Common code.
-     */
-
-    if (a_sequence < 0 || a_sequence >= c_max_sequence)
-        return false;
-
-    if (is_active(a_sequence))
+    bool was_active = false;
+    if (is_sequence_valid(a_sequence))
     {
-        return m_seqs[a_sequence]->is_dirty_perf();
+        if (is_active(a_sequence))
+        {
+            was_active = m_seqs[a_sequence]->is_dirty_perf();
+        }
+        else
+        {
+            was_active = m_was_active_perf[ a_sequence ];
+            m_was_active_perf[ a_sequence ] = false;
+        }
     }
-
-    bool was_active = m_was_active_perf[ a_sequence ];
-    m_was_active_perf[ a_sequence ] = false;
     return was_active;
 }
 
@@ -861,18 +841,19 @@ perform::is_dirty_perf (int a_sequence)
 bool
 perform::is_dirty_names (int a_sequence)
 {
-    /*
-     * Common code.
-     */
-
-    if (a_sequence < 0 || a_sequence >= c_max_sequence)
-        return false;
-
-    if (is_active(a_sequence))
-        return m_seqs[a_sequence]->is_dirty_names();
-
-    bool was_active = m_was_active_names[a_sequence];
-    m_was_active_names[a_sequence] = false;
+    bool was_active = false;
+    if (is_sequence_valid(a_sequence))
+    {
+        if (is_active(a_sequence))
+        {
+            was_active = m_seqs[a_sequence]->is_dirty_names();
+        }
+        else
+        {
+            was_active = m_was_active_names[a_sequence];
+            m_was_active_names[a_sequence] = false;
+        }
+    }
     return was_active;
 }
 

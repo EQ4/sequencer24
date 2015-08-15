@@ -198,7 +198,7 @@ userfile::parse (perform * a_perf)
     {
         long bus_on, bus;
         sscanf(m_line, "%ld %ld", &bus, &bus_on);
-        a_perf->get_master_midi_bus()->set_clock(bus, (clock_e) bus_on);
+        a_perf->master_bus().set_clock(bus, (clock_e) bus_on);
         next_data_line(file);
     }
     line_after(file, "[keyboard-control]");
@@ -280,7 +280,7 @@ userfile::parse (perform * a_perf)
     {
         long bus_on, bus;
         sscanf(m_line, "%ld %ld", &bus, &bus_on);
-        a_perf->get_master_midi_bus()->set_input(bus, (bool) bus_on);
+        a_perf->master_bus().set_input(bus, (bool) bus_on);
         next_data_line(file);
     }
 

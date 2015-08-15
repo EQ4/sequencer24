@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-12
+ * \updates       2015-08-15
  * \license       GNU GPLv2 or above
  *
  */
@@ -134,6 +134,22 @@ sequence::operator = (const sequence & a_rhs)
     verify_and_link();
     unlock();
     return *this;
+}
+
+/**
+ *  Returns the number of events stored in m_list_events.
+ *
+ * \threadsafe
+ */
+
+int
+sequence::event_count () const
+{
+    int result;
+    lock();
+    result = int(m_list_event.size());
+    unlock();
+    return result;
 }
 
 /**
@@ -303,6 +319,15 @@ sequence::set_rec_vol (long a_rec_vol)
  *  Adds an event to the internal event list in a sorted manner.  Then it
  *  reset the draw-marker and sets the dirty flag.
  *
+ *  Currently, when reading a MIDI file (see the midifile module's parse
+ *  function), only the main events (notes, after-touch, pitch, program
+ *  changes, etc.) are added with this function.  So, we can rely on
+ *  reading only playable events into a sequence.
+ *
+ *  This module (sequencer) adds all of those events as well, but it
+ *  can surely add other events.  We should assume that any events
+ *  added by sequencer are playable.
+ *
  * \threadsafe
  */
 
@@ -368,8 +393,8 @@ sequence::off_queued ()
 }
 
 /**
- *  The play() function dumps notes starting from thee given tick, and it
- *  prebuffers ahead.  This function is called by the sequencer thread,
+ *  The play() function dumps notes starting from the given tick, and it
+ *  pre-buffers ahead.  This function is called by the sequencer thread,
  *  performance.  The tick comes in as global tick.
  *
  *  It turns the sequence off after we play in this frame.
@@ -662,7 +687,7 @@ sequence::link_new ()
 void
 sequence::remove (EventList::iterator i)
 {
-    if (i->is_note_off()  && m_playing_notes[i->get_note()] > 0)
+    if (i->is_note_off() && m_playing_notes[i->get_note()] > 0)
     {
         m_masterbus->play(m_bus, &(*i), m_midi_channel);
         m_playing_notes[i->get_note()]--;
@@ -1768,6 +1793,8 @@ sequence::stream_event (event *a_ev)
 
 /**
  *  Sets the dirty flags for names, main, and performance.
+ *
+ * \threadunsafe
  */
 
 void
@@ -3034,13 +3061,13 @@ sequence::remove_all ()
 }
 
 void
-sequence::lock ()
+sequence::lock () const
 {
     m_mutex.lock();
 }
 
 void
-sequence::unlock ()
+sequence::unlock () const
 {
     m_mutex.unlock();
 }
@@ -3059,22 +3086,20 @@ sequence::get_last_tick ()
     return (m_last_tick + (m_length - m_trigger_offset)) % m_length;
 }
 
-/* sets the midibus to dump to */
+/**
+ *  Sets the midibus number to dump to.
+ *
+ * \threadsafe
+ */
 
 void
 sequence::set_midi_bus (char a_mb)
 {
     lock();
-    off_playing_notes(); /* off notes except initial */
-    this->m_bus = a_mb;
+    off_playing_notes();            /* off notes except initial         */
+    m_bus = a_mb;
     set_dirty();
     unlock();
-}
-
-char
-sequence::get_midi_bus ()
-{
-    return this->m_bus;
 }
 
 void
