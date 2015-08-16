@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-09
+ * \updates       2015-08-16
  * \license       GNU GPLv2 or above
  *
  *  The Seq24 MIDI file is a standard, Format 1 MIDI file, with some extra
@@ -78,9 +78,23 @@ private:
 
     std::list<unsigned char> m_char_list;
 
+    /**
+     *  Use the new format for the proprietary footer section of the Seq24
+     *  MIDI file.  In this new format, each sequencer-specfic value
+     *  (0x242400xx, as defined in the globals module) is preceded by the
+     *  sequencer-specific prefix, 0xFF 0x7F len id/date). By default,
+     *  this value is true, but the user can specify the --legacy (-l)
+     *  option, or make a soft link to the sequence24 binary called
+     *  "seq24",  to write the data in the old format. [We will eventually
+     *  add the --legacy option to the <tt> ~/.seq24rc </tt> configuration
+     *  file.]  Note that reading can handle either format transparently.
+     */
+
+    bool m_new_format;
+
 public:
 
-    midifile (const std::string &);
+    midifile (const std::string & name, bool propformat = true);
     ~midifile ();
 
     bool parse (perform * a_perf, int a_screen_set);
@@ -88,14 +102,17 @@ public:
 
 private:
 
+    unsigned long parse_prop_header (int file_size);
+    bool parse_proprietary (perform * a_perf, int file_size);
     unsigned long read_long ();
     unsigned short read_short ();
     unsigned char read_byte ();
-    unsigned long read_var ();
-
+    unsigned long read_varinum ();
     void write_long (unsigned long);
     void write_short (unsigned short);
     void write_byte (unsigned char);
+    void write_varinum (unsigned long);
+    void write_prop_header (unsigned long tag, long len);
 
 };
 

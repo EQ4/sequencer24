@@ -26,7 +26,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-10
+ * \updates       2015-08-16
  * \license       GNU GPLv2 or above
  *
  */
@@ -40,7 +40,7 @@
  *  This constructor simply initializes all of the class members.
  */
 
-event::event()
+event::event ()
  :
     m_timestamp (0),
     m_status    (EVENT_NOTE_OFF),
@@ -61,13 +61,53 @@ event::event()
  *  This destructor explicitly deletes m_sysex and sets it to null.
  */
 
-event::~event()
+event::~event ()
 {
     if (not_nullptr(m_sysex))
         delete [] m_sysex;
 
     m_sysex = nullptr;
 }
+
+/**
+ *  If the current timestamp equal the event's timestamp, then this
+ *  function returns true if the current rank is less than the event's
+ *  rank.
+ *
+ *  Otherwise, it returns true if the current timestamp is less than
+ *  the event's timestamp.
+ *
+ * \warning
+ *      The less-than operator is supposed to support a "strict weak
+ *      ordering", and is supposed to leave equivalent values in the same
+ *      order they were before the sort.  However, every time we load and
+ *      save our sample MIDI file, events get reversed.  Here are
+ *      program-changes that get reversed:
+ *
+\verbatim
+        Save N:     0070: 6E 00 C4 48 00 C4 0C 00  C4 57 00 C4 19 00 C4 26
+        Save N+1:   0070: 6E 00 C4 26 00 C4 19 00  C4 57 00 C4 0C 00 C4 48
+\endverbatim
+ *
+ *      The 0070 is the offset within the versions of the
+ *      b4uacuse-seq24.midi file.
+ */
+
+bool
+event::operator < (const event & a_rhsevent) const
+{
+    if (m_timestamp == a_rhsevent.m_timestamp)
+        return (get_rank() < a_rhsevent.get_rank());
+    else
+        return (m_timestamp < a_rhsevent.m_timestamp);
+}
+
+#if USE_EXTRA_COMPARE_OPERATORS
+
+/*
+ * Note sure we really need these extra operators.  No code uses them, the
+ * modules build, link, and run just fine without them.
+ */
 
 /**
  *  If the current timestamp equal the event's timestamp, then this
@@ -79,30 +119,12 @@ event::~event()
  */
 
 bool
-event::operator > (const event & a_rhsevent)
+event::operator > (const event & a_rhsevent) const
 {
     if (m_timestamp == a_rhsevent.m_timestamp)
         return get_rank() > a_rhsevent.get_rank();
     else
         return m_timestamp > a_rhsevent.m_timestamp;
-}
-
-/**
- *  If the current timestamp equal the event's timestamp, then this
- *  function returns true if the current rank is less than the event's
- *  rank.
- *
- *  Otherwise, it returns true if the current timestamp is less than
- *  the event's timestamp.
- */
-
-bool
-event::operator < (const event & a_rhsevent)
-{
-    if (m_timestamp == a_rhsevent.m_timestamp)
-        return (get_rank() < a_rhsevent.get_rank());
-    else
-        return (m_timestamp < a_rhsevent.m_timestamp);
 }
 
 /**
@@ -115,7 +137,7 @@ event::operator < (const event & a_rhsevent)
  */
 
 bool
-event::operator <= (unsigned long a_rhslong)
+event::operator <= (unsigned long a_rhslong) const
 {
     return m_timestamp <= a_rhslong;
 }
@@ -125,10 +147,12 @@ event::operator <= (unsigned long a_rhslong)
  */
 
 bool
-event::operator > (unsigned long a_rhslong)
+event::operator > (unsigned long a_rhslong) const
 {
     return m_timestamp > a_rhslong;
 }
+
+#endif  // USE_EXTRA_COMPARE_OPERATORS
 
 /**
  *  Sets the m_status member to the value of a_status.  If a_status is a
@@ -157,7 +181,7 @@ event::set_status (char a_status)
  */
 
 void
-event::make_clock()
+event::make_clock ()
 {
     m_status = (unsigned char) EVENT_MIDI_CLOCK;
 }
@@ -304,7 +328,7 @@ event::append_sysex (unsigned char * a_data, long a_size)
  */
 
 void
-event::print()
+event::print ()
 {
     printf("[%06ld] [%04lX] %02X ", m_timestamp, m_size, m_status);
     if (m_status == EVENT_SYSEX)

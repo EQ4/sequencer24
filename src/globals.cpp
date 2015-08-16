@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-08-07
- * \updates       2015-08-07
+ * \updates       2015-08-16
  * \license       GNU GPLv2 or above
  *
  */
@@ -33,10 +33,11 @@
 #include "globals.h"
 
 /*
- * Most of these variables are declared and used in other modules, as
- * well.
+ * Most of these variables were declared and used in other modules, but
+ * are now consolidated here.
  */
 
+bool global_legacy_format = false;     /* new 2015-08-16 */
 bool global_manual_alsa_ports = false;
 bool global_showmidi = false;
 bool global_priority = false;

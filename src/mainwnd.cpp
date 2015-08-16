@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-12
+ * \updates       2015-08-16
  * \license       GNU GPLv2 or above
  *
  */
@@ -62,7 +62,8 @@
 #include "pixmaps/learn2.xpm"
 #include "pixmaps/perfedit.xpm"
 #include "pixmaps/seq24_32.xpm"
-#include "pixmaps/sequencer24_square.xpm" // replaces "pixmaps/seq24.xpm"
+#include "pixmaps/sequencer24_square.xpm"   /* replace "pixmaps/seq24.xpm" */
+#include "pixmaps/sequencer24_legacy.xpm"   /* indicates --legacy option   */
 
 /**
  *  This static member provides a couple pipes for signalling/messaging.
@@ -204,7 +205,11 @@ mainwnd::mainwnd (perform * a_p)
         (
             new Gtk::Image
             (
-                Gdk::Pixbuf::create_from_xpm_data(sequencer24_square_xpm)
+                Gdk::Pixbuf::create_from_xpm_data
+                (
+                    global_legacy_format ?
+                        sequencer24_legacy_xpm : sequencer24_square_xpm
+                )
             )
         ), false, false
     );
@@ -637,9 +642,9 @@ void
 mainwnd::open_file (const std::string & fn)
 {
     bool result;
-    midifile f(fn);                    // create object to represent file
+    midifile f(fn);                    /* create object to represent file   */
     m_mainperf->clear_all();
-    result = f.parse(m_mainperf, 0);
+    result = f.parse(m_mainperf, 0);   /* parsing handles old & new format  */
     m_modified = ! result;
     if (! result)
     {
@@ -724,7 +729,7 @@ bool mainwnd::save_file ()
         return true;
     }
 
-    midifile f(global_filename);
+    midifile f(global_filename, ! global_legacy_format);
     result = f.write(m_mainperf);
     if (! result)
     {

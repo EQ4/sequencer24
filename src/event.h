@@ -182,11 +182,13 @@ public:
      * Operator overloads
      */
 
-    bool operator > (const event & rhsevent);
-    bool operator < (const event & rhsevent);
+    bool operator < (const event & rhsevent) const;
 
-    bool operator <= (unsigned long rhslong);
-    bool operator > (unsigned long rhslong);
+#if USE_EXTRA_COMPARE_OPERATORS
+    bool operator > (const event & rhsevent) const;
+    bool operator <= (unsigned long rhslong) const;
+    bool operator > (unsigned long rhslong) const;
+#endif  // USE_EXTRA_COMPARE_OPERATORS
 
     /**
      * \setter m_timestamp
@@ -201,7 +203,7 @@ public:
      * \getter m_timestamp
      */
 
-    long get_timestamp() const
+    long get_timestamp () const
     {
         return m_timestamp;
     }
@@ -228,7 +230,7 @@ public:
      * \getter m_status
      */
 
-    unsigned char get_status() const
+    unsigned char get_status () const
     {
         return m_status;
     }

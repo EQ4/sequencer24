@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-10
+ * \updates       2015-08-16
  * \license       GNU GPLv2 or above
  *
  *  Not totally sure that the LASH support is completely finished, at this
@@ -150,7 +150,7 @@ lash::handle_event (lash_event_t * ev)
     std::string str = (cstring == NULL) ? "" : cstring;
     if (type == LASH_Save_File)
     {
-        midifile f(str + "/seq24.mid");
+        midifile f(str + "/seq24.mid", ! global_legacy_format);
         f.write(m_perform);
         lash_send_event(m_client, lash_event_new_with_type(LASH_Save_File));
     }

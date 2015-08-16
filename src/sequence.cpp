@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-15
+ * \updates       2015-08-16
  * \license       GNU GPLv2 or above
  *
  */
@@ -329,6 +329,12 @@ sequence::set_rec_vol (long a_rec_vol)
  *  added by sequencer are playable.
  *
  * \threadsafe
+ *
+ * \warning
+ *      This pushing (and, in writing the MIDI file, the popping,
+ *      causes events with identical timestamps to be written in
+ *      reverse order.  Doesn't affect functionality, but it's puzzling
+ *      until one understands what is happening.
  */
 
 void
@@ -336,7 +342,7 @@ sequence::add_event (const event * a_e)
 {
     lock();
     m_list_event.push_front(*a_e);
-    m_list_event.sort();
+    m_list_event.sort();                /* by time-stamp */
     reset_draw_marker();
     set_dirty();
     unlock();
@@ -3558,24 +3564,33 @@ sequence::add_long_list (CharList * a_list, long a_x)
     a_list->push_front((a_x & 0x000000FF));
 }
 
+/**
+ *  This function fills the given character list with MIDI data from the
+ *  current sequence, preparatory to writing it to a file.
+ *
+ *  Note that some of the events might not come out in the same order they
+ *  were stored in (we see that with program-change events.
+ */
+
 void
 sequence::fill_list (CharList * a_list, int a_pos)
 {
     lock();
-    *a_list = CharList();                               /* clear list */
-    add_list_var(a_list, 0);                              /* sequence number */
+    *a_list = CharList();                               /* copy empty list  */
+    add_list_var(a_list, 0);                            /* sequence number  */
     a_list->push_front(char(0xFF));
     a_list->push_front(0x00);
     a_list->push_front(0x02);
     a_list->push_front(char((a_pos & 0xFF00) >> 8));
     a_list->push_front(char(a_pos & 0x00FF));
-
-    add_list_var(a_list, 0);                              /* name */
+    add_list_var(a_list, 0);                            /* track name       */
     a_list->push_front(char(0xFF));
     a_list->push_front(0x03);
 
     int length =  m_name.length();
-    if (length > 0x7F) length = 0x7f;
+    if (length > 0x7F)
+        length = 0x7f;
+
     a_list->push_front(length);
     for (int i = 0; i < length; i++)
         a_list->push_front(m_name.c_str()[i]);
@@ -3584,15 +3599,17 @@ sequence::fill_list (CharList * a_list, int a_pos)
     EventList::iterator i;
     for (i = m_list_event.begin(); i != m_list_event.end(); i++)
     {
-        event e = *i;
+        const event & e = *i;
         timestamp = e.get_timestamp();
         delta_time = timestamp - prev_timestamp;
         prev_timestamp = timestamp;
-        add_list_var(a_list, delta_time);             /* encode delta_time */
+        add_list_var(a_list, delta_time);             /* encode delta_time  */
 
         /* timestamp is encoded, now do the status and data */
 
-        a_list->push_front(e.m_status | m_midi_channel);
+        unsigned char d0 = e.m_data[0];
+        unsigned char d1 = e.m_data[1];
+        a_list->push_front(e.m_status | m_midi_channel);    /* add channel */
         switch (e.m_status & 0xF0)
         {
         case 0x80:
@@ -3601,14 +3618,14 @@ sequence::fill_list (CharList * a_list, int a_pos)
         case 0xB0:
         case 0xE0:
 
-            a_list->push_front(e.m_data[0]);
-            a_list->push_front(e.m_data[1]);
+            a_list->push_front(d0);
+            a_list->push_front(d1);
             break;
 
         case 0xC0:
         case 0xD0:
 
-            a_list->push_front(e.m_data[0]);
+            a_list->push_front(d0);
             break;
 
         default:
@@ -3617,25 +3634,22 @@ sequence::fill_list (CharList * a_list, int a_pos)
     }
 
     int num_triggers = m_list_trigger.size();
-    TriggerList::iterator t = m_list_trigger.begin();
-    TriggerList::iterator p;
-
     add_list_var(a_list, 0);
     a_list->push_front(char(0xFF));
     a_list->push_front(char(0x7F));
     add_list_var(a_list, (num_triggers * 3 * 4) + 4);
     add_long_list(a_list, c_triggers_new);
+
+    TriggerList::iterator t = m_list_trigger.begin();
     for (int i = 0; i < num_triggers; i++)
     {
-        p = t;
         add_long_list(a_list, t->m_tick_start);
         add_long_list(a_list, t->m_tick_end);
         add_long_list(a_list, t->m_offset);
         t++;
     }
-
     add_list_var(a_list, 0);                              /* bus */
-    a_list->push_front(char(0xF));
+    a_list->push_front(char(0xFF));
     a_list->push_front(char(0x7F));
     a_list->push_front(char(0x05));
     add_long_list(a_list, c_midibus);

@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-12
+ * \updates       2015-08-16
  * \license       GNU GPLv2 or above
  *
  */
@@ -1738,10 +1738,10 @@ bool perform::jack_session_event ()
     fname += "file.mid";
     std::string cmd
     (
-        "seq24 --file \"${SESSION_DIR}file.mid\" --jack_session_uuid "
+        "sequencer24 --file \"${SESSION_DIR}file.mid\" --jack_session_uuid "
     );
     cmd += m_jsession_ev->client_uuid;
-    midifile f(fname);
+    midifile f(fname, ! global_legacy_format);
     f.write(this);
     m_jsession_ev->command_line = strdup(cmd.c_str());
     jack_session_reply(m_jack_client, m_jsession_ev);

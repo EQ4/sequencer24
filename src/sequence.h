@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-15
+ * \updates       2015-08-16
  * \license       GNU GPLv2 or above
  *
  */
@@ -98,12 +98,9 @@ public:
      *  This operator compares only the m_tick_start members.
      */
 
-    bool operator< (const trigger & rhs)
+    bool operator < (const trigger & rhs)
     {
-        if (m_tick_start < rhs.m_tick_start)
-            return true;
-
-        return false;
+        return m_tick_start < rhs.m_tick_start;
     }
 
 };

@@ -25,9 +25,11 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-09
+ * \updates       2015-08-16
  * \license       GNU GPLv2 or above
  *
+ *  This module handles "fruity" interactions only in the piano roll
+ *  section of the pattern editor.
  */
 
 #include <gdkmm/cursor.h>
@@ -36,6 +38,12 @@
 #include "seqroll.h"
 #include "sequence.h"
 #include "seqkeys.h"
+
+/**
+ *  An internal variable for handle size.
+ */
+
+const long s_handlesize = 16;
 
 /**
  *  An internal function used by the FruitySeqRollInput class.
@@ -76,7 +84,7 @@ FruitySeqRollInput::updateMousePtr (seqroll & sroll)
          note == drop_note
     )
     {
-        long handle_size = clamp(c_handlesize, 0, (end - start) / 3);
+        long handle_size = clamp(s_handlesize, 0, (end - start) / 3);
         if (start <= drop_tick && drop_tick <= start + handle_size)
             sroll.get_window()->set_cursor(Gdk::Cursor(Gdk::CENTER_PTR));
         else if (end - handle_size <= drop_tick && drop_tick <= end)
@@ -265,7 +273,7 @@ FruitySeqRollInput::on_button_press_event
                         {
                             long handle_size = clamp // 16 wide unless very small
                             (
-                                c_handlesize, 0, (end - start) / 3
+                                s_handlesize, 0, (end - start) / 3
                             );
                             if
                             (

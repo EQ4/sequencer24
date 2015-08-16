@@ -1,6 +1,6 @@
 Chris Ahlstrom
 Analyzing the Parsing of b4uacuse-seq24.midi
-2015-08-15 to 2015-08-15
+2015-08-15 to 2015-08-16
 
 We found a bug (self-induced) in the reading of this file. While tracking it
 down, we also examined how a naming track is treated, and how the
@@ -77,11 +77,11 @@ Seq24 Data at the end:
 -  24 24 00 10 00 00 00 00
 
    Read the next long value, 0x24240003.  This is c_midiclocks.  We get a
-   value of 0 for "TrackLength":
+   value of 0 for "TrackLength" (now a local variable called "busscount"):
 
 -  24 24 00 03 00 00 00 00
 
-   If TrackLength were > 0, then for each value, we would read a byte value
+   If busscount were > 0, then for each value, we would read a byte value
    represent the bus a clock was on, and setting the clock value of the
    master MIDI buss.
 

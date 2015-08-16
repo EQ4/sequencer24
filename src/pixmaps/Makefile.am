@@ -6,7 +6,7 @@
 # \library    	sequencer24 application
 # \author     	Chris Ahlstrom
 # \date       	2015-07-24
-# \update      2015-07-26
+# \update      2015-08-16
 # \version    	$Revision$
 # \license    	$XPC_SUITE_GPL_LICENSE$
 #
@@ -36,13 +36,15 @@ EXTRA_DIST = \
 	play2.xpm \
 	play.xpm \
 	q_rec.xpm \
-	quanize.xpm \
+	quantize.xpm \
 	rec.xpm \
 	redo.xpm \
 	scale.xpm \
 	seq24_32.xpm \
 	seq24.xpm \
 	sequencer24.xpm \
+	sequencer24_legacy.xpm \
+	sequencer24_square.xpm \
 	seq-editor.xpm \
 	sequences.xpm \
 	snap.xpm \

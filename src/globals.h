@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-25
- * \updates       2015-08-13
+ * \updates       2015-08-16
  * \license       GNU GPLv2 or above
  *
  *  We're going to try to collect all the globals here in one module, and
@@ -409,16 +409,11 @@ const int c_perf_scale_x = 32;  // units are ticks per pixel
 const int c_max_instruments = 64;
 
 /**
- *  A global variable for handle size.
- */
-
-const long c_handlesize = 16;
-
-/**
  *  These global values seemed to be use mainly in the options,
  *  optionsfile, perform, seq24, and userfile modules.
  */
 
+extern bool global_legacy_format;      /* new 2015-08-16 */
 extern bool global_showmidi;
 extern bool global_priority;
 extern bool global_stats;
@@ -428,19 +423,15 @@ extern bool global_with_jack_master;
 extern bool global_with_jack_master_cond;
 extern bool global_jack_start_mode;
 extern bool global_manual_alsa_ports;
-
+extern bool global_is_pattern_playing;
+extern bool global_print_keys;
+extern bool global_device_ignore;           // seq24 module
+extern int global_device_ignore_num;        // seq24 module
 extern std::string global_filename;
 extern std::string global_jack_session_uuid;
-
 extern std::string global_last_used_dir;
 extern std::string global_config_filename;
 extern std::string global_user_filename;
-
-extern bool global_is_pattern_playing;
-extern bool global_print_keys;
-
-extern bool global_device_ignore;           // seq24 module
-extern int global_device_ignore_num;        // seq24 module
 
 /**
  *  This structure corresponds to <tt> [user-midi-bus-0] </tt> definitions

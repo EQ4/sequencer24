@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-09
+ * \updates       2015-08-16
  * \license       GNU GPLv2 or above
  *
  */
@@ -36,10 +36,10 @@
 #include <gdkmm/cursor.h>
 #include <gtkmm/main.h>
 
-#include "font.h"
 #include "globals.h"                   // full platform configuration
+#include "font.h"
 #include "mainwnd.h"
-#include "midifile.h"
+// #include "midifile.h"
 #include "optionsfile.h"
 #include "perform.h"
 #include "userfile.h"
@@ -49,12 +49,15 @@
 #endif
 
 /**
- *  A structure for command parsing.
+ *  A structure for command parsing that provides the long forms of
+ *  command-line arguments, and associates them with their respective
+ *  short form.  Note the terminating null structure..
  */
 
 static struct option long_options[] =
 {
     {"help",                0, 0, 'h'},
+    {"legacy",              0, 0, 'l'},                 /* new 2015-08-16 */
     {"showmidi",            0, 0, 's'},
     {"show_keys",           0, 0, 'k'},
     {"stats",               0, 0, 'S'},
@@ -69,10 +72,10 @@ static struct option long_options[] =
     {"manual_alsa_ports",   0, 0, 'm'},
     {"pass_sysex",          0, 0, 'P'},
     {"version",             0, 0, 'V'},
-    {0, 0, 0, 0}
+    {0, 0, 0, 0}                                        /* terminator     */
 };
 
-static const char versiontext[] = PACKAGE " " VERSION "\n";
+static const std::string versiontext = PACKAGE " " VERSION "\n";
 
 /*
  * Global pointer!  Declared in font.h.
@@ -97,6 +100,8 @@ const char * const g_help_1 =
 "Options:\n"
 "   -h, --help               Show this message.\n"
 "   -v, --version            Show program version information.\n"
+"   -l, --legacy             Write MIDI file in old Seq24 format.  Also set\n"
+"                            if Sequencer24 is called as 'seq24'.\n"
 "   -m, --manual_alsa_ports  Don't attach ALSA ports.\n"
 "   -s, --showmidi           Dump incoming MIDI events to the screen.\n"
 "   -p, --priority           Runs higher priority with FIFO scheduler\n"
@@ -113,7 +118,7 @@ const char * const g_help_2 =
 "   -M, --jack_start_mode m  When synced to JACK, the following play modes\n"
 "                            are available: 0 = live mode;\n"
 "                            1 = song mode (the default).\n"
-"   -S, --stats              Show statistics\n"
+"   -S, --stats              Show global statistics.\n"
 "   -x, --interaction_method n  See .seq24rc for methods to use.\n"
 "   -U, --jack_session_uuid u   Set UUID for JACK session\n"
 "\n\n\n"
@@ -148,7 +153,9 @@ main (int argc, char * argv [])
         int option_index = 0;   /* getopt_long stores index here */
         c = getopt_long
         (
-            argc, argv, "C:hi:jJmM:pPsSU:Vx:", long_options, &option_index
+            argc, argv,
+            "Chli:jJmM:pPsSU:Vx:",          /* wrong: "C:hi:jJmM:pPsSU:Vx:" */
+            long_options, &option_index
         );
         if (c == -1)            /* detect the end of the options */
             break;
@@ -160,6 +167,11 @@ main (int argc, char * argv [])
             printf(g_help_1);
             printf(g_help_2);
             return EXIT_SUCCESS;
+            break;
+
+        case 'l':
+            global_legacy_format = true;
+            printf("Setting legacy seq24 file format.\n");
             break;
 
         case 'S':
@@ -211,7 +223,7 @@ main (int argc, char * argv [])
             break;
 
         case 'V':
-            printf("%s", versiontext);
+            printf("%s", versiontext.c_str());
             return EXIT_SUCCESS;
             break;
 
@@ -226,6 +238,15 @@ main (int argc, char * argv [])
         default:
             break;
         }
+    }
+
+    std::size_t applen = strlen("seq24");
+    std::string appname(argv[0]);           /* "seq24", "./seq24", etc. */
+    appname = appname.substr(appname.size()-applen, applen);
+    if (appname == "seq24")
+    {
+        global_legacy_format = true;
+        printf("Setting legacy seq24 file format.\n");
     }
 
     /*
