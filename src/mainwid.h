@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-15
+ * \updates       2015-08-16
  * \license       GNU GPLv2 or above
  *
  */
@@ -106,6 +106,7 @@ public:
 
 private:
 
+    bool valid_sequence (int a_seq);
     void draw_sequence_on_pixmap (int a_seq);
     void draw_sequences_on_pixmap ();
     void fill_background_window ();

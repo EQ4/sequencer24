@@ -794,6 +794,33 @@ midifile::write (perform * a_perf)
      * legacy format is not in force.
      */
 
+#ifdef THIS_CODE_IS_READY
+
+    /*
+     * We want to write:
+     *
+     *  -   0x4D54726B. The track tag "MTrk".  The MIDI spec requires that
+     *      software can skip over non-standard chunks. "Prop"?  Would
+     *      require a fix to midicvt.
+     *  -   0xaabbccdd. The length of the track.  This needs to be
+     *      calculated somehow.
+     *  -   The sequence number, a special value like 0x8888, well out of
+     *      normal range.
+     *  -   The name of the track:
+     *      -   "Seq24 Specific"
+     *      -   "Sequencer24 Specific"
+     *
+
+    write_long(0x4D54726B);         // magic number 'MTrk'      //
+
+     *
+     * At the end, after the proprietary data, we will want to write the
+     * TrkEnd meta event.
+     */
+
+
+#endif
+
     write_prop_header(c_midictrl, 4);           /* midi control tag + 4     */
     write_long(0);
     write_prop_header(c_midiclocks, 4);         /* bus mute/unmute data + 4 */

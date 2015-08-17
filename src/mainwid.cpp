@@ -173,11 +173,7 @@ mainwid::timeout ()
 void
 mainwid::draw_sequence_on_pixmap (int a_seq)
 {
-    if      /* Common code */
-    (
-        a_seq >= (m_screenset * c_mainwnd_rows * c_mainwnd_cols) &&
-        a_seq < ((m_screenset + 1) * c_mainwnd_rows * c_mainwnd_cols)
-    )
+    if (valid_sequence(a_seq))
     {
         int i = (a_seq / c_mainwnd_rows) % c_mainwnd_cols;
         int j =  a_seq % c_mainwnd_rows;
@@ -305,7 +301,6 @@ mainwid::draw_sequence_on_pixmap (int a_seq)
             bool selected;
             int velocity;
             draw_type dt;
-
             seq->reset_draw_marker();
             while                           // draws the note marks in inner box
             (
@@ -355,6 +350,18 @@ mainwid::draw_sequence_on_pixmap (int a_seq)
 }
 
 /**
+ *  Common-code helper function.
+ */
+
+bool
+mainwid::valid_sequence (int a_seq)
+{
+    int boxes = c_mainwnd_rows * c_mainwnd_cols;
+    return a_seq >= (m_screenset * boxes) && a_seq < ((m_screenset+1) * boxes);
+}
+
+
+/**
  *  This function draws something in the Patterns Panel.  The sequence is
  *  drawn only if it is in the current screen set (indicated by
  *  m_screenset.  However, if we comment out this code, we can't see any
@@ -364,15 +371,7 @@ mainwid::draw_sequence_on_pixmap (int a_seq)
 void
 mainwid::draw_sequence_pixmap_on_window (int a_seq)         // effective?
 {
-    /*
-     * Commenting out this whole function block seems to change nothing!!!
-     */
-
-    if      /* Common code */
-    (
-        a_seq >= (m_screenset * c_mainwnd_rows * c_mainwnd_cols) &&
-        a_seq < ((m_screenset+1) * c_mainwnd_rows * c_mainwnd_cols)
-    )
+    if (valid_sequence(a_seq))
     {
         int i = (a_seq / c_mainwnd_rows) % c_mainwnd_cols;
         int j =  a_seq % c_mainwnd_rows;
@@ -417,7 +416,7 @@ mainwid::update_markers(int a_ticks)
 
 /**
  *  Does the actual drawing of one pattern/sequence position marker (a
- *  vertical bar.
+ *  vertical bar).
  *
  *  More Common code.
  */

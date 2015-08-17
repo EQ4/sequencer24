@@ -41,15 +41,28 @@ Reading Clapton name track:
 
    To summarize:
 
-      MTrk
-      0 SeqNr 12
-      0 Meta TrkName "Eric Clapton &"
-      0 SeqSpec 24 24 00 08            # c_triggers, no triggers
-      0 SeqSpec 24 24 00 01 00         # c_midibus, buss 0
-      0 SeqSpec 24 24 00 06 04 04
-      0 SeqSpec 24 24 00 02 00
-      48 Meta TrkEnd
-      TrkEnd
+(a)    MTrk                             # 4d 54 72 6b
+(b)                                     # 00 00 00 40 (length=64)
+(c)                                     # 00 (delta time)
+(d)    0 SeqNr 12                       # ff 00 02, and 00 0c (i.e. seq 12)
+(e)    0 Meta TrkName "Eric Clapton &"  # ff 03 0e (length=14) Eric Clapton...
+(f)    0 SeqSpec 24 24 00 08            # ff 7f 04 (length) 24 24 00 08, 00
+(g)    0 SeqSpec 24 24 00 01 00         # ff 7f 05 (length) 24 24 01 01 00, 00
+(h)    0 SeqSpec 24 24 00 06 04 04      # ff 7f 06 (") 24 24 00 06 04 04, 00
+(i)    0 SeqSpec 24 24 00 02 00         # ff 7f 05 (") 24 24 00 02 00, 30
+(j)    48 Meta TrkEnd
+(k)    TrkEnd
+
+                 (a)         (b)          (c)(d)
+00013a80:  .. .. 4D 54 72 6B 00 00  00 40 00 FF 00 02 00 0C  /.MTrk...@......
+           ?? (e)
+00013a90:  00 FF 03 0E 45 72 69 63  20 43 6C 61 70 74 6F 6E  ....Eric Clapton
+                    (f)                      (g)
+00013aa0:  20 26 00 FF 7F 04 24 24  00 08 00 FF 7F 05 24 24   &....$$......$$
+                       (h)                            (i)
+00013ab0:  00 01 00 00 FF 7F 06 24  24 00 06 04 04 00 FF 7F  .......$$.......
+                                (j)
+00013ac0:  05 24 24 00 02 00 30 FF  2F 00 .. .. .. .. .. ..  .$$...0./.MTrk..
 
 Seq24 Data at the end:
 
