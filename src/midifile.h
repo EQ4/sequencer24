@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-17
+ * \updates       2015-08-18
  * \license       GNU GPLv2 or above
  *
  *  The Seq24 MIDI file is a standard, Format 1 MIDI file, with some extra
@@ -54,7 +54,8 @@ class midifile
 private:
 
     /**
-     *  Holds the position in the MIDI file.
+     *  Holds the position in the MIDI file.  This is at least a 32-bit
+     *  value in the recent architectures running Linux and Windows.
      */
 
     int m_pos;
@@ -110,7 +111,17 @@ private:
     unsigned long read_varinum ();
     void write_long (unsigned long);
     void write_short (unsigned short);
-    void write_byte (unsigned char);
+
+    /**
+     *  Writes 1 byte.  The byte is written to the m_char_list member, using a
+     *  call to push_back().
+     */
+
+    void write_byte (unsigned char c)
+    {
+        m_char_list.push_back(c);
+    }
+
     void write_varinum (unsigned long);
     void write_track_name (const std::string & trackname);
     void write_seq_number (unsigned short seqnum);
@@ -120,8 +131,25 @@ private:
     long varinum_size (long len) const;
     long prop_item_size (long datalen) const;
     long track_name_size (const std::string & trackname) const;
-    long seq_number_size () const;
-    long track_end_size () const;
+
+    /**
+     *  Returns the size of a sequence-number event, which is always 5
+     *  bytes, plus one byte for the delta time that precedes it..
+     */
+
+    long seq_number_size () const
+    {
+        return 6;
+    }
+
+    /**
+     *  Returns the size of a track-end event, which is always 3 bytes.
+     */
+
+    long track_end_size () const
+    {
+        return 3;
+    }
 
 };
 

@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-16
+ * \updates       2015-08-18
  * \license       GNU GPLv2 or above
  *
  */
@@ -806,7 +806,7 @@ sequence::get_selected_box
     *a_tick_s = c_maxbeats * c_ppqn;
     *a_tick_f = 0;
     *a_note_h = 0;
-    *a_note_l = 128;
+    *a_note_l = MIDI_COUNT_MAX;
     EventList::iterator i;
     for (i = m_list_event.begin(); i != m_list_event.end(); i++)
     {
@@ -850,7 +850,7 @@ sequence::get_clipboard_box
     *a_tick_s = c_maxbeats * c_ppqn;
     *a_tick_f = 0;
     *a_note_h = 0;
-    *a_note_l = 128;
+    *a_note_l = MIDI_COUNT_MAX;
     if (m_list_clipboard.size() == 0)
     {
         *a_tick_s = *a_tick_f = *a_note_h = *a_note_l = 0;
@@ -1603,8 +1603,8 @@ sequence::change_event_data_range
             if (newdata < 0)
                 newdata = 0;
 
-            if (newdata > 127)
-                newdata = 127;
+            if (newdata >= MIDI_COUNT_MAX)
+                newdata = MIDI_COUNT_MAX - 1;
 
             if (a_status == EVENT_NOTE_ON)
                 d1 = newdata;
@@ -1905,7 +1905,7 @@ sequence::play_note_on (int a_note)
     lock();
     event e;
     e.set_status(EVENT_NOTE_ON);
-    e.set_data(a_note, 127);
+    e.set_data(a_note, MIDI_COUNT_MAX-1);
     m_masterbus->play(m_bus, &e, m_midi_channel);
     m_masterbus->flush();
     unlock();
@@ -1924,7 +1924,7 @@ sequence::play_note_off (int a_note)
     lock();
     event e;
     e.set_status(EVENT_NOTE_OFF);
-    e.set_data(a_note, 127);
+    e.set_data(a_note, MIDI_COUNT_MAX-1);
     m_masterbus->play(m_bus, &e, m_midi_channel);
     m_masterbus->flush();
     unlock();
@@ -2910,7 +2910,7 @@ int
 sequence::get_lowest_note_event ()
 {
     lock();
-    int result = 127;
+    int result = MIDI_COUNT_MAX-1;
     EventList::iterator i;
     for (i = m_list_event.begin(); i != m_list_event.end(); i++)
     {
@@ -3422,13 +3422,13 @@ sequence::transpose_notes (int a_steps, int a_scale)
             e.unmark();
             int  note = e.get_note();
             bool off_scale = false;
-            if (transpose_table[note % 12] == 0)
+            if (transpose_table[note % OCTAVE_SIZE] == 0)
             {
                 off_scale = true;
                 note -= 1;
             }
             for (int x = 0; x < a_steps; ++x)
-                note += transpose_table[note % 12];
+                note += transpose_table[note % OCTAVE_SIZE];
 
             if (off_scale)
                 note += 1;

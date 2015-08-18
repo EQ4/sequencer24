@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-25
- * \updates       2015-08-16
+ * \updates       2015-08-18
  * \license       GNU GPLv2 or above
  *
  *  We're going to try to collect all the globals here in one module, and
@@ -56,11 +56,48 @@
 #include "easy_macros.h"               // with platform_macros.h, too
 
 /**
+ *  A manifest constant for the normal number of semitones in an
+ *  equally-tempered octave.  The name is short deliberately.
+ */
+
+#define OCTAVE_SIZE                      12
+
+/**
  *  Manifest constant for the maximum value limit of a MIDI byte when used
  *  to limit the size of an array.
  */
 
-#define MIDI_COUNT_MAX      128
+#define MIDI_COUNT_MAX                  128
+
+/**
+ *  Default value for c_ppqn (global parts-per-quarter-note value).
+ */
+
+#define DEFAULT_PPQN                    192
+
+/**
+ *  Default value for c_bpm (global beats-per-minute)
+ */
+
+#define DEFAULT_BPM                     120
+
+/**
+ *  Default value for c_max_busses.
+ */
+
+#define DEFAULT_BUSS_MAX                 32
+
+/**
+ *  Default value for c_thread_trigger_width_ms.
+ */
+
+#define DEFAULT_TRIGWIDTH_MS              4
+
+/**
+ *  Default value for c_thread_trigger_width_ms.
+ */
+
+#define DEFAULT_TRIGLOOK_MS               2
 
 /**
  *  Number of rows in the Patterns Panel.  The current value is 4, and
@@ -125,7 +162,7 @@ const int c_max_sequence = c_seqs_in_set * c_max_sets;
  *  doesn't change.
  */
 
-const int c_ppqn = 192;
+const int c_ppqn = DEFAULT_PPQN;
 
 /**
  *  Provides the default number BPM (beats per minute), which describes
@@ -133,26 +170,26 @@ const int c_ppqn = 192;
  *  default value is 120.
  */
 
-const int c_bpm = 120;
+const int c_bpm = DEFAULT_BPM;
 
 /**
  *  Provides the maximum number of MIDI buss definitions supported in the
  *  ~/.seq24usr file.
  */
 
-const int c_max_busses = 32;
+const int c_max_busses = DEFAULT_BUSS_MAX;
 
 /**
  *  The trigger width in milliseconds.  This value is 4 ms.
  */
 
-const int c_thread_trigger_width_ms = 4;
+const int c_thread_trigger_width_ms = DEFAULT_TRIGWIDTH_MS;
 
 /**
  *  The trigger lookahead in milliseconds.  This value is 2 ms.
  */
 
-const int c_thread_trigger_lookahead_ms = 2;
+const int c_thread_trigger_lookahead_ms = DEFAULT_TRIGLOOK_MS;
 
 /**
  *  Constants for the mainwid class.  The c_text_x and c_text_y constants
@@ -248,7 +285,7 @@ const int c_mainwid_y =
  *  be in pixels; one pixel per MIDI value.
  */
 
-const int c_dataarea_y = 128;          // MIDI_COUNT_MAX ?
+const int c_dataarea_y = (MIDI_COUNT_MAX * 1);
 
 /**
  *  The width of the 'bar', presumably the line that ends a measure, in
@@ -271,7 +308,7 @@ const int c_key_y = 8;
  *  scroll to see them all.
  */
 
-const int c_num_keys = MIDI_COUNT_MAX; // 128
+const int c_num_keys = MIDI_COUNT_MAX;      // 128
 
 /**
  *  The dimensions and offset of the virtual keyboard at the left of the
@@ -333,7 +370,7 @@ const int c_midi_notes = 256;
  *  Provides the default string for the name of a pattern or sequence.
  */
 
-const std::string c_dummy("Untitled");
+const std::string c_dummy = "Untitled";
 
 /**
  *  Provides the maximum size of sequence, and the default size.
@@ -512,7 +549,7 @@ enum c_music_scales
 \endverbatim
  */
 
-const bool c_scales_policy[c_scale_size][12] =
+const bool c_scales_policy[c_scale_size][OCTAVE_SIZE] =
 {
     {                                                       /* off = chromatic */
         true, true, true, true, true, true,
@@ -570,7 +607,7 @@ const bool c_scales_policy[c_scale_size][12] =
 \endverbatim
  */
 
-const int c_scales_transpose_up[c_scale_size][12] =
+const int c_scales_transpose_up[c_scale_size][OCTAVE_SIZE] =
 {
     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},                  /* off = chromatic */
     { 2, 0, 2, 0, 1, 2, 0, 2, 0, 2, 0, 1},                  /* major           */
@@ -580,7 +617,7 @@ const int c_scales_transpose_up[c_scale_size][12] =
     { 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0},                  /* C whole tone    */
 };
 
-const int c_scales_transpose_dn[c_scale_size][12] =
+const int c_scales_transpose_dn[c_scale_size][OCTAVE_SIZE] =
 {
     { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},      /* off = chromatic */
     { -1, 0, -2, 0, -2, -1, 0, -2, 0, -2, 0, -2},           /* major           */
@@ -617,7 +654,7 @@ const int c_scales_transpose_dn[c_scale_size][12] =
 \endverbatim
  */
 
-const int c_scales_transpose_dn_neg[c_scale_size][12] =
+const int c_scales_transpose_dn_neg[c_scale_size][OCTAVE_SIZE] =
 {
     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},                  /* off = chromatic */
     { 1, 0, 2, 0, 2, 1, 0, 2, 0, 2, 0, 2},                  /* major           */
@@ -634,7 +671,7 @@ const int c_scales_transpose_dn_neg[c_scale_size][12] =
  *  update_pixmap() function.
  *
 \verbatim
-const int c_scales_symbol[c_scale_size][12] =
+const int c_scales_symbol[c_scale_size][OCTAVE_SIZE] =
 {
     { 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32},      // off = chromatic
     { 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32},      // major
@@ -665,7 +702,7 @@ const char c_scales_text[c_scale_size][32] =                /* careful!        *
  *  window.
  */
 
-const char c_key_text[][3] =
+const char c_key_text[OCTAVE_SIZE][3] =
 {
     "C",
     "C#",
@@ -686,7 +723,7 @@ const char c_key_text[][3] =
  *  window.
  */
 
-const char c_interval_text[][3] =
+const char c_interval_text[16][3] =
 {
     "P1",
     "m2",
@@ -712,7 +749,7 @@ const char c_interval_text[][3] =
  *  appears if the user has selected a musical scale like Major or Minor.
  */
 
-const char c_chord_text[][5] =
+const char c_chord_text[8][5] =
 {
     "I",
     "II",
@@ -751,7 +788,7 @@ enum interaction_method_e
  *  Provides names for the mouse-handling used by the application.
  */
 
-const char * const c_interaction_method_names[] =
+const char * const c_interaction_method_names[3] =
 {
     "seq24",
     "fruity",
@@ -762,7 +799,7 @@ const char * const c_interaction_method_names[] =
  *  Provides descriptions for the mouse-handling used by the application.
  */
 
-const char * const c_interaction_method_descs[] =
+const char * const c_interaction_method_descs[3] =
 {
     "original seq24 method",
     "similar to a certain fruity sequencer we like",

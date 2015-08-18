@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-09
+ * \updates       2015-08-18
  * \license       GNU GPLv2 or above
  *
  */
@@ -140,7 +140,7 @@ seqkeys::update_pixmap ()
             (c_key_y * i) + 1, c_key_x - 2, c_key_y - 1
         );
 
-        int key = (c_num_keys - i - 1) % 12;    /* the key in the octave */
+        int key = (c_num_keys - i - 1) % OCTAVE_SIZE;   /* key in the octave */
         if (key == 1 || key == 3 || key == 6 || key == 8 || key == 10)
         {
             m_gc->set_foreground(m_black);
@@ -154,7 +154,7 @@ seqkeys::update_pixmap ()
         char notes[20];
         if (key == m_key)                       /* notes */
         {
-            int octave = ((c_num_keys - i - 1) / 12) - 1;
+            int octave = ((c_num_keys - i - 1) / OCTAVE_SIZE) - 1;
             if (octave < 0)
                 octave *= -1;
 
@@ -262,7 +262,7 @@ seqkeys::set_hint_state (bool a_state)
 void
 seqkeys::draw_key (int a_key, bool a_state)
 {
-    int key = a_key % 12;               /* the key in the octave */
+    int key = a_key % OCTAVE_SIZE;               /* the key in the octave */
     a_key = c_num_keys - a_key - 1;
     if (key == 1 || key == 3 || key == 6 || key == 8 || key == 10)
         m_gc->set_foreground(m_black);

@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-14
+ * \updates       2015-08-18
  * \license       GNU GPLv2 or above
  *
  */
@@ -104,7 +104,7 @@ static const int c_quantize_events       =  6;
 static const int c_tighten_events        =  8;
 static const int c_tighten_notes         =  9;
 static const int c_transpose             = 10;
-static const int c_transpose_h           = 12;
+static const int c_transpose_h           = 12;      /* skipped 11 */
 
 /**
  *  Connects to a menu item, tells the performance to launch the timer
@@ -784,7 +784,7 @@ seqedit::popup_tool_menu ()
 
     char num[16];
     holder2 = manage(new Gtk::Menu());
-    for (int i = -12; i <= 12; ++i)
+    for (int i = -OCTAVE_SIZE; i <= OCTAVE_SIZE; ++i)
     {
         if (i != 0)
         {

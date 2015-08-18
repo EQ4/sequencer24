@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-17
+ * \updates       2015-08-18
  * \license       GNU GPLv2 or above
  *
  */
@@ -55,14 +55,16 @@
  *  (or our midicvt program).
  */
 
-#define PROPRIETARY_CHUNK_TAG          0x4D54726B       /* "MTrk" */
+#define PROPRIETARY_CHUNK_TAG          0x4D54726B       /* "MTrk"           */
 
 /**
  *  Provides the sequence number for the proprietary data when using the new
- *  format.  (There is no track-name for the legacy format.)
+ *  format.  (There is no track-name for the legacy format.)  Can't use
+ *  numbers, such as 0xFFFF, that have MIDI meta tags in them, confuses
+ *  our proprietary track parser.
  */
 
-#define PROPRIETARY_SEQ_NUMBER         0xFFFF
+#define PROPRIETARY_SEQ_NUMBER         0x7777           /* high enough?     */
 
 /**
  *  Provides the track name for the proprietary data when using the new
@@ -223,6 +225,9 @@ midifile::parse (perform * a_perf, int a_screen_set)
 
     /*
      * We should be good to load now, for each Track in the MIDI file.
+     * Note that NumTracks doesn't count the Seq24 proprietary footer
+     * section, even if it uses the new format, so that section will still
+     * be read properly after all normal tracks have been processed.
      */
 
     event e;
@@ -254,7 +259,7 @@ midifile::parse (perform * a_perf, int a_screen_set)
             RunningTime = 0;                    /* reset time                */
             while (! done)                      /* get each event in the Trk */
             {
-                Delta = read_varinum();             /* get time delta            */
+                Delta = read_varinum();         /* get time delta            */
                 laststatus = status;
                 status = m_data[m_pos];         /* get status                */
                 if ((status & 0x80) == 0x00)    /* is it a status bit ?      */
@@ -284,7 +289,7 @@ midifile::parse (perform * a_perf, int a_screen_set)
                     data[0] = read_byte();
                     data[1] = read_byte();
 
-                    // some files have velocity == 0 as Note Off
+                    /* some files have velocity == 0 as Note Off */
 
                     if ((status & 0xF0) == EVENT_NOTE_ON && data[1] == 0)
                     {
@@ -449,8 +454,16 @@ midifile::parse (perform * a_perf, int a_screen_set)
  *  Parse the proprietary header, figuring out if it is the new format, or
  *  the legacy format.
  *
- *  For convenience, this function also checks the amount of file data
- *  left.
+ *  For convenience, this function first checks the amount of file data
+ *  left.  Then it reads a long value.  If the value starts with FF, then
+ *  that signals the new format.  Otherwise, it is probably the old
+ *  format, and the long value is a control tag (0x242400nn), which can be
+ *  returned immedidately.
+ *
+ *  If it is the new format, we back up to the FF, then get the next byte,
+ *  which should be a 7F.  If so, then we read the length (a variable
+ *  length value) of the data, and then read the long value, which should
+ *  be the control tag, which, again, is returned by this function.
  *
  * \param file_size
  *      The size of the data file.  This value is compared against the
@@ -470,7 +483,7 @@ midifile::parse_prop_header (int file_size)
     unsigned long result = 0;
     if ((file_size - m_pos) > (int) sizeof(unsigned long))
     {
-        result = read_long();
+        result = read_long();                   /* status (new), or tag     */
         unsigned char status = (result & 0xFF000000) >> 24;
         if (status == 0xFF)
         {
@@ -478,13 +491,17 @@ midifile::parse_prop_header (int file_size)
             unsigned char type = read_byte();   /* get meta type            */
             if (type == 0x7F)
             {
-                /* long len = */ (void) read_varinum();
-                result = read_long();
+                (void) read_varinum();          /* prop section length      */
+                result = read_long();           /* control tag              */
             }
             else
             {
-                errprint("Bad status in proprietary file footer");
-                return false;
+                fprintf
+                (
+                    stderr,
+                    "Bad status '%x' in proprietary section near offset %x",
+                    int(type), m_pos
+                );
             }
         }
     }
@@ -662,17 +679,6 @@ midifile::write_short (unsigned short a_x)
 }
 
 /**
- *  Writes 1 byte.  The byte is written to the m_char_list member, using a
- *  call to push_back().  We should inline this function.
- */
-
-void
-midifile::write_byte (unsigned char a_x)
-{
-    m_char_list.push_back(a_x);
-}
-
-/**
  *  Writes a MIDI Variable-Length Value (VLV), which has a variable number
  *  of bytes.
  *
@@ -701,7 +707,7 @@ midifile::write_byte (unsigned char a_x)
  *      -  0x80 is represented as "0x81 0x00".
  *      -  0x0FFFFFFF (the largest number) is represented as "0xFF 0xFF
  *         0xFF 0x7F".
-
+ *
  */
 
 void
@@ -801,7 +807,8 @@ midifile::varinum_size (long len) const
  *  in the proprietary secton of write().
  *
  *  The legacy format just writes the control tag (0x242400xx).  The new
- *  format writes 0xFF 0x7F len 0x242400xx.
+ *  format writes 0x00 0xFF 0x7F len 0x242400xx; the first 0x00 is the
+ *  delta time.
  *
  * \warning
  *      Currently, the manufacturer ID is not handled; it is part of the
@@ -826,12 +833,13 @@ midifile::write_prop_header
 {
     if (m_new_format)
     {
-        int len = data_length + 4;          /* data + sizeof(control_tag);   */
+        int len = data_length + 4;          /* data + sizeof(control_tag);  */
+        write_byte(0x00);                   /* delta time                   */
         write_byte(0xFF);
         write_byte(0x7F);
         write_varinum(len);
     }
-    write_long(control_tag);                /* use legacy output call        */
+    write_long(control_tag);                /* use legacy output call       */
 }
 
 /**
@@ -849,11 +857,12 @@ midifile::prop_item_size (long data_length) const
     long result = 0;
     if (m_new_format)
     {
-        int len = data_length + 4;          /* data + sizeof(control_tag);   */
-        result += 2 + varinum_size(len);
+        int len = data_length + 4;          /* data + sizeof(control_tag);  */
+        result += 3;                        /* count delta time, meta bytes */
+        result += varinum_size(len);        /* count the length bytes       */
     }
-    result += 4;                            /* write_long(control_tag);      */
-    result += data_length;
+    result += 4;                            /* write_long(control_tag);     */
+    result += data_length;                  /* add the data size itself     */
     return result;
 }
 
@@ -933,10 +942,9 @@ midifile::write (perform * a_perf)
  *  legacy format is not in force.
  *
  *  The first thing to do, for the new format only, is calculate the length
- *  of this big section of data.
- *
- *  Note that currently we do not use the commented code, which writes a
- *  special sequence number for the proprietary track.
+ *  of this big section of data.  This was quite tricky; we tweaked and
+ *  adjusted until the midicvt program handled the whole new-format file
+ *  without emitting any errors.
  */
 
 bool
@@ -955,32 +963,27 @@ midifile::write_proprietary_track (perform * a_perf)
      * bytes of zeroes?
      */
 
-    int gmutesz = c_seqs_in_set * (4 + c_seqs_in_set * 4);
+    int gmutesz = 4 + c_seqs_in_set * (4 + c_seqs_in_set * 4);
     if (m_new_format)                           /* calculate track size     */
     {
-        tracklength = 1;                        /* size of delta time = 0   */
         tracklength += seq_number_size();       /* bogus sequence number    */
         tracklength += track_name_size(PROPRIETARY_TRACK_NAME);
-        tracklength += prop_item_size(4);       /* c_midictrl               */
-        tracklength += prop_item_size(4);       /* c_midiclocks             */
+        tracklength += prop_item_size(0);       /* c_midictrl               */
+        tracklength += prop_item_size(0);       /* c_midiclocks             */
         tracklength += prop_item_size(cnotesz); /* c_notes                  */
         tracklength += prop_item_size(4);       /* c_bpmtag                 */
-        tracklength += prop_item_size(4);       /* c_mutegroups             */
-        tracklength += prop_item_size(gmutesz); /* c_notes                  */
+        tracklength += prop_item_size(gmutesz); /* c_mutegroups             */
         tracklength += track_end_size();        /* Meta TrkEnd              */
     }
     if (m_new_format)                           /* write beginning of track */
     {
         write_long(PROPRIETARY_CHUNK_TAG);      /* "MTrk" or something else */
         write_long(tracklength);
-        write_byte(0);                          /* delta time for prop data */
-        write_seq_number(0xFFFF);               /* bogus sequence number    */
+        write_seq_number(PROPRIETARY_SEQ_NUMBER); /* bogus sequence number   */
         write_track_name(PROPRIETARY_TRACK_NAME);
     }
-    write_prop_header(c_midictrl, 4);           /* midi control tag + 4     */
-    write_long(0);
-    write_prop_header(c_midiclocks, 4);         /* bus mute/unmute data + 4 */
-    write_long(0);
+    write_prop_header(c_midictrl, 0);           /* midi control tag + 4     */
+    write_prop_header(c_midiclocks, 0);         /* bus mute/unmute data + 4 */
     write_prop_header(c_notes, cnotesz);        /* notepad data tag + data  */
     write_short(c_max_sets);                    /* data, not a tag          */
     for (int i = 0; i < c_max_sets; i++)        /* see "cnotesz" calc       */
@@ -990,9 +993,9 @@ midifile::write_proprietary_track (perform * a_perf)
         for (unsigned int j = 0; j < note->length(); j++)
             write_byte((*note)[j]);
     }
-    write_prop_header(c_bpmtag, 4);             /* bpm tag + 4              */
-    write_long(a_perf->get_bpm());
-    write_prop_header(c_mutegroups, 4);         /* the mute groups tag + 4  */
+    write_prop_header(c_bpmtag, 4);             /* bpm tag + long data      */
+    write_long(a_perf->get_bpm());              /* 4 bytes                  */
+    write_prop_header(c_mutegroups, gmutesz);   /* the mute groups tag etc. */
     write_long(c_gmute_tracks);                 /* data, not a tag          */
     for (int j = 0; j < c_seqs_in_set; ++j)     /* should be optional!      */
     {
@@ -1009,7 +1012,8 @@ midifile::write_proprietary_track (perform * a_perf)
 }
 
 /**
- *  Writes out a track name.
+ *  Writes out a track name.  Note that we have to precede this "event"
+ *  with a delta time value, set to 0.
  */
 
 void
@@ -1018,8 +1022,9 @@ midifile::write_track_name (const std::string & trackname)
     bool ok = ! trackname.empty();
     if (ok)
     {
-        write_byte(0xFF);                   /* meta tag                     */
-        write_byte(0x03);                   /* second byte                  */
+        write_byte(0x00);                               /* delta time       */
+        write_byte(0xFF);                               /* meta tag         */
+        write_byte(0x03);                               /* second byte      */
         write_varinum((unsigned long) trackname.size());
         for (int i = 0; i < int(trackname.size()); i++)
             write_byte(trackname[i]);
@@ -1037,7 +1042,7 @@ midifile::track_name_size (const std::string & trackname) const
     long result = 0;
     if (! trackname.empty())
     {
-        result += 2;                                    /* 0xFF and 0x03    */
+        result += 3;                                    /* 0x00 0xFF 0x03   */
         result += varinum_size(long(trackname.size())); /* variable length  */
         result += long(trackname.size());               /* data size        */
     }
@@ -1045,26 +1050,19 @@ midifile::track_name_size (const std::string & trackname) const
 }
 
 /**
- *  Writes out a sequence number.
+ *  Writes out a sequence number.  The format is "FF 00 02 ss ss", where
+ *  "02" is actually the constant length of the data.  We have to precede
+ *  these values with a 0 delta time, of course.
  */
 
 void
 midifile::write_seq_number (unsigned short seqnum)
 {
-    write_byte(0xFF);                       /* meta tag                     */
-    write_byte(0x00);                       /* second byte                  */
-    write_byte(0x02);                       /* finish sequence tag          */
-    write_short(PROPRIETARY_SEQ_NUMBER);    /* write the sequence number    */
-}
-
-/**
- *  Returns the size of a sequence-number event, which is always 5 bytes.
- */
-
-long
-midifile::seq_number_size () const
-{
-    return 5;
+    write_byte(0x00);                           /* delta time               */
+    write_byte(0xFF);                           /* meta tag                 */
+    write_byte(0x00);                           /* second byte              */
+    write_byte(0x02);                           /* finish sequence tag      */
+    write_short(seqnum);                        /* write sequence number    */
 }
 
 /**
@@ -1077,16 +1075,6 @@ midifile::write_track_end ()
     write_byte(0xFF);                       /* meta tag                     */
     write_byte(0x2F);
     write_byte(0x00);
-}
-
-/**
- *  Returns the size of a track-end event, which is always 3 bytes.
- */
-
-long
-midifile::track_end_size () const
-{
-    return 3;
 }
 
 /*

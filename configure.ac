@@ -6,7 +6,7 @@ dnl \file          configure.ac
 dnl \library       sequencer24
 dnl \author        Chris Ahlstrom
 dnl \date          2015-07-24
-dnl \update        2015-08-08
+dnl \update        2015-08-18
 dnl \version       $Revision$
 dnl \license       $XPC_SUITE_GPL_LICENSE$
 dnl
@@ -402,7 +402,7 @@ dnl #define API_VERSION "0.9"             // already defined on command line
 
 AH_TOP(
 
-#define VERSION_DATE_SHORT "2015-08-08"
+#define VERSION_DATE_SHORT "2015-08-18"
 #define VERSION "0.9.3"
 
 )
@@ -431,11 +431,11 @@ dnl the time.
 WARNINGS_ENABLED="-Wall"
 WARNINGS_DISABLED="-Wno-unused-parameter -Wno-non-virtual-dtor"
 
-dnl CXXFLAGS="$CFLAGS $COMMONFLAGS -Wno-variadic-macros -std=c++11"
-dnl CXXFLAGS="$CFLAGS $COMMONFLAGS -Wno-variadic-macros"
+dnl We added -std=c++11 for g++ 4.8, and -Wno-deprecated-declarations to
+dnl stop g++ 5.2 from griping about usage of std::auto_ptr<>.
 
 CFLAGS="$CFLAGS $COMMONFLAGS"
-CXXFLAGS="$CFLAGS -Wno-variadic-macros"
+CXXFLAGS="$CFLAGS -Wno-variadic-macros -std=c++11 -Wno-deprecated-declarations"
 
 AC_CONFIG_FILES([
  Makefile

@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-09
+ * \updates       2015-08-18
  * \license       GNU GPLv2 or above
  *
  */
@@ -338,11 +338,11 @@ seqroll::update_background ()
     for (int i = 0; i < (m_window_y / c_key_y) + 1; i++)
     {
         int remkeys = c_num_keys - i;               /* remaining keys?      */
-        int octkey = 12 - m_key;                    /* used three times     */
+        int octkey = OCTAVE_SIZE - m_key;           /* used three times     */
         int modkey = (remkeys - m_scroll_offset_key + octkey);
         if (global_interactionmethod == e_fruity_interaction)
         {
-            if ((modkey % 12) == 0)
+            if ((modkey % OCTAVE_SIZE) == 0)
             {
                 m_gc->set_foreground(m_dk_grey);    /* draw horz lines at C */
                 m_gc->set_line_attributes
@@ -350,7 +350,7 @@ seqroll::update_background ()
                     1, Gdk::LINE_SOLID, Gdk::CAP_NOT_LAST, Gdk::JOIN_MITER
                 );
             }
-            else if ((modkey % 12) == 11)
+            else if ((modkey % OCTAVE_SIZE) == (OCTAVE_SIZE-1))
             {
                 m_gc->set_foreground(m_grey); /* horz grey lines, other notes */
                 m_gc->set_line_attributes
@@ -362,7 +362,7 @@ seqroll::update_background ()
         m_background->draw_line(m_gc, 0, i * c_key_y, m_window_x, i * c_key_y);
         if (m_scale != c_scale_off)
         {
-            if (! c_scales_policy[m_scale][(modkey - 1) % 12])
+            if (! c_scales_policy[m_scale][(modkey - 1) % OCTAVE_SIZE])
             {
                 m_background->draw_rectangle
                 (
