@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-16
+ * \updates       2015-08-17
  * \license       GNU GPLv2 or above
  *
  */
@@ -47,6 +47,29 @@
  */
 
 #define TRACKNAME_MAX                   256
+
+/**
+ *  The chunk header value for the Sequencer24 proprietary section.
+ *  We will try other chunks, as well, since, as per the MIDI
+ *  specification, unknown chunks should not cause an error in a sequencer
+ *  (or our midicvt program).
+ */
+
+#define PROPRIETARY_CHUNK_TAG          0x4D54726B       /* "MTrk" */
+
+/**
+ *  Provides the sequence number for the proprietary data when using the new
+ *  format.  (There is no track-name for the legacy format.)
+ */
+
+#define PROPRIETARY_SEQ_NUMBER         0xFFFF
+
+/**
+ *  Provides the track name for the proprietary data when using the new
+ *  format.  (There is no track-name for the legacy format.)
+ */
+
+#define PROPRIETARY_TRACK_NAME         "Sequencer24-S"
 
 /**
  *  Principal constructor.
@@ -410,13 +433,14 @@ midifile::parse (perform * a_perf, int a_screen_set)
              */
 
             if (curtrack > 0)                          /* MThd comes first */
+            {
                 errprintf("Unsupported MIDI chunk, skipping: %8lX\n", ID);
-
+            }
             m_pos += TrackLength;
         }
     }                                                   /* for each track  */
     if (result)
-        result = parse_proprietary(a_perf, file_size);
+        result = parse_proprietary_track(a_perf, file_size);
 
     return result;
 }
@@ -501,7 +525,7 @@ midifile::parse_prop_header (int file_size)
  */
 
 bool
-midifile::parse_proprietary (perform * a_perf, int file_size)
+midifile::parse_proprietary_track (perform * a_perf, int file_size)
 {
     bool result = true;
     unsigned long proprietary = parse_prop_header(file_size);
@@ -701,6 +725,76 @@ midifile::write_varinum (unsigned long value)
 }
 
 /**
+ *  Calculates the length of a variable length value.  This function is
+ *  needed when calculating the length of a track.  Note that it handles
+ *  only the following situations:
+ *
+ *  https://en.wikipedia.org/wiki/Variable-length_quantity
+ *
+\verbatim
+       1 byte:  0x00 to 0x7F
+       2 bytes: 0x80 to 0x3FFF
+       3 bytes: 0x4000 to 0x001FFFFF
+       4 bytes: 0x200000 to 0x0FFFFFFF
+\verbatim
+ *
+ * \return
+ *      Returns values as noted above.  Anything beyond that range returns
+ *      0.
+ */
+
+long
+midifile::varinum_size (long len) const
+{
+    int result = 0;
+    if (len >= 0x00 && len < 0x80)
+        result = 1;
+    else if (len >= 0x80 && len < 0x4000)
+        result = 2;
+    else if (len >= 0x4000 && len < 0x200000)
+        result = 3;
+    else if (len >= 0x200000 && len < 0x10000000)
+        result = 4;
+
+    return result;
+}
+
+/**
+ *
+ * We want to write:
+ *
+ *  -   0x4D54726B.
+ *       The track tag "MTrk".  The MIDI spec requires that
+ *      software can skip over non-standard chunks. "Prop"?  Would
+ *      require a fix to midicvt.
+ *  -   0xaabbccdd.
+ *      The length of the track.  This needs to be
+ *      calculated somehow.
+ *  -   0x00.  A zero delta time.
+ *  -   0x7f7f, The sequence number, a special value, well out of
+ *      our normal range.
+ *  -   The name of the track:
+ *      -   "Seq24-Spec"
+ *      -   "Sequencer24-S"
+ *
+ *   Then follows the proprietary data, written in the normal manner.
+ *
+ *   Finally, tack on the track-end meta-event.
+ *
+ *      Components of final track size:
+ *
+ *          -# Delta time.  1 byte, always 0x00.
+ *          -# Sequence number.  5 bytes.  OPTIONAL.  We won't write it.
+ *          -# Track name. 3 + 10 or 3 + 15
+ *          -# Series of proprietary specs:
+ *             -# Prop header:
+ *                -# If legacy format, 4 bytes.
+ *                -# Otherwise, 2 bytes + varinum_size(length) + 4 bytes.
+ *                -# Length of the prop data.
+ *          -# Track End. 3 bytes.
+ */
+
+/**
  *  Writes a "proprietary" Seq24 footer header in either the new
  *  MIDI-compliant format, or the legacy Seq24 format.  This function does
  *  not write the data.  It replaces calls such as "write_long(c_midich)"
@@ -730,16 +824,38 @@ midifile::write_prop_header
     long data_length
 )
 {
-    if (! global_legacy_format)
+    if (m_new_format)
     {
-        int len = data_length + 4;         /* sizeof(control_tag);          */
+        int len = data_length + 4;          /* data + sizeof(control_tag);   */
         write_byte(0xFF);
         write_byte(0x7F);
         write_varinum(len);
     }
-    write_long(control_tag);                /* use legacy output call       */
+    write_long(control_tag);                /* use legacy output call        */
 }
 
+/**
+ *  Calculates the size of a proprietary item, as written by the
+ *  write_prop_header() function, plus whatever is called to write the data.
+ *  If using the new format, the length includes the sum of sequencer-specific
+ *  tag (0xFF 0x7F) and the size of the variable-length value.  Then, for
+ *  legacy and new format, 4 bytes are added for the Seq24 MIDI control
+ *  value, and the the data length is added.
+ */
+
+long
+midifile::prop_item_size (long data_length) const
+{
+    long result = 0;
+    if (m_new_format)
+    {
+        int len = data_length + 4;          /* data + sizeof(control_tag);   */
+        result += 2 + varinum_size(len);
+    }
+    result += 4;                            /* write_long(control_tag);      */
+    result += data_length;
+    return result;
+}
 
 /**
  *  Write the whole MIDI data and Seq24 information out to the file.
@@ -788,76 +904,7 @@ midifile::write (perform * a_perf)
             }
         }
     }
-
-    /*
-     * Write out the proprietary section, using the new format if the
-     * legacy format is not in force.
-     */
-
-#ifdef THIS_CODE_IS_READY
-
-    /*
-     * We want to write:
-     *
-     *  -   0x4D54726B. The track tag "MTrk".  The MIDI spec requires that
-     *      software can skip over non-standard chunks. "Prop"?  Would
-     *      require a fix to midicvt.
-     *  -   0xaabbccdd. The length of the track.  This needs to be
-     *      calculated somehow.
-     *  -   The sequence number, a special value like 0x8888, well out of
-     *      normal range.
-     *  -   The name of the track:
-     *      -   "Seq24 Specific"
-     *      -   "Sequencer24 Specific"
-     *
-
-    write_long(0x4D54726B);         // magic number 'MTrk'      //
-
-     *
-     * At the end, after the proprietary data, we will want to write the
-     * TrkEnd meta event.
-     */
-
-
-#endif
-
-    write_prop_header(c_midictrl, 4);           /* midi control tag + 4     */
-    write_long(0);
-    write_prop_header(c_midiclocks, 4);         /* bus mute/unmute data + 4 */
-    write_long(0);
-
-    int datasize = 2;                           /* first value is short     */
-    for (int i = 0; i < c_max_sets; i++)
-    {
-        std::string * note = a_perf->get_screen_set_notepad(i);
-        datasize += 2 + note->length();         /* short + note length      */
-    }
-    write_prop_header(c_notes, datasize);       /* notepad data tag + data  */
-    write_short(c_max_sets);                    /* data, not a tag          */
-    for (int i = 0; i < c_max_sets; i++)
-    {
-        std::string * note = a_perf->get_screen_set_notepad(i);
-        write_short(note->length());
-        for (unsigned int j = 0; j < note->length(); j++)
-            write_byte((*note)[j]);
-    }
-    write_prop_header(c_bpmtag, 4);             /* bpm tag + 4              */
-    write_long(a_perf->get_bpm());
-    write_prop_header(c_mutegroups, 4);         /* the mute groups tag + 4  */
-    write_long(c_gmute_tracks);                 /* data, not a tag          */
-
-    /*
-     * We need a way to make this optional.  Why write 4096 bytes
-     * needlessly?
-     */
-
-    for (int j = 0; j < c_seqs_in_set; ++j)
-    {
-        a_perf->select_group_mute(j);
-        write_long(j);
-        for (int i = 0; i < c_seqs_in_set; ++i)
-            write_long(a_perf->get_group_mute_state(i));
-    }
+    (void) write_proprietary_track(a_perf);
 
     std::ofstream file
     (
@@ -879,6 +926,167 @@ midifile::write (perform * a_perf)
     }
     m_char_list.clear();
     return true;
+}
+
+/**
+ *  Writes out the proprietary section, using the new format if the
+ *  legacy format is not in force.
+ *
+ *  The first thing to do, for the new format only, is calculate the length
+ *  of this big section of data.
+ *
+ *  Note that currently we do not use the commented code, which writes a
+ *  special sequence number for the proprietary track.
+ */
+
+bool
+midifile::write_proprietary_track (perform * a_perf)
+{
+    long tracklength = 0;
+    int cnotesz = 2;                            /* first value is short     */
+    for (int i = 0; i < c_max_sets; i++)
+    {
+        std::string * note = a_perf->get_screen_set_notepad(i);
+        cnotesz += 2 + note->length();          /* short + note length      */
+    }
+
+    /*
+     * We need a way to make the group mute data optional.  Why write 4096
+     * bytes of zeroes?
+     */
+
+    int gmutesz = c_seqs_in_set * (4 + c_seqs_in_set * 4);
+    if (m_new_format)                           /* calculate track size     */
+    {
+        tracklength = 1;                        /* size of delta time = 0   */
+        tracklength += seq_number_size();       /* bogus sequence number    */
+        tracklength += track_name_size(PROPRIETARY_TRACK_NAME);
+        tracklength += prop_item_size(4);       /* c_midictrl               */
+        tracklength += prop_item_size(4);       /* c_midiclocks             */
+        tracklength += prop_item_size(cnotesz); /* c_notes                  */
+        tracklength += prop_item_size(4);       /* c_bpmtag                 */
+        tracklength += prop_item_size(4);       /* c_mutegroups             */
+        tracklength += prop_item_size(gmutesz); /* c_notes                  */
+        tracklength += track_end_size();        /* Meta TrkEnd              */
+    }
+    if (m_new_format)                           /* write beginning of track */
+    {
+        write_long(PROPRIETARY_CHUNK_TAG);      /* "MTrk" or something else */
+        write_long(tracklength);
+        write_byte(0);                          /* delta time for prop data */
+        write_seq_number(0xFFFF);               /* bogus sequence number    */
+        write_track_name(PROPRIETARY_TRACK_NAME);
+    }
+    write_prop_header(c_midictrl, 4);           /* midi control tag + 4     */
+    write_long(0);
+    write_prop_header(c_midiclocks, 4);         /* bus mute/unmute data + 4 */
+    write_long(0);
+    write_prop_header(c_notes, cnotesz);        /* notepad data tag + data  */
+    write_short(c_max_sets);                    /* data, not a tag          */
+    for (int i = 0; i < c_max_sets; i++)        /* see "cnotesz" calc       */
+    {
+        std::string * note = a_perf->get_screen_set_notepad(i);
+        write_short(note->length());
+        for (unsigned int j = 0; j < note->length(); j++)
+            write_byte((*note)[j]);
+    }
+    write_prop_header(c_bpmtag, 4);             /* bpm tag + 4              */
+    write_long(a_perf->get_bpm());
+    write_prop_header(c_mutegroups, 4);         /* the mute groups tag + 4  */
+    write_long(c_gmute_tracks);                 /* data, not a tag          */
+    for (int j = 0; j < c_seqs_in_set; ++j)     /* should be optional!      */
+    {
+        a_perf->select_group_mute(j);
+        write_long(j);
+        for (int i = 0; i < c_seqs_in_set; ++i)
+            write_long(a_perf->get_group_mute_state(i));
+    }
+    if (m_new_format)
+    {
+        write_track_end();
+    }
+    return true;
+}
+
+/**
+ *  Writes out a track name.
+ */
+
+void
+midifile::write_track_name (const std::string & trackname)
+{
+    bool ok = ! trackname.empty();
+    if (ok)
+    {
+        write_byte(0xFF);                   /* meta tag                     */
+        write_byte(0x03);                   /* second byte                  */
+        write_varinum((unsigned long) trackname.size());
+        for (int i = 0; i < int(trackname.size()); i++)
+            write_byte(trackname[i]);
+    }
+}
+
+/**
+ *  Calculates the size of a trackname and the meta event that specifies
+ *  it.
+ */
+
+long
+midifile::track_name_size (const std::string & trackname) const
+{
+    long result = 0;
+    if (! trackname.empty())
+    {
+        result += 2;                                    /* 0xFF and 0x03    */
+        result += varinum_size(long(trackname.size())); /* variable length  */
+        result += long(trackname.size());               /* data size        */
+    }
+    return result;
+}
+
+/**
+ *  Writes out a sequence number.
+ */
+
+void
+midifile::write_seq_number (unsigned short seqnum)
+{
+    write_byte(0xFF);                       /* meta tag                     */
+    write_byte(0x00);                       /* second byte                  */
+    write_byte(0x02);                       /* finish sequence tag          */
+    write_short(PROPRIETARY_SEQ_NUMBER);    /* write the sequence number    */
+}
+
+/**
+ *  Returns the size of a sequence-number event, which is always 5 bytes.
+ */
+
+long
+midifile::seq_number_size () const
+{
+    return 5;
+}
+
+/**
+ *  Writes out the end-of-track marker.
+ */
+
+void
+midifile::write_track_end ()
+{
+    write_byte(0xFF);                       /* meta tag                     */
+    write_byte(0x2F);
+    write_byte(0x00);
+}
+
+/**
+ *  Returns the size of a track-end event, which is always 3 bytes.
+ */
+
+long
+midifile::track_end_size () const
+{
+    return 3;
 }
 
 /*

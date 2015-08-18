@@ -6,7 +6,7 @@
 # \library    	generic
 # \author     	Chris Ahlstrom
 # \date       	2015-08-08
-# \update     	2015-08-09
+# \update     	2015-08-16
 # \version    	$Revision$
 # \license    	$XPC_SUITE_GPL_LICENSE$
 #
@@ -82,7 +82,8 @@ clean:
 	-rm -rf html
 	-rm -rf latex
 	-rm -f *.log dox-stamp
-	-rm -f ../reference_manual.pdf
+
+#	-rm -f ../reference_manual.pdf
 
 #******************************************************************************
 # Installing documentation

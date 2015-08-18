@@ -131,9 +131,67 @@ Seq24 Data at the end:
    In our sample file, 32 groups are specified, but all 32 group-mute-state
    values for each are 0.
 
+Components of final track size:
 
+    a. Delta time.  1 byte, always 0x00.
+    b. Sequence number.  5 bytes.  OPTIONAL.
+    c. Track name. 3 + 10 or 3 + 15
+    d. Series of proprietary specs:
+       a. Prop header:
+          a. If legacy format, 4 bytes.
+          b. Otherwise, 2 bytes + varinum_size(length) + 4 bytes.
+          c. Length of the prop data.
+    e. Track End. 3 bytes.
 
+Length of a variable length value:
 
+   https://en.wikipedia.org/wiki/Variable-length_quantity
 
+   1 byte:  0x00 to 0x7F
+   2 bytes: 0x80 to 0x3FFF
+   3 bytes: 0x4000 to 0x001FFFFF
+   4 bytes: 0x200000 to 0x0FFFFFFF
+
+Track chunk == MTrk" + <length> + <track_event> [+ <track_event> ...]
+
+"MTrk" 4 bytes the literal string MTrk. This marks the beginning of a track.
+<length> 4 bytes the number of bytes in the track chunk following this number.
+         That is, the marker and length are not counted in the length value.
+<track_event> a sequenced track event.
+
+Track Event
+
+A track event consists of a delta time since the last event, and one of three
+types of events.
+ 
+   track_event = <v_time> + <midi_event> | <meta_event> | <sysex_event>
+ 
+<v_time> variable length value for elapsed time (delta time) from the previous
+         event to this event.
+
+<midi_event>  any MIDI channel message such as note-on or note-off.
+<meta_event>  an SMF meta event.
+<sysex_event> an SMF system exclusive event.
+
+Meta Event
+
+Meta events are non-MIDI data of various sorts consisting of a fixed prefix, type indicator, a length field, and actual event data..
+ 
+   meta_event = 0xFF + <meta_type> + <v_length> + <event_data_bytes>
+
+<meta_type> 1 byte, meta event types:
+
+   Type	Event	Type	Event
+   0x00	Sequence number	0x20	MIDI channel prefix assignment
+   0x01	Text event	      0x2F	End of track
+   0x02	Copyright notice	0x51	Tempo setting
+   0x03	Sequence or track name	0x54	SMPTE offset
+   0x04	Instrument name	0x58	Time signature
+   0x05	Lyric text	      0x59	Key signature
+   0x06	Marker text	      0x7F	Sequencer specific event
+   0x07	Cue point
+
+<v_length> length of meta event data, a variable length value.
+<event_data_bytes> the actual event data.
 
 
