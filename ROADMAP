@@ -51,11 +51,16 @@ x  -  Branch off to a "Document" branch:
       -  Generate Doxygen documentation.
       -  Merge "Document" back into the main trunk.
    -  Branch off to a "Fixes" branch to fix these issues:
-      -  Ignore updating patterns/sequences that are empty during playback.
+      -  Ignore updating patterns/sequences that are empty (i.e. just a
+         track-name) during playback.
 x     -  Add more musical scales.  Added harmonic minor, melodic minor, and
          C whole tone scales.
 x     -  Ctrl-E in main window brings up Song Editor, but also toggles the
          sequence controlled by key "e".
+x     -  Write the proprietary section of Seq24 in a more MIDI-compliant
+         format (i.e. as a track) so that applications like midicvt can
+         read it; add a --legacy option to write the MIDI file in the old
+         format.
       -  Lock the size of the Patterns Panel (expanding it just shows more
          grey, and it resizes horizontally very slowly).
       -  Fix issue where doing nothing causes a save prompt upon exit.
