@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-24
  * \license       GNU GPLv2 or above
  *
  */
@@ -34,6 +34,8 @@
 #include "font.h"
 #include "perform.h"
 #include "perfnames.h"
+
+#define HIGHLIGHT_EMPTY_SEQS            // undefine for normal empty seqs
 
 /**
  *  Principal constructor for this user-interface object.
@@ -48,6 +50,7 @@ perfnames::perfnames (perform * a_perf, Gtk::Adjustment * a_vadjust)
     m_black             (Gdk::Color("black")),
     m_white             (Gdk::Color("white")),
     m_grey              (Gdk::Color("grey")),
+    m_yellow            (Gdk::Color("yellow")),
     m_pixmap            (),
     m_mainperf          (a_perf),
     m_window_x          (),
@@ -71,6 +74,7 @@ perfnames::perfnames (perform * a_perf, Gtk::Adjustment * a_vadjust)
     colormap->alloc_color(m_black);
     colormap->alloc_color(m_white);
     colormap->alloc_color(m_grey);
+    colormap->alloc_color(m_yellow);
     m_vadjust->signal_value_changed().connect
     (
         mem_fun(*(this), &perfnames::change_vert)
@@ -129,20 +133,31 @@ perfnames::redraw (int sequence)
  */
 
 void
-perfnames::draw_sequence (int sequence)
+perfnames::draw_sequence (int seqnum)
 {
-    int i = sequence - m_sequence_offset;
-    if (sequence < c_max_sequence)
+    int i = seqnum - m_sequence_offset;
+    if (seqnum < c_max_sequence)
     {
+        sequence * seq = m_mainperf->get_sequence(seqnum);
+
+#ifdef HIGHLIGHT_EMPTY_SEQS
+
+        /*
+         * Setting seqempty to seq->event_count() == 0 here causes a
+         * seqfault in pthread code!  Setting it further on does work.
+         */
+
+        bool seqempty = false;
+#endif
         m_gc->set_foreground(m_black);
         m_window->draw_rectangle
         (
             m_gc, true, 0, (c_names_y * i) , c_names_x, c_names_y + 1
         );
-        if (sequence % c_seqs_in_set == 0)
+        if (seqnum % c_seqs_in_set == 0)
         {
             char ss[3];
-            snprintf(ss, sizeof(ss), "%2d", sequence / c_seqs_in_set);
+            snprintf(ss, sizeof(ss), "%2d", seqnum / c_seqs_in_set);
             m_gc->set_foreground(m_white);
             p_font_renderer->render_string_on_drawable
             (
@@ -157,8 +172,16 @@ perfnames::draw_sequence (int sequence)
                 m_gc, true, 1, (c_names_y * (i)), (6 * 2) + 1, c_names_y
             );
         }
-        if (m_mainperf->is_active(sequence))
-            m_gc->set_foreground(m_white);
+        if (m_mainperf->is_active(seqnum))
+        {
+#ifdef HIGHLIGHT_EMPTY_SEQS
+            seqempty = seq->event_count() == 0;     // this works fine!
+            if (seqempty)
+                m_gc->set_foreground(m_yellow);
+            else
+#endif
+                m_gc->set_foreground(m_white);
+        }
         else
             m_gc->set_foreground(m_grey);
 
@@ -167,34 +190,39 @@ perfnames::draw_sequence (int sequence)
             m_gc, true, 6 * 2 + 3,
             (c_names_y * i) + 1, c_names_x - 3 - (6 * 2), c_names_y - 1
         );
-        if (m_mainperf->is_active(sequence))
+        if (m_mainperf->is_active(seqnum))
         {
             char temp[50];
-            m_sequence_active[sequence] = true;
+            m_sequence_active[seqnum] = true;
+            font::Color col;
+#ifdef HIGHLIGHT_EMPTY_SEQS
+            if (seqempty)
+                col = font::BLACK_ON_YELLOW;
+            else
+#endif
+                col = font::BLACK;
+
             snprintf
             (
                 temp, sizeof(temp), "%-14.14s   %2d",
-                m_mainperf->get_sequence(sequence)->get_name(),
-                m_mainperf->get_sequence(sequence)->get_midi_channel() + 1
+                seq->get_name(), seq->get_midi_channel() + 1
             );
             p_font_renderer->render_string_on_drawable
             (
-                m_gc, 5 + 6 * 2, c_names_y * i + 2, m_window, temp, font::BLACK
+                m_gc, 5 + 6 * 2, c_names_y * i + 2, m_window, temp, col
             );
             snprintf
             (
                 temp, sizeof(temp), "%d-%d %ld/%ld",
-                m_mainperf->get_sequence(sequence)->get_midi_bus(),
-                m_mainperf->get_sequence(sequence)->get_midi_channel() + 1,
-                m_mainperf->get_sequence(sequence)->get_bpm(),
-                m_mainperf->get_sequence(sequence)->get_bw()
+                seq->get_midi_bus(), seq->get_midi_channel() + 1,
+                seq->get_bpm(), seq->get_bw()
             );
             p_font_renderer->render_string_on_drawable
             (
-                m_gc, 5 + 6 * 2, c_names_y * i + 12, m_window, temp, font::BLACK
+                m_gc, 5 + 6 * 2, c_names_y * i + 12, m_window, temp, col
             );
 
-            bool muted = m_mainperf->get_sequence(sequence)->get_song_mute();
+            bool muted = seq->get_song_mute();
             m_gc->set_foreground(m_black);
             m_window->draw_rectangle
             (
@@ -202,10 +230,17 @@ perfnames::draw_sequence (int sequence)
             );
             if (muted)
             {
+#ifdef HIGHLIGHT_EMPTY_SEQS
+                if (seqempty)
+                    col = font::YELLOW_ON_BLACK;
+                else
+#endif
+                    col = font::WHITE;
+
                 p_font_renderer->render_string_on_drawable
                 (
                     m_gc, 5 + 6 * 2 + 6 * 20, c_names_y * i + 2,
-                    m_window, "M", font::WHITE
+                    m_window, "M", col
                 );
             }
             else
@@ -213,7 +248,7 @@ perfnames::draw_sequence (int sequence)
                 p_font_renderer->render_string_on_drawable
                 (
                     m_gc, 5 + 6 * 2 + 6 * 20, c_names_y * i + 2,
-                    m_window, "M", font::BLACK
+                    m_window, "M", col
                 );
             }
         }
@@ -253,16 +288,17 @@ perfnames::convert_y (int a_y, int * a_seq)
 bool
 perfnames::on_button_press_event (GdkEventButton * a_e)
 {
-    int sequence;
+    int seqnum;
     int y = (int) a_e->y;              //  int x = (int) a_e->x;
-    convert_y(y, &sequence);
-    m_current_seq = sequence;
+    convert_y(y, &seqnum);
+    m_current_seq = seqnum;
     if (a_e->button == 1)                           /* left mouse button */
     {
-        if (m_mainperf->is_active(sequence))
+        if (m_mainperf->is_active(seqnum))
         {
-            bool muted = m_mainperf->get_sequence(sequence)->get_song_mute();
-            m_mainperf->get_sequence(sequence)->set_song_mute(!muted);
+            sequence * seq = m_mainperf->get_sequence(seqnum);
+            bool muted = seq->get_song_mute();
+            seq->set_song_mute(! muted);
             queue_draw();
         }
     }

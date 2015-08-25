@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-16
+ * \updates       2015-08-23
  * \license       GNU GPLv2 or above
  *
  */
@@ -1159,8 +1159,20 @@ perform::play (long a_tick)
         {
             if (not_nullptr_assert(m_seqs[i], "play"))
             {
-                if (m_seqs[i]->get_queued() &&
-                        m_seqs[i]->get_queued_tick() <= a_tick)
+                /*
+                 * New condition, not sure yet if this is workable.  It
+                 * doesn't stop the progress bar update for an empty
+                 * sequence.
+                 */
+
+                if (m_seqs[i]->event_count() == 0)      /* new 2015-08-23 */
+                    continue;
+
+                if
+                (
+                    m_seqs[i]->get_queued() &&
+                    m_seqs[i]->get_queued_tick() <= a_tick
+                )
                 {
                     m_seqs[i]->play
                     (

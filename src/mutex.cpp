@@ -24,19 +24,32 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-15
+ * \updates       2015-08-24
  * \license       GNU GPLv2 or above
  *
  */
 
 #include "mutex.h"
 
+/*
+ *  Define the static enabler for the locking mutex.  This does not solve
+ *  the problem of the long MIDI-file parsing.
+ *
+ *      bool mutex::sm_mutex_enabled = true;
+ */
+
 /**
  *  Define the static recursive mutex and its condition variable.
  */
 
-const pthread_mutex_t mutex::recmutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
-const pthread_cond_t condition_var::cond  = PTHREAD_COND_INITIALIZER;
+const pthread_mutex_t mutex::sm_recursive_mutex =
+    PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+
+/**
+ *  Define the static condition variable used by all mutex locks.
+ */
+
+const pthread_cond_t condition_var::cond = PTHREAD_COND_INITIALIZER;
 
 /**
  *  The constructor assigns the recursive mutex to the local locking
@@ -45,7 +58,7 @@ const pthread_cond_t condition_var::cond  = PTHREAD_COND_INITIALIZER;
 
 mutex::mutex ()
  :
-    m_mutex_lock    (recmutex)
+    m_mutex_lock    (sm_recursive_mutex)
 {
     // empty body
 }

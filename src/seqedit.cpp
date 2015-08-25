@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-18
+ * \updates       2015-08-23
  * \license       GNU GPLv2 or above
  *
  */
@@ -80,6 +80,8 @@
 #include "pixmaps/tools.xpm"
 #include "pixmaps/seq-editor.xpm"
 
+using namespace Gtk::Menu_Helpers;
+
 /**
  * Static data members.
  */
@@ -115,6 +117,10 @@ static const int c_transpose_h           = 12;      /* skipped 11 */
 
 /**
  *  Principal constructor.
+ *
+ * \todo
+ *      Offload most of the work into an initialization function like
+ *      options does; make the sequence and perform parameters references.
  */
 
 seqedit::seqedit (sequence * a_seq, perform * a_perf, int a_pos)
@@ -710,13 +716,8 @@ seqedit::create_menus ()
 void
 seqedit::popup_tool_menu ()
 {
-    using namespace Gtk::Menu_Helpers;
-
-    m_menu_tools = manage(new Gtk::Menu());
-
-    Gtk::Menu * holder;
-    Gtk::Menu * holder2;
-    holder = manage(new Gtk::Menu());
+    Gtk::Menu * holder = manage(new Gtk::Menu());
+    m_menu_tools = manage(new Gtk::Menu());             // swapped
 
 #define DO_ACTION       mem_fun(*this, &seqedit::do_action)
 
@@ -746,9 +747,9 @@ seqedit::popup_tool_menu ()
                 sigc::bind(DO_ACTION, c_select_inverse_events, 0))
         );
     }
-
     m_menu_tools->items().push_back(MenuElem("Select", *holder));
-    holder = manage(new Gtk::Menu());
+
+    holder = manage(new Gtk::Menu());           /* another menu */
     holder->items().push_back
     (
         MenuElem("Quantize Selected Notes",
@@ -783,7 +784,7 @@ seqedit::popup_tool_menu ()
     holder = manage(new Gtk::Menu());
 
     char num[16];
-    holder2 = manage(new Gtk::Menu());
+    Gtk::Menu * holder2 = manage(new Gtk::Menu());
     for (int i = -OCTAVE_SIZE; i <= OCTAVE_SIZE; ++i)
     {
         if (i != 0)
@@ -1226,8 +1227,6 @@ seqedit::popup_menu (Gtk::Menu * a_menu)
 void
 seqedit::popup_midibus_menu ()
 {
-    using namespace Gtk::Menu_Helpers;
-
     m_menu_midibus = manage(new Gtk::Menu());
     mastermidibus & masterbus = m_mainperf->master_bus();
 
@@ -1250,8 +1249,6 @@ seqedit::popup_midibus_menu ()
 void
 seqedit::popup_midich_menu ()
 {
-    using namespace Gtk::Menu_Helpers;
-
     m_menu_midich = manage(new Gtk::Menu());
     int midi_bus = m_seq->get_midi_bus();
     char b[16];
@@ -1288,8 +1285,6 @@ seqedit::popup_midich_menu ()
 void
 seqedit::popup_sequence_menu ()
 {
-    using namespace Gtk::Menu_Helpers;
-
     m_menu_sequences = manage(new Gtk::Menu());
 
 #define SET_BG_SEQ     mem_fun(*this, &seqedit::set_background_sequence)
@@ -1348,7 +1343,12 @@ seqedit::set_background_sequence (int a_seq)
     }
     if (m_mainperf->is_active(a_seq))
     {
-        sequence *seq = m_mainperf->get_sequence(a_seq);
+        /**
+         * \todo
+         *      Make the sequence pointer a reference.
+         */
+
+        sequence * seq = m_mainperf->get_sequence(a_seq);
         snprintf(name, sizeof(name), "[%d] %.13s", a_seq, seq->get_name());
         m_entry_sequence->set_text(name);
         m_seqroll_wid->set_background_sequence(true, a_seq);
@@ -1390,8 +1390,6 @@ seqedit::create_menu_image (bool a_state)
 void
 seqedit::popup_event_menu ()
 {
-    using namespace Gtk::Menu_Helpers;
-
     bool ccs[MIDI_COUNT_MAX];
     char b[20];
     bool note_on = false;
@@ -1571,7 +1569,7 @@ seqedit::popup_event_menu ()
 void
 seqedit::set_midi_channel (int a_midichannel)
 {
-    char b[10];
+    char b[8];
     snprintf(b, sizeof(b), "%d", a_midichannel + 1);
     m_entry_channel->set_text(b);
     m_seq->set_midi_channel(a_midichannel);
@@ -1663,7 +1661,7 @@ seqedit::set_scale (int a_scale)
  */
 
 void
-seqedit::set_key(int a_note)
+seqedit::set_key (int a_note)
 {
     m_entry_key->set_text(c_key_text[a_note]);
     m_key = m_initial_key = a_note;
@@ -1680,7 +1678,6 @@ void
 seqedit::apply_length (int a_bpm, int a_bw, int a_measures)
 {
     m_seq->set_length(a_measures * a_bpm * ((c_ppqn * 4) / a_bw));
-
     m_seqroll_wid->reset();
     m_seqtime_wid->reset();
     m_seqdata_wid->reset();
@@ -1691,6 +1688,10 @@ seqedit::apply_length (int a_bpm, int a_bw, int a_measures)
  *  Calculates the measures value based on the bpm (beats per measure),
  *  ppqn (parts per quarter note), and bw (beat width) values, and returns
  *  the resultant measures value.
+ *
+ * \todo
+ *      Create a sequence::set_units() function or a
+ *      sequence::get_measures() function to forward to.
  */
 
 long
@@ -1712,7 +1713,7 @@ seqedit::get_measures ()
 void
 seqedit::set_measures (int a_length_measures)
 {
-    char b[10];
+    char b[8];
     snprintf(b, sizeof(b), "%d", a_length_measures);
     m_entry_length->set_text(b);
     m_measures = a_length_measures;
@@ -1727,7 +1728,7 @@ seqedit::set_measures (int a_length_measures)
 void
 seqedit::set_bpm (int a_beats_per_measure)
 {
-    char b[4];
+    char b[8];
     snprintf(b, sizeof(b), "%d", a_beats_per_measure);
     m_entry_bpm->set_text(b);
     if (a_beats_per_measure != m_seq->get_bpm())
@@ -1746,7 +1747,7 @@ seqedit::set_bpm (int a_beats_per_measure)
 void
 seqedit::set_bw (int a_beat_width)
 {
-    char b[4];
+    char b[8];
     snprintf(b, sizeof(b), "%d", a_beat_width);
     m_entry_bw->set_text(b);
     if (a_beat_width != m_seq->get_bw())
@@ -1864,8 +1865,7 @@ seqedit::set_data_type (unsigned char a_status, unsigned char a_control)
     m_seqdata_wid->set_data_type(a_status, a_control);
     m_seqroll_wid->set_data_type(a_status, a_control);
 
-    char text[100];
-    char hex[20];
+    char hex[24];
     char type[80];
     snprintf(hex, sizeof(hex), "[0x%02X]", a_status);
     if (a_status == EVENT_NOTE_OFF)
@@ -1908,6 +1908,7 @@ seqedit::set_data_type (unsigned char a_status, unsigned char a_control)
     else
         snprintf(type, sizeof(type), "Unknown MIDI Event");
 
+    char text[104];
     snprintf(text, sizeof(text), "%s %s", hex, type);
     m_entry_data->set_text(text);
 }

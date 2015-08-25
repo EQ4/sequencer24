@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-15
+ * \updates       2015-08-23
  * \license       GNU GPLv2 or above
  *
  */
@@ -38,6 +38,8 @@
 #include "perform.h"
 #include "seqedit.h"
 #include "seqmenu.h"
+
+using namespace Gtk::Menu_Helpers;
 
 /**
  *  Principal constructor.  Apart from filling in some fo the members,
@@ -79,8 +81,6 @@ seqmenu::~seqmenu ()
 void
 seqmenu::popup_menu ()
 {
-    using namespace Gtk::Menu_Helpers;
-
     if (not_nullptr(m_menu))
         delete m_menu;
 
@@ -236,11 +236,10 @@ seqmenu::seq_edit ()
     }
     else
     {
-        this->seq_new();
+        seq_new();
         sed = new seqedit
         (
-            m_mainperf->get_sequence(m_current_seq),
-            m_mainperf, m_current_seq
+            m_mainperf->get_sequence(m_current_seq), m_mainperf, m_current_seq
         );
         m_seqedit = sed;
     }
@@ -251,7 +250,7 @@ seqmenu::seq_edit ()
  */
 
 void
-seqmenu::seq_new()
+seqmenu::seq_new ()
 {
     if (! m_mainperf->is_active(m_current_seq))
     {
@@ -262,6 +261,10 @@ seqmenu::seq_new()
 
 /**
  *  Copies the selected (current) sequence to the clipboard sequence.
+ *
+ * \todo
+ *      Can be offloaded to a perform member function that accepts a
+ *      sequence clipboard non-const reference parameter.
  */
 
 void
@@ -274,10 +277,15 @@ seqmenu::seq_copy ()
 /**
  *  Deletes the selected (current) sequence and copies it to the clipboard
  *  sequence, <i> if </i> it is not in edit mode.
+ *
+ * \todo
+ *      A lot of seq_cut() can be offloaded to a (new) perform member
+ *      function that takes a sequence clipboard non-const reference
+ *      parameter.
  */
 
 void
-seqmenu::seq_cut()
+seqmenu::seq_cut ()
 {
     if (m_mainperf->is_active(m_current_seq) &&
             ! m_mainperf->is_sequence_in_edit(m_current_seq))
@@ -292,10 +300,14 @@ seqmenu::seq_cut()
  *  Pastes the sequence clipboard into the current sequence, if the
  *  current sequence slot is not active.  Then it sets the dirty flag for
  *  the destination sequence.
+ *
+ * \todo
+ *      All of seq_paste() can be offloaded to a (new) perform member
+ *      function with a const clipboard reference parameter.
  */
 
 void
-seqmenu::seq_paste()
+seqmenu::seq_paste ()
 {
     if (! m_mainperf->is_active(m_current_seq))
     {
@@ -309,6 +321,10 @@ seqmenu::seq_paste()
  *  If the current sequence is active, this function pushes a trigger
  *  undo in the main perform object, clears its sequence triggers for the
  *  current seqeuence, and sets the dirty flag of the sequence.
+ *
+ * \todo
+ *      All of seq_paste() can be offloaded to a (new) perform member
+ *      function.
  */
 
 void

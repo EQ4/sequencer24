@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-23
  * \license       GNU GPLv2 or above
  *
  */
@@ -47,19 +47,31 @@ public:
     /**
      *  A simple enumeration to describe the basic colors used in writing
      *  text.  Basically, these two values cause the selection of one or
-     *  another pixmap (font_b_xpm and font_w_xpm).
+     *  another pixmap (font_b_xpm and font_w_xpm).  We've added two more
+     *  pixmaps to draw black text on a yellow background (font_y.xpm) and
+     *  yellow text on a black background (font_yb.xpm).
      *
      * \var BLACK
-     *      The first supported color.
+     *      The first supported color.  A black font on a white
+     *      background.
      *
      * \var WHITE
-     *      The second supported color.
+     *      The second supported color. A white font on a black
+     *      background.
+     *
+     * \var BLACK_ON_YELLOW
+     *      A new color, for drawing black text on a yellow background.
+     *
+     * \var YELLOW_ON_BLACK
+     *      A new color, for drawing yellow text on a black background.
      */
 
     enum Color
     {
-        BLACK = 0,
-        WHITE = 1
+        BLACK,              /* font_b.xpm  */
+        WHITE,              /* font_w.xpm  */
+        BLACK_ON_YELLOW,    /* font_y.xpm  */
+        YELLOW_ON_BLACK     /* font_yb.xpm */
     };
 
 private:
@@ -67,7 +79,7 @@ private:
     /**
      *  Points to the current pixmap (m_black_pixmap or m_white_pixmap)
      *  to use to render a string.  This member used to be an object, but
-     *  it's probably a bit faster to just use a pointer.
+     *  it's probably a bit faster to just use a pointer (or a reference).
      */
 
     Glib::RefPtr<Gdk::Pixmap> * m_pixmap;
@@ -85,6 +97,20 @@ private:
      */
 
     Glib::RefPtr<Gdk::Pixmap> m_white_pixmap;
+
+    /**
+     *  The pixmap in the file <tt> src/pixmaps/font_y.xpm </tt> is loaded
+     *  into this object.  It contains a black font on a yellow background.
+     */
+
+    Glib::RefPtr<Gdk::Pixmap> m_b_on_y_pixmap;
+
+    /**
+     *  The pixmap in the file <tt> src/pixmaps/font_yb.xpm </tt> is loaded
+     *  into this object.  It contains a yellow font on a black background.
+     */
+
+    Glib::RefPtr<Gdk::Pixmap> m_y_on_b_pixmap;
 
     /**
      *  This object is instantiated as a default object.  All we know is

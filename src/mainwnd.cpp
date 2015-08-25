@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-16
+ * \updates       2015-08-24
  * \license       GNU GPLv2 or above
  *
  */
@@ -62,21 +62,28 @@
 #include "pixmaps/learn2.xpm"
 #include "pixmaps/perfedit.xpm"
 #include "pixmaps/seq24_32.xpm"
-#include "pixmaps/sequencer24_square.xpm"   /* replace "pixmaps/seq24.xpm" */
-#include "pixmaps/sequencer24_legacy.xpm"   /* indicates --legacy option   */
+#include "pixmaps/sequencer24_square.xpm"   /* replace "pixmaps/seq24.xpm"  */
+#include "pixmaps/sequencer24_legacy.xpm"   /* indicates --legacy option    */
+
+using namespace Gtk::Menu_Helpers;          /* MenuElem, etc.               */
 
 /**
- *  This static member provides a couple pipes for signalling/messaging.
+ *  This static member provides a couple of pipes for signalling/messaging.
  */
 
 int mainwnd::m_sigpipe[2];
-
-using namespace Gtk::Menu_Helpers;            // MenuElem, etc.
 
 /**
  *  The constructor the main window of the application.
  *  This constructor is way too large; it would be nicer to provide a
  *  number of well-named initialization functions.
+ *
+ * \param a_p
+ *      Refers to the main performance object.
+ *
+ * \todo
+ *      Offload most of the work into an initialization function like
+ *      options does; make the perform parameter a reference.
  */
 
 mainwnd::mainwnd (perform * a_p)
@@ -111,6 +118,12 @@ mainwnd::mainwnd (perform * a_p)
     m_timeout_connect       ()                              // handler?
 {
     set_icon(Gdk::Pixbuf::create_from_xpm_data(seq24_32_xpm));
+
+    /**
+     * \todo
+     *      Better as a member function.
+     */
+
     m_mainperf->m_notify.push_back(this);           // register for notification
     update_window_title();                          // main window
     m_menubar->items().push_front(MenuElem("_File", *m_menu_file));
@@ -437,6 +450,10 @@ mainwnd::timer_callback ()
 
 /**
  *  Opens the Performance Editor (Song Editor).
+ *
+ * \todo
+ *      Try to find a way to set m_modified only if the song editor
+ *      actually changes something, instead of just because it was opened.
  */
 
 void
@@ -513,6 +530,9 @@ mainwnd::on_grouplearnchange (bool state)
 
 /**
  *  Toggle the group-learn status.
+ *
+ * \todo
+ *      Make this a perform function, and forward to it here.
  */
 
 void
@@ -642,9 +662,9 @@ void
 mainwnd::open_file (const std::string & fn)
 {
     bool result;
-    midifile f(fn);                    /* create object to represent file   */
+    midifile f(fn);                     /* create object to represent file  */
     m_mainperf->clear_all();
-    result = f.parse(m_mainperf, 0);   /* parsing handles old & new format  */
+    result = f.parse(m_mainperf, 0);    /* parsing handles old & new format */
     m_modified = ! result;
     if (! result)
     {
@@ -911,23 +931,6 @@ mainwnd::file_exit ()
 }
 
 /**
- *  This callback function handles a delete event from ...?
- *
- *  Any changed data is saved.  If the pattern is playing, then it is
- *  stopped.
- */
-
-bool
-mainwnd::on_delete_event (GdkEventAny * a_e)
-{
-    bool result = is_save();
-    if (result && global_is_pattern_playing)
-        stop_playing();
-
-    return ! result;
-}
-
-/**
  *  Presents a Help / About dialog.  I (Chris) took the liberty of tacking
  *  my name at the end, and hope to eventually have done enough work to
  *  warrant having it there.
@@ -1026,7 +1029,30 @@ mainwnd::edit_callback_notepad ()
 }
 
 /**
+ *  This callback function handles a delete event from ...?
+ *
+ *  Any changed data is saved.  If the pattern is playing, then it is
+ *  stopped.
+ */
+
+bool
+mainwnd::on_delete_event (GdkEventAny * a_e)
+{
+    bool result = is_save();
+    if (result && global_is_pattern_playing)
+        stop_playing();
+
+    return ! result;
+}
+
+/**
  *  Handles a key release event.
+ *
+ * \todo
+ *      The perform m_key_* members should be functions.
+ *
+ * \return
+ *      Always returns false.
  */
 
 bool
@@ -1038,10 +1064,14 @@ mainwnd::on_key_release_event (GdkEventKey * a_ev)
     if (a_ev->keyval == m_mainperf->m_key_queue)
         m_mainperf->unset_sequence_control_status(c_status_queue);
 
-    if (a_ev->keyval == m_mainperf->m_key_snapshot_1 ||
-            a_ev->keyval == m_mainperf->m_key_snapshot_2)
+    if
+    (
+        a_ev->keyval == m_mainperf->m_key_snapshot_1 ||
+        a_ev->keyval == m_mainperf->m_key_snapshot_2
+    )
+    {
         m_mainperf->unset_sequence_control_status(c_status_snapshot);
-
+    }
     if (a_ev->keyval == m_mainperf->m_key_group_learn)
         m_mainperf->unset_mode_group_learn();
 
@@ -1099,6 +1129,17 @@ mainwnd::on_key_press_event (GdkEventKey * a_ev)
         }
         if (a_ev->keyval == m_mainperf->m_key_screenset_dn)
         {
+            /**
+             * \todo
+             *      Need a well-named perform function for decrementing
+             *      its screenset; it should return the new value.
+             *
+             * \todo
+             *      The perform get_screen_set_notepad() should have an
+             *      overload that uses the current perform screenset
+             *      value; perhaps should return a reference as well.
+             */
+
             m_mainperf->set_screenset(m_mainperf->get_screenset() - 1);
             m_main_wid->set_screenset(m_mainperf->get_screenset());
             m_adjust_ss->set_value(m_mainperf->get_screenset());
@@ -1109,6 +1150,11 @@ mainwnd::on_key_press_event (GdkEventKey * a_ev)
         }
         if (a_ev->keyval == m_mainperf->m_key_screenset_up)
         {
+            /**
+             * \todo
+             *      Need a well-named perform furnction for incrementing
+             *      its screenset; it should return the new value.
+             */
 
             m_mainperf->set_screenset(m_mainperf->get_screenset() + 1);
             m_main_wid->set_screenset(m_mainperf->get_screenset());
@@ -1132,19 +1178,17 @@ mainwnd::on_key_press_event (GdkEventKey * a_ev)
 
         if (m_mainperf->get_key_groups().count(a_ev->keyval) != 0)
         {
-            m_mainperf->select_and_mute_group /* activate mute group key    */
+            m_mainperf->select_and_mute_group   /* activate mute group key  */
             (
                 m_mainperf->lookup_keygroup_group(a_ev->keyval)
             );
         }
-        if
+        if                                      /* mute group learn         */
         (
             m_mainperf->is_learn_mode() &&
             a_ev->keyval != m_mainperf->m_key_group_learn
         )
         {
-            // mute group learn
-
             if (m_mainperf->get_key_groups().count(a_ev->keyval) != 0)
             {
                 std::ostringstream os;
@@ -1178,7 +1222,7 @@ mainwnd::on_key_press_event (GdkEventKey * a_ev)
                    << "\" (code = "
                    << a_ev->keyval
                    << ") is not one of the configured mute-group keys.\n"
-                   << "To change this see File/Options menu or .seq24rc"
+                   << "To change this see File/Options menu or ~/.seq24rc."
                    ;
 
                 Gtk::MessageDialog dialog
@@ -1186,13 +1230,12 @@ mainwnd::on_key_press_event (GdkEventKey * a_ev)
                     *this, "MIDI mute group learn failed", false,
                     Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true
                 );
-
                 dialog.set_secondary_text(os.str(), false);
                 dialog.run();
 
                 /*
                  * Missed the key-up message for group-learn, so force it
-                 * to off
+                 * to off.
                  */
 
                 m_mainperf->unset_mode_group_learn();
@@ -1247,6 +1290,10 @@ mainwnd::on_key_press_event (GdkEventKey * a_ev)
 /**
  *  Handle a sequence key to toggle the playing of an active pattern in
  *  the selected screen-set.
+ *
+ * \todo
+ *      Better as a perform member function, so make this a forwarding
+ *      function.
  */
 
 void
@@ -1324,7 +1371,6 @@ mainwnd::install_signal_handlers ()
         printf("sigaction() failed: %s\n", std::strerror(errno));
         return false;
     }
-
     if (sigaction(SIGINT, &action, NULL) == -1)
     {
         printf("sigaction() failed: %s\n", std::strerror(errno));
@@ -1334,40 +1380,49 @@ mainwnd::install_signal_handlers ()
 }
 
 /**
+ *  Handles saving or exiting actions when signalled.
  *
+ * \return
+ *      Returns true if the signalling was able to be completed, even if
+ *      it was an unexpected signal.
  */
 
 bool
 mainwnd::signal_action (Glib::IOCondition condition)
 {
+    bool result = true;
     if ((condition & Glib::IO_IN) == 0)
     {
         printf("Error: unexpected IO condition\n");
-        return false;
+        result = false;
     }
-
-    int message;
-    if (read(m_sigpipe[0], &message, sizeof(message)) == -1)
+    else
     {
-        printf("read() failed: %s\n", std::strerror(errno));
-        return false;
+        int message;
+        if (read(m_sigpipe[0], &message, sizeof(message)) == -1)
+        {
+            printf("read() failed: %s\n", std::strerror(errno));
+            result = false;
+        }
+        else
+        {
+            switch (message)
+            {
+            case SIGUSR1:
+                save_file();
+                break;
+
+            case SIGINT:
+                file_exit();
+                break;
+
+            default:
+                printf("Unexpected signal received: %d\n", message);
+                break;
+            }
+        }
     }
-
-    switch (message)
-    {
-    case SIGUSR1:
-        save_file();
-        break;
-
-    case SIGINT:
-        file_exit();
-        break;
-
-    default:
-        printf("Unexpected signal received: %d\n", message);
-        break;
-    }
-    return true;
+    return result;
 }
 
 /*

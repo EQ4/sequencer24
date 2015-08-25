@@ -1,6 +1,6 @@
 Sequencer24/Seq24 Roadmap
 Chris Ahlstrom
-2015-07-23 to 2015-08-18
+2015-07-23 to 2015-08-24
 
 The starting point for the Sequencer24 project is version
 0.9.2 of seq24.  Sequencer24 starts with version 0.9.3.
@@ -51,8 +51,10 @@ x  -  Branch off to a "Document" branch:
       -  Generate Doxygen documentation.
       -  Merge "Document" back into the main trunk.
    -  Branch off to a "Fixes" branch to fix these issues:
-      -  Ignore updating patterns/sequences that are empty (i.e. just a
-         track-name) during playback.
+y     -  Ignore updating patterns/sequences that are empty (i.e. just a
+         track-name) during playback.  This is done, playing will be
+         ignored, as is updating the progress bar.  Can be disabled at
+         build time; see the mainwid.cpp module.
 x     -  Add more musical scales.  Added harmonic minor, melodic minor, and
          C whole tone scales.
 x     -  Ctrl-E in main window brings up Song Editor, but also toggles the
@@ -61,6 +63,10 @@ x     -  Write the proprietary section of Seq24 in a more MIDI-compliant
          format (i.e. as a track) so that applications like midicvt can
          read it; add a --legacy option to write the MIDI file in the old
          format.
+      -  New bug?  Patterns showing up as muted temporarily, in "sync"
+         with the Song Editor window !!!
+      -  Make a --lash/--no-lash option, for when LASH support is enabled
+         in the build configuration.
       -  Lock the size of the Patterns Panel (expanding it just shows more
          grey, and it resizes horizontally very slowly).
       -  Fix issue where doing nothing causes a save prompt upon exit.
@@ -69,13 +75,15 @@ x     -  Write the proprietary section of Seq24 in a more MIDI-compliant
       -  The std::list the Seq24 uses is fast, but it doesn't allow for
          direct access to list elements, and the push/pop paradigm causes
          a reversal of some events (program change) that makes it impossible
-         to reliably diff the MIDI files that result.  Also very slow in
-         debug more.
+         to reliably diff the MIDI files that result.
+      -  Reading a MIDI file is very slow in debug mode, almost certainly
+         due to mutex locking.
    -  Branch off to a "Library" branch:
       -  Break out non-GUI functionality into libsequencer24.
       -  Unit test each element as appropriate using xpc-suite
          functionality.
-      -  Add some base classes for common functionality.
+      -  Add some base classes and additional member functions for common
+            functionality.
       -  Handle Windows vs. Linux code more cleanly.
       -  Enhance documentation and recreate it.
       -  Rebuild application using library code.
@@ -96,8 +104,8 @@ Eventually, there will be a few features and fixes to try to add:
    -  Get the Song editor's "Increase size of grid" button working.
       Also document it.
 
-There's actually not a lot to improve though, in Seq24, except to keep the
-project active and living.
+There's actually not a lot to improve though, in Seq24 functionality, except
+to keep the project active and living.  A very nice project!
 
 Git Graph:
 

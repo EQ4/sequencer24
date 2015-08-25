@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-15
+ * \updates       2015-08-24
  * \license       GNU GPLv2 or above
  *
  */
@@ -45,10 +45,21 @@ class mutex
 private:
 
     /**
-     *  Provides the mutex that can be used by the whole appliciation?
+     *  Provides a way to disable the locking.  Mostly experimental,
+     *  we want to disable locking to see if we can speed up MIDI file
+     *  reading when the application is compiled for debugging.  It takes
+     *  about 8 seconds to read our sample MIDI files.  This does not
+     *  solve the problem of the long MIDI-file parsing, however.
+     *
+     *      static bool sm_mutex_enabled;
      */
 
-    static const pthread_mutex_t recmutex;
+    /**
+     *  Provides a recursive mutex that can be used by the whole
+     *  application, appaerently.
+     */
+
+    static const pthread_mutex_t sm_recursive_mutex;
 
 protected:
 
@@ -63,6 +74,13 @@ public:
     mutex ();
     void lock () const;
     void unlock () const;
+
+    /*
+     * static void enable (bool flag = true)
+     * {
+     *     sm_mutex_enabled = flag;
+     * }
+     */
 
 };
 

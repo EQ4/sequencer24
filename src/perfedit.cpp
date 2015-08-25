@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-12
+ * \updates       2015-08-23
  * \license       GNU GPLv2 or above
  *
  */
@@ -83,6 +83,13 @@ using namespace Gtk::Menu_Helpers;
  *  Principal constructor, has a pointer to a perform object.
  *  We've reordered the pointer members and put them in the initializer
  *  list to make the constructor a bit cleaner.
+ *
+ * \param a_perf
+ *      Refers to the main performance object.
+ *
+ * \todo
+ *      Offload most of the work into an initialization function like
+ *      options does; make the perform parameter a reference.
  */
 
 perfedit::perfedit (perform * a_perf)
@@ -345,6 +352,9 @@ perfedit::undo ()
 /**
  *  Implement the playing.  JACK will be used if it is present and, in the
  *  application, enabled.
+ *
+ * \todo
+ *      This function should be a perform member, and forward to it.
  */
 \
 void
@@ -357,6 +367,9 @@ perfedit::start_playing ()
 
 /**
  *  Stop the playing.
+ *
+ * \todo
+ *      This function should be a perform member, and forward to it.
  */
 
 void
@@ -434,10 +447,11 @@ perfedit::popup_menu (Gtk::Menu * a_menu)
 }
 
 /**
- *  Sets the guides, which are (what) user-interface element.
+ *  Sets the guides, which are the L and R user-interface elements.
  *  See the set_snap() function.
  *
- *  The c_ppqn variable should be copied into a member.
+ * \todo
+ *      The c_ppqn variable should be copied into a perfedit member.
  */
 
 void

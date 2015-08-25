@@ -1,3 +1,6 @@
+#ifndef SEQ24_MENU_H
+#define SEQ24_MENU_H
+
 /*
  *  This file is part of seq24/sequencer24.
  *
@@ -16,9 +19,6 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef SEQ24_MENU_H
-#define SEQ24_MENU_H
-
 /**
  * \file          seqmenu.h
  *
@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-23
  * \license       GNU GPLv2 or above
  *
  */
@@ -103,7 +103,7 @@ private:
 
 private:            // callback
 
-    void on_realize();
+    void on_realize ();
 
 };
 

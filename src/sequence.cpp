@@ -2885,10 +2885,12 @@ sequence::paste_trigger ()
     }
 }
 
-
-/* this refreshes the play marker to the LastTick */
-/* resets draw marker so calls to getNextnoteEvent
-       will start from the first */
+/**
+ *  This refreshes the play marker to the last tick. It resets the draw marker
+ *  so that calls to get_next_note_event() will start from the first event.
+ *
+ * \threadsafe
+ */
 
 void
 sequence::reset_draw_marker ()
@@ -2898,6 +2900,10 @@ sequence::reset_draw_marker ()
     unlock();
 }
 
+/**
+ * \threadsafe
+ */
+
 void
 sequence::reset_draw_trigger_marker ()
 {
@@ -2905,6 +2911,10 @@ sequence::reset_draw_trigger_marker ()
     m_iterator_draw_trigger = m_list_trigger.begin();
     unlock();
 }
+
+/**
+ * \threadsafe
+ */
 
 int
 sequence::get_lowest_note_event ()
@@ -2922,6 +2932,10 @@ sequence::get_lowest_note_event ()
     return result;
 }
 
+/**
+ * \threadsafe
+ */
+
 int
 sequence::get_highest_note_event ()
 {
@@ -2938,10 +2952,11 @@ sequence::get_highest_note_event ()
     return ret;
 }
 
-/* each call seqdata( sequence *a_seq, int a_scale );fills the passed
- * references with a
-       events elements, and returns true.  When it has no more events,
-       returns a false */
+/**
+ *  Each call to seqdata() fills the passed references with a events
+ *  elements, and returns true.  When it has no more events, returns a
+ *  false.
+ */
 
 draw_type
 sequence::get_next_note_event
@@ -2968,40 +2983,53 @@ sequence::get_next_note_event
             m_iterator_draw++;
             return result;
         }
-        else if ((*m_iterator_draw).is_note_on() && (!(*m_iterator_draw).is_linked()))
+        else if
+        (
+            (*m_iterator_draw).is_note_on() && (!(*m_iterator_draw).is_linked())
+        )
         {
             result = DRAW_NOTE_ON;
             m_iterator_draw++;
             return result;
         }
-        else if ((*m_iterator_draw).is_note_off() && (!(*m_iterator_draw).is_linked()))
+        else if
+        (
+            (*m_iterator_draw).is_note_off() && (!(*m_iterator_draw).is_linked())
+        )
         {
             result = DRAW_NOTE_OFF;
             m_iterator_draw++;
             return result;
         }
-
-        /* keep going until we hit null or find a NoteOn */
-
-        m_iterator_draw++;
+        m_iterator_draw++;  /* keep going until we hit null or find a NoteOn */
     }
     return DRAW_FIN;
 }
+
+/**
+ *  Get the next event in the event list.  Then set the status and control
+ *  character parameters using that event.
+ */
 
 bool
 sequence::get_next_event (unsigned char * a_status, unsigned char * a_cc)
 {
     unsigned char j;
-    while (m_iterator_draw  != m_list_event.end())
+    while (m_iterator_draw != m_list_event.end())
     {
         *a_status = (*m_iterator_draw).get_status();
         (*m_iterator_draw).get_data(a_cc, &j);
-
-        m_iterator_draw++; /* we have a good one  update and return */
+        m_iterator_draw++;      /* we have a good one; update and return */
         return true;
     }
     return false;
 }
+
+/**
+ *  Get the next event in the event list that matches the given status and
+ *  control character.  Then set the rest of the parameters parameters
+ *  using that event.
+ */
 
 bool
 sequence::get_next_event
@@ -3021,32 +3049,38 @@ sequence::get_next_event
             *a_tick = (*m_iterator_draw).get_timestamp();
             *a_selected = (*m_iterator_draw).is_selected();
 
-            /* either we have a control chage with the right CC
-               or its a different type of event */
+            /*
+             *  Either we have a control chage with the right CC
+             * or its a different type of event.
+             */
 
             if
             (
                 (a_status == EVENT_CONTROL_CHANGE && *a_D0 == a_cc) ||
-                (a_status != EVENT_CONTROL_CHANGE))
+                (a_status != EVENT_CONTROL_CHANGE)
+            )
             {
                 m_iterator_draw++; /* we have a good one update and return */
                 return true;
             }
         }
-
-        /* keep going until we hit null or find a NoteOn */
-
-        m_iterator_draw++;
+        m_iterator_draw++;  /* keep going until we hit null or find a NoteOn */
     }
     return false;
 }
 
+/**
+ *  Get the next trigger in the trigger list, and set the parameters based
+ *  on that trigger.
+ */
+
 bool
 sequence::get_next_trigger
 (
-    long * a_tick_on, long * a_tick_off, bool * a_selected, long * a_offset)
+    long * a_tick_on, long * a_tick_off, bool * a_selected, long * a_offset
+)
 {
-    while (m_iterator_draw_trigger  != m_list_trigger.end())
+    while (m_iterator_draw_trigger != m_list_trigger.end())
     {
         *a_tick_on  = (*m_iterator_draw_trigger).m_tick_start;
         *a_selected = (*m_iterator_draw_trigger).m_selected;
@@ -3066,25 +3100,9 @@ sequence::remove_all ()
     unlock();
 }
 
-void
-sequence::lock () const
-{
-    m_mutex.lock();
-}
-
-void
-sequence::unlock () const
-{
-    m_mutex.unlock();
-}
-
-const char *
-sequence::get_name ()
-{
-    return m_name.c_str();
-}
-
-/* returns last tick played..  used by editors idle function */
+/**
+ *  Returns the last tick played, and is used by the editor's idle function.
+ */
 
 long
 sequence::get_last_tick ()
@@ -3136,8 +3154,10 @@ sequence::get_length ()
 }
 
 
-/* sets state.  when playing, and sequencer is running, notes get dumped
- * to the alsa buffers */
+/**
+ *  Sets the playing state of this sequence.  When playing, and the
+ *  sequencer is running, notes get dumped to the ALSA buffers.
+ */
 
 void
 sequence::set_playing (bool a_p)
@@ -3147,11 +3167,11 @@ sequence::set_playing (bool a_p)
     {
         if (a_p)
         {
-            m_playing = true; /* turn on */
+            m_playing = true;       /* turn on  */
         }
         else
         {
-            m_playing = false; /* turn off */
+            m_playing = false;      /* turn off */
             off_playing_notes();
         }
         set_dirty();

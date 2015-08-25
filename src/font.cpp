@@ -24,15 +24,17 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-23
  * \license       GNU GPLv2 or above
  *
  */
 
 #include "easy_macros.h"
 #include "font.h"
-#include "pixmaps/font_w.xpm"
-#include "pixmaps/font_b.xpm"
+#include "pixmaps/font_w.xpm"           /* white on black (inverse video)   */
+#include "pixmaps/font_b.xpm"           /* black on white                   */
+#include "pixmaps/font_yb.xpm"          /* yellow on black (inverse video)  */
+#include "pixmaps/font_y.xpm"           /* black on yellow                  */
 
 /**
  *    Rote default constructor.
@@ -43,6 +45,8 @@ font::font ()
     m_pixmap        (nullptr),
     m_black_pixmap  (),
     m_white_pixmap  (),
+    m_b_on_y_pixmap (),
+    m_y_on_b_pixmap (),
     m_clip_mask     ()
 {
    // empty body
@@ -69,6 +73,14 @@ font::init (Glib::RefPtr<Gdk::Window> a_window)
     m_white_pixmap = Gdk::Pixmap::create_from_xpm
     (
         a_window->get_colormap(), m_clip_mask, font_w_xpm
+    );
+    m_b_on_y_pixmap = Gdk::Pixmap::create_from_xpm
+    (
+        a_window->get_colormap(), m_clip_mask, font_y_xpm
+    );
+    m_y_on_b_pixmap = Gdk::Pixmap::create_from_xpm
+    (
+        a_window->get_colormap(), m_clip_mask, font_yb_xpm
     );
 }
 
@@ -122,6 +134,17 @@ font::render_string_on_drawable
 
     int font_w = 6;                     // c_text_x == 6
     int font_h = 10;                    // c_text_y == 12
+    if (col == font::BLACK)
+        m_pixmap = &m_black_pixmap;
+    else if (col == font::WHITE)
+        m_pixmap = &m_white_pixmap;
+    else if (col == font::BLACK_ON_YELLOW)
+        m_pixmap = &m_b_on_y_pixmap;
+    else if (col == font::YELLOW_ON_BLACK)
+        m_pixmap = &m_y_on_b_pixmap;
+    else
+        m_pixmap = &m_black_pixmap; // user lied, provide a legal pointer
+
     for (int i = 0; i < length; ++i)
     {
         unsigned char c = (unsigned char) str[i];
@@ -131,13 +154,6 @@ font::render_string_on_drawable
         pixbuf_index_x += 2;            // add 2 for border?
         pixbuf_index_y *= 13;           // height of grid (letter is 12 pixels)
         pixbuf_index_y += 2;            // add 2 for border?
-        if (col == font::BLACK)
-            m_pixmap = &m_black_pixmap;
-        else if (col == font::WHITE)
-            m_pixmap = &m_white_pixmap;
-        else
-            m_pixmap = &m_black_pixmap; // user lied, provide a legal pointer
-
         a_draw->draw_drawable
         (
             a_gc, *m_pixmap, pixbuf_index_x, pixbuf_index_y,

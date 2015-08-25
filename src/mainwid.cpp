@@ -25,12 +25,12 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-15
+ * \updates       2015-08-24
  * \license       GNU GPLv2 or above
  *
  */
 
-#include <gtkmm/combo.h>               // Gtk::Entry
+#include <gtkmm/combo.h>                // Gtk::Entry
 #include <gtkmm/menubar.h>
 
 #include "font.h"
@@ -38,6 +38,15 @@
 #include "perform.h"
 
 using namespace Gtk::Menu_Helpers;
+
+/**
+ *  Adjustments to the main window.  Trying to get sequences that don't
+ *  have events to show up as black-on-yellow.  This works now.
+ */
+
+#define HIGHLIGHT_EMPTY_SEQS            // undefine for normal empty seqs
+#define USE_GREY_GRID                   // undefine for black boxes
+#define USE_NORMAL_GRID                 // undefine for grey box, black outline
 
 /**
  *  Static array of characters for use in toggling patterns.
@@ -81,7 +90,7 @@ mainwid::mainwid (perform * a_p)
     m_black             (Gdk::Color("black")),
     m_white             (Gdk::Color("white")),
     m_grey              (Gdk::Color("grey")),
-    m_yellow            (Gdk::Color("yellow")),
+    m_yellow            (Gdk::Color("yellow")), // for empty-seq highlight
     m_background        (),
     m_foreground        (),
     m_pixmap            (),
@@ -104,6 +113,7 @@ mainwid::mainwid (perform * a_p)
     colormap->alloc_color(m_black);
     colormap->alloc_color(m_white);
     colormap->alloc_color(m_grey);
+    colormap->alloc_color(m_yellow);
     set_size_request(c_mainwid_x, c_mainwid_y);
     add_events
     (
@@ -167,7 +177,21 @@ mainwid::timeout ()
  *  This function draws a specific pattern/sequence on the pixmap located
  *  in the main window of the application, the Patterns Panel.  The
  *  sequence is drawn only if it is in the current screen set (indicated
- *  by m_screenset.
+ *  by m_screenset).
+ *
+ * \note
+ *      If only the main window is up, then the sequences just appear to
+ *      play -- the progress bars move in each pattern.  Gaps in the song
+ *      don't change the appearance of the patterns.  But, if the Song
+ *      (performance) Editor window is up, and the song is started using
+ *      the controls in the Song (performance) Editor windows, then the
+ *      active patterns are black (!) while playing, and white when gaps
+ *      in the song are encountered.  Also, the muting status in the main
+ *      window seems to be ignored (based on coloring, anyway).  However,
+ *      the muting in the Song (performance) windows does seem to be in
+ *      force.
+ *
+ *      Is the color actually backwards from what was intended?
  */
 
 void
@@ -187,14 +211,10 @@ mainwid::draw_sequence_on_pixmap (int a_seq)
         if (m_mainperf->is_active(a_seq))
         {
             sequence * seq = m_mainperf->get_sequence(a_seq);
-
-            /*
-             * \change ca 2015-08-15
-             *      Color sequences without events differently.
-             */
-
+#ifdef HIGHLIGHT_EMPTY_SEQS
             if (seq->event_count() > 0)
             {
+#endif
                 if (seq->get_playing())
                 {
                     m_last_playing[a_seq] = true;   // active and playing
@@ -207,22 +227,28 @@ mainwid::draw_sequence_on_pixmap (int a_seq)
                     m_background = m_white;
                     m_foreground = m_black;
                 }
+#ifdef HIGHLIGHT_EMPTY_SEQS
             }
             else
             {
-                m_last_playing[a_seq] = false;  // active and not playing
-
-                /**
-                 * ACTIVATE AFTER YOU FIGURE IT OUT
-                 *
-                m_background = m_black;
-                m_foreground = m_yellow;
-                 *
-                 */
+                m_last_playing[a_seq] = false;      // active and not playing
+                if (seq->get_playing())
+                {
+                    m_last_playing[a_seq] = false;  // active and playing
+                    m_background = m_black;
+                    m_foreground = m_yellow;
+                }
+                else
+                {
+                    m_last_playing[a_seq] = false;  // active and not playing
+                    m_background = m_yellow;
+                    m_foreground = m_black;
+                }
             }
+#endif  // HIGHLIGHT_EMPTY_SEQS
 
-            m_gc->set_foreground(m_background); // tricky reversal of color!
-            m_pixmap->draw_rectangle            // ?????
+            m_gc->set_foreground(m_background);
+            m_pixmap->draw_rectangle
             (
                 m_gc, true, base_x+1, base_y+1, c_seqarea_x-2, c_seqarea_y-2
             );
@@ -231,11 +257,26 @@ mainwid::draw_sequence_on_pixmap (int a_seq)
             char temp[20];                      // SEQ_NAME_SIZE !
             snprintf(temp, sizeof temp, "%.13s", seq->get_name());
             font::Color col = font::BLACK;
-            if (m_foreground == m_black)
-                col = font::BLACK;
+#ifdef HIGHLIGHT_EMPTY_SEQS
+            if (seq->event_count() > 0)
+            {
+#endif
+                if (m_foreground == m_black)
+                    col = font::BLACK;
 
-            if (m_foreground == m_white)
-                col = font::WHITE;
+                if (m_foreground == m_white)
+                    col = font::WHITE;
+#ifdef HIGHLIGHT_EMPTY_SEQS
+            }
+            else
+            {
+                if (m_foreground == m_black)
+                    col = font::BLACK_ON_YELLOW;
+
+                if (m_foreground == m_yellow)
+                    col = font::YELLOW_ON_BLACK;
+            }
+#endif  // HIGHLIGHT_EMPTY_SEQS
 
             p_font_renderer->render_string_on_drawable      // name of pattern
             (
@@ -277,13 +318,18 @@ mainwid::draw_sequence_on_pixmap (int a_seq)
             if (seq->get_queued())
             {
                 m_gc->set_foreground(m_grey);
-                m_pixmap->draw_rectangle                    // inner box?
+                m_pixmap->draw_rectangle
                 (
                     m_gc, true, rectangle_x - 2, rectangle_y - 1,
                     c_seqarea_seq_x + 3, c_seqarea_seq_y + 3
                 );
                 m_foreground = m_black;
             }
+
+            /*
+             * Draws the inner rectangle for all sequences.
+             */
+
             m_gc->set_foreground(m_foreground);
             m_pixmap->draw_rectangle                        // ditto, unqueued
             (
@@ -332,19 +378,38 @@ mainwid::draw_sequence_on_pixmap (int a_seq)
                 );
             }
         }
-        else /* not active */
+        else                            /* sequence not active */
         {
+            /*
+             *  Draws the grid areas that do not contain a sequence.
+             *  The first section colors the whole grid area grey,
+             *  surrounded by a thin black outline.  The second section
+             *  draws a slightly narrower, but taller grey box, that
+             *  yields the outlining "brackets" on each side of the grid
+             *  area.  Without either of these sections, an empty grid is
+             *  all black.
+             *
+             *  It might be cool to offer a drawing option for
+             *  "black-grid", "boxed-grid", or "normal-grid" for the
+             *  empty sequence box.
+             */
+
+#ifdef USE_GREY_GRID                        /* otherwise, leave it black    */
             m_gc->set_foreground(m_grey);
             m_pixmap->draw_rectangle
             (
                 this->get_style()->get_bg_gc(Gtk::STATE_NORMAL),
                 true, base_x + 4, base_y, c_seqarea_x - 8, c_seqarea_y
             );
+#ifdef USE_NORMAL_GRID                      /* change box to "brackets"     */
             m_pixmap->draw_rectangle
             (
                 this->get_style()->get_bg_gc(Gtk::STATE_NORMAL),
                 true, base_x + 1, base_y + 1, c_seqarea_x - 2, c_seqarea_y - 2
             );
+#endif  // USE_NORMAL_GRID
+#endif  // USE_BLACK_GRID
+
         }
     }
 }
@@ -415,10 +480,11 @@ mainwid::update_markers(int a_ticks)
 }
 
 /**
- *  Does the actual drawing of one pattern/sequence position marker (a
- *  vertical bar).
+ *  Does the actual drawing of one pattern/sequence position marker, a
+ *  vertical progress bar.
  *
- *  More Common code.
+ *  If the sequence has no events, this function doesn't bother even
+ *  drawing a position marker.
  */
 
 void
@@ -430,6 +496,9 @@ mainwid::draw_marker_on_sequence (int a_seq, int a_tick)
     if (m_mainperf->is_active(a_seq))
     {
         sequence * seq = m_mainperf->get_sequence(a_seq);
+        if (seq->event_count() ==  0)
+            return;                         /* new 2015-08-23 don't update */
+
         int i = (a_seq / c_mainwnd_rows) % c_mainwnd_cols;
         int j =  a_seq % c_mainwnd_rows;
         int base_x = (c_mainwid_border + (c_seqarea_x + c_mainwid_spacing) * i);

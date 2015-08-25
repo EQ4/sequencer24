@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-16
+ * \updates       2015-08-23
  * \license       GNU GPLv2 or above
  *
  */
@@ -312,7 +312,14 @@ public:
         return m_song_mute;
     }
 
-    const char * get_name ();
+    /**
+     * \getter m_name
+     */
+
+    const char * get_name ()
+    {
+        return m_name.c_str();
+    }
 
     /**
      * \setter m_editing
@@ -542,14 +549,22 @@ private:
 
     void put_event_on_bus (event * a_e);
     void remove_all ();
-    void lock () const;
-    void unlock () const;
     void set_trigger_offset (long a_trigger_offset);
     void split_trigger (trigger & trig, long a_split_tick);
     void adjust_trigger_offsets_to_length( long a_new_len);
     long adjust_offset (long a_offset);
     void remove (EventList::iterator i);
     void remove (event * e);
+
+    void lock () const
+    {
+        m_mutex.lock();
+    }
+
+    void unlock () const
+    {
+        m_mutex.unlock();
+    }
 
 };
 

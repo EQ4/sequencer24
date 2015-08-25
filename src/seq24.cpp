@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-16
+ * \updates       2015-08-24
  * \license       GNU GPLv2 or above
  *
  */
@@ -39,7 +39,6 @@
 #include "globals.h"                   // full platform configuration
 #include "font.h"
 #include "mainwnd.h"
-// #include "midifile.h"
 #include "optionsfile.h"
 #include "perform.h"
 #include "userfile.h"

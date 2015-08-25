@@ -109,7 +109,7 @@ private:
     Gtk::Entry * m_entry_bw;
     Gtk::HBox * m_hbox;
     Gtk::HBox * m_hlbox;
-    Gtk::Tooltips * m_tooltips;              // why not conditional on Gtk version?
+    Gtk::Tooltips * m_tooltips;        // why not conditional on Gtk version?
 
     /**
      * Menus for time signature, beats per measure, beat width.
