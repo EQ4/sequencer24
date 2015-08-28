@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-09
+ * \updates       2015-08-27
  * \license       GNU GPLv2 or above
  *
  */
@@ -125,6 +125,7 @@ private:
     int m_snap;
     int m_bpm;
     int m_bw;
+    bool m_modified;
 
 public:
 
@@ -132,6 +133,24 @@ public:
     ~perfedit ();
 
     void init_before_show ();
+
+    /**
+     * \setter m_modified
+     */
+
+    void is_modified (bool flag)
+    {
+        m_modified = flag;
+    }
+
+    /**
+     * \getter m_modified
+     */
+
+    bool is_modified () const
+    {
+        return m_modified;
+    }
 
 private:
 

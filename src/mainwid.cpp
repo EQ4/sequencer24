@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-27
+ * \updates       2015-08-28
  * \license       GNU GPLv2 or above
  *
  */
@@ -161,7 +161,7 @@ mainwid::fill_background_window ()
 {
     m_pixmap->draw_rectangle
     (
-        this->get_style()->get_bg_gc(Gtk::STATE_NORMAL),
+        get_style()->get_bg_gc(Gtk::STATE_NORMAL),      // this->
         true, 0, 0, m_window_x, m_window_y
     );
 }
@@ -401,13 +401,13 @@ mainwid::draw_sequence_on_pixmap (int a_seq)
             m_gc->set_foreground(m_grey);
             m_pixmap->draw_rectangle
             (
-                this->get_style()->get_bg_gc(Gtk::STATE_NORMAL),
+                get_style()->get_bg_gc(Gtk::STATE_NORMAL),        // this->
                 true, base_x + 4, base_y, c_seqarea_x - 8, c_seqarea_y
             );
 #ifdef USE_NORMAL_GRID                      /* change box to "brackets"     */
             m_pixmap->draw_rectangle
             (
-                this->get_style()->get_bg_gc(Gtk::STATE_NORMAL),
+                get_style()->get_bg_gc(Gtk::STATE_NORMAL),       // this->
                 true, base_x + 1, base_y + 1, c_seqarea_x - 2, c_seqarea_y - 2
             );
 #endif  // USE_NORMAL_GRID

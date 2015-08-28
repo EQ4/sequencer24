@@ -1,14 +1,14 @@
 #!/bin/bash
 #
 #******************************************************************************
-# pack (sequencer24)
+# pack (Sequencer24)
 #------------------------------------------------------------------------------
 ##
 # \file       	pack
-# \library    	sequencer24
+# \library    	Sequencer24
 # \author     	Chris Ahlstrom
 # \date       	2015-07-24
-# \update     	2015-07-30
+# \update     	2015-08-28
 # \version    	$Revision$
 # \license    	$XPC_SUITE_GPL_LICENSE$
 #
@@ -120,7 +120,7 @@ else
 
    if [ "$DODRYRUN" == "yes" ] ; then
       if [ "$DOCLEAN" == "yes" ] ; then
-         echo "sequencer24 will be cleaned by 'bootstrap --clean'."
+         echo "Sequencer24 will be cleaned by 'bootstrap --clean'."
       fi
       exit 1
    fi
@@ -142,8 +142,8 @@ else
 
    tar cJf $TARBALLNAME $WORKINGDIR/ \
  --exclude-vcs         \
- --exclude="seq24"     \
- --exclude="sequence24" \
+ --exclude="src/seq24" \
+ --exclude="src/sequencer24" \
  --exclude="config.status"  \
  --exclude="libtool"   \
  --exclude="Makefile"  \
@@ -208,7 +208,7 @@ else
 fi
 
 #******************************************************************************
-# pack (sequencer24)
+# pack (Sequencer24)
 #------------------------------------------------------------------------------
 # Local Variables:
 # End:

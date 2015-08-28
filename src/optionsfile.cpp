@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-09
+ * \updates       2015-08-28
  * \license       GNU GPLv2 or above
  *
  *  The <tt> ~/.seq24rc </tt> configuration file is fairly simple in
@@ -158,6 +158,10 @@ optionsfile::~optionsfile ()
  *
  *  -   0 = 'seq24' (original Seq24 method).
  *  -   1 = 'fruity' (similar to a certain fruity sequencer we like).
+ *
+ *  The second data line is set to "1" if Mod4 can be used to keep seq24
+ *  in note-adding mode even after the right-click is released, and "0"
+ *  otherwise.
  */
 
 bool
@@ -362,6 +366,9 @@ optionsfile::parse (perform * a_perf)
     line_after(file, "[interaction-method]");
     sscanf(m_line, "%ld", &method);
     global_interactionmethod = interaction_method_e(method);
+    next_data_line(file);                   // @new 2015-08-28
+    sscanf(m_line, "%ld", &method);         //
+    global_allow_mod4_mode = method != 0;   //
 
     file.close();
     return true;
@@ -573,7 +580,7 @@ optionsfile::write (perform * a_perf)
 
     file
         << "\n\n\n[manual-alsa-ports]\n"
-        << "# Set to 1 if you want seq24 to create its own alsa ports and\n"
+        << "# Set to 1 if you want seq24 to create its own ALSA ports and\n"
         << "# not connect to other clients\n"
         << global_manual_alsa_ports << "\n"
         ;
@@ -594,6 +601,14 @@ optionsfile::write (perform * a_perf)
         ++x;
     }
     file << global_interactionmethod << "\n";
+
+    file
+        << "\n"
+        << "# Set to 1 to allow seq24 to stay in note-adding mode when\n"
+        << "# the right-click is released while holding the Mod4 (Super or\n"
+        << "# Windows) key.\n"
+        << "\n"
+        << (global_allow_mod4_mode ? "1" : "0") << "\n";   // @new 2015-08-28
 
     size_t kevsize = a_perf->get_key_events().size() < (size_t) c_seqs_in_set ?
          a_perf->get_key_events().size() :

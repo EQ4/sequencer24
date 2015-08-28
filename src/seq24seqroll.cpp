@@ -26,7 +26,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-09
+ * \updates       2015-08-28
  * \license       GNU GPLv2 or above
  *
  */
@@ -72,13 +72,9 @@ Seq24SeqRollInput::set_adding (bool a_adding, seqroll & sroll)
 bool
 Seq24SeqRollInput::on_button_press_event (GdkEventButton * a_ev, seqroll & sroll)
 {
-    int numsel;
-    long tick_s;
-    long tick_f;
-    int note_h;
-    int note_l;
+    long tick_s, tick_f;
+    int note_h, note_l;
     int norm_x, norm_y, snapped_x, snapped_y;
-    bool needs_update = false;
     sroll.grab_focus();
     snapped_x = norm_x = (int)(a_ev->x + sroll.m_scroll_offset_x);
     snapped_y = norm_y = (int)(a_ev->y + sroll.m_scroll_offset_y);
@@ -89,6 +85,8 @@ Seq24SeqRollInput::on_button_press_event (GdkEventButton * a_ev, seqroll & sroll
     sroll.m_old.y = 0;
     sroll.m_old.width = 0;
     sroll.m_old.height = 0;
+
+    bool needs_update = false;
     if (sroll.m_paste)
     {
         sroll.convert_xy(snapped_x, snapped_y, &tick_s, &note_h);
@@ -99,33 +97,28 @@ Seq24SeqRollInput::on_button_press_event (GdkEventButton * a_ev, seqroll & sroll
     }
     else
     {
-        /*  left and middle mouse buttons */
-
-        if (a_ev->button == 1 || a_ev->button == 2)
+        int numsel;
+        if (a_ev->button == 1 || a_ev->button == 2) /* left or middle button */
         {
-            sroll.m_current_x = sroll.m_drop_x = norm_x; /* selection normal x */
+            /*
+             * Set the selection for normal x, then turn x,y in to tick,note.
+             */
 
-            /* turn x,y in to tick/note */
-
+            sroll.m_current_x = sroll.m_drop_x = norm_x;
             sroll.convert_xy(sroll.m_drop_x, sroll.m_drop_y, &tick_s, &note_h);
             if (m_adding)
             {
-                sroll.m_painting = true;                /* start the paint job */
+                /*
+                 * Start paint job.  If snapped, add the snapped x value.
+                 */
 
-                /* adding, snapped x */
-
+                sroll.m_painting = true;
                 sroll.m_current_x = sroll.m_drop_x = snapped_x;
                 sroll.convert_xy
                 (
                     sroll.m_drop_x, sroll.m_drop_y, &tick_s, &note_h
                 );
-
-                /*
-                 *  Test if a note is already there; fake a select;
-                 *  if so, do not add.
-                 */
-
-                if
+                if      /* if note already there, fake a select, do not add */
                 (
                     ! sroll.m_seq->select_note_events
                     (
@@ -133,10 +126,8 @@ Seq24SeqRollInput::on_button_press_event (GdkEventButton * a_ev, seqroll & sroll
                     )
                 )
                 {
-                    /* add note, length = little less than snap */
-
                     sroll.m_seq->push_undo();
-                    sroll.m_seq->add_note
+                    sroll.m_seq->add_note  /* length = little less than snap */
                     (
                         tick_s, sroll.m_note_length - 2, note_h, true
                     );
@@ -153,19 +144,14 @@ Seq24SeqRollInput::on_button_press_event (GdkEventButton * a_ev, seqroll & sroll
                     )
                 )
                 {
-                    if (!(a_ev->state & GDK_CONTROL_MASK))
-                    {
+                    if (! (a_ev->state & GDK_CONTROL_MASK))
                         sroll.m_seq->unselect();
-                    }
-
-                    /* on direct click select only one event */
 
                     numsel = sroll.m_seq->select_note_events
                     (
                         tick_s, note_h, tick_s, note_h,
-                        sequence::e_select_one
+                        sequence::e_select_one  /* direct click, one event */
                     );
-
                     if (numsel == 0) /* none selected, start selection box */
                     {
                         if (a_ev->button == 1)
@@ -182,15 +168,16 @@ Seq24SeqRollInput::on_button_press_event (GdkEventButton * a_ev, seqroll & sroll
                     )
                 )
                 {
-                    /* moving - left click only */
+                    /*
+                     * Moving and selectiong, left-click (without Ctrl
+                     * key) only.  Get the box that selected elements are
+                     * in.
+                     */
 
-                    if (a_ev->button == 1 && !(a_ev->state & GDK_CONTROL_MASK))
+                    if (a_ev->button == 1 && ! (a_ev->state & GDK_CONTROL_MASK))
                     {
                         sroll.m_moving_init = true;
                         needs_update = true;
-
-                        /* get the box that selected elements are in */
-
                         sroll.m_seq->get_selected_box
                         (
                             &tick_s, &note_h, &tick_f, &note_l
@@ -218,8 +205,8 @@ Seq24SeqRollInput::on_button_press_event (GdkEventButton * a_ev, seqroll & sroll
                     }
 
                     /*
-                     * Middle mouse button, or left-ctrl click (for
-                     * 2button mice).
+                     * Middle mouse button, or left-ctrl-click (for
+                     * 2-button mice).
                      */
 
                     if
@@ -228,14 +215,8 @@ Seq24SeqRollInput::on_button_press_event (GdkEventButton * a_ev, seqroll & sroll
                         (a_ev->button == 1 && (a_ev->state & GDK_CONTROL_MASK))
                     )
                     {
-
-                        /* moving, normal x */
-
-                        sroll.m_growing = true;
-
-                        /* get the box that selected elements are in */
-
-                        sroll.m_seq->get_selected_box
+                        sroll.m_growing = true;         /* moving, normal x */
+                        sroll.m_seq->get_selected_box   /* selected elements */
                         (
                             &tick_s, &note_h, &tick_f, &note_l
                         );
@@ -288,7 +269,6 @@ Seq24SeqRollInput::on_button_release_event
     int delta_y = sroll.m_current_y - sroll.m_drop_y;
     long delta_tick;
     int delta_note;
-
     if (a_ev->button == 1)
     {
         if (sroll.m_selecting)
@@ -344,22 +324,31 @@ Seq24SeqRollInput::on_button_release_event
     }
     if (a_ev->button == 3)
     {
-        set_adding(false, sroll);
+        /*
+         * Experimental feature.  If the Super (Mod4, Windows) key is
+         * pressed when release, keep the adding state in force.  One
+         * can then use the unadorned left-click key to add notes.  Right
+         * click to reset the adding mode.  This feature is enabled only
+         * if allowed by the settings (but is true by default).
+         */
+
+        bool addmode_exit  = ! global_allow_mod4_mode;
+        if (! addmode_exit )
+            addmode_exit = ! (a_ev->state & GDK_MOD4_MASK); // Mod4 held?
+
+        if (addmode_exit)
+            set_adding(false, sroll);
     }
-
-    /* turn off */
-
-    sroll.m_selecting = false;
+    sroll.m_selecting = false;      /* turn it all off */
     sroll.m_moving = false;
     sroll.m_growing = false;
     sroll.m_paste = false;
     sroll.m_moving_init = false;
     sroll.m_painting = false;
     sroll.m_seq->unpaint_all();
-    if (needs_update)           /* if they clicked, something changed */
-    {
-        sroll.m_seq->set_dirty(); // redraw_events();
-    }
+    if (needs_update)               /* if they clicked, something changed */
+        sroll.m_seq->set_dirty();   // redraw_events();
+
     return true;
 }
 
@@ -373,18 +362,16 @@ bool Seq24SeqRollInput::on_motion_notify_event
     GdkEventMotion * a_ev, seqroll & sroll
 )
 {
-    sroll.m_current_x = (int)(a_ev->x  + sroll.m_scroll_offset_x);
-    sroll.m_current_y = (int)(a_ev->y  + sroll.m_scroll_offset_y);
-
-    int note;
-    long tick;
-
+    sroll.m_current_x = int(a_ev->x + sroll.m_scroll_offset_x);
+    sroll.m_current_y = int(a_ev->y + sroll.m_scroll_offset_y);
     if (sroll.m_moving_init)
     {
         sroll.m_moving_init = false;
         sroll.m_moving = true;
     }
 
+    int note;
+    long tick;
     sroll.snap_y(&sroll.m_current_y);
     sroll.convert_xy(0, sroll.m_current_y, &tick, &note);
     sroll.m_seqkeys_wid->set_hint_key(note);

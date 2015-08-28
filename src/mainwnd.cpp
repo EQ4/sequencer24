@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-27
+ * \updates       2015-08-28
  * \license       GNU GPLv2 or above
  *
  */
@@ -396,9 +396,8 @@ mainwnd::mainwnd (perform * a_p)
     Gtk::VBox * mainvbox = new Gtk::VBox();
     mainvbox->pack_start(*m_menubar, false, false);
     mainvbox->pack_start(*contentvbox);
-    this->add(*mainvbox);                   // add main layout box
+    add(*mainvbox);                         // add main layout box (this->)
     show_all();                             // show everything
-
     add_events(Gdk::KEY_PRESS_MASK | Gdk::KEY_RELEASE_MASK);
     m_timeout_connect = Glib::signal_timeout().connect
     (
@@ -407,6 +406,7 @@ mainwnd::mainwnd (perform * a_p)
     m_sigpipe[0] = -1;                      // initialize static array
     m_sigpipe[1] = -1;
     install_signal_handlers();
+//  m_perf_edit->is_modified(false);        // is it even set at this point?
 }
 
 /**
@@ -471,7 +471,7 @@ mainwnd::open_performance_edit ()
     {
         m_perf_edit->init_before_show();
         m_perf_edit->show_all();
-        m_modified = true;
+        m_modified = true;              // STILL ENABLED
     }
 }
 
@@ -746,7 +746,8 @@ mainwnd::choose_file ()
  *  Saves the current state in a MIDI file.
  */
 
-bool mainwnd::save_file ()
+bool
+mainwnd::save_file ()
 {
     bool result = false;
     if (global_filename == "")
@@ -775,7 +776,8 @@ bool mainwnd::save_file ()
  *  running.
  */
 
-int mainwnd::query_save_changes ()
+int
+mainwnd::query_save_changes ()
 {
     std::string query_str;
     if (global_filename == "")
@@ -798,10 +800,11 @@ int mainwnd::query_save_changes ()
  *  save if okayed.
  */
 
-bool mainwnd::is_save ()
+bool
+mainwnd::is_save ()
 {
     bool result = false;
-    if (is_modified())
+    if (is_modified() || m_perf_edit->is_modified())
     {
         int choice = query_save_changes();
         switch (choice)

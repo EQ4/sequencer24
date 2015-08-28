@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-27
+ * \updates       2015-08-28
  * \license       GNU GPLv2 or above
  *
  */
@@ -126,7 +126,8 @@ perfedit::perfedit (perform * a_perf)
     m_menu_bw           (manage(new Gtk::Menu())),
     m_snap              (8),                    // (c_ppqn / 4),
     m_bpm               (4),
-    m_bw                (4)
+    m_bw                (4),
+    m_modified          (false)
 {
     set_icon(Gdk::Pixbuf::create_from_xpm_data(perfedit_xpm));
     set_title("Sequencer24 - Song Editor");                   /* main window */
@@ -321,7 +322,7 @@ perfedit::perfedit (perform * a_perf)
     m_hlbox->pack_start(*(manage(new Gtk::Label("x"))), false, false, 4);
     m_hlbox->pack_start(*m_button_snap , false, false);
     m_hlbox->pack_start(*m_entry_snap , false, false);
-    this->add(*m_table);                                /* add table */
+    add(*m_table);                                /* add table, this-> */
     set_snap(8);
     set_bpm(4);
     set_bw(4);
@@ -384,7 +385,7 @@ perfedit::stop_playing ()
  *  Implement the collapse action.  This action removes all events between
  *  the L and R (left and right) markers.  This action is preceded by
  *  pushing an Undo operation in the perform object, not moving its
- *  triggers (the go away), and telling the perfroll to redraw.
+ *  triggers (they go away), and telling the perfroll to redraw.
  */
 
 void
@@ -393,6 +394,7 @@ perfedit::collapse ()
     m_mainperf->push_trigger_undo();
     m_mainperf->move_triggers(false);
     m_perfroll->queue_draw();
+    is_modified(true);
 }
 
 /**
@@ -425,10 +427,11 @@ perfedit::expand ()
     m_mainperf->push_trigger_undo();
     m_mainperf->move_triggers(true);
     m_perfroll->queue_draw();
+    is_modified(true);
 }
 
 /**
- *  Set the looping in the perfrom object.
+ *  Set the looping in the perform object.
  */
 
 void
@@ -493,6 +496,7 @@ perfedit::set_bpm (int a_beats_per_measure)
     m_entry_bpm->set_text(b);
     m_bpm = a_beats_per_measure;
     set_guides();
+    // is_modified(true);
 }
 
 /**
@@ -508,6 +512,7 @@ perfedit::set_bw (int a_beat_width)
     m_entry_bw->set_text(b);
     m_bw = a_beat_width;
     set_guides();
+    // is_modified(true);
 }
 
 /**
@@ -519,6 +524,7 @@ perfedit::grow ()
 {
     m_perfroll->increment_size();
     m_perftime->increment_size();
+    is_modified(true);
 }
 
 /**

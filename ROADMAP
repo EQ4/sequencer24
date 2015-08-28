@@ -1,6 +1,6 @@
 Sequencer24/Seq24 Roadmap
 Chris Ahlstrom
-2015-07-23 to 2015-08-27
+2015-07-23 to 2015-08-28
 
 The starting point for the Sequencer24 project is version
 0.9.2 of seq24.  Sequencer24 starts with version 0.9.3.
@@ -50,7 +50,7 @@ x  -  Branch off to a "Document" branch:
          directives, eliminating dead variables, etc.
    x  -  Generate Doxygen documentation.
    x  -  Merge "Document" back into the main trunk.
-   -  Branch off to a "Fixes" branch to fix these issues:
+y  -  Branch off to a "Fixes" branch to fix these issues:
    x  -  Ignore updating patterns/sequences that are empty (i.e. just a
          track-name) during playback.  This is done, playing of empty
          sequences will be ignored, as is updating the progress bar.  Can
@@ -68,8 +68,10 @@ x  -  Branch off to a "Document" branch:
          in the build configuration.
    x  -  Lock the size of the Patterns Panel (expanding it just shows more
          grey, and it resizes horizontally very slowly).
-      -  Fix issue where doing nothing causes a save prompt upon exit.
-         This happens only if the Song Editor is opened.
+   y  -  Fix issue where doing nothing causes a save prompt upon exit.
+         This happens only if the Song Editor is opened.  Partly fixed,
+         but needs more verification.  Now disabled; also need prompt when
+         new notes and patterns are edited.  A big task, really.
       -  Neither the Song Editor nor the Pattern Editor scroll to the next page
          when the progress bar moves off the right.
       -  The std::list the Seq24 uses is fast, but it does not allow for
@@ -82,6 +84,12 @@ x  -  Branch off to a "Document" branch:
          better safety.
       -  Opening a pattern edit while playback is happening yields
          issues in keeping the progress line up-to-date.
+   y  -  More friendliness for two-button mice.  Currently, there is an
+         option to hold the Mod4 (Super or Windows) key when releasing a
+         right-click, to allow adding notes to continue anyway, until
+         an unadorned right click is made.  Also added to the options
+         file, but not yet a GUI-editable item.  Also reveals that
+         we need to set-dirty when adding notes to a sequence.
    -  Branch off to a "Library" branch:
       -  Break out non-GUI functionality into libsequencer24.
       -  Unit test each element as appropriate using xpc-suite
@@ -105,7 +113,6 @@ x  -  Branch off to a "Document" branch:
 Eventually, there will be a few features and fixes to try to add:
 
    -  A MIDI event text pane to display (and later edit) all MIDI events.
-   -  Even more friendliness for two-button mice.
    -  Speed up the horizontal resize on the Song/Performance Editor.
    -  Make it possible to use Alt or Ctrl plus a sequence-toggling
       key to bring up an edit dialog for that sequence.

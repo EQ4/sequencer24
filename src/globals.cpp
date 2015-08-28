@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-08-07
- * \updates       2015-08-27
+ * \updates       2015-08-28
  * \license       GNU GPLv2 or above
  *
  */
@@ -60,6 +60,7 @@ bool global_jack_start_mode = true;
 std::string global_jack_session_uuid = "";
 
 interaction_method_e global_interactionmethod = e_seq24_interaction;
+bool global_allow_mod4_mode = true;     /* new 2015-08-28 */
 user_midi_bus_definition   global_user_midi_bus_definitions[c_max_busses];
 user_instrument_definition global_user_instrument_definitions[c_max_instruments];
 

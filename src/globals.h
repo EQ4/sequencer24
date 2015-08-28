@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-25
- * \updates       2015-08-27
+ * \updates       2015-08-28
  * \license       GNU GPLv2 or above
  *
  *  We're going to try to collect all the globals here in one module, and
@@ -813,6 +813,15 @@ const char * const c_interaction_method_descs[3] =
  */
 
 extern interaction_method_e global_interactionmethod;
+
+/**
+ *  Provides the value of usage of the Mod4 (Super or Windows) key in
+ *  disabling the exiting of the note-add mode of the seqroll module.
+ *  Currently applies only the the "seq24" interaction method, not the
+ *  "fruity" method.  Defaults to true.
+ */
+
+extern bool global_allow_mod4_mode;
 
 #endif  // SEQ24_GLOBALS_H
 
