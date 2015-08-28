@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-06
+ * \updates       2015-08-27
  * \license       GNU GPLv2 or above
  *
  *  The midibus module is the Linux version of the midibus module.
@@ -272,22 +272,22 @@ public:
 private:
 
     /**
-     *  Lock the mutex.
-     */
+     *  Lock the mutex. Replaced by automutex
 
     void lock ()
     {
         m_mutex.lock();
     }
+     */
 
     /**
-     *  Unlock the mutex.
-     */
+     *  Unlock the mutex. Replaced by automutex
 
     void unlock ()
     {
         m_mutex.unlock();
     }
+     */
 
 };
 

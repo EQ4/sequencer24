@@ -1,6 +1,6 @@
 Sequencer24/Seq24 Roadmap
 Chris Ahlstrom
-2015-07-23 to 2015-08-24
+2015-07-23 to 2015-08-27
 
 The starting point for the Sequencer24 project is version
 0.9.2 of seq24.  Sequencer24 starts with version 0.9.3.
@@ -9,82 +9,90 @@ The following changes are planned ('x' means it is done):
 
 x  -  Create a Git project out of the existing Seq24 files: sequencer24
 x  -  Branch off to a permanent "Legacy" branch:
-      -  Add this ROADMAP file to the legacy branch.
-      -  Make any changes needed to get the code to build and running in the
+   x  -  Add this ROADMAP file to the legacy branch.
+   x  -  Make any changes needed to get the code to build and running in the
          old way.  Hopefully, no changes will be needed.
-      -  Tag the legacy branch and record the tag in this ROADMAP:
+   x  -  Tag the legacy branch and record the tag in this ROADMAP:
          Legacy commit #: 3ab98816b494a5b0a8aedd04e7fd7f6fe8c3e96f
          Legacy tag name: "v0.9.2"
 x  -  Branch off to a "Debian" branch:
-      -  Add the Debian files obtained from Debian.org, and verify that
+   x  -  Add the Debian files obtained from Debian.org, and verify that
          a Debian package could be made.
-      -  Merge "Debian" back into the main trunk.
+   x  -  Merge "Debian" back into the main trunk.
 x  -  Branch off to a "Catchup" branch:
-      -  Add the LASH fixes found on GitHub, and verify functionality.
-      -  Other easy fixes found anywhere?
-      -  Merge "Catchup" back into the main trunk.
-      -  Tagged as "Catchup", commit 8ea385884b7629424243b347f645b7d3720a3857.
+   x  -  Add the LASH fixes found on GitHub, and verify functionality.
+   x  -  Other easy fixes found anywhere?
+   x  -  Merge "Catchup" back into the main trunk.
+   x  -  Tagged as "Catchup", commit 8ea385884b7629424243b347f645b7d3720a3857.
 x  -  Branch off to a "Packaging" branch:
-      -  Add a bootstrap script and its helper scripts.
-      -  Update configure.in to configure.ac and add our standard features
+   x  -  Add a bootstrap script and its helper scripts.
+   x  -  Update configure.in to configure.ac and add our standard features
          for better-tailored builds.
-      -  Add a pack script.
-      -  Add our licensing (for clarification)
-      -  Fix and verify any Debian packaging issues that crop up.
-      -  Merge "Packaging" back into the main trunk.
+   x  -  Add a pack script.
+   x  -  Add our licensing (for clarification)
+   x  -  Fix and verify any Debian packaging issues that crop up.
+   x  -  Merge "Packaging" back into the main trunk.
 x  -  Branch off to a "Gtkmm-3" branch.
-      -  Update the GUI, document the changes, and verify functionality.
-      -  Merge "Gtkmm-3" back into the main trunk.
-      -  WARNING:  We found later that we accidentally left some GTKMM-2.4
+   x  -  Update the GUI, document the changes, and verify functionality.
+   x  -  Merge "Gtkmm-3" back into the main trunk.
+   x  -  WARNING:  We found later that we accidentally left some GTKMM-2.4
          references in configure.ac.  We are going to go back to 2.4 and
          work this out, eventually, in a future "GtkmmUpgrade" branch, to be
          determined.
 x  -  Branch off to a "Document" branch:
-      -  Fall back to Gtkmm-2.4!!!
-      -  Document each module to a limited extent.
-      -  Simplify and normalize the #include files to speed up builds and
+   x  -  Fall back to Gtkmm-2.4!!!
+   x  -  Document each module to a limited extent.
+   x  -  Simplify and normalize the #include files to speed up builds and
          make the actual module arrangement easier to grok.
-      -  Get an idea of the design, and document it.  Look for ways
+   x  -  Get an idea of the design, and document it.  Look for ways
          to collect common code into base classes.
-      -  Make the code a bit cleaner, such as eliminating "using namespace"
+   x  -  Make the code a bit cleaner, such as eliminating "using namespace"
          directives, eliminating dead variables, etc.
-      -  Generate Doxygen documentation.
-      -  Merge "Document" back into the main trunk.
+   x  -  Generate Doxygen documentation.
+   x  -  Merge "Document" back into the main trunk.
    -  Branch off to a "Fixes" branch to fix these issues:
-y     -  Ignore updating patterns/sequences that are empty (i.e. just a
-         track-name) during playback.  This is done, playing will be
-         ignored, as is updating the progress bar.  Can be disabled at
-         build time; see the mainwid.cpp module.
-x     -  Add more musical scales.  Added harmonic minor, melodic minor, and
+   x  -  Ignore updating patterns/sequences that are empty (i.e. just a
+         track-name) during playback.  This is done, playing of empty
+         sequences will be ignored, as is updating the progress bar.  Can
+         be disabled at configure/build time; see the mainwid and
+         perfnames modules, and configure.ac.
+   x  -  Add more musical scales.  Added harmonic minor, melodic minor, and
          C whole tone scales.
-x     -  Ctrl-E in main window brings up Song Editor, but also toggles the
+   x  -  Ctrl-E in main window brings up Song Editor, but also toggles the
          sequence controlled by key "e".
-x     -  Write the proprietary section of Seq24 in a more MIDI-compliant
+   x  -  Write the proprietary section of Seq24 in a more MIDI-compliant
          format (i.e. as a track) so that applications like midicvt can
          read it; add a --legacy option to write the MIDI file in the old
          format.
-      -  New bug?  Patterns showing up as muted temporarily, in "sync"
-         with the Song Editor window !!!
-      -  Make a --lash/--no-lash option, for when LASH support is enabled
+   x  -  Make a --lash/--no-lash option, for when LASH support is enabled
          in the build configuration.
-      -  Lock the size of the Patterns Panel (expanding it just shows more
+   x  -  Lock the size of the Patterns Panel (expanding it just shows more
          grey, and it resizes horizontally very slowly).
       -  Fix issue where doing nothing causes a save prompt upon exit.
+         This happens only if the Song Editor is opened.
       -  Neither the Song Editor nor the Pattern Editor scroll to the next page
          when the progress bar moves off the right.
-      -  The std::list the Seq24 uses is fast, but it doesn't allow for
+      -  The std::list the Seq24 uses is fast, but it does not allow for
          direct access to list elements, and the push/pop paradigm causes
          a reversal of some events (program change) that makes it impossible
          to reliably diff the MIDI files that result.
-      -  Reading a MIDI file is very slow in debug mode, almost certainly
-         due to mutex locking.
+      -  Reading a MIDI file is very slow in debug mode, but does not seem to
+         be due to mutex locking.
+   x  -  Replace calls to lock()/unlock() with an automutex instance for
+         better safety.
+      -  Opening a pattern edit while playback is happening yields
+         issues in keeping the progress line up-to-date.
    -  Branch off to a "Library" branch:
       -  Break out non-GUI functionality into libsequencer24.
       -  Unit test each element as appropriate using xpc-suite
          functionality.
       -  Add some base classes and additional member functions for common
-            functionality.
-      -  Handle Windows vs. Linux code more cleanly.
+         functionality:
+         -  Gtk::Drawable-derived base class
+         -  Handle Windows vs. Linux code more cleanly.
+            -  Windows/Linux mastermidibus bases class
+            -  Windows/Linux midibus bases class
+         -  An autolock object to simplify many of the locked functions.
       -  Enhance documentation and recreate it.
       -  Rebuild application using library code.
       -  Verify functionality.
@@ -150,4 +158,4 @@ Old dependencies:
    JACK
    lash-1.0
 
-
+# vim: sw=4 ts=4 wm=8 et ft=sh

@@ -177,6 +177,7 @@ if [ $DOCLEAN == "yes" ] ; then
    clean_cfgfiles
    clean_gnufiles
    clean_tempfiles
+   clean_m4
 fi
 
 if [ $DOFULLCLEAN == "yes" ] ; then

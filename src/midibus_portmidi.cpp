@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-12
+ * \updates       2015-08-27
  * \license       GNU GPLv2 or above
  *
  *  This file provides a Windows-only implementation of the midibus class.
@@ -173,7 +173,7 @@ midibus::print ()
 void
 midibus::play (event * a_e24, unsigned char a_channel)
 {
-    lock();
+    automutex locker(m_mutex);
     PmEvent event;
     event.timestamp = 0;
 
@@ -185,7 +185,6 @@ midibus::play (event * a_e24, unsigned char a_channel)
     a_e24->get_data(&buffer[1], &buffer[2]);
     event.message = Pm_Message(buffer[0], buffer[1], buffer[2]);
     /*PmError err = */ Pm_Write(m_pms, &event, 1);
-    unlock();
 }
 
 /**
@@ -206,8 +205,7 @@ void
 midibus::sysex (event * a_e24)
 {
 #if 0
-    lock();
-    unlock();
+    automutex locker(m_mutex);
 #endif
 }
 
@@ -332,7 +330,7 @@ midibus::stop ()
 void
 midibus::clock (long a_tick)
 {
-    lock();
+    automutex locker(m_mutex);
     if (m_clock_type != e_clock_off)
     {
         bool done = false;
@@ -354,7 +352,6 @@ midibus::clock (long a_tick)
             }
         }
     }
-    unlock();
 }
 
 #endif   // PLATFORM_WINDOWS

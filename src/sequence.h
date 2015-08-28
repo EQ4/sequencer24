@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-23
+ * \updates       2015-08-27
  * \license       GNU GPLv2 or above
  *
  */
@@ -36,6 +36,7 @@
 #include <string>
 #include <list>
 #include <stack>
+// #include <vector>                       // experimental:  replace std::list
 
 #include "easy_macros.h"
 
@@ -44,6 +45,8 @@
 #else
 #include "midibus.h"
 #endif
+
+#include "mutex.h"
 
 /**
  *  Provides a set of methods for drawing certain items.
@@ -151,34 +154,35 @@ public:
 
 private:
 
-    typedef std::list<event> EventList;
-    typedef std::list<trigger> TriggerList;
-    typedef std::stack<std::list<event> > EventStack;
-    typedef std::stack<std::list<trigger> > TriggerStack;
+    typedef std::list<event> Events;
+//  typedef std::vector<event> Events;  // no sort(), merge(), push_front()
+    typedef std::list<trigger> Triggers;
+    typedef std::stack<Events> EventStack;
+    typedef std::stack<Triggers> TriggerStack;
     typedef std::list<char> CharList;
 
 private:
 
-    static EventList m_list_clipboard;
+    static Events m_events_clipboard;
 
     /**
      *  This list holds the current pattern/sequence events.
      */
 
-    EventList m_list_event;
-    TriggerList m_list_trigger;
+    Events m_events;
+    Triggers m_triggers;
     trigger m_trigger_clipboard;
-    EventStack m_list_undo;
-    EventStack m_list_redo;
-    TriggerStack m_list_trigger_undo;
-    TriggerStack m_list_trigger_redo;
+    EventStack m_events_undo;
+    EventStack m_events_redo;
+    TriggerStack m_triggers_undo;
+    TriggerStack m_triggers_redo;
 
     /* markers */
 
-    EventList::iterator m_iterator_play;
-    EventList::iterator m_iterator_draw;
-    TriggerList::iterator m_iterator_play_trigger;
-    TriggerList::iterator m_iterator_draw_trigger;
+    Events::iterator m_iterator_play;
+    Events::iterator m_iterator_draw;
+    Triggers::iterator m_iterator_play_trigger;
+    Triggers::iterator m_iterator_draw_trigger;
 
     /* contains the proper MIDI channel */
 
@@ -246,10 +250,11 @@ private:
     long m_rec_vol;
 
     /**
-     *  Provides locking for the sequence.
+     *  Provides locking for the sequence.  Made mutable for use in
+     *  certain locked getter functions.
      */
 
-    mutex m_mutex;
+    mutable mutex m_mutex;
 
 public:
 
@@ -298,7 +303,7 @@ public:
      * \setter m_song_mute
      */
 
-    void set_song_mute(bool a_mute)
+    void set_song_mute (bool a_mute)
     {
         m_song_mute = a_mute;
     }
@@ -316,7 +321,7 @@ public:
      * \getter m_name
      */
 
-    const char * get_name ()
+    const char * get_name () const
     {
         return m_name.c_str();
     }
@@ -334,7 +339,7 @@ public:
      * \getter m_editing
      */
 
-    bool get_editing (void)
+    bool get_editing () const
     {
         return m_editing;
     }
@@ -352,16 +357,34 @@ public:
      * \getter m_raise
      */
 
-    bool get_raise (void)
+    bool get_raise (void) const
     {
         return m_raise;
     }
 
     void set_length (long a_len, bool a_adjust_triggers = true); /* in ticks */
-    long get_length ();
+
+    /**
+     * \getter m_length
+     */
+
+    long get_length () const
+    {
+        return m_length;
+    }
+
     long get_last_tick ();
     void set_playing (bool);
-    bool get_playing ();
+
+    /**
+     * \getter m_playing
+     */
+
+    bool get_playing () const
+    {
+        return m_playing;
+    }
+
     void toggle_playing ();
     void toggle_queued ();
     void off_queued ();
@@ -385,19 +408,55 @@ public:
     }
 
     void set_recording (bool);
-    bool get_recording ();
+
+    /**
+     * \getter m_recording
+     */
+
+    bool get_recording () const
+    {
+        return m_recording;
+    }
+
     void set_snap_tick (int a_st);
     void set_quantized_rec (bool a_qr);
-    bool get_quantized_rec ();
+
+    /**
+     * \getter m_quantized_rec
+     */
+
+    bool get_quantized_rec () const
+    {
+        return m_quantized_rec;
+    }
+
     void set_thru (bool);
-    bool get_thru ();
+
+    /**
+     * \getter m_thru
+     */
+
+    bool get_thru () const
+    {
+        return m_thru;
+    }
+
     bool is_dirty_main ();
     bool is_dirty_edit ();
     bool is_dirty_perf ();
     bool is_dirty_names ();
     void set_dirty_mp ();
     void set_dirty ();
-    unsigned char get_midi_channel ();
+
+    /**
+     * \getter m_midi_channel
+     */
+
+    unsigned char get_midi_channel () const
+    {
+        return m_midi_channel;
+    }
+
     void set_midi_channel (unsigned char a_ch);
     void print ();
     void print_triggers ();
@@ -553,9 +612,12 @@ private:
     void split_trigger (trigger & trig, long a_split_tick);
     void adjust_trigger_offsets_to_length( long a_new_len);
     long adjust_offset (long a_offset);
-    void remove (EventList::iterator i);
+    void remove (Events::iterator i);
     void remove (event * e);
 
+    /*
+     * Replaced by automutex.
+     *
     void lock () const
     {
         m_mutex.lock();
@@ -565,6 +627,7 @@ private:
     {
         m_mutex.unlock();
     }
+     */
 
 };
 

@@ -6,7 +6,7 @@ dnl \file          configure.ac
 dnl \library       sequencer24
 dnl \author        Chris Ahlstrom
 dnl \date          2015-07-24
-dnl \update        2015-08-18
+dnl \update        2015-08-27
 dnl \version       $Revision$
 dnl \license       $XPC_SUITE_GPL_LICENSE$
 dnl
@@ -389,6 +389,19 @@ else
     AC_MSG_WARN([*** LASH support not enabled.]);
 fi
 
+dnl Support for highlighting empty sequences (in yellow)
+
+AC_ARG_ENABLE(highlight,
+    [AS_HELP_STRING(--disable-highlight, [Disable highlighting empty sequences])],
+    [highlight=$enableval],
+    [highlight=yes])
+
+if test "$lash" != "no"; then
+    AC_DEFINE(HIGHLIGHT_EMPTY_SEQS, 1, [Define to enable highlighting empty sequences])
+else
+    AC_MSG_WARN([*** Highlighting empty sequences not enabled.]);
+fi
+
 dnl 6.0  Top portion of the config.h/sequencer24-config.h header files.
 dnl      The sequencer24-config.h header file has "SEQUENCER24_" prepended
 dnl      to these automatically for us.  Also, we can't use
@@ -435,7 +448,7 @@ dnl We added -std=c++11 for g++ 4.8, and -Wno-deprecated-declarations to
 dnl stop g++ 5.2 from griping about usage of std::auto_ptr<>.
 
 CFLAGS="$CFLAGS $COMMONFLAGS"
-CXXFLAGS="$CFLAGS -Wno-variadic-macros -std=c++11 -Wno-deprecated-declarations"
+CXXFLAGS="$CFLAGS -Wno-variadic-macros -Wno-deprecated-declarations"
 
 AC_CONFIG_FILES([
  Makefile

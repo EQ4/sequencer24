@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-23
+ * \updates       2015-08-27
  * \license       GNU GPLv2 or above
  *
  */
@@ -94,6 +94,7 @@ using namespace Gtk::Menu_Helpers;
 
 perfedit::perfedit (perform * a_perf)
  :
+    Gtk::Window         (),
     m_mainperf          (a_perf),
     m_table             (manage(new Gtk::Table(6, 3, false))),
     m_vadjust           (manage(new Gtk::Adjustment(0, 0, 1, 1, 1, 1))),

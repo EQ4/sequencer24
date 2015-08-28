@@ -1,0 +1,74 @@
+Chris Ahlstrom
+Random Ideas for Documentation and Improvements
+2015-08-25 to 2015-08-26
+
+Found on the web, suggested enhancements for seq24:
+
+   https://blueprints.launchpad.net/seq24/+spec/advanced-song-editor-features
+
+   1. Nested patterns. The ability to select a set of blocks and save the set
+      as a single block would enable complex patterns to be more easily
+      managed.
+
+   2. Block transpose. A facility to transpose a whole block or set of blocks.
+
+   3. Zoom. Ability to zoom-in to facilitate easier positioning of blocks for
+      more complex rhythms.
+
+   4. Playback control. Ability to move the playback position to any point
+      while playing.
+
+   5. Loop control. Ability to specify multiple loops, each with their own
+      marker pairs. Also, loop counters.  Possibly also a scripting language
+      to control looping and other flow of control. Loop count of 1 would
+      allow for a non-looped section.
+
+Documentation for features not yet documented:
+
+   https://ubuntustudiomusic.wordpress.com/2013/01/06/using-seq24/
+
+Videos of seq24:
+
+   http://www.charliehiphop.com/seq24-song-editor
+   
+   http://wootangent.net/2010/10/linux-music-tutorial-seq24-part-1/
+
+      Click in patterns panel to arm the pattern and cause it to play.  That
+      turns the pattern box white-on-black.  So I had it backwards; black
+      means the sequence is unmuted!
+
+   http://wootangent.net/2010/11/linux-music-tutorial-seq24-part-2/
+
+      Right ctrl modifier key (Ctrl - q!!!)  Queue key.  Add to the "mute"
+      key (wrong word) to set up the pattern to "kick in".
+
+      Change R-Ctrl to a Windows key.
+
+      Snapshotting, easier than queuing.
+      
+      Selecting specific notes to be affected by the "data" editor.
+
+      Flow of data events...
+
+Toggle sequences with a MIDI controller:
+
+   http://linuxmusicians.com/viewtopic.php?f=4&t=2443&p=15696#p15696
+
+Tricks for Zyn/Yosh:
+
+    In zynaddsubfx, you get more precise control if you turn the
+    knobs/controls with your right mouse button. 
+
+Internal:
+
+   locks, mutex members:
+
+      mastermidibus and its _portmidi sibling
+      midibus and its _portmidi sibling
+      sequence
+      mutex (and condition_var class)
+      perform (condition variable object)
+
+      RUN helgrind on Sequencer24 !!!
+
+# vim: sw=4 ts=4 wm=8 et ft=sh

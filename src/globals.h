@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-25
- * \updates       2015-08-18
+ * \updates       2015-08-27
  * \license       GNU GPLv2 or above
  *
  *  We're going to try to collect all the globals here in one module, and
@@ -451,6 +451,7 @@ const int c_max_instruments = 64;
  */
 
 extern bool global_legacy_format;      /* new 2015-08-16 */
+extern bool global_lash_support;       /* new 2015-08-27 */
 extern bool global_showmidi;
 extern bool global_priority;
 extern bool global_stats;

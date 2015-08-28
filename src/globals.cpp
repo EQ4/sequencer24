@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-08-07
- * \updates       2015-08-16
+ * \updates       2015-08-27
  * \license       GNU GPLv2 or above
  *
  */
@@ -38,6 +38,7 @@
  */
 
 bool global_legacy_format = false;     /* new 2015-08-16 */
+bool global_lash_support = false;      /* new 2015-08-27 */
 bool global_manual_alsa_ports = false;
 bool global_showmidi = false;
 bool global_priority = false;

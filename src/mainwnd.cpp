@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-24
+ * \updates       2015-08-27
  * \license       GNU GPLv2 or above
  *
  */
@@ -34,7 +34,6 @@
 #include <csignal>
 #include <cerrno>
 #include <cstring>
-
 #include <gdkmm/cursor.h>
 #include <gtk/gtkversion.h>
 #include <gtkmm/aboutdialog.h>
@@ -55,7 +54,6 @@
 #include "midifile.h"
 #include "options.h"
 #include "perfedit.h"
-
 #include "pixmaps/play2.xpm"
 #include "pixmaps/stop.xpm"
 #include "pixmaps/learn.xpm"
@@ -118,6 +116,14 @@ mainwnd::mainwnd (perform * a_p)
     m_timeout_connect       ()                              // handler?
 {
     set_icon(Gdk::Pixbuf::create_from_xpm_data(seq24_32_xpm));
+
+    /*
+     * This request always leaves the bottom panel partly obscured.
+     *
+     * set_size_request(794, 350);
+     */
+
+    set_resizable(false);
 
     /**
      * \todo

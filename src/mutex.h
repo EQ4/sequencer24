@@ -27,9 +27,15 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-24
+ * \updates       2015-08-27
  * \license       GNU GPLv2 or above
  *
+ *  This module defines the following classes:
+ *
+ *      -   mutex.  A primitive wrapper for pthread_mutex_t.
+ *      -   automutex. A way to lock a function more safely and easily.
+ *      -   condition_var.  Provides a common usage paradigm, for the
+ *          perform object.
  */
 
 #include <pthread.h>
@@ -56,7 +62,7 @@ private:
 
     /**
      *  Provides a recursive mutex that can be used by the whole
-     *  application, appaerently.
+     *  application, apparently.
      */
 
     static const pthread_mutex_t sm_recursive_mutex;
@@ -67,7 +73,7 @@ protected:
      *  Provides a mutex lock usable by a single module or class.
      */
 
-    mutable pthread_mutex_t  m_mutex_lock;
+    mutable pthread_mutex_t m_mutex_lock;
 
 public:
 
@@ -76,11 +82,58 @@ public:
     void unlock () const;
 
     /*
-     * static void enable (bool flag = true)
+     * static void enable (bool flag = true)        // experimental
      * {
      *     sm_mutex_enabled = flag;
      * }
      */
+
+};
+
+/**
+ *  Provides a mutex that locks automatically when created, and unlocks
+ *  when destroyed.  This has a couple of benefits.  First, it is more
+ *  threadsafe in the face of exception handling.  Secondly, it can be
+ *  done with just one line of code.
+ */
+
+class automutex
+{
+
+private:
+
+    /**
+     *  Provides the mutex reference to be used for locking.
+     */
+
+    mutex & m_safety_mutex;
+
+private:        // do not allow these functions to be used
+
+    automutex ();
+    automutex (const automutex &);
+    automutex & operator =(const automutex &);
+
+public:
+
+    /**
+     *  Principal constructor gets a references to a mutex parameter, and
+     *  then locks the mutex.
+     */
+
+    automutex (mutex & my_mutex) : m_safety_mutex (my_mutex)
+    {
+        m_safety_mutex.lock();
+    }
+
+    /**
+     *  The destructor unlocks the mutex.
+     */
+
+    ~automutex ()
+    {
+        m_safety_mutex.unlock();
+    }
 
 };
 

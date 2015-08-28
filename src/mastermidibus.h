@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-30
- * \updates       2015-08-12
+ * \updates       2015-08-27
  * \license       GNU GPLv2 or above
  *
  *  The mastermidibus module is the Linux version of the mastermidibus module.
@@ -270,22 +270,22 @@ public:
 private:
 
     /**
-     *  Mutex lock.
-     */
+     *  Mutex lock.  Replaced by automutex.
 
     void lock ()
     {
         m_mutex.lock();
     }
+     */
 
     /**
-     *  Mutex unlock.
-     */
+     *  Mutex unlock.  Replaced by automutex.
 
     void unlock ()
     {
         m_mutex.unlock();
     }
+     */
 
 };
 

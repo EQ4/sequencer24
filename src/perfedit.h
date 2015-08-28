@@ -78,7 +78,7 @@ class perftime;
  *  perfroll, and a perftime.
  */
 
-class perfedit: public Gtk::Window
+class perfedit : public Gtk::Window
 {
 
 private:

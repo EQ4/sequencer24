@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-24
+ * \updates       2015-08-27
  * \license       GNU GPLv2 or above
  *
  */
@@ -41,10 +41,13 @@ using namespace Gtk::Menu_Helpers;
 
 /**
  *  Adjustments to the main window.  Trying to get sequences that don't
- *  have events to show up as black-on-yellow.  This works now.
+ *  have events to show up as black-on-yellow.  This works now, and is
+ *  enabled by default.  To disable this feature, configure the build with
+ *  the --disable-highlight option.
+ *
+ *      #define HIGHLIGHT_EMPTY_SEQS    // undefine for normal empty seqs
  */
 
-#define HIGHLIGHT_EMPTY_SEQS            // undefine for normal empty seqs
 #define USE_GREY_GRID                   // undefine for black boxes
 #define USE_NORMAL_GRID                 // undefine for grey box, black outline
 
@@ -211,7 +214,7 @@ mainwid::draw_sequence_on_pixmap (int a_seq)
         if (m_mainperf->is_active(a_seq))
         {
             sequence * seq = m_mainperf->get_sequence(a_seq);
-#ifdef HIGHLIGHT_EMPTY_SEQS
+#if HIGHLIGHT_EMPTY_SEQS
             if (seq->event_count() > 0)
             {
 #endif
@@ -227,7 +230,7 @@ mainwid::draw_sequence_on_pixmap (int a_seq)
                     m_background = m_white;
                     m_foreground = m_black;
                 }
-#ifdef HIGHLIGHT_EMPTY_SEQS
+#if HIGHLIGHT_EMPTY_SEQS
             }
             else
             {
@@ -257,7 +260,7 @@ mainwid::draw_sequence_on_pixmap (int a_seq)
             char temp[20];                      // SEQ_NAME_SIZE !
             snprintf(temp, sizeof temp, "%.13s", seq->get_name());
             font::Color col = font::BLACK;
-#ifdef HIGHLIGHT_EMPTY_SEQS
+#if HIGHLIGHT_EMPTY_SEQS
             if (seq->event_count() > 0)
             {
 #endif
@@ -266,7 +269,7 @@ mainwid::draw_sequence_on_pixmap (int a_seq)
 
                 if (m_foreground == m_white)
                     col = font::WHITE;
-#ifdef HIGHLIGHT_EMPTY_SEQS
+#if HIGHLIGHT_EMPTY_SEQS
             }
             else
             {

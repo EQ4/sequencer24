@@ -301,6 +301,7 @@ function clean_m4()
    rm -f m4/lock.m4
    rm -f m4/longdouble.m4
    rm -f m4/longlong.m4
+   rm -f m4/lt*.m4
    rm -f m4/nls.m4
    rm -f m4/po.m4
    rm -f m4/printf-posix.m4

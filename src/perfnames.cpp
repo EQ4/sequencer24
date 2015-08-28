@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-24
+ * \updates       2015-08-27
  * \license       GNU GPLv2 or above
  *
  */
@@ -35,7 +35,14 @@
 #include "perform.h"
 #include "perfnames.h"
 
-#define HIGHLIGHT_EMPTY_SEQS            // undefine for normal empty seqs
+/**
+ *  Adjustments to the performance window.  Sequences that don't have
+ *  events show up as black-on-yellow.  This feature is enabled by
+ *  default.  To disable this feature, configure the build with the
+ *  --disable-highlight option.
+ *
+ *      #define HIGHLIGHT_EMPTY_SEQS    // undefine for normal empty seqs
+ */
 
 /**
  *  Principal constructor for this user-interface object.
@@ -140,7 +147,7 @@ perfnames::draw_sequence (int seqnum)
     {
         sequence * seq = m_mainperf->get_sequence(seqnum);
 
-#ifdef HIGHLIGHT_EMPTY_SEQS
+#if HIGHLIGHT_EMPTY_SEQS
 
         /*
          * Setting seqempty to seq->event_count() == 0 here causes a
@@ -174,7 +181,7 @@ perfnames::draw_sequence (int seqnum)
         }
         if (m_mainperf->is_active(seqnum))
         {
-#ifdef HIGHLIGHT_EMPTY_SEQS
+#if HIGHLIGHT_EMPTY_SEQS
             seqempty = seq->event_count() == 0;     // this works fine!
             if (seqempty)
                 m_gc->set_foreground(m_yellow);
@@ -195,7 +202,7 @@ perfnames::draw_sequence (int seqnum)
             char temp[50];
             m_sequence_active[seqnum] = true;
             font::Color col;
-#ifdef HIGHLIGHT_EMPTY_SEQS
+#if HIGHLIGHT_EMPTY_SEQS
             if (seqempty)
                 col = font::BLACK_ON_YELLOW;
             else
@@ -230,7 +237,7 @@ perfnames::draw_sequence (int seqnum)
             );
             if (muted)
             {
-#ifdef HIGHLIGHT_EMPTY_SEQS
+#if HIGHLIGHT_EMPTY_SEQS
                 if (seqempty)
                     col = font::YELLOW_ON_BLACK;
                 else

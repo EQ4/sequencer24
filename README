@@ -1,6 +1,6 @@
 README for Sequencer24 0.9.3
 Chris Ahlstrom
-2015-07-24 to 2015-08-03
+2015-07-24 to 2015-08-25
 
 The sequencer24 project is a gradual refactoring of seq24 0.9.2
 to bring it up to date, fix bugs, consolidate patches, convert
@@ -9,7 +9,7 @@ to GTKmm 3, and more.
 It is done as a series of Git branches (x means it is done):
 
 x  Legacy:     The original Seq24 0.9.2 with some notes.
-x  Debian:     Incorporating Debian's packaging support into the project.
+x  Debian:     Incorporating Debians packaging support into the project.
 x  Catchup:    Incorporating a few patches found around the Internet.
 x  Packaging:  Getting the build system up-to-date; bootstrapping; packing.
 x  Gtkmm-3:    Porting from gtkmm-2.4 to gtkmm-3.0.  Turned out to be trivial.
@@ -56,3 +56,4 @@ What to do with a fresh repository checkout?
 
     Apply "autoreconf" to get a configure script, then read INSTALL.
 
+# vim: sw=4 ts=4 wm=8 et ft=sh

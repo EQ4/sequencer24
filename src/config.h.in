@@ -61,6 +61,9 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
+/* Define to enable highlighting empty sequences */
+#undef HIGHLIGHT_EMPTY_SEQS
+
 /* Define to enable JACK session support */
 #undef JACK_SESSION
 

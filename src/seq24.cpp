@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-24
+ * \updates       2015-08-27
  * \license       GNU GPLv2 or above
  *
  */
@@ -32,7 +32,6 @@
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <gdkmm/cursor.h>
 #include <gtkmm/main.h>
 
@@ -45,7 +44,10 @@
 
 #ifdef LASH_SUPPORT
 #include "lash.h"
-#endif
+
+lash * global_lash_driver = nullptr;
+
+#endif  // LASH_SUPPORT
 
 /**
  *  A structure for command parsing that provides the long forms of
@@ -56,6 +58,9 @@
 static struct option long_options[] =
 {
     {"help",                0, 0, 'h'},
+#ifdef LASH_SUPPORT
+    {"lash",                0, 0, 'L'},                 /* new 2015-08-27 */
+#endif
     {"legacy",              0, 0, 'l'},                 /* new 2015-08-16 */
     {"showmidi",            0, 0, 's'},
     {"show_keys",           0, 0, 'k'},
@@ -82,10 +87,6 @@ static const std::string versiontext = PACKAGE " " VERSION "\n";
 
 font * p_font_renderer = nullptr;
 
-#ifdef LASH_SUPPORT
-lash * lash_driver = nullptr;
-#endif
-
 #ifdef PLATFORM_WINDOWS
 #define HOME "HOMEPATH"
 #define SLASH "\\"
@@ -94,13 +95,19 @@ lash * lash_driver = nullptr;
 #define SLASH "/"
 #endif
 
-const char * const g_help_1 =
+const char * const g_help_1a =
 "Usage: seq24 [OPTIONS] [FILENAME]\n\n"
 "Options:\n"
 "   -h, --help               Show this message.\n"
 "   -v, --version            Show program version information.\n"
 "   -l, --legacy             Write MIDI file in old Seq24 format.  Also set\n"
 "                            if Sequencer24 is called as 'seq24'.\n"
+#ifdef LASH_SUPPORT
+"   -L, --lash               Activate built-in LASH support.\n"
+#endif
+    ;
+
+const char * const g_help_1b =
 "   -m, --manual_alsa_ports  Don't attach ALSA ports.\n"
 "   -s, --showmidi           Dump incoming MIDI events to the screen.\n"
 "   -p, --priority           Runs higher priority with FIFO scheduler\n"
@@ -124,46 +131,34 @@ const char * const g_help_2 =
     ;
 
 /**
- *  The standard C/C++ entry point to this application.
+ *  The standard C/C++ entry point to this application.  This first thing
+ *  this function does is scan the argument vector and strip off all
+ *  parameters known to GTK+.
  */
 
 int
 main (int argc, char * argv [])
 {
-    /*
-     *  Scan the argument vector and strip off all parameters known to
-     *  GTK+.
-     */
-
-    Gtk::Main kit(argc, argv);
-
-    /*
-     *  Initialize the lash driver (strips lash specific command line
-     *  arguments, but does not connect to daemon)
-     */
-
-#ifdef LASH_SUPPORT
-    lash_driver = new lash(argc, argv);
-#endif
-
+    Gtk::Main kit(argc, argv);          /* strip GTK+ parameters    */
     int c;
-    while (true)                /* parse parameters */
+    while (true)                        /* parse parameters         */
     {
-        int option_index = 0;   /* getopt_long stores index here */
+        int option_index = 0;           /* getopt_long stores index here */
         c = getopt_long
         (
             argc, argv,
-            "Chli:jJmM:pPsSU:Vx:",          /* wrong: "C:hi:jJmM:pPsSU:Vx:" */
+            "ChlLi:jJmM:pPsSU:Vx:",      /* wrong: "C:hi:jJmM:pPsSU:Vx:" */
             long_options, &option_index
         );
-        if (c == -1)            /* detect the end of the options */
+        if (c == -1)                    /* detect the end of the options */
             break;
 
         switch (c)
         {
         case '?':
         case 'h':
-            printf(g_help_1);
+            printf(g_help_1a);
+            printf(g_help_1b);
             printf(g_help_2);
             return EXIT_SUCCESS;
             break;
@@ -171,6 +166,11 @@ main (int argc, char * argv [])
         case 'l':
             global_legacy_format = true;
             printf("Setting legacy seq24 file format.\n");
+            break;
+
+        case 'L':
+            global_lash_support = true;
+            printf("Activating LASH support.\n");
             break;
 
         case 'S':
@@ -305,14 +305,19 @@ main (int argc, char * argv [])
     }
 
 #ifdef LASH_SUPPORT
+    if (global_lash_support)
+    {
+        /*
+         *  Initialize the lash driver (strips lash-specific command line
+         *  arguments), then connect to LASH daemon and poll events.
+         */
 
-    /*
-     * Connect to LASH daemon and poll events.
-     */
-
-    lash_driver->init(&p);
-    lash_driver->start();
-
+        global_lash_driver = new lash(argc, argv);
+        global_lash_driver->init(&p);
+        global_lash_driver->start();
+    }
+    else
+        global_lash_driver = nullptr;
 #endif
 
     kit.run(seq24_window);
@@ -332,7 +337,8 @@ main (int argc, char * argv [])
     }
 
 #ifdef LASH_SUPPORT
-    delete lash_driver;
+    if (not_nullptr(global_lash_driver))
+        delete global_lash_driver;
 #endif
 
     return EXIT_SUCCESS;

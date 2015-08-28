@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-12
+ * \updates       2015-08-27
  * \license       GNU GPLv2 or above
  *
  *  This file provides a Linux-only implementation of MIDI support.
@@ -372,7 +372,7 @@ void
 midibus::play (event * a_e24, unsigned char a_channel)
 {
 #ifdef HAVE_LIBASOUND
-    lock();
+    automutex locker(m_mutex);
     snd_seq_event_t ev;
     snd_midi_event_t *midi_ev;      /* ALSA MIDI parser   */
     unsigned char buffer[3];        /* temp for MIDI data */
@@ -399,7 +399,6 @@ midibus::play (event * a_e24, unsigned char a_channel)
     /* pump it into the queue */
 
     snd_seq_event_output(m_seq, &ev);
-    unlock();
 #endif  // HAVE_LIBASOUND
 }
 
@@ -422,7 +421,7 @@ void
 midibus::sysex (event * a_e24)
 {
 #ifdef HAVE_LIBASOUND
-    lock();
+    automutex locker(m_mutex);
     snd_seq_event_t ev;
 
     /* clear event */
@@ -452,7 +451,6 @@ midibus::sysex (event * a_e24)
         usleep(80000);
         flush();
     }
-    unlock();
 #endif  // HAVE_LIBASOUND
 }
 
@@ -463,13 +461,10 @@ midibus::sysex (event * a_e24)
 void
 midibus::flush ()
 {
-
 #ifdef HAVE_LIBASOUND
-    lock();
+    automutex locker(m_mutex);
     snd_seq_drain_output(m_seq);
-    unlock();
 #endif
-
 }
 
 /**
@@ -479,9 +474,7 @@ midibus::flush ()
 void
 midibus::init_clock (long a_tick)
 {
-
 #ifdef HAVE_LIBASOUND
-
     if (m_clock_type == e_clock_pos && a_tick != 0)
     {
         continue_from(a_tick);
@@ -504,9 +497,7 @@ midibus::init_clock (long a_tick)
 
         m_lasttick = starting_tick - 1;
     }
-
 #endif  // HAVE_LIBASOUND
-
 }
 
 /**
@@ -516,7 +507,6 @@ midibus::init_clock (long a_tick)
 void
 midibus::continue_from (long a_tick)
 {
-
 #ifdef HAVE_LIBASOUND
 
     /*
@@ -562,11 +552,8 @@ midibus::continue_from (long a_tick)
         flush();
         snd_seq_event_output(m_seq, &ev);
     }
-
 #endif  // HAVE_LIBASOUND
-
 }
-
 
 /**
  *  This function gets the MIDI clock a-runnin', if the clock type is not
@@ -576,9 +563,7 @@ midibus::continue_from (long a_tick)
 void
 midibus::start ()
 {
-
 #ifdef HAVE_LIBASOUND
-
     m_lasttick = -1;
     if (m_clock_type != e_clock_off)
     {
@@ -591,9 +576,7 @@ midibus::start ()
         snd_seq_ev_set_direct(&ev);                     /* it's immediate */
         snd_seq_event_output(m_seq, &ev);               /* pump it into queue */
     }
-
 #endif  // HAVE_LIBASOUND
-
 }
 
 /**
@@ -645,7 +628,7 @@ void
 midibus::clock (long a_tick)
 {
 #ifdef HAVE_LIBASOUND
-    lock();
+    automutex locker(m_mutex);
     if (m_clock_type != e_clock_off)
     {
         bool done = false;
@@ -677,7 +660,6 @@ midibus::clock (long a_tick)
         }
         flush();            /* and send out */
     }
-    unlock();
 #endif  // HAVE_LIBASOUND
 }
 
@@ -690,7 +672,7 @@ midibus::clock (long a_tick)
 void
 midibus::remove_queued_on_events (int a_tag)
 {
-    lock();
+    automutex locker(m_mutex);
     snd_seq_remove_events_t * remove_events;
     snd_seq_remove_events_malloc(&remove_events);
     snd_seq_remove_events_set_condition
@@ -701,7 +683,6 @@ midibus::remove_queued_on_events (int a_tag)
     snd_seq_remove_events_set_tag(remove_events, a_tag);
     snd_seq_remove_events(m_seq, remove_events);
     snd_seq_remove_events_free(remove_events);
-    unlock();
 }
 
 #endif  // 0

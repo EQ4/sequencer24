@@ -184,11 +184,9 @@ mastermidibus::init ()
 void
 mastermidibus::start ()
 {
-    lock();
+    automutex locker(m_mutex);
     for (int i = 0; i < m_num_out_buses; i++)
         m_buses_out[i]->start();
-
-    unlock();
 }
 
 /**
@@ -200,11 +198,9 @@ mastermidibus::start ()
 void
 mastermidibus::continue_from (long a_tick)
 {
-    lock();
+    automutex locker(m_mutex);
     for (int i = 0; i < m_num_out_buses; i++)
         m_buses_out[i]->continue_from(a_tick);
-
-    unlock();
 }
 
 /**
@@ -216,11 +212,9 @@ mastermidibus::continue_from (long a_tick)
 void
 mastermidibus::init_clock (long a_tick)
 {
-    lock();
+    automutex locker(m_mutex);
     for (int i = 0; i < m_num_out_buses; i++)
         m_buses_out[i]->init_clock(a_tick);
-
-    unlock();
 }
 
 /**
@@ -232,11 +226,9 @@ mastermidibus::init_clock (long a_tick)
 void
 mastermidibus::stop ()
 {
-    lock();
+    automutex locker(m_mutex);
     for (int i = 0; i < m_num_out_buses; i++)
         m_buses_out[i]->stop();
-
-    unlock();
 }
 
 /**
@@ -248,11 +240,9 @@ mastermidibus::stop ()
 void
 mastermidibus::clock (long a_tick)
 {
-    lock();
+    automutex locker(m_mutex);
     for (int i = 0; i < m_num_out_buses; i++)
         m_buses_out[i]->clock(a_tick);
-
-    unlock();
 }
 
 /**
@@ -264,9 +254,8 @@ mastermidibus::clock (long a_tick)
 void
 mastermidibus::set_ppqn (int a_ppqn)
 {
-    lock();
+    automutex locker(m_mutex);
     m_ppqn = a_ppqn;
-    unlock();
 }
 
 /**
@@ -278,9 +267,8 @@ mastermidibus::set_ppqn (int a_ppqn)
 void
 mastermidibus::set_bpm (int a_bpm)
 {
-    lock();
+    automutex locker(m_mutex);
     m_bpm = a_bpm;
-    unlock();
 }
 
 /**
@@ -303,12 +291,11 @@ mastermidibus::flush ()
 void
 mastermidibus::sysex (event * a_ev)
 {
-    lock();
+    automutex locker(m_mutex);
     for (int i = 0; i < m_num_out_buses; i++)
         m_buses_out[i]->sysex(a_ev);
 
     flush();
-    unlock();
 }
 
 /**
@@ -321,12 +308,11 @@ mastermidibus::sysex (event * a_ev)
 void
 mastermidibus::play (unsigned char a_bus, event * a_e24, unsigned char a_channel)
 {
-    lock();
+    automutex locker(m_mutex);
     if (m_buses_out_active[a_bus] && a_bus < m_num_out_buses)
     {
         m_buses_out[a_bus]->play(a_e24, a_channel);
     }
-    unlock();
 }
 
 /**
@@ -338,16 +324,12 @@ mastermidibus::play (unsigned char a_bus, event * a_e24, unsigned char a_channel
 void
 mastermidibus::set_clock (unsigned char a_bus, clock_e a_clock_type)
 {
-    lock();
+    automutex locker(m_mutex);
     if (a_bus < c_max_busses)
-    {
         m_init_clock[a_bus] = a_clock_type;
-    }
+
     if (m_buses_out_active[a_bus] && a_bus < m_num_out_buses)
-    {
         m_buses_out[a_bus]->set_clock(a_clock_type);
-    }
-    unlock();
 }
 
 /**
@@ -397,16 +379,12 @@ midibus::get_clock_mod ()
 void
 mastermidibus::set_input (unsigned char a_bus, bool a_inputing)
 {
-    lock();
+    automutex locker(m_mutex);
     if (a_bus < c_max_busses)         // should be m_num_in_buses I believe!!!
-    {
         m_init_input[a_bus] = a_inputing;
-    }
+
     if (m_buses_in_active[a_bus] && a_bus < m_num_in_buses)
-    {
         m_buses_in[a_bus]->set_input(a_inputing);
-    }
-    unlock();
 }
 
 /**
@@ -417,9 +395,8 @@ bool
 mastermidibus::get_input (unsigned char a_bus)
 {
     if (m_buses_in_active[a_bus] && a_bus < m_num_in_buses)
-    {
         return m_buses_in[a_bus]->get_input();
-    }
+
     return false;
 }
 
@@ -431,10 +408,9 @@ std::string
 mastermidibus::get_midi_out_bus_name (int a_bus)
 {
     if (m_buses_out_active[a_bus] && a_bus < m_num_out_buses)
-    {
         return m_buses_out[a_bus]->get_name();
-    }
-    return "error in get_midi_out_bus_name()";
+
+    return "get_midi_out_bus_name(): error";
 }
 
 /**
@@ -445,10 +421,9 @@ std::string
 mastermidibus::get_midi_in_bus_name (int a_bus)
 {
     if (m_buses_in_active[a_bus] && a_bus < m_num_in_buses)
-    {
         return m_buses_in[a_bus]->get_name();
-    }
-    return "error in get_midi_in_bus_name()";
+
+    return "get_midi_in_bus_name(): error";
 }
 
 /**
@@ -460,9 +435,7 @@ mastermidibus::print ()
 {
     printf("Available Buses\n");
     for (int i = 0; i < m_num_out_buses; i++)
-    {
         printf("%s\n", m_buses_out[i]->m_name.c_str());
-    }
 }
 
 /**
@@ -494,19 +467,17 @@ mastermidibus::poll_for_midi ()
 bool
 mastermidibus::is_more_input ()
 {
-    lock();
+    automutex locker(m_mutex);
     int size = 0;
     for (int i = 0; i < m_num_in_buses; i++)
     {
         if (m_buses_in[i]->poll_for_midi())
             size = 1;
     }
-    unlock();
     return size > 0;
 }
 
-// No mastermidibus::port_start(),                      //
-// No mastermidibus::port_exit() in Windows version     //
+// No mastermidibus::port_start(), port_exit() in Windows version.
 
 /**
  *  Grab a MIDI event.
@@ -517,7 +488,7 @@ mastermidibus::is_more_input ()
 bool
 mastermidibus::get_midi_event (event *a_in)
 {
-    lock();
+    automutex locker(m_mutex);
     bool result = false;
     PmEvent event;
     PmError err;
@@ -534,25 +505,19 @@ mastermidibus::get_midi_event (event *a_in)
         }
     }
     if (! result)
-    {
-        unlock();
         return false;
-    }
+
     a_in->set_status(Pm_MessageStatus(event.message));
     a_in->set_size(3);
     a_in->set_data(Pm_MessageData1(event.message), Pm_MessageData2(event.message));
 
     /* some keyboards send Note On with velocity 0 for Note Off */
 
-    if (a_in->get_status() == EVENT_NOTE_ON &&
-            a_in->get_note_velocity() == 0x00)
-    {
+    if (a_in->get_status() == EVENT_NOTE_ON && a_in->get_note_velocity() == 0x00)
         a_in->set_status(EVENT_NOTE_OFF);
-    }
 
     // Why no "sysex = false" here, like in Linux version?
 
-    unlock();
     return true;
 }
 
@@ -566,10 +531,9 @@ mastermidibus::get_midi_event (event *a_in)
 void
 mastermidibus::set_sequence_input (bool a_state, sequence * a_seq)
 {
-    lock();
+    automutex locker(m_mutex);
     m_seq = a_seq;
     m_dumping_input = a_state;
-    unlock();
 }
 
 #endif   // PLATFORM_WINDOWS
