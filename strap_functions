@@ -424,7 +424,7 @@ function clean_gnufiles()
       find . -iname "*.$EXT" -exec rm -f '{}' \; 2> /dev/null
    done
 
-   local GNUDIRS="autom4te.cache config .deps .libs"   # i18n
+   local GNUDIRS="autom4te.cache .deps .libs"   # i18n
 
    for DIR in $GNUDIRS
    do
