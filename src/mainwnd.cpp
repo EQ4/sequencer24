@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-28
+ * \updates       2015-08-29
  * \license       GNU GPLv2 or above
  *
  */
@@ -406,7 +406,13 @@ mainwnd::mainwnd (perform * a_p)
     m_sigpipe[0] = -1;                      // initialize static array
     m_sigpipe[1] = -1;
     install_signal_handlers();
-//  m_perf_edit->is_modified(false);        // is it even set at this point?
+
+    /*
+     * Have to be careful here, otherwise changes are lost or we get
+     * prompted even when nothing is done.
+     *
+     * m_perf_edit->is_modified(false);     // is it even set at this point?
+     */
 }
 
 /**
@@ -471,7 +477,7 @@ mainwnd::open_performance_edit ()
     {
         m_perf_edit->init_before_show();
         m_perf_edit->show_all();
-        m_modified = true;              // STILL ENABLED
+        is_modified(true);              // STILL ENABLED
     }
 }
 
@@ -576,7 +582,7 @@ mainwnd::new_file ()
     );
     global_filename = "";           // clear()
     update_window_title();
-    m_modified = false;
+    is_modified(false);
 }
 
 /**
@@ -671,7 +677,7 @@ mainwnd::open_file (const std::string & fn)
     midifile f(fn);                     /* create object to represent file  */
     m_mainperf->clear_all();
     result = f.parse(m_mainperf, 0);    /* parsing handles old & new format */
-    m_modified = ! result;
+    is_modified(! result);
     if (! result)
     {
         Gtk::MessageDialog errdialog
@@ -767,7 +773,7 @@ mainwnd::save_file ()
         );
         errdialog.run();
     }
-    m_modified = ! result;
+    is_modified(! result);
     return result;
 }
 
@@ -804,7 +810,7 @@ bool
 mainwnd::is_save ()
 {
     bool result = false;
-    if (is_modified() || m_perf_edit->is_modified())
+    if (is_modified() || m_perf_edit->is_modified() || m_main_wid->is_modified())
     {
         int choice = query_save_changes();
         switch (choice)
@@ -904,7 +910,7 @@ mainwnd::file_import_dialog ()
         }
         global_filename = std::string(dlg.get_filename());
         update_window_title();
-        m_modified = true;
+        is_modified(true);
         m_main_wid->reset();
         m_entry_notes->set_text
         (
@@ -1011,7 +1017,7 @@ mainwnd::adj_callback_ss ()
     (
         *m_mainperf->get_screen_set_notepad(m_mainperf->get_screenset())
     );
-    m_modified = true;
+    is_modified(true);
 }
 
 /**
@@ -1022,7 +1028,7 @@ void
 mainwnd::adj_callback_bpm ()
 {
     m_mainperf->set_bpm((int) m_adjust_bpm->get_value());
-    m_modified = true;
+    is_modified(true);
 }
 
 /**
@@ -1034,7 +1040,7 @@ mainwnd::edit_callback_notepad ()
 {
     std::string text = m_entry_notes->get_text();
     m_mainperf->set_screen_set_notepad(m_mainperf->get_screenset(), &text);
-    m_modified = true;
+    is_modified(true);
 }
 
 /**

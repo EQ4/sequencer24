@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-23
+ * \updates       2015-08-29
  * \license       GNU GPLv2 or above
  *
  */
@@ -69,9 +69,8 @@ private:
 
     seqedit * m_seqedit;
 
-protected:
-
     int m_current_seq;
+    bool m_modified;
 
 public:
 
@@ -84,7 +83,44 @@ public:
 
     virtual ~seqmenu ();
 
+    /**
+     * \getter m_current_seq
+     */
+
+    int current_sequence () const
+    {
+        return m_current_seq;
+    }
+
+    /**
+     * \getter m_modified
+     */
+
+    bool is_modified () const
+    {
+        return m_modified;
+    }
+
 protected:
+
+    /**
+     * \setter m_current_seq
+     */
+
+    void current_sequence (int seq)
+    {
+        if (seq > 0)                    // shall we validate the upper end?
+            m_current_seq = seq;
+    }
+
+    /**
+     * \setter m_modified
+     */
+
+    void is_modified (bool flag)
+    {
+        m_modified = flag;
+    }
 
     void popup_menu ();
 

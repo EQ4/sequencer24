@@ -1,6 +1,8 @@
 2015-07-24  Chris Ahlstrom <ahlstromcj@gmail.com>
 
-	* *.*: Porting to new build system
+	* *.*: Porting to new build system, tons of documentation, code cleanup,
+	basic fixes, minor new features, for new version 0.9.3 through
+	2015-08-29, name change to Sequencer24.
 
 2012-02-24  Guido Scholz  <guido.scholz@bayernline.de>
 

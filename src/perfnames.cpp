@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-27
+ * \updates       2015-08-29
  * \license       GNU GPLv2 or above
  *
  */
@@ -295,10 +295,10 @@ perfnames::convert_y (int a_y, int * a_seq)
 bool
 perfnames::on_button_press_event (GdkEventButton * a_e)
 {
+    int y = int(a_e->y);                            /* int x = (int) a_e->x; */
     int seqnum;
-    int y = (int) a_e->y;              //  int x = (int) a_e->x;
     convert_y(y, &seqnum);
-    m_current_seq = seqnum;
+    current_sequence(seqnum);
     if (a_e->button == 1)                           /* left mouse button */
     {
         if (m_mainperf->is_active(seqnum))

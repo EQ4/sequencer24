@@ -58,7 +58,7 @@ using namespace Gtk::Menu_Helpers;
  *  configuration dialog.
  *
  * \obsolete
- *      It's only use was in this module, and is commented out below,
+ *      Its only use was in this module, and is commented out below,
  *      replaced by another lookup method.
  *
 \verbatim
@@ -684,8 +684,8 @@ bool
 mainwid::on_button_press_event (GdkEventButton * a_p0)
 {
     grab_focus();
-    m_current_seq = seq_from_xy((int) a_p0->x, (int) a_p0->y);
-    if (m_current_seq != -1 && a_p0->button == 1)
+    current_sequence(seq_from_xy(int(a_p0->x), int(a_p0->y)));
+    if (current_sequence() >= 0 && a_p0->button == 1)
         m_button_down = true;
 
     return true;
@@ -699,20 +699,20 @@ mainwid::on_button_press_event (GdkEventButton * a_p0)
 bool
 mainwid::on_button_release_event (GdkEventButton * a_p0)
 {
-    m_current_seq = seq_from_xy((int) a_p0->x, (int) a_p0->y);
+    current_sequence(seq_from_xy(int(a_p0->x), int(a_p0->y)));
     m_button_down = false;
 
     /*
      * Have we hit a sequence with the L button?  Toggle its play mode.
      */
 
-    if (m_current_seq != -1 && a_p0->button == 1 && ! m_moving)
+    if (current_sequence() >= 0 && a_p0->button == 1 && ! m_moving)
     {
-        if (m_mainperf->is_active(m_current_seq))
+        if (m_mainperf->is_active(current_sequence()))
         {
-            m_mainperf->sequence_playing_toggle(m_current_seq);
-            draw_sequence_on_pixmap(m_current_seq);
-            draw_sequence_pixmap_on_window(m_current_seq);      // effective?
+            m_mainperf->sequence_playing_toggle(current_sequence());
+            draw_sequence_on_pixmap(current_sequence());
+            draw_sequence_pixmap_on_window(current_sequence());      // effective?
         }
     }
     if (a_p0->button == 1 && m_moving)
@@ -720,14 +720,15 @@ mainwid::on_button_release_event (GdkEventButton * a_p0)
         m_moving = false;
         if          // if we're in a pattern, it is active, and in edit mode...
         (
-            ! m_mainperf->is_active(m_current_seq) && m_current_seq != -1 &&
-            ! m_mainperf->is_sequence_in_edit(m_current_seq)
+            ! m_mainperf->is_active(current_sequence()) &&
+            current_sequence() != -1 &&
+            ! m_mainperf->is_sequence_in_edit(current_sequence())
         )
         {
-            m_mainperf->new_sequence(m_current_seq);
-            *(m_mainperf->get_sequence(m_current_seq)) = m_moving_seq;
-            draw_sequence_on_pixmap(m_current_seq);
-            draw_sequence_pixmap_on_window(m_current_seq);      // effective?
+            m_mainperf->new_sequence(current_sequence());
+            *(m_mainperf->get_sequence(current_sequence())) = m_moving_seq;
+            draw_sequence_on_pixmap(current_sequence());
+            draw_sequence_pixmap_on_window(current_sequence());      // effective?
         }
         else
         {
@@ -737,7 +738,7 @@ mainwid::on_button_release_event (GdkEventButton * a_p0)
             draw_sequence_pixmap_on_window(m_old_seq);          // effective?
         }
     }
-    if (m_current_seq != -1 && a_p0->button == 3)       // launch menu (R button)
+    if (current_sequence() != -1 && a_p0->button == 3)       // launch menu (R button)
         popup_menu();
 
     return true;
@@ -756,18 +757,18 @@ mainwid::on_motion_notify_event (GdkEventMotion * a_p0)
     {
         if
         (
-            seq != m_current_seq && ! m_moving &&
-            ! m_mainperf->is_sequence_in_edit(m_current_seq)
+            seq != current_sequence() && ! m_moving &&
+            ! m_mainperf->is_sequence_in_edit(current_sequence())
         )
         {
-            if (m_mainperf->is_active(m_current_seq))
+            if (m_mainperf->is_active(current_sequence()))
             {
-                m_old_seq = m_current_seq;
+                m_old_seq = current_sequence();
                 m_moving = true;
-                m_moving_seq = *(m_mainperf->get_sequence(m_current_seq));
-                m_mainperf->delete_sequence(m_current_seq);
-                draw_sequence_on_pixmap(m_current_seq);
-                draw_sequence_pixmap_on_window(m_current_seq);  // effective?
+                m_moving_seq = *(m_mainperf->get_sequence(current_sequence()));
+                m_mainperf->delete_sequence(current_sequence());
+                draw_sequence_on_pixmap(current_sequence());
+                draw_sequence_pixmap_on_window(current_sequence());  // effective?
             }
         }
     }

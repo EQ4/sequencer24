@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-23
+ * \updates       2015-08-29
  * \license       GNU GPLv2 or above
  *
  */
@@ -53,7 +53,8 @@ seqmenu::seqmenu (perform * a_p)
     m_mainperf      (a_p),
     m_clipboard     (),
     m_seqedit       (nullptr),
-    m_current_seq   (0)
+    m_current_seq   (0),
+    m_modified      (false)
 {
     m_clipboard.set_master_midi_bus(&a_p->master_bus());    // precedence?
 }
@@ -204,21 +205,21 @@ seqmenu::mute_all_tracks ()
 }
 
 /**
- *  This menu callback launches the sequence editor window.  If it is
- *  already open for that sequence, this function just raise it.
+ *  This menu callback launches the sequence-editor (pattern editor)
+ *  window.  If it is already open for that sequence, this function just
+ *  raises it.
  *
  *  Note that the m_seqedit member to which we save the new pointer is
  *  currently there just to avoid a compiler warning.
+ *
+ *  Also, if a new sequences is created, we set the m_modified flag to
+ *  true, even though the sequence might later be deleted.  Too much
+ *  modification to keep track of!
  */
 
 void
 seqmenu::seq_edit ()
 {
-   /*
-    * Left hanging with NO CHANCE of DELETIONS!  MUST FIX!  OR SEE IF GTK
-    * takes care of it!
-    */
-
     seqedit * sed;
     if (m_mainperf->is_active(m_current_seq))
     {
@@ -229,7 +230,8 @@ seqmenu::seq_edit ()
                 m_mainperf->get_sequence(m_current_seq),
                 m_mainperf, m_current_seq
             );
-            m_seqedit = sed;
+            m_seqedit = sed;            /* prevents "unused" warning      */
+            is_modified(true);          /* could be deleted later, though */
         }
         else
             m_mainperf->get_sequence(m_current_seq)->set_raise(true);
@@ -241,12 +243,14 @@ seqmenu::seq_edit ()
         (
             m_mainperf->get_sequence(m_current_seq), m_mainperf, m_current_seq
         );
-        m_seqedit = sed;
+        m_seqedit = sed;                /* prevents "unused" warning      */
+        is_modified(true);              /* could be deleted later, though */
     }
 }
 
 /**
- *  This function creates a new sequence.
+ *  This function sets the new sequence into the perform object, a bit
+ *  prematurely, though.
  */
 
 void

@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-10
+ * \updates       2015-08-29
  * \license       GNU GPLv2 or above
  *
  *  The main windows is known as the "Patterns window" or "Patterns
@@ -220,6 +220,15 @@ private:
     void sequence_key (int a_seq);
     void update_window_title ();
     void toLower (std::string &);    // isn't this std::string?
+
+    /**
+     * \setter m_modified
+     */
+
+    void is_modified (bool flag)
+    {
+        m_modified = flag;
+    }
 
     /**
      * \getter m_modified

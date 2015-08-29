@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-12
+ * \updates       2015-08-29
  * \license       GNU GPLv2 or above
  *
  *  Here is a list of the global variables used/stored/modified by this
@@ -473,7 +473,7 @@ options::add_mouse_page ()
     Gtk::VBox * vbox = manage(new Gtk::VBox());
     m_notebook->append_page(*vbox, "_Mouse", true);
 
-    /* Frame for transport options */
+    /* Frame for mouse-interaction options */
 
     Gtk::Frame * interactionframe = manage(new Gtk::Frame("Interaction method"));
     interactionframe->set_border_width(4);
@@ -519,6 +519,35 @@ options::add_mouse_page ()
     (
         sigc::bind(mem_fun(*this, &options::mouse_fruity_callback), rb_fruity)
     );
+
+    /**
+     * \todo
+     *      Add a "Mod4" checkbox section here.
+     */
+
+    Gtk::Frame * mod4frame = manage(new Gtk::Frame("Seq24 Options"));
+    mod4frame->set_border_width(4);
+    vbox->pack_start(*mod4frame, Gtk::PACK_SHRINK);
+
+    Gtk::VBox * mod4box = manage(new Gtk::VBox());
+    mod4box->set_border_width(4);
+    mod4frame->add(*mod4box);
+    Gtk::CheckButton * chk_mod4 = manage
+    (
+        new Gtk::CheckButton("_Mod4 key preserves note-add mode", true)
+    );
+    chk_mod4->set_active(global_allow_mod4_mode);
+    add_tooltip
+    (
+        chk_mod4,
+        "If checked, note-add mode stays active after right-click release "
+        "if 'Windows' key is pressed in seq24 mode."
+    );
+    mod4box->pack_start(*chk_mod4, Gtk::PACK_SHRINK);
+    chk_mod4->signal_toggled().connect
+    (
+        sigc::bind(mem_fun(*this, &options::mouse_mod4_callback), chk_mod4)
+    );
 }
 
 /**
@@ -543,7 +572,10 @@ options::add_jack_sync_page ()
     transportbox->set_border_width(4);
     transportframe->add(*transportbox);
 
-    Gtk::CheckButton * check = manage(new Gtk::CheckButton("JACK _Transport", true));
+    Gtk::CheckButton * check = manage
+    (
+        new Gtk::CheckButton("JACK _Transport", true)
+    );
     check->set_active(global_with_jack_transport);
     add_tooltip(check, "Enable sync with JACK Transport.");
     check->signal_toggled().connect
@@ -739,6 +771,16 @@ options::mouse_fruity_callback (Gtk::RadioButton * btn)
 {
     if (btn->get_active())
         global_interactionmethod = e_fruity_interaction;
+}
+
+/**
+ *  Mouse interaction, Mod4 option callback function.
+ */
+
+void
+options::mouse_mod4_callback (Gtk::CheckButton * btn)
+{
+    global_allow_mod4_mode = btn->get_active();
 }
 
 /**

@@ -112,6 +112,7 @@ private:
     void transport_callback (button a_type, Gtk::Button * a_button);
     void mouse_seq24_callback (Gtk::RadioButton *);
     void mouse_fruity_callback (Gtk::RadioButton *);
+    void mouse_mod4_callback (Gtk::CheckButton *);
 
     /* notebook pages */
 
