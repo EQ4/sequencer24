@@ -6,11 +6,10 @@ The sequencer24 project is a gradual refactoring of seq24 0.9.2
 to bring it up to date, fix bugs, consolidate patches, convert
 to GTKmm 3, and much more.
 
-For the latest code, check out the "Fixes" branch.  The master branch
-is a few weeks old now.
+Most recent update:  Merged Fixes branch back into master.
 
-It is done as a series of Git branches (x means it is done, y means in
-progress):
+The refactoring is done as a series of Git branches (x means it is done, y
+means in progress):
 
 x  Legacy:     The original Seq24 0.9.2 with some notes.
 x  Debian:     Incorporating Debians packaging support into the project.
@@ -22,9 +21,10 @@ x  Fixes:      More documentation, fixes, and some new features.  Moving
                some fixes to the upcoming Library branch.
    Library:    Refactor the code to separate and unit-test functionality.
 
-The Fixes branch is in progress.  Light documentation, code prettifying,
+The Fixes branch is now "finished". Light documentation, code prettifying,
 warning elimination, valgrind clean.  Trying to get a handle on all the
-global variables and how things work.
+global variables and how things work.  Some fixes will be offloaded to the
+Library branch.  In the meantime, enjoy the master branch!
 
 See the ROADMAP file for more information and a kind of TODO list.
 
