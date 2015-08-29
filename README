@@ -1,24 +1,29 @@
 README for Sequencer24 0.9.3
 Chris Ahlstrom
-2015-07-24 to 2015-08-25
+2015-07-24 to 2015-08-29
 
 The sequencer24 project is a gradual refactoring of seq24 0.9.2
 to bring it up to date, fix bugs, consolidate patches, convert
-to GTKmm 3, and more.
+to GTKmm 3, and much more.
 
-It is done as a series of Git branches (x means it is done):
+For the latest code, check out the "Fixes" branch.  The master branch
+is a few weeks old now.
+
+It is done as a series of Git branches (x means it is done, y means in
+progress):
 
 x  Legacy:     The original Seq24 0.9.2 with some notes.
 x  Debian:     Incorporating Debians packaging support into the project.
 x  Catchup:    Incorporating a few patches found around the Internet.
 x  Packaging:  Getting the build system up-to-date; bootstrapping; packing.
 x  Gtkmm-3:    Porting from gtkmm-2.4 to gtkmm-3.0.  Turned out to be trivial.
-   Document:   Adding thorough in-code documentation and upgraded formatting.
+x  Document:   Adding thorough in-code documentation and upgraded formatting.
+y  Fixes:      More documentation, fixes, and some new features.
    Library:    Refactor the code to separate and unit-test functionality.
 
-The Document branch, first pass, is in progress.  Light documentation, code
-prettifying, warning elimination.  Trying to get a handle on all the global
-variables and how things work.
+The Fixes branch is in progress.  Light documentation, code prettifying,
+warning elimination, valgrind clean.  Trying to get a handle on all the
+global variables and how things work.
 
 See the ROADMAP file for more information and a kind of TODO list.
 

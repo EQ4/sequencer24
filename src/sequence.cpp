@@ -151,17 +151,13 @@ sequence::operator = (const sequence & a_rhs)
  *  Returns the number of events stored in m_eventss.
  *
  * \threadsafe
- *
- *  Note sure that a size() call really needs locking.
  */
 
 int
 sequence::event_count () const
 {
-    int result;
     automutex locker(m_mutex);
-    result = int(m_events.size());
-    return result;
+    return int(m_events.size());
 }
 
 /**

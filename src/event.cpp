@@ -105,7 +105,7 @@ event::operator < (const event & a_rhsevent) const
 #if USE_EXTRA_COMPARE_OPERATORS
 
 /*
- * Note sure we really need these extra operators.  No code uses them, the
+ * Not sure we really need these extra operators.  No code uses them, the
  * modules build, link, and run just fine without them.
  */
 
