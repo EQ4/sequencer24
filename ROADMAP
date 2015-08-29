@@ -5,7 +5,8 @@ Chris Ahlstrom
 The starting point for the Sequencer24 project is version
 0.9.2 of seq24.  Sequencer24 starts with version 0.9.3.
 
-The following changes are planned ('x' means it is done):
+The following changes are planned ('x' means it is done, 'y' means it is
+in progress, and 'z' means it will be moved to a later branch):
 
 x  -  Create a Git project out of the existing Seq24 files: sequencer24
 x  -  Branch off to a permanent "Legacy" branch:
@@ -50,7 +51,7 @@ x  -  Branch off to a "Document" branch:
          directives, eliminating dead variables, etc.
    x  -  Generate Doxygen documentation.
    x  -  Merge "Document" back into the main trunk.
-y  -  Branch off to a "Fixes" branch to fix these issues:
+xz -  Branch off to a "Fixes" branch to fix these issues:
    x  -  Ignore updating patterns/sequences that are empty (i.e. just a
          track-name) during playback.  This is done, playing of empty
          sequences will be ignored, as is updating the progress bar.  Can
@@ -68,25 +69,26 @@ y  -  Branch off to a "Fixes" branch to fix these issues:
          in the build configuration.
    x  -  Lock the size of the Patterns Panel (expanding it just shows more
          grey, and it resizes horizontally very slowly).
-   y  -  Fix issue where doing nothing causes a save prompt upon exit.
+   yx -  Fix issue where doing nothing causes a save prompt upon exit.
          This happens only if the Song Editor is opened.  Partly fixed,
          but needs more verification.  Now disabled; also need prompt when
          new notes and patterns are edited.  A big task, really.  Better
          safe than sorry.
-      -  Neither the Song Editor nor the Pattern Editor scroll to the next page
+   z  -  Neither the Song Editor nor the Pattern Editor scroll to the next page
          when the progress bar moves off the right.
-      -  The std::list the Seq24 uses is fast, but it does not allow for
+   z  -  The std::list the Seq24 uses is fast, but it does not allow for
          direct access to list elements, and the push/pop paradigm causes
          a reversal of some events (program change) that makes it impossible
          to reliably diff the MIDI files that result.
-      -  Reading a MIDI file is very slow in debug mode, but does not seem to
-         be due to mutex locking.
+   z  -  Reading a MIDI file is very slow in debug mode, but does not seem to
+         be due to mutex locking.  It seems to be due to the std::list
+         operations; see contrib/profile.txt, obtained by building with
+         gprof support.
    x  -  Replace calls to lock()/unlock() with an automutex instance for
-         better safety.  It seems to be due to the std::list operations;
-         see contrib/profile.txt, obtained by building with gprof support.
-      -  Opening a pattern edit while playback is happening yields
+         better safety, less code.
+   z  -  Opening a pattern edit while playback is happening yields
          issues in keeping the progress line up-to-date.
-   y  -  More friendliness for two-button mice.  Currently, there is an
+   yz -  More friendliness for two-button mice.  Currently, there is an
          option to hold the Mod4 (Super or Windows) key when releasing a
          right-click, to allow adding notes to continue anyway, until
          an unadorned right click is made.  Also added to the options
