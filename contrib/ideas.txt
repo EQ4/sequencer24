@@ -86,4 +86,11 @@ Replacing std::list<>: Current list usage sequences:
             Sort transposed events, then merge them (no second sorting).
             Sort quantized  events, then merge them (no second sorting).
 
+Playback use cases:
+
+    ALSA:
+
+        Run "yoshimi -a -A &".
+        Set [manual-alsa-ports] to 0 in ~/.seq24rc.
+
 # vim: sw=4 ts=4 wm=8 et ft=sh

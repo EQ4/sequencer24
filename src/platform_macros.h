@@ -1,4 +1,4 @@
-#if ! defined SEQ24_PLATFORM_MACROS_H
+#ifndef SEQ24_PLATFORM_MACROS_H
 #define SEQ24_PLATFORM_MACROS_H
 
 /**
@@ -11,13 +11,14 @@
  * \library       sequencer24 application
  * \author        Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-08
+ * \updates       2015-08-30
  * \license       GNU GPLv2 or above
  *
  *  Copyright (C) 2013-2015 Chris Ahlstrom <ahlstromcj@gmail.com>
  *
  *  We need a uniform way to specify OS and compiler features without
- *  have to litter our code with many macros.
+ *  have to litter our code with many macros.  (Littering this file
+ *  with macros is okay, though.)
  *
  * Determining useful macros:
  *

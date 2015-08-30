@@ -1,6 +1,6 @@
 Sequencer24/Seq24 Roadmap
 Chris Ahlstrom
-2015-07-23 to 2015-08-29
+2015-07-23 to 2015-08-30
 
 The starting point for the Sequencer24 project is version
 0.9.2 of seq24.  Sequencer24 starts with version 0.9.3.
@@ -94,6 +94,9 @@ xz -  Branch off to a "Fixes" branch to fix these issues:
          an unadorned right click is made.  Also added to the options
          file, but not yet a GUI-editable item.  Also reveals that
          we need to set-dirty when adding notes to a sequence.
+x  -  Fixed in "master" branch:
+      -  Weird stuff with clicking sequence 0 versus other sequences.
+         Was due to incorrect validation in seqmenu::current_sequence().
    -  Branch off to a "Library" branch:
       -  Break out non-GUI functionality into libsequencer24.
       -  Unit test each element as appropriate using xpc-suite

@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-27
+ * \updates       2015-08-30
  * \license       GNU GPLv2 or above
  *
  *  This module defines the following classes:
@@ -117,7 +117,7 @@ private:        // do not allow these functions to be used
 public:
 
     /**
-     *  Principal constructor gets a references to a mutex parameter, and
+     *  Principal constructor gets a reference to a mutex parameter, and
      *  then locks the mutex.
      */
 

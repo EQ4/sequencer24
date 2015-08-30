@@ -1,5 +1,5 @@
-#ifndef SEQ24_LASH
-#define SEQ24_LASH
+#ifndef SEQ24_LASH_H
+#define SEQ24_LASH_H
 
 /*
  *  This file is part of seq24/sequencer24.
@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-27
+ * \updates       2015-08-30
  * \license       GNU GPLv2 or above
  *
  */
@@ -87,7 +87,7 @@ private:
 extern lash * global_lash_driver;
 #endif
 
-#endif // SEQ24_LASH
+#endif // SEQ24_LASH_H
 
 /*
  * lash.h

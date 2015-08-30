@@ -1,5 +1,5 @@
-#ifndef SEQ24_MENU_H
-#define SEQ24_MENU_H
+#ifndef SEQ24_SEQMENU_H
+#define SEQ24_SEQMENU_H
 
 /*
  *  This file is part of seq24/sequencer24.
@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-29
+ * \updates       2015-08-30
  * \license       GNU GPLv2 or above
  *
  */
@@ -109,7 +109,7 @@ protected:
 
     void current_sequence (int seq)
     {
-        if (seq > 0)                    // shall we validate the upper end?
+        if (seq >= 0)                   // shall we validate the upper end?
             m_current_seq = seq;
     }
 
@@ -143,7 +143,7 @@ private:            // callback
 
 };
 
-#endif   // SEQ24_MENU_H
+#endif   // SEQ24_SEQMENU_H
 
 /*
  * seqmenu.h

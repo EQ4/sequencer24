@@ -1,5 +1,5 @@
-#ifndef SEQ24_MAINWINDOW_H
-#define SEQ24_MAINWINDOW_H
+#ifndef SEQ24_MAINWND_H
+#define SEQ24_MAINWND_H
 
 /*
  *  This file is part of seq24/sequencer24.
@@ -27,7 +27,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-29
+ * \updates       2015-08-30
  * \license       GNU GPLv2 or above
  *
  *  The main windows is known as the "Patterns window" or "Patterns
@@ -268,7 +268,7 @@ private:
 
 };
 
-#endif   // SEQ24_MAINWINDOW_H
+#endif   // SEQ24_MAINWND_H
 
 /*
  * mainwnd.h
