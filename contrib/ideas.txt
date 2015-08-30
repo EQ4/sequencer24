@@ -23,6 +23,11 @@ Found on the web, suggested enhancements for seq24:
       to control looping and other flow of control. Loop count of 1 would
       allow for a non-looped section.
 
+More:
+
+   -  Ability to change time signature, either within a pattern, or for
+      different patterns, or maybe in the Song Editor.
+
 Documentation for features not yet documented:
 
    https://ubuntustudiomusic.wordpress.com/2013/01/06/using-seq24/
@@ -39,16 +44,74 @@ Videos of seq24:
 
    http://wootangent.net/2010/11/linux-music-tutorial-seq24-part-2/
 
-      Right ctrl modifier key (Ctrl - q!!!)  Queue key.  Add to the "mute"
-      key (wrong word) to set up the pattern to "kick in".
-
-      Change R-Ctrl to a Windows key.
+      Change R-Ctrl to a Windows key or some other key.
 
       Snapshotting, easier than queuing.
       
       Selecting specific notes to be affected by the "data" editor.
 
       Flow of data events...
+
+      Realtime pattern triggering:
+
+        Immediate triggering, use the hot-key for that pattern.
+
+        Queing one or more patterns to trigger at the next repeat, hold down the
+        modifier key as each hot-key is struck.  Default modifier key is
+        the Right Ctrl key (Ctrl-q is the Exit key!!!).  [Go to
+        Options/Keyboard/Queue (key) and provide an alternate key, such as
+        the Super key.  [Will this affect the Super key in the Pattern
+        Editor or Song Editor windows????]  To provide an alternate key,
+        click in the Queue field and press the desired modifier key.
+
+            Super (L and R)
+            Ctrl (L and R)
+            Alt (L and R)
+            Menu key
+            Fxx keys
+
+        Add to the pattern's toggle key (wrong word) to setup the pattern
+        to kick in.
+
+        Note the grey center painted in the pattern's box when the pattern
+        is queued up.  [Need a SCREEN SHOT!]
+
+        Keep queue [default is Backslash key]:
+
+            This is like a LOCK key for the pattern queing, so that you
+            need hit only the pattern's hot key to get it queued up; no
+            need for the queing modifier key.  In fact, the queing modifier
+            key unlocks the keep queue (it seems).
+
+        Snapshots (another pattern-triggering option):
+        
+            Set snapshot up for the left Windows key.  This key can be set
+            up in Options / Keyboard / Snapshot 1 (or Snapshot 2).
+
+            Press that snapshot key, and trigger/untrigger the patterns you
+            want.  When that snapshot key is released, the setup reverts to
+            what it was when you pressed that snapshot key.
+
+            Good for taking a number of parts out one at a time, then
+            having them all start back up at one time (reverting to the
+            "snapshot".
+
+        Pattern editor:
+
+            Drawing velocities.  Affects all notes, or only the selected
+            notes.
+
+            Expand the pattern by increasing the number of bars in it.
+
+            Copy and paste, pasting to different vertical position to
+            create a transposed copy.
+
+            MIDI CC automation.  Select the CC, then drawing by dragging
+            across the event strip, which paints events at the given
+            "resolution" you set up with the note-length menu entry.
+
+            Extra notes added on repeats from note editor or from a MIDI
+            keyboard.
 
 Toggle sequences with a MIDI controller:
 
@@ -93,4 +156,4 @@ Playback use cases:
         Run "yoshimi -a -A &".
         Set [manual-alsa-ports] to 0 in ~/.seq24rc.
 
-# vim: sw=4 ts=4 wm=8 et ft=sh
+# vim: sw=4 ts=4 wm=8 et ft=text
