@@ -95,8 +95,21 @@ xz -  Branch off to a "Fixes" branch to fix these issues:
          file, but not yet a GUI-editable item.  Also reveals that
          we need to set-dirty when adding notes to a sequence.
 x  -  Fixed in "master" branch:
-      -  Weird stuff with clicking sequence 0 versus other sequences.
+   x  -  Weird stuff with clicking sequence 0 versus other sequences.
          Was due to incorrect validation in seqmenu::current_sequence().
+      -  Sometimes the editing of event values in the event data section
+         will not work. The workaround is to do a Ctrl-A, and the click in
+         the roll to deselect the selection; that makes the event value
+         editing work again.
+      -  The pattern right-click Cut menu entry does not seem to work.
+         The loop or pattern remains in place.  Is this actually meant to
+         cut selected events?
+      -  While one is typing in the name of the set in this field, the
+         keystrokes will affect the panel window, causing playback to
+         start and pattern boxes to be toggled!
+      -  While one is typing in the number of the set in the Set number field,
+         the keystrokes will affect the panel window, causing playback to
+         start and pattern boxes to be toggled!
    -  Branch off to a "Library" branch:
       -  Break out non-GUI functionality into libsequencer24.
       -  Unit test each element as appropriate using xpc-suite
