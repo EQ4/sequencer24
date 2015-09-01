@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-29
+ * \updates       2015-08-31
  * \license       GNU GPLv2 or above
  *
  */
@@ -992,6 +992,10 @@ mainwnd::about_dialog ()
     list_documenters.push_back
     (
         "See <https://github.com/ahlstromcj/seq24-doc.git>"
+    );
+    list_documenters.push_back
+    (
+        "and <https://github.com/ahlstromcj/sequencer24-doc.git>"
     );
     dialog.set_documenters(list_documenters);
     dialog.show_all_children();
