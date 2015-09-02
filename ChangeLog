@@ -1,3 +1,9 @@
+2015-09-01  Chris Ahlstrom <ahlstromcj@gmail.com>
+
+	* src/seq24.cpp: Added support for configuration files in
+	/home/user/.config/sequencer24 when in non-legacy mode, setting
+	version to 0.9.4
+
 2015-07-24  Chris Ahlstrom <ahlstromcj@gmail.com>
 
 	* *.*: Porting to new build system, tons of documentation, code cleanup,

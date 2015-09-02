@@ -1,4 +1,4 @@
-.TH Sequencer24 1 "July 24 2015" "Version 0.9.3" "Sequencer24 Manual Page"
+.TH Sequencer24 1 "Sept 4 2015" "Version 0.9.4" "Sequencer24 Manual Page"
 
 .SH NAME
 Sequencer24 - Real time MIDI sequencer refactored from Seq24
@@ -11,7 +11,7 @@ Sequencer24 - Real time MIDI sequencer refactored from Seq24
 .PP
 \fISequencer24\fP is a real-time MIDI sequencer. It was created to
 provide a simple interface for editing and playing MIDI 'loops'.
-It uses gtk-3 for the user interface.
+It uses gtk-2 for the user interface.
 
 .SH OPTIONS
 Sequencer24 accepts the following options:
@@ -21,6 +21,18 @@ Display a list of all commandline options
 .TP 8
 .B  \-\-version
 Display the program version
+.TP 8
+.B  \-\-legacy
+Save the MIDI file in the old Seq24 format, as unspecified
+binary data, instead of as a legal MIDI track with meta events.
+The user-interface will indicate this mode.  This mode is also
+used if the application is invoked as the
+\fIseq24\fP
+command.
+.TP 8
+.B \-\-lash
+If LASH support is compiled into the program, this option
+enables it.
 .TP 8
 .B \-\-file \fI<filename>\fP
 Load MIDI file on startup
@@ -70,16 +82,18 @@ Set uuid for jack session
 
 
 .SH FILES
-\fB$HOME\fP/.sequencer24rc stores the user settings for sequencer24.
+\fB$HOME\fP/sequencer24rc stores the user-configuration settings for
+sequencer24.
+\fB$HOME\fP/sequencer24usr stores the MIDI-configuration settings for
+sequencer24, but is not present by default.
 
 .SH SUGGESTIONS AND BUG REPORTS
 Any bugs found should be reported to the upstream author and/or package 
 maintainer.
 
 .SH OTHER INFO
-The current project homepage is a simple git repository at the
-https://github.com/ahlstromcj/sequencer.git URL.  It can be cloned as
-git@github.com:ahlstromcj/sequencer24.git if desired.
+The current Sequencer24 project homepage is a simple git repository at the
+https://github.com/ahlstromcj/sequencer.git URL.
 
 It is released under the GNU GPL license.
 
@@ -88,5 +102,5 @@ Sequencer24 was written by Chris Ahlstrom <ahlstromcj@gmail.com>.
 Seq24 was written by Rob C. Buse <seq24@filter24.org> and the Seq24team.
 
 This manual page was written by Dana Olson <seq24@ubuntustudio.com> with
-additions from Guido Scholz <guido.scholz@bayernline.de>, and minor
-changes by Chris Ahlstrom <ahlstromcj@gmail.com>.
+additions from Guido Scholz <guido.scholz@bayernline.de>, and
+additions by Chris Ahlstrom <ahlstromcj@gmail.com>.

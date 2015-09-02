@@ -1,6 +1,6 @@
 Sequencer24/Seq24 Roadmap
 Chris Ahlstrom
-2015-07-23 to 2015-08-30
+2015-07-23 to 2015-09-01
 
 The starting point for the Sequencer24 project is version
 0.9.2 of seq24.  Sequencer24 starts with version 0.9.3.
@@ -110,6 +110,12 @@ x  -  Fixed in "master" branch:
       -  While one is typing in the number of the set in the Set number field,
          the keystrokes will affect the panel window, causing playback to
          start and pattern boxes to be toggled!
+   y  -  Read the configuration information from
+         ~/.config/sequencer24/sequencer24rc and
+         ~/.config/sequencer24/sequencer24usr, unless they are not
+         found, or the --legacy option is in force.  Write to them as
+         well, unless the --legacy option is in force.  Done, but
+         currently kind of Linux-specific.
    -  Branch off to a "Library" branch:
       -  Break out non-GUI functionality into libsequencer24.
       -  Unit test each element as appropriate using xpc-suite

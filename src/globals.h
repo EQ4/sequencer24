@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-25
- * \updates       2015-08-28
+ * \updates       2015-09-01
  * \license       GNU GPLv2 or above
  *
  *  We're going to try to collect all the globals here in one module, and
@@ -468,8 +468,11 @@ extern int global_device_ignore_num;        // seq24 module
 extern std::string global_filename;
 extern std::string global_jack_session_uuid;
 extern std::string global_last_used_dir;
+extern std::string global_config_directory;
 extern std::string global_config_filename;
 extern std::string global_user_filename;
+extern std::string global_config_filename_alt;
+extern std::string global_user_filename_alt;
 
 /**
  *  This structure corresponds to <tt> [user-midi-bus-0] </tt> definitions
@@ -695,7 +698,7 @@ const char c_scales_text[c_scale_size][32] =                /* careful!        *
     "Minor",
     "Harmonic Minor",
     "Melodic Minor",
-    "C Whole Tone",
+    "Whole Tone",
 };
 
 /**

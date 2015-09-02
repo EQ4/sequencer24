@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-27
+ * \updates       2015-09-01
  * \license       GNU GPLv2 or above
  *
  */
@@ -32,6 +32,11 @@
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <sys/types.h>                  /* for stat() and mkdir() */
+#include <sys/stat.h>
+#include <unistd.h>
+
 #include <gdkmm/cursor.h>
 #include <gtkmm/main.h>
 
@@ -129,6 +134,43 @@ const char * const g_help_2 =
 "   -U, --jack_session_uuid u   Set UUID for JACK session\n"
 "\n\n\n"
     ;
+
+/**
+ *  An internal function to ensure that the ~/.config/sequencer24
+ *  directory exists.  This function is actually a little more general
+ *  than that, but it is not sufficiently general, in general.
+ *
+ * \param pathname
+ *      Provides the name of the path to create.  The parent directory of
+ *      the final directory must already exist.
+ *
+ * \return
+ *      Returns true if the path-name exists.
+ */
+
+#ifdef PLATFORM_GNU
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif
+
+static bool
+make_directory (const std::string & pathname)
+{
+    bool result = ! pathname.empty();
+    if (result)
+    {
+        static struct stat st =
+        {
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 /* and more for Linux! */
+        };
+        if (stat(pathname.c_str(), &st) == -1)
+        {
+            int rcode = mkdir(pathname.c_str(), 0700);
+            result = rcode == 0;
+        }
+    }
+    return result;
+}
+
 
 /**
  *  The standard C/C++ entry point to this application.  This first thing
@@ -268,27 +310,96 @@ main (int argc, char * argv [])
     p_font_renderer = new font();      /* set the font renderer       */
     if (getenv(HOME) != NULL)          /* is $HOME set?               */
     {
+        /*
+         *  Instead of the Seq24 names, use the new configuration
+         *  file-names, located in ~/.config/sequencer24.  If they aren't
+         *  found, then fall back to the legacy configuration file-names.
+         *  If the --legacy option is in force, use only the legacy
+         *  configuration file-name.  Note that we also ensure the
+         *  directory exists.  CURRENTLY LINUX-SPECIFIC.
+         */
+
         std::string home(getenv(HOME));
-        std::string total_file = home + SLASH + global_config_filename;
-        global_last_used_dir = home;
-        if (Glib::file_test(total_file, Glib::FILE_TEST_EXISTS))
+        if (! global_legacy_format)
         {
-            printf("Reading [%s]\n", total_file.c_str());
-            optionsfile options(total_file);
-            if (! options.parse(&p))
-                printf("Error Reading [%s]\n", total_file.c_str());
+            std::string cfg_dir = home + SLASH + global_config_directory;
+            bool ok = make_directory(cfg_dir);
+            if (! ok)
+            {
+                printf
+                (
+                    "? error creating [%s]\n", global_config_directory.c_str()
+                );
+                return EXIT_FAILURE;
+            }
         }
-        total_file = home + SLASH + global_user_filename;
-        if (Glib::file_test(total_file, Glib::FILE_TEST_EXISTS))
+
+        std::string rcname = home + SLASH + global_config_directory +
+            SLASH + global_config_filename;
+
+        if
+        (
+            ! global_legacy_format &&
+            Glib::file_test(rcname, Glib::FILE_TEST_EXISTS)
+        )
         {
-            printf("Reading [%s]\n", total_file.c_str());
-            userfile user(total_file);
+            printf("Reading configuration [%s]\n", rcname.c_str());
+            optionsfile options(rcname);
+            if (options.parse(&p))
+                global_last_used_dir = home;
+            else
+                printf("? error reading [%s]\n", rcname.c_str());
+        }
+        else
+        {
+            std::string alt_rcname = home + SLASH +
+                global_config_filename_alt;
+
+            if (Glib::file_test(alt_rcname, Glib::FILE_TEST_EXISTS))
+            {
+                printf
+                (
+                    "Reading alternate configuration [%s]\n",
+                    alt_rcname.c_str()
+                );
+                optionsfile options(alt_rcname);
+                if (options.parse(&p))
+                    global_last_used_dir = home;
+                else
+                    printf("? error reading [%s]\n", alt_rcname.c_str());
+            }
+        }
+
+        rcname = home + SLASH + global_config_directory +
+            SLASH + global_user_filename;
+
+        if (Glib::file_test(rcname, Glib::FILE_TEST_EXISTS))
+        {
+            printf("Reading 'user' configuration [%s]\n", rcname.c_str());
+            userfile user(rcname);
             if (! user.parse(&p))
-                printf("Error Reading [%s]\n", total_file.c_str());
+                printf("? error reading [%s]\n", rcname.c_str());
+        }
+        else
+        {
+            std::string alt_rcname = home + SLASH +
+                global_user_filename_alt;
+
+            if (Glib::file_test(alt_rcname, Glib::FILE_TEST_EXISTS))
+            {
+                printf
+                (
+                    "Reading 'user' configuration [%s]\n",
+                    alt_rcname.c_str()
+                );
+                userfile user(alt_rcname);
+                if (! user.parse(&p))
+                    printf("? error reading [%s]\n", alt_rcname.c_str());
+            }
         }
     }
     else
-        printf("Error calling getenv( \"%s\" )\n", HOME);
+        printf("? error calling getenv(\"%s\")\n", HOME);
 
     p.init();
     p.launch_input_thread();
@@ -301,7 +412,7 @@ main (int argc, char * argv [])
         if (Glib::file_test(argv[optind], Glib::FILE_TEST_EXISTS))
             seq24_window.open_file(argv[optind]);
         else
-            printf("File not found: %s\n", argv[optind]);
+            printf("? file not found: %s\n", argv[optind]);
     }
 
 #ifdef LASH_SUPPORT
@@ -324,17 +435,26 @@ main (int argc, char * argv [])
     p.deinit_jack();
     if (getenv(HOME) != NULL)
     {
+        /*
+         * Write the configuration file to the new name, unless the
+         * --legacy option is in force.
+         */
+
         std::string home(getenv(HOME));
-        std::string total_file = home + SLASH + global_config_filename;
-        printf("Writing [%s]\n", total_file.c_str());
-        optionsfile options(total_file);
+        std::string rcname;
+        if (global_legacy_format)
+            rcname = home + SLASH + global_config_filename_alt;
+        else
+            rcname = home + SLASH + global_config_directory +
+                SLASH + global_config_filename;
+
+        printf("Writing configuration [%s]\n", rcname.c_str());
+        optionsfile options(rcname);
         if (!options.write(&p))
-            printf("Error writing [%s]\n", total_file.c_str());
+            printf("? error writing [%s]\n", rcname.c_str());
     }
     else
-    {
-        printf("Error calling getenv( \"%s\" )\n", HOME);
-    }
+        printf("? error calling getenv(\"%s\")\n", HOME);
 
 #ifdef LASH_SUPPORT
     if (not_nullptr(global_lash_driver))

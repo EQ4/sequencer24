@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-08-07
- * \updates       2015-08-28
+ * \updates       2015-09-01
  * \license       GNU GPLv2 or above
  *
  */
@@ -48,8 +48,11 @@ bool global_stats = false;
 bool global_pass_sysex = false;
 std::string global_filename = "";
 std::string global_last_used_dir = "/";
-std::string global_config_filename = ".seq24rc";
-std::string global_user_filename = ".seq24usr";
+std::string global_config_directory = ".config/sequencer24";
+std::string global_config_filename = "sequencer24rc";
+std::string global_user_filename = "sequencer24usr";
+std::string global_config_filename_alt = ".seq24rc";
+std::string global_user_filename_alt = ".seq24usr";
 bool global_print_keys = false;
 bool global_is_pattern_playing = false;
 
