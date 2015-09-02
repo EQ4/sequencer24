@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-28
+ * \updates       2015-09-02
  * \license       GNU GPLv2 or above
  *
  *  The <tt> ~/.seq24rc </tt> configuration file is fairly simple in
@@ -393,8 +393,8 @@ optionsfile::write (perform * a_perf)
 
     file
         << "#\n"
-        << "# Seq 24 Init File\n"
-        << "#\n\n\n"
+        << "# Sequencer24 0.9.4 (and above) initialization file\n"
+        << "#\n"
         << "[midi-control]\n"
         <<  c_midi_controls << "\n"               // constant count
         ;
@@ -486,7 +486,7 @@ optionsfile::write (perform * a_perf)
      * Group MIDI control
      */
 
-    file << "\n\n\n[mute-group]\n";
+    file << "\n[mute-group]\n";
     int mtx[c_seqs_in_set];
     file <<  c_gmute_tracks << "\n";
     for (int j = 0; j < c_seqs_in_set; j++)
@@ -524,7 +524,7 @@ optionsfile::write (perform * a_perf)
      */
 
     int buses = a_perf->master_bus().get_num_out_buses();
-    file << "\n\n\n[midi-clock]\n";
+    file << "\n[midi-clock]\n";
     file << buses << "\n";
     for (int i = 0; i < buses; i++)
     {
@@ -556,7 +556,7 @@ optionsfile::write (perform * a_perf)
 
     buses = a_perf->master_bus().get_num_in_buses();
     file
-        << "\n\n\n[midi-input]\n"
+        << "\n[midi-input]\n"
         << buses << "\n"
         ;
     for (int i = 0; i < buses; i++)
@@ -579,9 +579,10 @@ optionsfile::write (perform * a_perf)
      */
 
     file
-        << "\n\n\n[manual-alsa-ports]\n"
+        << "\n[manual-alsa-ports]\n"
         << "# Set to 1 if you want seq24 to create its own ALSA ports and\n"
         << "# not connect to other clients\n"
+        << "\n"
         << global_manual_alsa_ports << "\n"
         ;
 
@@ -590,7 +591,7 @@ optionsfile::write (perform * a_perf)
      */
 
     int x = 0;
-    file << "\n\n\n[interaction-method]\n";
+    file << "\n[interaction-method]\n";
     while (c_interaction_method_names[x] && c_interaction_method_descs[x])
     {
         file
@@ -615,7 +616,7 @@ optionsfile::write (perform * a_perf)
          (size_t) c_seqs_in_set
          ;
     file
-        << "\n\n\n[keyboard-control]\n"
+        << "\n[keyboard-control]\n"
         << "# Key #, Sequence #\n"
         << kevsize << "\n"
         ;
@@ -638,8 +639,9 @@ optionsfile::write (perform * a_perf)
          (size_t)c_seqs_in_set
          ;
     file
-        << "\n\n\n[keyboard-group]\n"
+        << "\n[keyboard-group]\n"
         << "# Key #, group # \n"
+        << "\n"
         << kegsize << "\n"
         ;
 
@@ -710,7 +712,7 @@ optionsfile::write (perform * a_perf)
         << " stop sequencer\n"
         ;
     file
-        << "\n\n\n[jack-transport]\n\n"
+        << "\n[jack-transport]\n\n"
         << "# jack_transport - Enable sync with JACK Transport.\n"
         << global_with_jack_transport << "\n\n"
         << "# jack_master - Seq24 will attempt to serve as JACK Master.\n"
@@ -725,7 +727,7 @@ optionsfile::write (perform * a_perf)
         << global_jack_start_mode << "\n\n"
         ;
     file
-        << "\n\n\n[last-used-dir]\n\n"
+        << "\n[last-used-dir]\n\n"
         << "# Last used directory.\n"
         << global_last_used_dir << "\n\n"
         ;
