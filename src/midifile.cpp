@@ -24,9 +24,21 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-18
+ * \updates       2015-09-04
  * \license       GNU GPLv2 or above
  *
+ *  For a quick guide to the MIDI format, see, for example:
+ *
+ *  http://www.mobilefish.com/tutorials/midi/midi_quickguide_specification.html
+ *
+ *  It is important to note that most sequencers have taken a shortcut or
+ *  two in reading the MIDI format.  For example, most will silently
+ *  ignored an unadorned control tag (0x242400nn) which has not been
+ *  package up as a proper sequencer-specific meta event.  The midicvt
+ *  program (https://github.com/ahlstromcj/midicvt, derived from midicomp,
+ *  midi2text, and mf2t/t2mf) does not ignore this lack, and hence we
+ *  decided to provide a new, more strict input and output format for the
+ *  the proprietary track in Sequencer24.
  */
 
 #include <fstream>
@@ -452,7 +464,19 @@ midifile::parse (perform * a_perf, int a_screen_set)
 
 /**
  *  Parse the proprietary header, figuring out if it is the new format, or
- *  the legacy format.
+ *  the legacy format, for sequencer-specific data.
+ *
+ *  The new format creates a final track chunk, starting with "MTrk".
+ *  Then comes the delta-time (here, 0), and the event.  An event is a
+ *  MIDI event, a SysEx event, or a Meta event.
+ *
+ *  A MIDI Sequencer Specific meta message includes either a delta time or
+ *  absolute time, and the MIDI Sequencer Specific event encoded as
+ *  follows:
+ *
+\verbatim
+        0xFF 0x7F 0x02 length data
+\endverbatim
  *
  *  For convenience, this function first checks the amount of file data
  *  left.  Then it reads a long value.  If the value starts with FF, then
@@ -464,6 +488,11 @@ midifile::parse (perform * a_perf, int a_screen_set)
  *  which should be a 7F.  If so, then we read the length (a variable
  *  length value) of the data, and then read the long value, which should
  *  be the control tag, which, again, is returned by this function.
+ *
+ * \note
+ *      Most sequencers seem to be tolerant of both the lack of an "MTrk"
+ *      marker and of the presence of an unwrapped control tag, and so can
+ *      handle both the old and new formats of the final proprietary track.
  *
  * \param file_size
  *      The size of the data file.  This value is compared against the
@@ -513,11 +542,11 @@ midifile::parse_prop_header (int file_size)
  *  "proprietary" Seq24 data section, which describes the various features
  *  that Seq24 supports.  It consists of series of tags:
  *
- *  -   c_midictrl:
- *  -   c_midiclocks:
- *  -   c_notes:
- *  -   c_bpmtag:
- *  -   c_mutegroups:
+ *      -   c_midictrl
+ *      -   c_midiclocks
+ *      -   c_notes
+ *      -   c_bpmtag
+ *      -   c_mutegroups
  *
  *  (There are more tags defined in the globals module, but they are not
  *  used in this function.)
@@ -708,6 +737,7 @@ midifile::write_short (unsigned short a_x)
  *      -  0x0FFFFFFF (the largest number) is represented as "0xFF 0xFF
  *         0xFF 0x7F".
  *
+ *  Also see the varinum_size() function.
  */
 
 void
@@ -742,7 +772,7 @@ midifile::write_varinum (unsigned long value)
        2 bytes: 0x80 to 0x3FFF
        3 bytes: 0x4000 to 0x001FFFFF
        4 bytes: 0x200000 to 0x0FFFFFFF
-\verbatim
+\endverbatim
  *
  * \return
  *      Returns values as noted above.  Anything beyond that range returns
@@ -766,7 +796,6 @@ midifile::varinum_size (long len) const
 }
 
 /**
- *
  * We want to write:
  *
  *  -   0x4D54726B.
@@ -809,6 +838,13 @@ midifile::varinum_size (long len) const
  *  The legacy format just writes the control tag (0x242400xx).  The new
  *  format writes 0x00 0xFF 0x7F len 0x242400xx; the first 0x00 is the
  *  delta time.
+ *
+ *  In the new format, the 0x24 is a kind of "manufacturer ID".
+ *  At http://www.midi.org/techspecs/manid.php we see that most
+ *  manufacturer IDs start with 0x00, and are thus three bytes long,
+ *  or start with codes at 0x40 and above.  Similary,
+ *  http://sequence15.blogspot.com/2008/12/midi-manufacturer-ids.html
+ *  shows that no manufacturer uses 0x24.
  *
  * \warning
  *      Currently, the manufacturer ID is not handled; it is part of the
