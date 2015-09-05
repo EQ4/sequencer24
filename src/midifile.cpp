@@ -549,9 +549,11 @@ midifile::parse_prop_header (int file_size)
  *      -   c_mutegroups
  *
  *  (There are more tags defined in the globals module, but they are not
- *  used in this function.)
+ *  used in this function.  This doesn't quite make sense, as there are
+ *  also some "triggers" values, and we're pretty sure the application
+ *  uses them.)
  *
- *  The format is 1) tag ID; 2) length of data; 3) the data.
+ *  The format is (1) tag ID; (2) length of data; (3) the data.
  *
  * \change ca 2015-08-16
  *      First, we separate out this function for a little more clarify.

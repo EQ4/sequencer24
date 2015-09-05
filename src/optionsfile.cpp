@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-09-02
+ * \updates       2015-09-05
  * \license       GNU GPLv2 or above
  *
  *  The <tt> ~/.seq24rc </tt> configuration file is fairly simple in
@@ -629,7 +629,7 @@ optionsfile::write (perform * a_perf)
     {
         snprintf
         (
-            outs, sizeof(outs), "%u  %ld        # %s",
+            outs, sizeof(outs), "%u  %ld # %s",
             i->first, i->second, gdk_keyval_name(i->first)
         );
         file << std::string(outs) << "\n";
@@ -653,7 +653,7 @@ optionsfile::write (perform * a_perf)
     {
         snprintf
         (
-            outs, sizeof(outs), "%u  %ld        # %s",
+            outs, sizeof(outs), "%u  %ld # %s",
             i->first, i->second, gdk_keyval_name(i->first)
         );
         file << std::string(outs) << "\n";
@@ -662,7 +662,7 @@ optionsfile::write (perform * a_perf)
     file
         << "# bpm up, down\n"
         << a_perf->m_key_bpm_up << " "
-        << a_perf->m_key_bpm_dn << "        # "
+        << a_perf->m_key_bpm_dn << " # "
         << gdk_keyval_name(a_perf->m_key_bpm_up) << " "
         << gdk_keyval_name(a_perf->m_key_bpm_dn) << "\n"
         ;
@@ -670,7 +670,7 @@ optionsfile::write (perform * a_perf)
         << "# screen set up, down, play\n"
         << a_perf->m_key_screenset_up << " "
         << a_perf->m_key_screenset_dn << " "
-        << a_perf->m_key_set_playing_screenset << "        # "
+        << a_perf->m_key_set_playing_screenset << " # "
         << gdk_keyval_name(a_perf->m_key_screenset_up) << " "
         << gdk_keyval_name(a_perf->m_key_screenset_dn) << " "
         << gdk_keyval_name(a_perf->m_key_set_playing_screenset) << "\n"
@@ -679,7 +679,7 @@ optionsfile::write (perform * a_perf)
         << "# group on, off, learn\n"
         << a_perf->m_key_group_on << " "
         << a_perf->m_key_group_off << " "
-        << a_perf->m_key_group_learn << "        # "
+        << a_perf->m_key_group_learn << " # "
         << gdk_keyval_name(a_perf->m_key_group_on) << " "
         << gdk_keyval_name(a_perf->m_key_group_off) << " "
         << gdk_keyval_name(a_perf->m_key_group_learn) << "\n"
@@ -690,7 +690,7 @@ optionsfile::write (perform * a_perf)
         << a_perf->m_key_queue << " "
         << a_perf->m_key_snapshot_1 << " "
         << a_perf->m_key_snapshot_2 << " "
-        << a_perf->m_key_keep_queue << "        # "
+        << a_perf->m_key_keep_queue << " # "
         << gdk_keyval_name(a_perf->m_key_replace) << " "
         << gdk_keyval_name(a_perf->m_key_queue) << " "
         << gdk_keyval_name(a_perf->m_key_snapshot_1) << " "
@@ -699,15 +699,15 @@ optionsfile::write (perform * a_perf)
         ;
     file
         << a_perf->m_show_ui_sequence_key
-        << "        # show_ui_sequence_key (1=true/0=false)\n"
+        << " # show_ui_sequence_key (1=true/0=false)\n"
         ;
     file
-        << a_perf->m_key_start << "        # "
+        << a_perf->m_key_start << " # "
         << gdk_keyval_name(a_perf->m_key_start)
         << " start sequencer\n"
        ;
     file
-        << a_perf->m_key_stop << "        # "
+        << a_perf->m_key_stop << " # "
         << gdk_keyval_name(a_perf->m_key_stop)
         << " stop sequencer\n"
         ;
@@ -717,13 +717,11 @@ optionsfile::write (perform * a_perf)
         << global_with_jack_transport << "\n\n"
         << "# jack_master - Seq24 will attempt to serve as JACK Master.\n"
         << global_with_jack_master << "\n\n"
-        << "# jack_master_cond - Seq24 will fail to be master "
-           "if there is already a master set.\n"
+        << "# jack_master_cond - Seq24 won't be master if another master exists.\n"
         << global_with_jack_master_cond  << "\n\n"
         << "# jack_start_mode\n"
-        << "# 0 = Playback will be in live mode.  "
-            "Use this to allow muting and unmuting of loops.\n"
-        << "# 1 = Playback will use the song editors data.\n"
+        << "# 0 = Playback in live mode. Allows muting and unmuting of loops.\n"
+        << "# 1 = Playback uses the song editor's data.\n"
         << global_jack_start_mode << "\n\n"
         ;
     file

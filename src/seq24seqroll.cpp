@@ -26,7 +26,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-28
+ * \updates       2015-09-05
  * \license       GNU GPLv2 or above
  *
  */
@@ -325,15 +325,16 @@ Seq24SeqRollInput::on_button_release_event
     if (a_ev->button == 3)
     {
         /*
-         * Experimental feature.  If the Super (Mod4, Windows) key is
+         * Minor new feature.  If the Super (Mod4, Windows) key is
          * pressed when release, keep the adding state in force.  One
          * can then use the unadorned left-click key to add notes.  Right
          * click to reset the adding mode.  This feature is enabled only
          * if allowed by the settings (but is true by default).
+         * See the same code in perfrollinput.cpp.
          */
 
         bool addmode_exit  = ! global_allow_mod4_mode;
-        if (! addmode_exit )
+        if (! addmode_exit)
             addmode_exit = ! (a_ev->state & GDK_MOD4_MASK); // Mod4 held?
 
         if (addmode_exit)

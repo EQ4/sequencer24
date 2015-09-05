@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-09-01
+ * \updates       2015-09-05
  * \license       GNU GPLv2 or above
  *
  */
@@ -346,7 +346,9 @@ main (int argc, char * argv [])
             printf("Reading configuration [%s]\n", rcname.c_str());
             optionsfile options(rcname);
             if (options.parse(&p))
-                global_last_used_dir = home;
+            {
+                // nothing to do upon success
+            }
             else
                 printf("? error reading [%s]\n", rcname.c_str());
         }
