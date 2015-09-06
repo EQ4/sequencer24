@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-29
+ * \updates       2015-09-06
  * \license       GNU GPLv2 or above
  *
  *  Here is a list of the global variables used/stored/modified by this
@@ -534,14 +534,19 @@ options::add_mouse_page ()
     mod4frame->add(*mod4box);
     Gtk::CheckButton * chk_mod4 = manage
     (
-        new Gtk::CheckButton("_Mod4 key preserves note-add mode", true)
+        new Gtk::CheckButton
+        (
+            "_Mod4 key preserves note-add mode in song and pattern editors",
+            true
+        )
     );
     chk_mod4->set_active(global_allow_mod4_mode);
     add_tooltip
     (
         chk_mod4,
         "If checked, note-add mode stays active after right-click release "
-        "if 'Windows' key is pressed in seq24 mode."
+        "if 'Windows' key is pressed in seq24 mode.  This works in the "
+        "pattern and song editor piano rolls."
     );
     mod4box->pack_start(*chk_mod4, Gtk::PACK_SHRINK);
     chk_mod4->signal_toggled().connect
