@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-30
- * \updates       2015-08-27
+ * \updates       2015-09-07
  * \license       GNU GPLv2 or above
  *
  *  This file provides a Linux-only implementation of MIDI support.
@@ -463,7 +463,8 @@ mastermidibus::play (unsigned char a_bus, event * a_e24, unsigned char a_channel
 }
 
 /**
- *  Set the clock for the given (legal) buss number.
+ *  Set the clock for the given (legal) buss number.  The legality checks
+ *  are a little loose, however.
  *
  * \threadsafe
  */

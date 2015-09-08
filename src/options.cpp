@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-09-06
+ * \updates       2015-09-07
  * \license       GNU GPLv2 or above
  *
  *  Here is a list of the global variables used/stored/modified by this
@@ -138,7 +138,11 @@ options::add_midi_clock_page ()
         hbox2->pack_start(*label, false, false);
 
         Gtk::RadioButton * rb_off = manage(new Gtk::RadioButton("Off"));
-        add_tooltip(rb_off, "MIDI Clock will be disabled.");
+        add_tooltip
+        (
+            rb_off,
+            "MIDI Clock will be disabled. Used for conventional playback."
+        );
 
         Gtk::RadioButton * rb_on = manage(new Gtk::RadioButton("On (Pos)"));
         add_tooltip
@@ -155,8 +159,8 @@ options::add_midi_clock_page ()
             rb_mod,
             "MIDI Clock will be sent.  MIDI Start will be sent and clocking "
             "will begin once the song position has reached the modulo of "
-            "the specified Size. (Used for gear that doesn't respond to Song "
-            "Position)"
+            "the specified Size. For gear that doesn't respond to Song "
+            "Position."
         );
 
         Gtk::RadioButton::Group group = rb_off->get_group();

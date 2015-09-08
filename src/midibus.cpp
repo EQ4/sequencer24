@@ -64,7 +64,7 @@ midibus::midibus
     int a_queue
 ) :
     m_id                (a_id),
-    m_clock_type        (e_clock_off),      // offset?
+    m_clock_type        (e_clock_off),
     m_inputing          (false),
     m_seq               (a_seq),
     m_dest_addr_client  (a_destclient),
@@ -501,7 +501,7 @@ midibus::init_clock (long a_tick)
 }
 
 /**
- *  Contineu from the given tick.
+ *  Continue from the given tick.
  */
 
 void
@@ -536,18 +536,14 @@ midibus::continue_from (long a_tick)
         evc.data.control.value = beats;
         snd_seq_ev_set_fixed(&ev);
         snd_seq_ev_set_fixed(&evc);
-
         snd_seq_ev_set_priority(&ev, 1);
         snd_seq_ev_set_priority(&evc, 1);
-
         snd_seq_ev_set_source(&evc, m_local_addr_port); /* set source */
         snd_seq_ev_set_subs(&evc);
         snd_seq_ev_set_source(&ev, m_local_addr_port);
         snd_seq_ev_set_subs(&ev);
-
         snd_seq_ev_set_direct(&ev);                     /* it's immediate */
         snd_seq_ev_set_direct(&evc);
-
         snd_seq_event_output(m_seq, &evc);              /* pump it into queue */
         flush();
         snd_seq_event_output(m_seq, &ev);

@@ -24,7 +24,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-23
+ * \updates       2015-09-07
  * \license       GNU GPLv2 or above
  *
  */
@@ -2067,7 +2067,7 @@ perform::output_func ()
 #endif
             /*
              * init_clock will be true when we run for the first time, or
-             * as soon as jack gets a good lock on playback.
+             * as soon as JACK gets a good lock on playback.
              */
 
             if (init_clock)
@@ -2085,12 +2085,11 @@ perform::output_func ()
                         play(get_right_tick() - 1);     // play!
                         reset_sequences();              // reset!
                         set_orig_ticks(get_left_tick());
-                        current_tick = (double) get_left_tick()+leftover_tick;
+                        current_tick = double(get_left_tick() + leftover_tick);
                     }
                 }
-
                 play((long) current_tick);              // play!
-                m_master_bus.clock((long) clock_tick);  // MIDI clock
+                m_master_bus.clock(long(clock_tick));   // MIDI clock
                 if (global_stats)
                 {
                     while (stats_total_tick <= total_tick)
@@ -2102,7 +2101,8 @@ perform::output_func ()
 
 #ifndef PLATFORM_WINDOWS
                             long current_us =
-                                (current.tv_sec * 1000000) + (current.tv_nsec / 1000);
+                                (current.tv_sec * 1000000) +
+                                (current.tv_nsec / 1000);
 #else
                             long current_us = current * 1000;
 #endif
@@ -2110,7 +2110,9 @@ perform::output_func ()
                             stats_last_clock_us = current_us;
 
                             int index = stats_clock_width_us / 300;
-                            if (index >= 100) index = 99;
+                            if (index >= 100)
+                                index = 99;
+
                             stats_clock[index]++;
                         }
                         stats_total_tick++;
@@ -2833,7 +2835,6 @@ jack_timebase_callback
 )
 {
     static double jack_tick;
-//  static jack_nframes_t last_frame;
     static jack_nframes_t current_frame;
     static jack_transport_state_t state_current;
     static jack_transport_state_t state_last;
@@ -2851,9 +2852,8 @@ jack_timebase_callback
      * Compute BBT info from frame number.  This is relatively simple
      * here, but would become complex if we supported tempo or time
      * signature changes at specific locations in the transport timeline.
+     * If we are in a new position....
      */
-
-    // if we are in a new position
 
     if (state_last == JackTransportStarting &&
             state_current == JackTransportRolling)
@@ -2864,7 +2864,6 @@ jack_timebase_callback
             pos->beats_per_minute / (pos->frame_rate * 60.0);
 
         jack_tick = (jack_delta_tick < 0) ? -jack_delta_tick : jack_delta_tick;
-//      last_frame = current_frame;
 
         long ptick = 0, pbeat = 0, pbar = 0;
         pbar  = (long)
