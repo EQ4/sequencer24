@@ -1,0 +1,240 @@
+command % valgrind ./yoshimi -a -A -l wpb_yoshimi_params.xmz
+
+This crash, in gdb, occurs in the following backtrace:
+
+#29 0x00007ffff56ef7fc in fftwf_plan_r2r_1d () from
+/usr/lib/x86_64-linux-gnu/libfftw3f.so.3
+#30 0x00000000004aef9c in FFTwrapper::FFTwrapper(int) ()
+#31 0x0000000000483e52 in PADnoteParameters::applyparameters(bool) ()
+#32 0x0000000000462808 in
+Part::loadXMLinstrument(std::__cxx11::basic_string<char,
+ std::char_traits<char>, std::allocator<char> >) ()
+#33 0x000000000044ff41 in Bank::loadfromslot(unsigned int, Part*) ()
+#34 0x000000000044488f in SynthEngine::SetProgram(unsigned char, unsigned
+ short) ()
+#35 0x00000000004c711b in MusicIO::static_PrgChangeThread(void*) ()
+#36 0x00007ffff5f560a4 in start_thread (arg=0x7fffe57fa700) at
+ pthread_create.c:309
+
+Here's a valgrind run:
+
+==19930== Memcheck, a memory error detector
+==19930== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==19930== Using Valgrind-3.10.1 and LibVEX; rerun with -h for copyright info
+==19930== Command: ./yoshimi -a -A -l wpb_yoshimi_params.xmz
+==19930==
+Yoshimi is starting
+==19930== Invalid read of size 8
+==19930==    at 0x7DED240: std::_Rb_tree_increment(std::_Rb_tree_node_base const*) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.21)
+==19930==    by 0x44E377: Bank::changeRootID(unsigned long, unsigned long) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x455006: Bank::parseConfigFile(XMLwrapper*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x438CAF: Config::extractConfigData(XMLwrapper*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x43A53B: Config::loadConfig() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x43B295: Config::Setup(int, char**) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x43BC2C: Config::Config(SynthEngine*, int, char**) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x445192: SynthEngine::SynthEngine(int, char**, bool, unsigned int) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x523C54: mainCreateNewInstance(unsigned int) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x433077: main (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==  Address 0xc521148 is 24 bytes inside a block of size 128 free'd
+==19930==    at 0x4C2A360: operator delete(void*) (vg_replace_malloc.c:507)
+==19930==    by 0x44E46C: Bank::changeRootID(unsigned long, unsigned long) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x455006: Bank::parseConfigFile(XMLwrapper*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x438CAF: Config::extractConfigData(XMLwrapper*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x43A53B: Config::loadConfig() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x43B295: Config::Setup(int, char**) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x43BC2C: Config::Config(SynthEngine*, int, char**) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x445192: SynthEngine::SynthEngine(int, char**, bool, unsigned int) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x523C54: mainCreateNewInstance(unsigned int) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x433077: main (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==
+==19930== Syscall param ioctl(generic) points to uninitialised byte(s)
+==19930==    at 0x86B9C17: ioctl (syscall-template.S:81)
+==19930==    by 0x6D62F98: ??? (in /usr/lib/x86_64-linux-gnu/libasound.so.2.0.0)
+==19930==    by 0x6D689DA: snd_seq_parse_address (in /usr/lib/x86_64-linux-gnu/libasound.so.2.0.0)
+==19930==    by 0x4D14F1: AlsaEngine::openMidi() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4D5601: AlsaClient::openMidi() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x523E49: mainCreateNewInstance(unsigned int) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x433077: main (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==  Address 0xffeffeb64 is on thread 1's stack
+==19930==  in frame #2, created by snd_seq_parse_address (???)
+==19930==
+
+Yay! We're up and running :-)
+==19930== Thread 2:
+==19930== Conditional jump or move depends on uninitialised value(s)
+==19930==    at 0x4357F8: Config::signalCheck() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x524730: mainGuiThread(void*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x6AAE0A3: start_thread (pthread_create.c:309)
+==19930==    by 0x86C107C: clone (clone.S:111)
+==19930==
+==19930== Warning: client switching stacks?  SP change: 0x1e9879e0 --> 0x1e7871c0
+==19930==          to suppress, use: --max-stackframe=2099232 or greater
+==19930== Thread 4:
+==19930== Invalid read of size 4
+==19930==    at 0x4BE36E: Reverb::out(float*, float*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4BB09D: EffectMgr::out(float*, float*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x45FDE1: Part::ComputePartSmps() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x43FA0C: SynthEngine::MasterAudio(float**, float**, int) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4D3128: AlsaEngine::AudioThread() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x6AAE0A3: start_thread (pthread_create.c:309)
+==19930==    by 0x86C107C: clone (clone.S:111)
+==19930==  Address 0x1b575e14 is 100 bytes inside a block of size 680 free'd
+==19930==    at 0x4C2A360: operator delete(void*) (vg_replace_malloc.c:507)
+==19930==    by 0x4BA514: EffectMgr::defaults() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x45B5C5: Part::defaultsinstrument() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4627E4: Part::loadXMLinstrument(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x44FF40: Bank::loadfromslot(unsigned int, Part*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x44488E: SynthEngine::SetProgram(unsigned char, unsigned short) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4C711A: MusicIO::static_PrgChangeThread(void*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x6AAE0A3: start_thread (pthread_create.c:309)
+==19930==    by 0x86C107C: clone (clone.S:111)
+==19930==
+==19930== Invalid read of size 4
+==19930==    at 0x4BE382: Reverb::out(float*, float*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4BB09D: EffectMgr::out(float*, float*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x45FDE1: Part::ComputePartSmps() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x43FA0C: SynthEngine::MasterAudio(float**, float**, int) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4D3128: AlsaEngine::AudioThread() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x6AAE0A3: start_thread (pthread_create.c:309)
+==19930==    by 0x86C107C: clone (clone.S:111)
+==19930==  Address 0x1b575f7c is 460 bytes inside a block of size 680 free'd
+==19930==    at 0x4C2A360: operator delete(void*) (vg_replace_malloc.c:507)
+==19930==    by 0x4BA514: EffectMgr::defaults() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x45B5C5: Part::defaultsinstrument() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4627E4: Part::loadXMLinstrument(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x44FF40: Bank::loadfromslot(unsigned int, Part*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x44488E: SynthEngine::SetProgram(unsigned char, unsigned short) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4C711A: MusicIO::static_PrgChangeThread(void*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x6AAE0A3: start_thread (pthread_create.c:309)
+==19930==    by 0x86C107C: clone (clone.S:111)
+==19930==
+==19930== Invalid read of size 4
+==19930==    at 0x4BE392: Reverb::out(float*, float*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4BB09D: EffectMgr::out(float*, float*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x45FDE1: Part::ComputePartSmps() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x43FA0C: SynthEngine::MasterAudio(float**, float**, int) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4D3128: AlsaEngine::AudioThread() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x6AAE0A3: start_thread (pthread_create.c:309)
+==19930==    by 0x86C107C: clone (clone.S:111)
+==19930==  Address 0x1b61b18c is 2,204 bytes inside a block of size 3,080 free'd
+==19930==    at 0x4C2A8E0: operator delete[](void*) (vg_replace_malloc.c:542)
+==19930==    by 0x4BDF3C: Reverb::~Reverb() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4BDFA8: Reverb::~Reverb() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4BA514: EffectMgr::defaults() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x45B5C5: Part::defaultsinstrument() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4627E4: Part::loadXMLinstrument(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x44FF40: Bank::loadfromslot(unsigned int, Part*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x44488E: SynthEngine::SetProgram(unsigned char, unsigned short) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4C711A: MusicIO::static_PrgChangeThread(void*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x6AAE0A3: start_thread (pthread_create.c:309)
+==19930==    by 0x86C107C: clone (clone.S:111)
+==19930==
+==19930== Invalid read of size 4
+==19930==    at 0x4BE39B: Reverb::out(float*, float*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4BB09D: EffectMgr::out(float*, float*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x45FDE1: Part::ComputePartSmps() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x43FA0C: SynthEngine::MasterAudio(float**, float**, int) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4D3128: AlsaEngine::AudioThread() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x6AAE0A3: start_thread (pthread_create.c:309)
+==19930==    by 0x86C107C: clone (clone.S:111)
+==19930==  Address 0x1b576634 is 1,364 bytes inside a block of size 4,096 free'd
+==19930==    at 0x4C29E90: free (vg_replace_malloc.c:473)
+==19930==    by 0x4BDF52: Reverb::~Reverb() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4BDFA8: Reverb::~Reverb() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4BA514: EffectMgr::defaults() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x45B5C5: Part::defaultsinstrument() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4627E4: Part::loadXMLinstrument(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x44FF40: Bank::loadfromslot(unsigned int, Part*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x44488E: SynthEngine::SetProgram(unsigned char, unsigned short) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4C711A: MusicIO::static_PrgChangeThread(void*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x6AAE0A3: start_thread (pthread_create.c:309)
+==19930==    by 0x86C107C: clone (clone.S:111)
+==19930==
+==19930== Invalid write of size 4
+==19930==    at 0x4BE3A5: Reverb::out(float*, float*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4BB09D: EffectMgr::out(float*, float*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x45FDE1: Part::ComputePartSmps() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x43FA0C: SynthEngine::MasterAudio(float**, float**, int) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4D3128: AlsaEngine::AudioThread() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x6AAE0A3: start_thread (pthread_create.c:309)
+==19930==    by 0x86C107C: clone (clone.S:111)
+==19930==  Address 0x1b61b18c is 2,204 bytes inside a block of size 3,080 free'd
+==19930==    at 0x4C2A8E0: operator delete[](void*) (vg_replace_malloc.c:542)
+==19930==    by 0x4BDF3C: Reverb::~Reverb() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4BDFA8: Reverb::~Reverb() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4BA514: EffectMgr::defaults() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x45B5C5: Part::defaultsinstrument() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4627E4: Part::loadXMLinstrument(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x44FF40: Bank::loadfromslot(unsigned int, Part*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x44488E: SynthEngine::SetProgram(unsigned char, unsigned short) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4C711A: MusicIO::static_PrgChangeThread(void*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x6AAE0A3: start_thread (pthread_create.c:309)
+==19930==    by 0x86C107C: clone (clone.S:111)
+==19930==
+==19930== Invalid write of size 4
+==19930==    at 0x4BE3C2: Reverb::out(float*, float*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4BB09D: EffectMgr::out(float*, float*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x45FDE1: Part::ComputePartSmps() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x43FA0C: SynthEngine::MasterAudio(float**, float**, int) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4D3128: AlsaEngine::AudioThread() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x6AAE0A3: start_thread (pthread_create.c:309)
+==19930==    by 0x86C107C: clone (clone.S:111)
+==19930==  Address 0x1b575f3c is 396 bytes inside a block of size 680 free'd
+==19930==    at 0x4C2A360: operator delete(void*) (vg_replace_malloc.c:507)
+==19930==    by 0x4BA514: EffectMgr::defaults() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x45B5C5: Part::defaultsinstrument() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4627E4: Part::loadXMLinstrument(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x44FF40: Bank::loadfromslot(unsigned int, Part*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x44488E: SynthEngine::SetProgram(unsigned char, unsigned short) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4C711A: MusicIO::static_PrgChangeThread(void*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x6AAE0A3: start_thread (pthread_create.c:309)
+==19930==    by 0x86C107C: clone (clone.S:111)
+==19930==
+==19930== Invalid write of size 4
+==19930==    at 0x4BE3C5: Reverb::out(float*, float*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4BB09D: EffectMgr::out(float*, float*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x45FDE1: Part::ComputePartSmps() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x43FA0C: SynthEngine::MasterAudio(float**, float**, int) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4D3128: AlsaEngine::AudioThread() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x6AAE0A3: start_thread (pthread_create.c:309)
+==19930==    by 0x86C107C: clone (clone.S:111)
+==19930==  Address 0x1b575fbc is 524 bytes inside a block of size 680 free'd
+==19930==    at 0x4C2A360: operator delete(void*) (vg_replace_malloc.c:507)
+==19930==    by 0x4BA514: EffectMgr::defaults() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x45B5C5: Part::defaultsinstrument() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4627E4: Part::loadXMLinstrument(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x44FF40: Bank::loadfromslot(unsigned int, Part*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x44488E: SynthEngine::SetProgram(unsigned char, unsigned short) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4C711A: MusicIO::static_PrgChangeThread(void*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x6AAE0A3: start_thread (pthread_create.c:309)
+==19930==    by 0x86C107C: clone (clone.S:111)
+==19930==
+==19930== Invalid read of size 4
+==19930==    at 0x4BE342: Reverb::out(float*, float*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4BB09D: EffectMgr::out(float*, float*) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x45FDE1: Part::ComputePartSmps() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x43FA0C: SynthEngine::MasterAudio(float**, float**, int) (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x4D3128: AlsaEngine::AudioThread() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x6AAE0A3: start_thread (pthread_create.c:309)
+==19930==    by 0x86C107C: clone (clone.S:111)
+==19930==  Address 0x1b575f40 is 400 bytes inside a block of size 680 free'd
+==19930==    at 0x4C2A360: operator delete(void*) (vg_replace_malloc.c:507)
+==19930==    by 0x4BA514: EffectMgr::defaults() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)
+==19930==    by 0x45B5C5: Part::defaultsinstrument() (in /home/ahlstrom/Home/ca/mls/git/yoshimi/src/yoshimi)==19930==
+==19930== HEAP SUMMARY:
+==19930==     in use at exit: 48,169,309 bytes in 65,219 blocks
+==19930==   total heap usage: 1,984,644 allocs, 1,919,425 frees, 1,150,754,800 bytes allocated
+==19930==
+==19930== LEAK SUMMARY:
+==19930==    definitely lost: 152,316 bytes in 485 blocks
+==19930==    indirectly lost: 40,848 bytes in 1,806 blocks
+==19930==      possibly lost: 45,325 bytes in 1,285 blocks
+==19930==    still reachable: 47,930,820 bytes in 61,643 blocks
+==19930==         suppressed: 0 bytes in 0 blocks
+==19930== Rerun with --leak-check=full to see details of leaked memory
+==19930==
+==19930== For counts of detected and suppressed errors, rerun with: -v
+==19930== Use --track-origins=yes to see where uninitialised values come from
+==19930== ERROR SUMMARY: 32876 errors from 26 contexts (suppressed: 368 from 2)
+Killed
+a
