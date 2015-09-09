@@ -1,12 +1,13 @@
 README for Sequencer24 0.9.4
 Chris Ahlstrom
-2015-07-24 to 2015-09-01
+2015-07-24 to 2015-09-09
+
+This package is currently oriented to developers.  Please see the
+INSTALL file for a brief description on installation.
 
 The sequencer24 project is a gradual refactoring of seq24 0.9.2
 to bring it up to date, fix bugs, consolidate patches, convert
 to GTKmm 3, and much more.
-
-Most recent update:  Merged Fixes branch back into master.
 
 The refactoring is done as a series of Git branches (x means it is done, y
 means in progress):
@@ -35,6 +36,8 @@ project, which provides a 60-page PDF file and its LaTeX source code:
 
 However, we have found some documentation mistakes while researching, and
 will have to correct those mistakes soon.
+
+The following section is for historicial purposes only.
 
 --------------------------------------
 The original seq24 v0.9.2 README

@@ -1,6 +1,6 @@
 Chris Ahlstrom
 Random Ideas for Documentation and Improvements
-2015-08-25 to 2015-08-29
+2015-08-25 to 2015-09-08
 
 Found on the web, suggested enhancements for seq24:
 
@@ -155,5 +155,27 @@ Playback use cases:
 
         Run "yoshimi -a -A &".
         Set [manual-alsa-ports] to 0 in ~/.seq24rc.
+
+http://sourceforge.net/p/seq24/mailman/message/1049606/
+
+ - In the song editor, right-click on a track/loop name should let appear
+   the same menu as a right-click on the corresponding loop in the main
+   window (new/paste on an empty track and Edit/cut/copy and so on on an
+   existing track).  This way, it is not needed anymore to
+   switch between the two windows.
+
+ - In the pianoroll editor, to add series of controllers you must click
+   many times on the horizontal band of controller events. Maybe a click
+   and drag could be a nice feature to add multiple controller events
+   according to the "grid snap" setting.
+
+ - I often connect it with multiple soft synths. When reloading a session
+   file, if the order of the synths has changed, i must reconfigure by
+   hand each loop...  until next reloading... I don't know if it is the
+   best idea but saving connections by port name instead of port number
+   would probably work better.
+
+ - Less important and more questionable : color setting for loops/tracks
+   or maybe a color depending on midi port?
 
 # vim: sw=4 ts=4 wm=8 et ft=text
