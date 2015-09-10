@@ -8,7 +8,7 @@
 # \library    	sequencer24
 # \author     	Chris Ahlstrom
 # \date       	2015-07-24
-# \update     	2015-07-24
+# \update     	2015-09-10
 # \version    	$Revision$
 # \license    	$XPC_SUITE_GPL_LICENSE$
 #
@@ -359,6 +359,7 @@ function clean_tempfiles()
    find . -name "*.swp" -exec rm -f '{}' \; 2> /dev/null
    find . -name ".*.swp" -exec rm -f '{}' \; 2> /dev/null
    find . -name "*.t" -exec rm -f '{}' \; 2> /dev/null
+   find . -name "*.hexer" -exec rm -f '{}' \; 2> /dev/null
    find . -name "*~" -exec rm -f '{}' \; 2> /dev/null
    clean_by_ext "bak t tmp log"
    find . -name "tmwrk*" -exec rm -rf '{}' \; 2> /dev/null

@@ -189,6 +189,28 @@ midifile::read_varinum ()
 /**
  *  This function opens a binary MIDI file and parses it into sequences
  *  and other application objects.
+ *
+ *  In addition to the standard MIDI track data in a normal track, Seq24
+ *  adds four sequencer-specific events just before the end of the track:
+ *
+\verbatim
+    c_triggers_new:     SeqSpec FF 7F 1C 24 24 00 08 00 00 ...
+    c_midibus:          SeqSpec FF 7F 05 24 24 00 01 00
+    c_timesig:          SeqSpec FF 7F 06 24 24 00 06 04 04
+    c_midich:           SeqSpec FF 7F 05 24 24 00 02 06
+\endverbatim
+ *
+ *  Standard MIDI provides for the port and channel specifications, but
+ *  they are apparently considered obsolete:
+ *
+ *  Obsolete meta-event:                Replacement:
+ *
+\verbatim
+    MIDI port (buss):   FF 21 01 po     Device (port) name: FF 09 len text
+    MIDI channel:       FF 20 01 ch
+\endverbatim
+ *
+ *  What do other applications use for specifying port/channel?
  */
 
 bool
@@ -340,7 +362,7 @@ midifile::parse (perform * a_perf, int a_screen_set)
                                 seq->set_midi_bus(read_byte());
                                 len--;
                             }
-                            else if (proprietary == c_midich)
+                            else if (proprietary == c_midich) /
                             {
                                 seq->set_midi_channel(read_byte());
                                 len--;

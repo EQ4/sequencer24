@@ -1,9 +1,10 @@
 Sequencer24/Seq24 Roadmap
 Chris Ahlstrom
-2015-07-23 to 2015-09-01
+2015-07-23 to 2015-09-10
 
 The starting point for the Sequencer24 project is version
-0.9.2 of seq24.  Sequencer24 starts with version 0.9.3.
+0.9.2 of seq24.  Sequencer24 starts with version 0.9.3 and is currently at
+0.9.4.
 
 The following changes are planned ('x' means it is done, 'y' means it is
 in progress, and 'z' means it will be moved to a later branch):
@@ -116,6 +117,11 @@ x  -  Fixed in "master" branch:
          found, or the --legacy option is in force.  Write to them as
          well, unless the --legacy option is in force.  Done, but
          currently kind of Linux-specific.
+      -  Determine the feasibility of modifying selected sequences
+         to change the output port (MIDI buss) number.  Perhaps offload or
+         copy these specifications to the proprietary section.
+      -  Consider an option to override the proprietary section with data
+         from a file.
    -  Branch off to a "Library" branch:
       -  Break out non-GUI functionality into libsequencer24.
       -  Unit test each element as appropriate using xpc-suite
@@ -131,10 +137,14 @@ x  -  Fixed in "master" branch:
       -  Rebuild application using library code.
       -  Verify functionality.
       -  Merge "Library" back into the main trunk.
-   -  Create a separate "sequencer24-doc" project and update the
+x  -  Create a separate "sequencer24-doc" project and update the
       documentation to reflect the name changes and new project.
-   -  Branch off to an "Enhancements" branch:
-      -  TO BE DETERMINED.
+      Obviously, always a work-in-progress.
+   -  Branch off to an "Enhancements" branch (highly provisional):
+      -  Convert to gtkmm-3.
+      -  Add optional build using Qt 5.
+      -  Flesh out the support for PortMidi.
+      -  Support MingW builds in Windows a la the Subatomic Glue port.
 
 Eventually, there will be a few features and fixes to try to add:
 
@@ -146,7 +156,9 @@ Eventually, there will be a few features and fixes to try to add:
       Also document it.
 
 There's actually not a lot to improve though, in Seq24 functionality, except
-to keep the project active and living.  A very nice project!
+to keep the project active and living.  A very nice project, once you get
+to know it!  It has had a good number of contributors and patchers over
+the years.
 
 Git Graph:
 
