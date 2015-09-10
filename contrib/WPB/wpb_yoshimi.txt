@@ -1,6 +1,6 @@
 Construction of "Where's Prince Brilliant" for ZynAddSubFx/Yoshimi
 Chris Ahlstrom
-2012-01-20 to 2015-09-08
+2012-01-20 to 2015-09-09
 
 This file describes the importing of one of my old Cakewalk transcriptions, a
 rendering of "Where's Prince Brilliant?" from (unreliable) memory.
@@ -85,12 +85,5 @@ To set up and play the tune (using ALSA):
       the channel shown after the dash in the lower left corner of each
       pattern.  Probably best to save this to a new file, just in case.
 
-   5. Open the Song Editor of sequencer24.
-
-
-yoshimi 1.3.5.2 crash on playback:
-
-   *** Error in `yoshimi': corrupted double-linked list: 0x00007fefcc01a2b0 ***
-
-
+   5. Open the Song Editor of sequencer24.  Click the red play arrow.
 
