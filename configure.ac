@@ -6,7 +6,7 @@ dnl \file          configure.ac
 dnl \library       sequencer24
 dnl \author        Chris Ahlstrom
 dnl \date          2015-07-24
-dnl \update        2015-09-06
+dnl \update        2015-09-12
 dnl \version       $Revision$
 dnl \license       $XPC_SUITE_GPL_LICENSE$
 dnl
@@ -396,7 +396,7 @@ AC_ARG_ENABLE(highlight,
     [highlight=$enableval],
     [highlight=yes])
 
-if test "$lash" != "no"; then
+if test "$highlight" != "no"; then
     AC_DEFINE(HIGHLIGHT_EMPTY_SEQS, 1, [Define to enable highlighting empty sequences])
 else
     AC_MSG_WARN([*** Highlighting empty sequences not enabled.]);
@@ -461,7 +461,7 @@ AC_CONFIG_FILES([
 AC_OUTPUT
 
 dnl ***************************************************************************
-dnl configure.ac (midicvt)
+dnl configure.ac (sequencer24)
 dnl ---------------------------------------------------------------------------
 dnl vim: ts=4 sw=4 et ft=config
 dnl ---------------------------------------------------------------------------

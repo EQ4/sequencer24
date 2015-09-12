@@ -362,7 +362,7 @@ midifile::parse (perform * a_perf, int a_screen_set)
                                 seq->set_midi_bus(read_byte());
                                 len--;
                             }
-                            else if (proprietary == c_midich) /
+                            else if (proprietary == c_midich)
                             {
                                 seq->set_midi_channel(read_byte());
                                 len--;

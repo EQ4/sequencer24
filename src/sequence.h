@@ -28,7 +28,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-08-27
+ * \updates       2015-09-10
  * \license       GNU GPLv2 or above
  *
  */
@@ -36,7 +36,6 @@
 #include <string>
 #include <list>
 #include <stack>
-// #include <vector>                       // experimental:  replace std::list
 
 #include "easy_macros.h"
 
@@ -155,7 +154,6 @@ public:
 private:
 
     typedef std::list<event> Events;
-//  typedef std::vector<event> Events;  // no sort(), merge(), push_front()
     typedef std::list<trigger> Triggers;
     typedef std::stack<Events> EventStack;
     typedef std::stack<Triggers> TriggerStack;
