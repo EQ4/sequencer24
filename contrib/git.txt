@@ -1,6 +1,6 @@
 Quick Reference for Git Processes
 Chris Ahlstrom
-2015-09-09 to 2015-09-09
+2015-09-09 to 2015-09-12
 
    https://github.com/Kunena/Kunena-Forum/wiki/
       Create-a-new-branch-with-git-and-manage-branches and others
@@ -52,5 +52,9 @@ Delete a branch on your local filesystem, use -d or -D (to force):
 Delete the branch on github:
 
     $ git push origin :[name_of_your_new_branch]
+
+Caching your credentials (be careful!):
+
+    $ git config credential.helper store
 
 # vim: sw=4 ts=4 wm=8 et ft=sh
