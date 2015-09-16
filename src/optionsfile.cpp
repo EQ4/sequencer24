@@ -25,7 +25,7 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-09-05
+ * \updates       2015-09-16
  * \license       GNU GPLv2 or above
  *
  *  The <tt> ~/.seq24rc </tt> configuration file is fairly simple in
@@ -263,6 +263,15 @@ optionsfile::parse (perform * a_perf)
     sscanf(m_line, "%ld", &keys);
     next_data_line(file);
     a_perf->get_key_events().clear();
+
+    /*
+     * Weird bug involving the optionsfile and perform modules:  At the
+     * 4th or 5th line of data in the "rc" file, setting this key event
+     * results in the size remaining at 4, so the final size is 31.
+     * This bug is present even in seq24 r.0.9.2.  Also, the size of the
+     * reverse container is constant at 32.
+     */
+
     for (int i = 0; i < keys; ++i)
     {
         long key = 0, seq = 0;
@@ -270,7 +279,6 @@ optionsfile::parse (perform * a_perf)
         a_perf->set_key_event(key, seq);
         next_data_line(file);
     }
-
     line_after(file, "[keyboard-group]");
     long groups = 0;
     sscanf(m_line, "%ld", &groups);
@@ -611,9 +619,8 @@ optionsfile::write (perform * a_perf)
         << "\n"
         << (global_allow_mod4_mode ? "1" : "0") << "\n";   // @new 2015-08-28
 
-    size_t kevsize = a_perf->get_key_events().size() < (size_t) c_seqs_in_set ?
-         a_perf->get_key_events().size() :
-         (size_t) c_seqs_in_set
+    size_t kevsize = a_perf->get_key_events().size() < size_t(c_seqs_in_set) ?
+         a_perf->get_key_events().size() : size_t(c_seqs_in_set)
          ;
     file
         << "\n[keyboard-control]\n"
@@ -634,9 +641,14 @@ optionsfile::write (perform * a_perf)
         );
         file << std::string(outs) << "\n";
     }
+
+    /*
+     * int kcsize = int(a_perf->get_key_events().size());
+     * printf("Wrote %d [keyboard-control] events.\n", kcsize);
+     */
+
     size_t kegsize = a_perf->get_key_groups().size() < size_t(c_seqs_in_set) ?
-         a_perf->get_key_groups().size() :
-         (size_t)c_seqs_in_set
+         a_perf->get_key_groups().size() : size_t(c_seqs_in_set)
          ;
     file
         << "\n[keyboard-group]\n"

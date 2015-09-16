@@ -597,6 +597,14 @@ public:
     {
         return m_key_groups;
     }
+    RevSlotMap & get_key_events_rev ()
+    {
+        return m_key_events_rev;
+    }
+    RevSlotMap & get_key_groups_rev ()
+    {
+        return m_key_groups_rev;
+    }
 
     void set_key_event (unsigned int keycode, long sequence_slot);
     void set_key_group (unsigned int keycode, long group_slot);

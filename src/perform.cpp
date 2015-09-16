@@ -24,13 +24,13 @@
  * \library       sequencer24 application
  * \author        Seq24 team; modifications by Chris Ahlstrom
  * \date          2015-07-24
- * \updates       2015-09-07
+ * \updates       2015-09-16
  * \license       GNU GPLv2 or above
  *
  */
 
-#include <sched.h>
 #include <stdio.h>
+#include <sched.h>
 
 #ifndef PLATFORM_WINDOWS
 #include <time.h>
@@ -2738,7 +2738,10 @@ perform::sequence_playing_off (int a_sequence)
  *  slot.
  *
  *  It is called 32 times, corresponding the pattern/sequence slots in the
- *  Patterns window.
+ *  Patterns window.  Note that the loading of the 32 events takes place
+ *  in two places:  the perform constructor, and the reading of the "rc"
+ *  file.  In the second loading, only 31 events are loaded, in spite
+ *  of the key-events container being cleared first.
  */
 
 void
@@ -2773,6 +2776,18 @@ perform::set_key_event (unsigned int keycode, long sequence_slot)
 
     m_key_events[keycode] = sequence_slot;
     m_key_events_rev[sequence_slot] = keycode;
+
+    /*
+     * DEBUG code
+     */
+
+    int kcsize = int(m_key_events.size());
+    int kcrsize = int(m_key_events_rev.size());
+    printf
+    (
+        "Read key=%u, seq=%ld, size=%d, rev=%d\n",
+        keycode, sequence_slot, kcsize, kcrsize
+    );
 }
 
 /**
