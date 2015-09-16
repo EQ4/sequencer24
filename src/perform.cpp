@@ -153,6 +153,8 @@ perform::perform ()
         m_midi_cc_on[i] = zero;
         m_midi_cc_off[i] = zero;
     }
+    get_key_events().clear();           // \new ca 2015-09-16
+    get_key_events_rev().clear();       // \new ca 2015-09-16
     set_key_event(GDK_1, 0);
     set_key_event(GDK_q, 1);
     set_key_event(GDK_a, 2);
@@ -186,6 +188,8 @@ perform::perform ()
     set_key_event(GDK_k, 30);
     set_key_event(GDK_comma, 31);
 
+    get_key_groups().clear();           // \new ca 2015-09-16
+    get_key_groups_rev().clear();       // \new ca 2015-09-16
     set_key_group(GDK_exclam, 0);
     set_key_group(GDK_quotedbl, 1);
     set_key_group(GDK_numbersign, 2);
@@ -2779,15 +2783,20 @@ perform::set_key_event (unsigned int keycode, long sequence_slot)
 
     /*
      * DEBUG code
-     */
+     *
 
     int kcsize = int(m_key_events.size());
-    int kcrsize = int(m_key_events_rev.size());
-    printf
-    (
-        "Read key=%u, seq=%ld, size=%d, rev=%d\n",
-        keycode, sequence_slot, kcsize, kcrsize
-    );
+    if (kcsize <= 5 && kcsize >= 30)                // limit amount of output
+    {
+        int kcrsize = int(m_key_events_rev.size());
+        printf
+        (
+            "Read key=%u, seq=%ld, size=%d, rev=%d\n",
+            keycode, sequence_slot, kcsize, kcrsize
+        );
+    }
+     *
+     */
 }
 
 /**
@@ -2830,8 +2839,24 @@ perform::set_key_group (unsigned int keycode, long group_slot)
 
     m_key_groups[keycode] = group_slot;
     m_key_groups_rev[group_slot] = keycode;
-}
 
+    /*
+     * DEBUG code
+     *
+
+    int kcsize = int(m_key_groups.size());
+    if (kcsize <= 5 && kcsize >= 30)                // limit amount of output
+    {
+        int kcrsize = int(m_key_groups_rev.size());
+        printf
+        (
+            "Read group=%u, seq=%ld, size=%d, rev=%d\n",
+            keycode, group_slot, kcsize, kcrsize
+        );
+    }
+     *
+     */
+}
 
 #ifdef JACK_SUPPORT
 

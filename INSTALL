@@ -1,6 +1,6 @@
-INSTALL for Sequencer24 0.9.4
+INSTALL for Sequencer24 0.9.4.3
 Chris Ahlstrom
-2015-09-09 to 2015-09-09
+2015-09-09 to 2015-09-16
 
 The current packaging for Sequencer24 is primarily aimed at developers.
 There is currently no configure script... it must be bootstrapped.

@@ -266,6 +266,13 @@ options::add_midi_input_page ()
 /**
  *  Adds the Keyboard page (tab) to the Options dialog.  This tab is the
  *  Keybinding setup editor for the <tt> ~/.seq24rc </tt> keybindings.
+ *
+ * \warning
+ *      Managing the keys in this dialog relies on bypassing the
+ *      set_key_event() call, and currently this can result in the
+ *      key-event container having at least one less item than the normal
+ *      32 that are expected.  And this mistake gets written to the "rc"
+ *      file.
  */
 
 void
